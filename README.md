@@ -43,8 +43,52 @@ Higest precendence operator so binds tightly to the operand to it's left.  Will 
 Convert numbers to strings in a default number format unrelated to display format.
 ### Binary Boolean comparison operators (`=`, `<`, `>`, `<=`, `>=`, `<>`)
 Acting on String the comparisons are *case insensitive*.  Internally everything is converted to lower case before comparison. No other conversions are done for these operators.  This means you can't compare string and number representations and expect equality or reasonable comparisons.
+### Binding to functions
+Conversions also take place when binding to function parameters.  Excel will try to convert to the expected type.
 
+## Ranges and Arrays
+### Ranges
+Ranges are treated quite differently from arrays and can have some odd properties when evaluated in a scalar context.
+|   |  A |     B      | 
+|---|----|------------|
+| 1 |  2 | =$A$2:$A$5 |
+| 2 |  4 | =$A$2:$A$5 |
+| 3 |  8 | =$A$2:$A$5 |
+| 4 | 16 | =$A$2:$A$5 |
+| 5 | 32 | =$A$2:$A$5 |
 
+yields the values 
+
+|   |  A |     B    | 
+|---|----|----------|
+| 1 |  2 |  #VALUE! |
+| 2 |  4 |        4 |
+| 3 |  8 |        8 |
+| 4 | 16 |       16 |
+| 5 | 32 |       32 |
+
+where each the range is converted into a scalar in a different way for each context using the *current* row/column relative to the range.  Note that if the range does not overlap the current column, the result will be `#VALUE!`
+
+### Arrays
+Scalar operations on arrays are treated as matrix style operations where each element is operated on separately.  Note here that the formulas in B1:B5 are an array formula rather than multiple single formulas.
+
+|   |  A |       B      | 
+|---|----|--------------|
+| 1 |  2 | {=$A$2:$A$5} |
+| 2 |  4 | {=$A$2:$A$5} |
+| 3 |  8 | {=$A$2:$A$5} |
+| 4 | 16 | {=$A$2:$A$5} |
+| 5 | 32 | {=$A$2:$A$5} |
+
+yields
+
+|   |  A |    B    | 
+|---|----|---------|
+| 1 |  2 |       4 |
+| 2 |  4 |       8 |
+| 3 |  8 |      16 |
+| 4 | 16 |      32 |
+| 5 | 32 | #VALUE! |
 
 # Specification
 
