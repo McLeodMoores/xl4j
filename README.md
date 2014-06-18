@@ -90,7 +90,7 @@ yields
 | 4 | 16 |      32 |
 | 5 | 32 | #VALUE! |
 
-### Explcit type conversions
+### Explicit type conversions
 There are a number of funcitons available to force type conversions
 
 | Function Name | Return Type | Number | String | Boolean | Error |
