@@ -90,6 +90,16 @@ yields
 | 4 | 16 |      32 |
 | 5 | 32 | #VALUE! |
 
+### Explcit type conversions
+There are a number of funcitons available to force type conversions
+
+| Function Name | Return Type | Number | String | Boolean | Error |
+|---------------|-------------|--------|--------|---------|-------|
+| N()           | Number/Err  | arg    | 0      | 1/0     | arg   |
+| T()           | String/Err  | ""     | arg    | ""      | arg   |
+| TEXT()        | String/Err  | String rep. of arg | convert to String and back, #VALUE! if fails | "TRUE" or "FALSE" | arg |
+| VALUE()       | Number/Err  | arg    | convert to Number, #VALUE! if fails | #VALUE! | arg |
+
 # Specification
 
 ## Primitive Types
