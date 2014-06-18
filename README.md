@@ -49,7 +49,8 @@ Conversions also take place when binding to function parameters.  Excel will try
 ## Ranges and Arrays
 ### Ranges
 Ranges are treated quite differently from arrays and can have some odd properties when evaluated in a scalar context.
-|   |  A |     B      | 
+
+| . |  A |     B      | 
 |---|----|------------|
 | 1 |  2 | =$A$2:$A$5 |
 | 2 |  4 | =$A$2:$A$5 |
