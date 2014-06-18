@@ -72,13 +72,13 @@ where each the range is converted into a scalar in a different way for each cont
 ### Arrays
 Scalar operations on arrays are treated as matrix style operations where each element is operated on separately.  Note here that the formulas in B1:B5 are an array formula rather than multiple single formulas.
 
-|   |  A |       B      | 
-|---|----|--------------|
-| 1 |  2 | {=$A$2:$A$5} |
-| 2 |  4 | {=$A$2:$A$5} |
-| 3 |  8 | {=$A$2:$A$5} |
-| 4 | 16 | {=$A$2:$A$5} |
-| 5 | 32 | {=$A$2:$A$5} |
+|   |  A |        B       | 
+|---|----|----------------|
+| 1 |  2 | \{=$A$2:$A$5\} |
+| 2 |  4 | \{=$A$2:$A$5\} |
+| 3 |  8 | \{=$A$2:$A$5\} |
+| 4 | 16 | \{=$A$2:$A$5\} |
+| 5 | 32 | \{=$A$2:$A$5\} |
 
 yields
 
