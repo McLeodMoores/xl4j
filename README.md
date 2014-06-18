@@ -5,7 +5,7 @@ excel4j
 ## Excel Types
 | Excel Type       | Notes/Values |
 |------------------|--------------|
-| Number           | All floating point, note that it's not IEE-compliant.  In particular NaN -> #NUM!, Inf -> #NUM! and subnormals are truncated to 0.  The range is 10<sup>307</sup> <= abs(x) < 10<sup>308</sup> |
+| Number           | All floating point, note that it's not IEEE-compliant.  In particular NaN -> #NUM!, Inf -> #NUM! and subnormals are truncated to 0.  The range is 10<sup>307</sup> <= abs(x) < 10<sup>308</sup> |
 | Boolean          | TRUE or FALSE |
 | String (Unicode) | 2<sup>15</sup>-1 unicode characters (UTF-16?).  Only displayed if value >= 32. |
 | Errors | #NULL!, #DIV/0!, #VALUE!, #REF!, #NAME?, #NUM!, #N/A |
@@ -25,9 +25,26 @@ Chains of evaluation
  
 For formulas, the process is then
 
-1. Evaluate function arguments from most nested outwards.  Cell references and ranges are converted to values, which may then be converted to the expected data types if necessary.  If a name is not identifiable as a function or defined name (named range or cell), then it will be replaced with #NAME? and the evaluation will fail.
-2. If the value has changed, any dependent inputs will be recalculated. **WE WILL NEED TO TAKE THIS INTO ACCOUNT WHEN USING OBJECT HANDLES**
+1. Evaluate function arguments from most nested outwards.  Cell references and ranges are converted to values (unless the function in question expects a reference), which may then be converted to the expected data types if necessary.  If a name is not identifiable as a function or defined name (named range or cell), then it will be replaced with #NAME? and the evaluation will fail.
+2. If the _value has changed_, any dependent inputs will be recalculated. **WE WILL NEED TO TAKE THIS INTO ACCOUNT WHEN USING OBJECT HANDLES**
 3. Circular references are checked and cells may be resized.
+ 
+## Type conversion at the Excel level
+Conversions take place as operators are applied to values:
+### The equals operator
+Will convert any cell references into _values_ before invoking functions and will only return one of the basic Excel types listed above
+### Unary minus
+Will convert a string representation of a number to a negated number representation, so double negation converts from String to Number.  Booleans convert to -1 or 0, so an easy Boolean to Number conversion is achieved with double negation. Note that the unary plus operator does not have the same effect.
+### Binary arithmetic operators (`+`, `-`, `*`, `/`, `^`)
+Will try to convert any values to Numbers.  This includes strings in any recognised format, dates and times and percentages.
+### Percentage operators (`%`)
+Higest precendence operator so binds tightly to the operand to it's left.  Will try and convert anything to a Number, so can be applied to dates, times and Booleans as well.
+### String contatenation operator (`&`)
+Convert numbers to strings in a default number format unrelated to display format.
+### Binary Boolean comparison operators (`=`, `<`, `>`, `<=`, `>=`, `<>`)
+Acting on String the comparisons are *case insensitive*.  Internally everything is converted to lower case before comparison. No other conversions are done for these operators.  This means you can't compare string and number representations and expect equality or reasonable comparisons.
+
+
 
 # Specification
 
