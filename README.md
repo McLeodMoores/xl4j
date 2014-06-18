@@ -18,13 +18,15 @@ Percentages to are represented as numbers and their display is just a * 100 form
 
 ## Input evaluation
 Chains of evaluation
+
 1. If string prefix (single quote) => String
 2. If prefixed with plus, minus or equals => Formula
 3. See if the value looks like a date, time, currency amount, percentage or number
  
 For formulas, the process is then
+
 1. Evaluate function arguments from most nested outwards.  Cell references and ranges are converted to values, which may then be converted to the expected data types if necessary.  If a name is not identifiable as a function or defined name (named range or cell), then it will be replaced with #NAME? and the evaluation will fail.
-2. If the value has changed, any dependent inputs will be recalculated. ** WE WILL NEED TO TAKE THIS INTO ACCOUNT WHEN USING OBJECT HANDLES **
+2. If the value has changed, any dependent inputs will be recalculated. **WE WILL NEED TO TAKE THIS INTO ACCOUNT WHEN USING OBJECT HANDLES**
 3. Circular references are checked and cells may be resized.
 
 # Specification
