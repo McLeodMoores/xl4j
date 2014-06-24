@@ -3,7 +3,7 @@ Specification
 
 # Standard UDFs
 So an Excel function like `MyJavaFunction(Number1, Number2)`->`Number` would be:
-``
+```
 class MyFunctions {
 
   @XLFunction(name = "MyJavaFunction", category = StandardCategories.Financial, description = "My Java Function", volatile = "true")
