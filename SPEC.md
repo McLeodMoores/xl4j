@@ -3,7 +3,11 @@ Specification
 
 # Standard UDFs
 So an Excel function like `MyJavaFunction(Number1, Number2)`->`Number` would be:
-```
+``` java
+package com.mcleodmoores.excel4j.example;
+
+import com.mcelodmoores.excel4j.*;
+
 class MyFunctions {
 
   @XLFunction(name = "MyJavaFunction", category = StandardCategories.Financial, description = "My Java Function", volatile = "true")
@@ -27,3 +31,38 @@ In this example most of these annotations would be optional
 6. `@XLArgument.description` would default to:
   - the JavaDoc description if available.
 7. `@XLArgument.optional` would default to false.
+
+Registering the same method twice with the same `@XLFunction.name` could be allowable in some cases to handle overloading.
+
+## Class or Package level prefixes
+To allow a degree of namespaceing we need another anotation. In the case of a package it would go in the `package-java.java` file in the package you want:
+
+``` java
+@XLNamespace(name = "Ex")
+package com.mcleodmoores.excel4j.examples;
+
+import com.mcleodmoores.excel4j.XLNamespace;
+```
+
+which for the above example would lead to the functions being registered as `ExMyJavaFunction`.  Note the import after the package declaration.  In the case of a class if would be:
+
+``` java
+package com.mcleodmoores.examples;
+
+import com.mcleodmoores.excel4j.*;
+
+@XLNamespace(name = "Ex1")
+public class Example1 {
+  @XLFunction
+  ...
+}
+```
+
+and in this case would lead to initial example function being registered as `Ex1MyJavaFunction`.
+
+## Commands 
+Commands would be handled by setting the command flag if the return type is `void`.
+
+
+
+
