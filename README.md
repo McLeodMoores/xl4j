@@ -1,7 +1,22 @@
 excel4j
 =======
 
+# Two distinct modes of use
+
+1. Interacting with existing Java code and libraries directly from Excel
+  - Creating object by calling constructors, factory methods, etc.
+  - Invoking methods
+  - Marshall results too and from Excel types where possible, but always have a fallback to explcitily typed objects
+2. Writing and exposing functions specifically designed for Excel.  These would share the same type system but have
+   more refined argument lists, accept ranges, arrays and so on as necessary.
+  - Support for basic non-blocking, fast UDF invocation/calculation.
+  - Support for slower calculations by using
+    - Asynchronous UDFs
+    - Other tricks?  Timeouts, retries, RTD functions?
+  - Support for RTD servers.
+
 # General Notes
+
 ## Excel Types
 | Excel Type       | Notes/Values |
 |------------------|--------------|
