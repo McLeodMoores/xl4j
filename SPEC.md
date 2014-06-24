@@ -63,6 +63,8 @@ and in this case would lead to initial example function being registered as `Ex1
 ## Commands 
 Commands would be handled by setting the command flag if the return type is `void`.
 
-
+## Explcit types
+### XLRange
+Wrapped array of mixed types
 
 
