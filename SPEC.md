@@ -77,7 +77,7 @@ public RTDArgs myRtdFunction(final String topic1, final String topic2) {
   return RTDArgs.Builder.of("MyRTDServerProdId", "ServerName").withTopic(topic1).withTopic(topic2).build();
 }
 ```
-and we'd then generate the RTD function call back into Excel outside of the Java code.
+and we'd then generate the RTD function call back into Excel outside of the Java code.  Note that `@XLRealTimeDataFunction` would have the same attributes as `@XLFunction` except for the volatile attribute, which is not applicable to RTD functions.
 
 This of course doesn't actually deal with the RTD server itself.  In this case the Java code should simply closely mirror the COM IRtdServer interface:
 ``` java
