@@ -63,6 +63,52 @@ and in this case would lead to initial example function being registered as `Ex1
 ## Commands 
 Commands would be handled by setting the command flag if the return type is `void`.
 
+# RTD Functions/Servers
+One possibility is that we expose and call the COM API directly to forward to an RTD function.
+``` java
+Excel excel = Excel.getInstance();
+XLValue value = excel.getWorksheetFunction().rtd("MyRTDServerProdId", "ServerName", "Topic1", "Topic2").getValue();
+return value;
+```
+This might in practice need to be via the non-COM API though because of threading issues.
+A more user-friendly approach might be to add a different class of Excel function:
+``` java
+@XLRealTimeDataFunction(name = "MyRTDFunction", category = StandardCategories.Financial, description = "My RTD Function")
+public RTDArgs myRtdFunction(final String topic1, final String topic2) {
+  return RTDArgs.Builder.of("MyRTDServerProdId", "ServerName").withTopic(topic1).withTopic(topic2).build();
+}
+```
+and we'd then generate the RTD function call back into Excel outside of the Java code.
+
+This of course doesn't actually deal with the RTD server itself.  In this case the Java code should simply closely mirror the COM IRtdServer interface:
+``` java
+public interface XLRealTimeDataServer {
+  XLConnectDataReponse connectData(int topicId, String[] topics);
+  void disconnectData(int topicId);
+  int heartBeat();
+  List<XLRefreshDataResponse> refreshData();
+  int serverStart(XLRealTimeDataUpdateEvent handler);
+  void serverTerminate();
+}
+
+public interface XLRealTimeDataUpdateEvent {
+  void disconnect(); // stop servicing this event handler.
+  void updateNotify(); // data ready to pull with refreshData();
+  int getHeartbeatInterval();
+  void setHeartbeatInterval(); // might want to hide setter from client by excluding from interface.
+}
+
+public interface XLConnectDataResponse {
+  XLValue getValue();
+  boolean isUpdated(); // are new values required
+}
+
+public interface XLRefreshDataResponse {
+  String[] getTopics();
+  XLValue getValue();
+}
+```
+
 ## Explcit types
 ### XLRange
 Wrapped array of mixed types
