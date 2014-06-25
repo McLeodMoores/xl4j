@@ -111,6 +111,8 @@ public interface XLRefreshDataResponse {
 ```
 
 ## Explcit types
+
+The aim here is for the developer to have something to fall back on if the automatic marshalling doesn't work.
 ### XLValue
 This broadly mirrors the XLOPER* data structure.  The interesting question is whether this should be an object heirarchy or a type + object structure.  This could be done thus:
   - `XLString`
@@ -125,6 +127,8 @@ This broadly mirrors the XLOPER* data structure.  The interesting question is wh
     - `XLBigData`
     - Macro flow control crap
 
-The aim here is for the developer to have something to fall back on if the automatic marshalling doesn't work.
+### Type conversions
+
+
 
 
