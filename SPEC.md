@@ -9,7 +9,6 @@ package com.mcleodmoores.excel4j.example;
 import com.mcelodmoores.excel4j.*;
 
 class MyFunctions {
-
   @XLFunction(name = "MyJavaFunction", category = StandardCategories.Financial, description = "My Java Function", volatile = "true")
   public double myJavaFunction(@XLArgument(name = "arg1", description = "first argument", optional = "false") double arg1, 
                                @XLArgument(name = "arg2", description = "second argument", optional = "false") double param2) {
