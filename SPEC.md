@@ -24,7 +24,7 @@ In this example most of these annotations would be optional
 2. `@XLFunction.category` would default to the Class name.
 3. `@XLFunction.description` would lift the first line of any JavaDoc comment or otherwise be the fully qualified class name plus themethod name.
 4. `@XLFunction.volatile` would default to false.
-5. `@XLFunction.allowReferences' would default to false.
+5. `@XLFunction.allowReferences` would default to false. (This is whether the function can receive cell references).
 6. `@XLArgument.name` would default to:
   - debug symbol name if available (paranamer) 
   - the JavaDoc name if available (or perhaps this should be first?)
