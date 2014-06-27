@@ -149,6 +149,9 @@ Direct Java Calls refers to the abililty to call into unmodified Java classes an
      - `JMethodRX(...)` real-time (RTD), explciti typed results
  - `JWriteMember(<object-handle> | <class-name>, <member-name>, <value-or-object-handle>)` - write a member, returning an empty cell.
 
+> We might be able to avoid the common use of these varients if we can automatically queue recalculations of appropriate cells 
+> via COM, but I suspect synchronization issues would cause issues if used with e.g. Solver.  Can Solver work with RTD or Volatile 
+> UDFs at all?
 
 fdksjafkldsj
 fdaslkjflksdj
