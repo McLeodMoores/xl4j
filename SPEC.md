@@ -129,6 +129,39 @@ This broadly mirrors the XLOPER* data structure.  The interesting question is wh
 
 ### Type conversions
 
+# Direct Java Calls
+Direct Java Calls refers to the abililty to call into unmodified Java classes and methods directly from Excel.  
+
+ - `JConstruct(<class-name>, { <argument-x> }[0..n] })` - call a constructor, returning an object handle.
+ - `JMethod(<object-handle> | <class-name>, <method-name>, { <argument-x> }[0..n] })` calls a method, returning an object handle or primitive.  The default uses standard Excel dependency tracking so may become stale (?)
+   - Reduce type variants, these reduce results to Excel Number, Boolean or String wherever possible:
+     - `JMethodV(...)` volatile function that is evaluated every time anything on the sheet changes.  
+     - `JMethodR(...)` monitors the object for changes and updates the cell with a re-evaluated result via RTD server.
+   - Explicit type variants, these keep all results as Java object handles.
+     - `JMethodVX(...)` volatile, explicit typed results.
+     - `JMethodRX(...)` real-time (RTD), explciti typed results
+ - `JReadMember(<object-handle> | <class-name>, <member-name>) - read a member, returning an object handle or primitive.
+   - Reduce type variants, these reduce results to Excel Number, Boolean or String wherever possible:
+     - `JReadMemberV(...)` volatile function that is evaluated every time anything on the sheet changes.  
+     - `JReadMemberR(...)` monitors the object for changes and updates the cell with a re-evaluated result via RTD server.
+   - Explicit type variants, these keep all results as Java object handles.
+     - `JMethodVX(...)` volatile, explicit typed results.
+     - `JMethodRX(...)` real-time (RTD), explciti typed results
+ - `JWriteMember(<object-handle> | <class-name>, <member-name>, <value-or-object-handle>)` - write a member, returning an empty cell.
+
+
+fdksjafkldsj
+fdaslkjflksdj
+fasdlkjfalksdjf
+fdlksajflkajsdlkfj
+ldsakjflajdslajfladskjf
+afkljdslfjasldjfldajs
+dskfjalksdjfkjadslkfj
+fdalskjflajsdlfja;ds
+
+
+Padding because dillinger doesn't scroll to bottom properly
+
 
 
 
