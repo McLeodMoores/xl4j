@@ -110,6 +110,21 @@ public interface XLRefreshDataResponse {
 }
 ```
 
+### Simplified RTD functions
+It would be nice to have a simplified API to allow basic call-back functionality:
+``` java
+@XLRealTimeDataFunction(name = "MyRTDFunction", category = StandardCategories.Financial, description = "My RTD Function")
+public RTDCallback myRtdFunction() {
+  final RTDCallback handler = RTDCallback.Builder.of("MyRTDServerProdId").build(); // uses preset server name.
+  JButton swingButton = _button1;
+  swingButton.addActionListener(new ActionListener() { // obviously we'd add code so we didn't add this all the time.
+    public void actionPerformed(ActionEvent e) {
+      handler.getCallback().triggerUpdate(_updateField.getText());
+    }
+  }
+  return handler;
+}
+```
 ## Explcit types
 
 The aim here is for the developer to have something to fall back on if the automatic marshalling doesn't work.
