@@ -77,3 +77,4 @@ packages/
 *.jar
 *.war
 *.ear
+/target/
