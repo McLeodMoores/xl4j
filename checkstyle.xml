@@ -14,17 +14,14 @@
     <property name="tabWidth" value="4"/>
     <module name="JavadocMethod">
       <property name="scope" value="package"/>
-      <property name="excludeScope" value="private"/>
       <property name="suppressLoadErrors" value="true"/>
     </module>
     <module name="JavadocType"/>
     <module name="JavadocVariable">
-      <property name="excludeScope" value="private"/>
       <property name="scope" value="package"/>
     </module>
     <module name="JavadocStyle">
       <property name="scope" value="package"/>
-      <property name="excludeScope" value="private"/>
     </module>
     <module name="ConstantName"/>
     <module name="LocalFinalVariableName"/>

@@ -19,6 +19,11 @@ public final class SerializationUtils {
 
   private static final int BYTE_BUFFER_INITIAL_SIZE = 256;
 
+  /**
+   * Serialize an object to a byte array.
+   * @param object a Serializable object to encode
+   * @return a byte array representing the serialized object
+   */
   public static byte[] serialize(final Serializable object) {
     try (
       ByteArrayOutputStream bos = new ByteArrayOutputStream(BYTE_BUFFER_INITIAL_SIZE);
@@ -31,6 +36,11 @@ public final class SerializationUtils {
     }
   }
   
+  /**
+   * Deserialize an object from a byte array.
+   * @param data the byte array from which to deserialize the object
+   * @return the object, an object that is Serializable
+   */
   public static Serializable deserialize(final byte[] data) {
     try (
       ByteArrayInputStream bis = new ByteArrayInputStream(data);

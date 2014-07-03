@@ -27,19 +27,49 @@ public final class XLBigData implements XLValue {
     _length = length;
   }
   
+  /**
+   * Create an instance from a byte array.
+   * This is used when you're using a specific manual encoding and we're sending data
+   * to Excel rather than receiving it.
+   * @param data the data as a byte array
+   * @return an instance of XLBigData
+   */
   public static XLBigData of(final byte[] data) {
     ArgumentChecker.notNull(data, "data");
     return new XLBigData(data);
   }
-  
+
+  /**
+   * Create an instance from a Serializable Java object.
+   * This is used when you want to save an object (or graph of objects) and have it automatically 
+   * serialized before sending to Excel rather than receiving data from Excel.
+   * @param object the object to serialize
+   * @return an instance of XLBigData
+   */
   public static XLBigData of(final Serializable object) {
     return new XLBigData(SerializationUtils.serialize(object));
   }
   
-  public static XLBigData of(final int handleFromExcel, final int length) {
+  /**
+   * Create an instance from a Windows HANDLE and length.
+   * This is used when passing an object from Excel to Java, but only getting the actual data on demand.
+   * This allows more efficient communication between Excel and Java by avoid unnecessary data transfers.
+   * @param handleFromExcel a Windows HANDLE data type pointing at the data to retrieve.  This reduces to (void *)
+   *                        so should fit in a 64-bit signed long.
+   * @param length the length of the data block
+   * @return an instance of XLBigData
+   */  
+  public static XLBigData of(final long handleFromExcel, final long length) {
     return new XLBigData(handleFromExcel, length);
   }
   
+  /**
+   * Return the raw byte buffer.  
+   * This will either use the embedded byte array or call back into Windows/Excel to copy
+   * the buffer into Java.  Once this has been done, further requests use the embedded array, so just bear in
+   * mind the first call can be expensive if the data is being passed from the XLL side.
+   * @return the raw byte array buffer
+   */
   public byte[] getBuffer() {
     if (_valueToExcel == null) { // if no byte buffer, pull it from XLL using handle.
       _valueToExcel = Excel.getInstance().getBinaryName(_handleFromExcel, _length);
@@ -47,10 +77,20 @@ public final class XLBigData implements XLValue {
     return _valueToExcel;
   }
   
-  public Serializable getObjectValue() {
+  /**
+   * Return buffer deserialized into an object.  
+   * This will either use the embedded byte array as a source for the deserialization or call back into 
+   * Windows/Excel to copy the buffer into Java.  Once this has been done, further requests use the embedded 
+   * array, so just bear in mind the first call can be expensive if the data is being passed from the XLL side.
+   * This may throw a ClassNotFoundException embedded inside an Excel4JRuntimeException if the class cannot
+   * be found.
+   * @return the deserialized object
+   */
+  public Serializable getValue() {
     return SerializationUtils.deserialize(getBuffer());
   }
   
+  @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLBigData(this);
   }
