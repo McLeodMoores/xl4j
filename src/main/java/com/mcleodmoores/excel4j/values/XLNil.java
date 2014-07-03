@@ -29,4 +29,10 @@ public final class XLNil implements XLValue {
     return visitor.visitXLNil(this);
   }
 
+  // default hashCode and equals will suffice here.
+  
+  @Override
+  public String toString() {
+    return "XLNil";
+  }
 }

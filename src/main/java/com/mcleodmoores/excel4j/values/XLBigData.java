@@ -1,6 +1,7 @@
 package com.mcleodmoores.excel4j.values;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
@@ -11,6 +12,10 @@ import com.mcleodmoores.excel4j.util.SerializationUtils;
  */
 public final class XLBigData implements XLValue {
 
+  /**
+   * 
+   */
+  private static final int HASHCODE_SHIFT = 32;
   private byte[] _valueToExcel;
   private final long _handleFromExcel;
   private final long _length;
@@ -47,6 +52,7 @@ public final class XLBigData implements XLValue {
    * @return an instance of XLBigData
    */
   public static XLBigData of(final Serializable object) {
+    ArgumentChecker.notNull(object, "object");
     return new XLBigData(SerializationUtils.serialize(object));
   }
   
@@ -95,4 +101,42 @@ public final class XLBigData implements XLValue {
     return visitor.visitXLBigData(this);
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + (int) (_handleFromExcel ^ (_handleFromExcel >>> HASHCODE_SHIFT));
+    result = prime * result + (int) (_length ^ (_length >>> HASHCODE_SHIFT));
+    result = prime * result + Arrays.hashCode(_valueToExcel);
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof XLBigData)) {
+      return false;
+    }
+    XLBigData other = (XLBigData) obj;
+    if (_handleFromExcel != other._handleFromExcel) {
+      return false;
+    }
+    if (_length != other._length) {
+      return false;
+    }
+    if (!Arrays.equals(_valueToExcel, other._valueToExcel)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "XLBigData[getBuffer()=" + Arrays.toString(getBuffer()) + "]";
+  }
 }

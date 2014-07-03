@@ -88,4 +88,39 @@ public final class XLReference implements XLValue {
     return visitor.visitXLReference(this);
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((_ranges == null) ? 0 : _ranges.hashCode());
+    result = prime * result + ((_sheetId == null) ? 0 : _sheetId.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof XLReference)) {
+      return false;
+    }
+    XLReference other = (XLReference) obj;
+    if (!_ranges.equals(other._ranges)) {
+      return false;
+    }
+    if (!_sheetId.equals(other._sheetId)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "XLReference[sheetId=" + _sheetId + ", ranges=" + _ranges + "]";
+  }
+
 }

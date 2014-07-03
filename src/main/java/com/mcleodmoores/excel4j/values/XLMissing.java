@@ -29,4 +29,10 @@ public final class XLMissing implements XLValue {
     return visitor.visitXLMissing(this);
   }
 
+  // default hashCode and equals will suffice here.
+  
+  @Override
+  public String toString() {
+    return "XLMissing";
+  }
 }

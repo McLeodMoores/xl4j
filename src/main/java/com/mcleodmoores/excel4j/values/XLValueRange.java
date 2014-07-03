@@ -1,5 +1,7 @@
 package com.mcleodmoores.excel4j.values;
 
+import java.util.Arrays;
+
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
@@ -35,6 +37,37 @@ public final class XLValueRange implements XLValue {
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLValueRange(this);
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + Arrays.hashCode(_valueRange);
+    return result;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof XLValueRange)) {
+      return false;
+    }
+    XLValueRange other = (XLValueRange) obj;
+    if (!Arrays.deepEquals(_valueRange, other._valueRange)) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "XLValueRange[valueRange=" + Arrays.toString(_valueRange) + "]";
   }
 
 }
