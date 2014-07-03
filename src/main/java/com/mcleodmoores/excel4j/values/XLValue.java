@@ -1,4 +1,4 @@
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.values;
 
 /**
  * This is the equivalent of the xloper structure on the C side.  Because we don't have

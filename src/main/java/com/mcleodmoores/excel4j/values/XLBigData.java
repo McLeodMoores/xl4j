@@ -1,17 +1,19 @@
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.values;
 
 import java.io.Serializable;
 
+import com.mcleodmoores.excel4j.Excel;
+import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.util.SerializationUtils;
 
 /**
- * Java representation of the xloper type xltypeBigData
+ * Java representation of the xloper type xltypeBigData.
  */
-public class XLBigData implements XLValue {
+public final class XLBigData implements XLValue {
 
-  byte[] _valueToExcel;
-  final long _handleFromExcel;
-  final long _length;
+  private byte[] _valueToExcel;
+  private final long _handleFromExcel;
+  private final long _length;
   
   private XLBigData(final byte[] valueToExcel) {
     _valueToExcel = valueToExcel;
@@ -25,15 +27,16 @@ public class XLBigData implements XLValue {
     _length = length;
   }
   
-  public static XLBigData of(final byte[] valueToExcel) {
-    return new XLBigData(valueToExcel);
+  public static XLBigData of(final byte[] data) {
+    ArgumentChecker.notNull(data, "data");
+    return new XLBigData(data);
   }
   
   public static XLBigData of(final Serializable object) {
     return new XLBigData(SerializationUtils.serialize(object));
   }
   
-  public static XLBigData of(final int handleFromExcel, int length) {
+  public static XLBigData of(final int handleFromExcel, final int length) {
     return new XLBigData(handleFromExcel, length);
   }
   
@@ -48,7 +51,7 @@ public class XLBigData implements XLValue {
     return SerializationUtils.deserialize(getBuffer());
   }
   
-  public <E> E accept(XLValueVisitor<E> visitor) {
+  public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLBigData(this);
   }
 

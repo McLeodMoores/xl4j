@@ -9,11 +9,19 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-public class SerializationUtils {
+/**
+ * Static utility methods for serializing and deserializing objects from byte arrays. 
+ */
+public final class SerializationUtils {
+  
+  private SerializationUtils() {
+  }
 
-  public static byte[] serialize(Serializable object) {
+  private static final int BYTE_BUFFER_INITIAL_SIZE = 256;
+
+  public static byte[] serialize(final Serializable object) {
     try (
-      ByteArrayOutputStream bos = new ByteArrayOutputStream(256);
+      ByteArrayOutputStream bos = new ByteArrayOutputStream(BYTE_BUFFER_INITIAL_SIZE);
       ObjectOutput out = new ObjectOutputStream(bos);
     ) {
       out.writeObject(object);
@@ -23,7 +31,7 @@ public class SerializationUtils {
     }
   }
   
-  public static Serializable deserialize(byte[] data) {
+  public static Serializable deserialize(final byte[] data) {
     try (
       ByteArrayInputStream bis = new ByteArrayInputStream(data);
       ObjectInput in = new ObjectInputStream(bis);

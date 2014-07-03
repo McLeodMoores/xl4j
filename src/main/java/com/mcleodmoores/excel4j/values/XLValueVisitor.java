@@ -1,5 +1,9 @@
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.values;
 
+/**
+ * Visitor interface for XLValue.
+ * @param <T> the type of the return value
+ */
 public interface XLValueVisitor<T> {
   T visitXLString(XLString value);
   T visitXLBoolean(XLBoolean value);

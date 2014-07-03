@@ -1,6 +1,10 @@
 package com.mcleodmoores.excel4j;
 
-public class Excel {
+/**
+ * General interface to Excel. 
+ * Call getInstance() to get a (thread-safe) instance.
+ */
+public final class Excel {
 
   private Excel() {
   }
@@ -9,14 +13,14 @@ public class Excel {
    * Bill Pugh singleton pattern helper class removes synchronization requirement.
    */
   private static class ExcelHelper {
-    private static final Excel s_instance = new Excel();
+    private static final Excel INSTANCE = new Excel();
   }
   
   public static Excel getInstance() {
-    return ExcelHelper.s_instance;
+    return ExcelHelper.INSTANCE;
   }
   
-  public byte[] getBinaryName(long handle, long length) {
+  public byte[] getBinaryName(final long handle, final long length) {
     // TODO: Call into XLL to lock, copy and unlock handle 
     return new byte[0];
   }
