@@ -15,6 +15,42 @@ public final class ArgumentChecker {
   }
   
   /**
+   * Throws an exception if the argument is negative.
+   * @param argument the object to check
+   * @param name the name of the parameter
+   */
+  public static void notNegative(final int argument, final String name) {
+    if (argument < 0) {
+      s_logger.error("Argument {} was negative", name);
+      throw new Excel4JRuntimeException("Value " + name + " was negative");
+    }
+  }
+  
+  /**
+   * Throws an exception if the argument is negative.
+   * @param argument the object to check
+   * @param name the name of the parameter
+   */
+  public static void notNegative(final long argument, final String name) {
+    if (argument < 0L) {
+      s_logger.error("Argument {} was negative", name);
+      throw new Excel4JRuntimeException("Value " + name + " was negative");
+    }
+  }
+  
+  /**
+   * Throws an exception if the argument is negative.
+   * @param argument the object to check
+   * @param name the name of the parameter
+   */
+  public static void notNegative(final double argument, final String name) {
+    if (argument < 0d) {
+      s_logger.error("Argument {} was negative", name);
+      throw new Excel4JRuntimeException("Value " + name + " was negative");
+    }
+  }
+  
+  /**
    * Throws an exception if the argument is not null.
    * @param argument the object to check
    * @param name the name of the parameter

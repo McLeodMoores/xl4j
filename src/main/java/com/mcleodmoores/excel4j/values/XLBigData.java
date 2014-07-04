@@ -5,17 +5,14 @@ import java.util.Arrays;
 
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.util.HexUtils;
 import com.mcleodmoores.excel4j.util.SerializationUtils;
 
 /**
  * Java representation of the xloper type xltypeBigData.
  */
 public final class XLBigData implements XLValue {
-
-  /**
-   * 
-   */
-  private static final int HASHCODE_SHIFT = 32;
+  private static final int MAX_BYTES = 32;
   private byte[] _valueToExcel;
   private final long _handleFromExcel;
   private final long _length;
@@ -103,12 +100,7 @@ public final class XLBigData implements XLValue {
 
   @Override
   public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (int) (_handleFromExcel ^ (_handleFromExcel >>> HASHCODE_SHIFT));
-    result = prime * result + (int) (_length ^ (_length >>> HASHCODE_SHIFT));
-    result = prime * result + Arrays.hashCode(_valueToExcel);
-    return result;
+    return Arrays.hashCode(getBuffer());
   }
 
   @Override
@@ -123,13 +115,7 @@ public final class XLBigData implements XLValue {
       return false;
     }
     XLBigData other = (XLBigData) obj;
-    if (_handleFromExcel != other._handleFromExcel) {
-      return false;
-    }
-    if (_length != other._length) {
-      return false;
-    }
-    if (!Arrays.equals(_valueToExcel, other._valueToExcel)) {
+    if (!Arrays.equals(getBuffer(), other.getBuffer())) {
       return false;
     }
     return true;
@@ -137,6 +123,9 @@ public final class XLBigData implements XLValue {
 
   @Override
   public String toString() {
-    return "XLBigData[getBuffer()=" + Arrays.toString(getBuffer()) + "]";
+    final byte[] buffer = getBuffer();
+    final String s = HexUtils.bytesToTruncatedPaddedHex(buffer, MAX_BYTES);
+    final String elipses = buffer.length > MAX_BYTES ? "..." : "";
+    return "XLBigData[len=" + buffer.length + ", buffer=[" + s + elipses + "]]";
   }
 }
