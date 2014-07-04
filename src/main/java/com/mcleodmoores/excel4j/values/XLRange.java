@@ -3,6 +3,9 @@
  */
 package com.mcleodmoores.excel4j.values;
 
+import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
+
 /**
  * Represents a single rectangular range in Excel.  
  * This class is usually passed into the factory method (of()) of XLLocalReference or XLMultiReference.
@@ -30,7 +33,29 @@ public final class XLRange {
    * @return an instance representing the range.
    */
   public static XLRange of(final int rowFirst, final int rowLast, final int columnFirst, final int columnLast) {
+    ArgumentChecker.notNegative(rowFirst, "rowFirst");
+    ArgumentChecker.notNegative(rowLast, "rowLast");
+    ArgumentChecker.notNegative(columnFirst, "columnFirst");
+    ArgumentChecker.notNegative(columnLast, "columnLast");
+    if (rowFirst > rowLast) {
+      throw new Excel4JRuntimeException("rowFirst must be <= rowLast");
+    }
+    if (columnFirst > columnLast) {
+      throw new Excel4JRuntimeException("columnFirst must be <= columnLast");
+    }
     return new XLRange(rowFirst, rowLast, columnFirst, columnLast);
+  }
+  
+  /**
+   * Static factory method for creating ranges of just a single cell.
+   * @param row the row
+   * @param column the column
+   * @return an instance representing the range.
+   */
+  public static XLRange ofCell(final int row, final int column) {
+    ArgumentChecker.notNegative(row, "row");
+    ArgumentChecker.notNegative(column, "column");
+    return new XLRange(row, row, column, column);
   }
   
   /**
@@ -60,6 +85,27 @@ public final class XLRange {
   public int getColumnLast() {
     return _columnLast;
   }
+  
+  /**
+   * @return true, if the range is a single column or single cell
+   */
+  public boolean isSingleColumn() {
+    return _columnFirst == _columnLast;
+  }
+  
+  /**
+   * @return true, if the range is a single row or single cell
+   */
+  public boolean isSingleRow() {
+    return _rowFirst == _rowLast;
+  }
+  
+  /**
+   * @return true, if the range is for a single cell
+   */
+  public boolean isSingleCell() {
+    return _rowFirst == _rowLast && _columnFirst == _columnLast;
+  }  
 
   @Override
   public int hashCode() {
@@ -101,7 +147,16 @@ public final class XLRange {
 
   @Override
   public String toString() {
-    return "XLRange[rowFirst=" + _rowFirst + ", rowLast=" + _rowLast + ", columnFirst=" + _columnFirst + ", columnLast=" + _columnLast + "]";
+    if (isSingleCell()) {
+      return "XLRange[Single Cell row=" + _rowFirst + ", column=" + _columnFirst + "]";
+    }
+    if (isSingleColumn()) {
+      return "XLRange[Single Column rows=" + _rowFirst + " to " + _rowLast + ", column=" + _columnFirst + "]";
+    }
+    if (isSingleRow()) {
+      return "XLRange[Single Row row=" + _rowFirst + ", columns=" + _columnFirst + " to " + _columnLast + "]";
+    }
+    return "XLRange[Range rows=" + _rowFirst + " to " + _rowLast + ", columns=" + _columnFirst + " to " + _columnLast + "]";
   }
   
 }
