@@ -20,7 +20,7 @@ public final class XLNil implements XLValue {
    * Get an instance of an XLNil.
    * @return a singleton instance
    */
-  public XLNil getInstance() {
+  public static XLNil getInstance() {
     return XLNilHelper.INSTANCE;
   }
   

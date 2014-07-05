@@ -20,7 +20,7 @@ public final class XLMissing implements XLValue {
    * Get an instance of an XLMissing.
    * @return a singleton instance
    */
-  public XLMissing getInstance() {
+  public static XLMissing getInstance() {
     return XLMissingHelper.INSTANCE;
   }
   
