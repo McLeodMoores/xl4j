@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.excel4j.values.XLInteger;
 
 /**
- * Unit tests for XLBigData.
+ * Unit tests for XLInteger.
  */
 public final class XLIntegerTests {
   // CHECKSTYLE:OFF

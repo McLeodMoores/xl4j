@@ -69,11 +69,11 @@ public interface XLValueVisitor<T> {
   T visitXLNumber(XLNumber value);
   
   /**
-   * Visit an XLReference type.
-   * @param value an XLReference value
+   * Visit an XLMultiReference type.
+   * @param value an XLMultiReference value
    * @return the result of the implementing visitor
    */
-  T visitXLReference(XLReference value);
+  T visitXLMultiReference(XLMultiReference value);
   
   /**
    * Visit an XLValueRange type.

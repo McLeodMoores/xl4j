@@ -10,7 +10,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLRange;
 
 /**
- * Unit tests for XLBigData.
+ * Unit tests for XLRange.
  */
 public final class XLRangeTests {
   // CHECKSTYLE:OFF

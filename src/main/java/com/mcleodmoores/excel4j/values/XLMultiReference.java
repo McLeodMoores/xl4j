@@ -7,14 +7,14 @@ import java.util.List;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
- * Java representation of the xloper type xltypeRef.
+ * Java representation of the xloper type xltypeRef (aka xltypeMRef).
  */
-public final class XLReference implements XLValue {
+public final class XLMultiReference implements XLValue {
 
   private List<XLRange> _ranges;
   private XLSheetId _sheetId;
 
-  private XLReference(final XLSheetId sheetId, final List<XLRange> ranges) {
+  private XLMultiReference(final XLSheetId sheetId, final List<XLRange> ranges) {
     _sheetId = sheetId;
     _ranges = ranges;
   }
@@ -25,10 +25,10 @@ public final class XLReference implements XLValue {
    * @param range a single contiguous 2D range of cells
    * @return an instance of XLLocalReference
    */
-  public static XLReference of(final XLSheetId sheetId, final XLRange range) {
+  public static XLMultiReference of(final XLSheetId sheetId, final XLRange range) {
     ArgumentChecker.notNull(sheetId, "sheetId");
     ArgumentChecker.notNull(range, "range");
-    return new XLReference(sheetId, Collections.singletonList(range));
+    return new XLMultiReference(sheetId, Collections.singletonList(range));
   }
   
   /**
@@ -37,10 +37,10 @@ public final class XLReference implements XLValue {
    * @param ranges a list of contiguous 2D range of cells
    * @return an instance of XLReference
    */
-  public static XLReference of(final XLSheetId sheetId, final List<XLRange> ranges) {
+  public static XLMultiReference of(final XLSheetId sheetId, final List<XLRange> ranges) {
     ArgumentChecker.notNull(sheetId, "sheetId");
     ArgumentChecker.notNullOrEmpty(ranges, "ranges");
-    return new XLReference(sheetId, ranges);
+    return new XLMultiReference(sheetId, ranges);
   }
   
   /**
@@ -49,10 +49,10 @@ public final class XLReference implements XLValue {
    * @param ranges a vararg of contiguous 2D range of cells
    * @return an instance of XLReference
    */
-  public static XLReference of(final XLSheetId sheetId, final XLRange... ranges) {
+  public static XLMultiReference of(final XLSheetId sheetId, final XLRange... ranges) {
     ArgumentChecker.notNull(sheetId, "sheetId");
     ArgumentChecker.notNullOrEmpty(ranges, "ranges");
-    return new XLReference(sheetId, Arrays.asList(ranges));
+    return new XLMultiReference(sheetId, Arrays.asList(ranges));
   }
   
   /**
@@ -85,7 +85,7 @@ public final class XLReference implements XLValue {
   
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
-    return visitor.visitXLReference(this);
+    return visitor.visitXLMultiReference(this);
   }
 
   @Override
@@ -105,10 +105,10 @@ public final class XLReference implements XLValue {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof XLReference)) {
+    if (!(obj instanceof XLMultiReference)) {
       return false;
     }
-    XLReference other = (XLReference) obj;
+    XLMultiReference other = (XLMultiReference) obj;
     if (!_ranges.equals(other._ranges)) {
       return false;
     }
@@ -120,7 +120,11 @@ public final class XLReference implements XLValue {
 
   @Override
   public String toString() {
-    return "XLReference[sheetId=" + _sheetId + ", ranges=" + _ranges + "]";
+    if (isSingleRange()) {
+      return "XLMultiReference[sheetId=" + _sheetId.getSheetId() + ", range=" + getSingleRange() + "]";
+    } else {
+      return "XLMultiReference[sheetId=" + _sheetId.getSheetId() + ", ranges=" + _ranges + "]";
+    }
   }
 
 }

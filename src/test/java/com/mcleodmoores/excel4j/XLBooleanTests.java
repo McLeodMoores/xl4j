@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 
 /**
- * Unit tests for XLBigData.
+ * Unit tests for XLBoolean.
  */
 public final class XLBooleanTests {
   // CHECKSTYLE:OFF
