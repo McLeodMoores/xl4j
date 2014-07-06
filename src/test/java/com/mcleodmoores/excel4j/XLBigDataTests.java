@@ -86,6 +86,8 @@ public final class XLBigDataTests {
     XLBigData bigData4 = XLBigData.of("TEST STRING");
     Assert.assertEquals(bigData4, bigData3);
     Assert.assertEquals(bigData4.hashCode(), bigData4.hashCode());
+
+    Assert.assertEquals(bigData4.hashCode(), bigData3.hashCode());
   }
   
   @Test

@@ -25,6 +25,7 @@ public final class SerializationUtils {
    * @return a byte array representing the serialized object
    */
   public static byte[] serialize(final Serializable object) {
+    ArgumentChecker.notNull(object, "object");
     try (
       ByteArrayOutputStream bos = new ByteArrayOutputStream(BYTE_BUFFER_INITIAL_SIZE);
       ObjectOutput out = new ObjectOutputStream(bos);
@@ -32,7 +33,7 @@ public final class SerializationUtils {
       out.writeObject(object);
       return bos.toByteArray();
     } catch (IOException e) {
-      throw new RuntimeException(e); // should never happen.
+      throw new Excel4JRuntimeException("Could not serialize Serializable", e); // should never happen.
     }
   }
   
@@ -42,15 +43,16 @@ public final class SerializationUtils {
    * @return the object, an object that is Serializable
    */
   public static Serializable deserialize(final byte[] data) {
+    ArgumentChecker.notNull(data, "data");
     try (
       ByteArrayInputStream bis = new ByteArrayInputStream(data);
       ObjectInput in = new ObjectInputStream(bis);
     ) {
       return (Serializable) in.readObject();
     } catch (IOException e) {
-      throw new RuntimeException(e); // should never happen.
+      throw new Excel4JRuntimeException("Could not deserialize data", e);
     } catch (ClassNotFoundException e) { // should we expose this?
-      throw new RuntimeException(e);
+      throw new Excel4JRuntimeException("Couldn't deserialize data: Class not found", e);
     }
   }
 

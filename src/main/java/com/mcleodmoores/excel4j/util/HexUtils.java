@@ -3,6 +3,9 @@
  */
 package com.mcleodmoores.excel4j.util;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.Charset;
+
 /**
  * Utility class to output byte arrays as hex strings.
  */
@@ -73,5 +76,39 @@ public final class HexUtils {
       }
     }
     return new String(hexChars);
+  }
+  
+  /**
+   * Multi-line hex/character dump - similar to a hex editor layout.
+   * @param bytes the buffer to dump
+   * @param bytesPerLine the number of bytes to display on each line
+   * @return multi-line String containing hex-editor style dump
+   */
+  public static String bytesToMultiLineDump(final byte[] bytes, final int bytesPerLine) {
+    ArgumentChecker.notNull(bytes, "bytes");
+    ArgumentChecker.notNegative(bytesPerLine, "bytesPerLine");
+    ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+    byte[] line = new byte[bytesPerLine];
+    StringBuffer sb = new StringBuffer();
+    while (is.available() > 0) {
+      int bytesRead = is.read(line, 0, bytesPerLine);
+      if (bytesRead < bytesPerLine) {
+        byte[] shortLine = new byte[bytesRead];
+        System.arraycopy(line, 0, shortLine, 0, bytesRead);
+        String lineStr = bytesToPaddedHex(shortLine);
+        sb.append(lineStr);
+        final int remainingChars = (bytesPerLine - bytesRead) * 3;
+        sb.append(new String(new char[remainingChars]).replace("\0", " ")); // repeated string of spaces
+        sb.append("  ");
+        sb.append(new String(shortLine, Charset.defaultCharset()).replaceAll("\\p{C}", "."));
+      } else {
+        String lineStr = bytesToPaddedHex(line);
+        sb.append(lineStr);
+        sb.append("  ");
+        sb.append(new String(line, Charset.defaultCharset()).replaceAll("\\p{C}", "."));
+      }
+      sb.append("\n");
+    }
+    return sb.toString();
   }
 }
