@@ -45,4 +45,5 @@ public final class XLNumberTests {
     Assert.assertEquals(number987_654321.toString(), EXPECTED_987_654321);
     Assert.assertEquals(number0.toString(), EXPECTED_0_0);
   }
+  
 }
