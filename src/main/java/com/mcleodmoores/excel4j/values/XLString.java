@@ -53,11 +53,7 @@ public final class XLString implements XLValue {
       return false;
     }
     XLString other = (XLString) obj;
-    if (_value == null) {
-      if (other._value != null) {
-        return false;
-      }
-    } else if (!_value.equals(other._value)) {
+    if (!_value.equals(other._value)) {
       return false;
     }
     return true;

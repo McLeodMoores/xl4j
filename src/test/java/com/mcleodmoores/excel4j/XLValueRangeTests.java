@@ -85,15 +85,16 @@ public final class XLValueRangeTests {
     XLValueRange multi_1 = XLValueRange.of(MULTI_1);
     XLValueRange multi_2 = XLValueRange.of(MULTI_2);
     Assert.assertEquals(single, single);
-    Assert.assertNotEquals(single, null);
-    Assert.assertNotEquals(single, "Hello");
+    Assert.assertNotEquals(null, single);
+    Assert.assertNotEquals("Hello", single);
     Assert.assertEquals(single, single_1);
-    Assert.assertNotEquals(multi, null);
+    Assert.assertNotEquals(null, multi);
     Assert.assertEquals(multi, multi);
     Assert.assertEquals(multi, multi_1);
     Assert.assertNotEquals(single, multi);
     Assert.assertNotEquals(multi, single);
     Assert.assertNotEquals(multi, multi_2);
+   
     // hashCode
     Assert.assertEquals(single.hashCode(), single.hashCode());
     Assert.assertEquals(single.hashCode(), single_1.hashCode());

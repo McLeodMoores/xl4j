@@ -21,8 +21,8 @@ public class XLNilErrorMissingTests {
   	Assert.assertEquals(nil, nil2);
   	Assert.assertEquals(nil.hashCode(), nil2.hashCode());
   	
-  	Assert.assertNotEquals(nil, null);
-  	Assert.assertNotEquals(nil, XLError.Div0);
+  	Assert.assertNotEquals(null, nil);
+  	Assert.assertNotEquals(XLError.Div0, nil);
   }
   
   public void testNilToString() {

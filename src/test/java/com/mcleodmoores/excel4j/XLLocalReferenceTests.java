@@ -37,7 +37,8 @@ public final class XLLocalReferenceTests {
     XLLocalReference localRef_1 = XLLocalReference.of(range_1);
     XLLocalReference localRef_2 = XLLocalReference.of(range_2);
     Assert.assertEquals(localRef, localRef);
-    Assert.assertNotEquals(localRef, null);
+    Assert.assertNotEquals(null, localRef);
+    Assert.assertNotEquals("Hello", localRef);
     Assert.assertEquals(localRef, localRef_2);
     Assert.assertEquals(localRef.hashCode(), localRef.hashCode());
     Assert.assertEquals(localRef.hashCode(), localRef_2.hashCode());

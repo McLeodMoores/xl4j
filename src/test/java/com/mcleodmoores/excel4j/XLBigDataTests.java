@@ -80,8 +80,8 @@ public final class XLBigDataTests {
     
     final String testString = "TEST STRING";
     XLBigData bigData3 = XLBigData.of(testString);
-    Assert.assertNotEquals(bigData3, null);
-    Assert.assertNotEquals(bigData3, testString);
+    Assert.assertNotEquals(null, bigData3);
+    Assert.assertNotEquals(testString, bigData3);
     Assert.assertNotEquals(bigData3, bigData2);
     XLBigData bigData4 = XLBigData.of("TEST STRING");
     Assert.assertEquals(bigData4, bigData3);

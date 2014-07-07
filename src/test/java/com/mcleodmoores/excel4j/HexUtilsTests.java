@@ -80,4 +80,23 @@ public class HexUtilsTests {
     Assert.assertEquals(HexUtils.bytesToTruncatedPaddedHex(BYTES_1, 1), EXPECTED_PADDED_ONE_1);
     Assert.assertEquals(HexUtils.bytesToTruncatedPaddedHex(BYTES_1, 0), EXPECTED_PADDED_ZERO_1);
   }
+  
+  private static final String EXPECTED_MULTI_LINE_SIX = 
+    "12 34 56 78 9A BC  .4Vx��\n" +
+    "DE F0              ��\n";
+  private static final String EXPECTED_MULTI_LINE_FOUR = 
+    "12 34 56 78  .4Vx\n" +
+    "9A BC DE F0  ����\n";
+  private static final String EXPECTED_MULTI_LINE_FOUR_1 = 
+    "FF           �\n";
+  private static final String EXPECTED_MULTI_LINE_FOUR_2 = "";
+  
+  @Test
+  public void testBytesToMultiLineDump() {
+    Assert.assertEquals(HexUtils.bytesToMultiLineDump(BYTES, 6), EXPECTED_MULTI_LINE_SIX);
+    Assert.assertEquals(HexUtils.bytesToMultiLineDump(BYTES, 4), EXPECTED_MULTI_LINE_FOUR);
+    Assert.assertEquals(HexUtils.bytesToMultiLineDump(BYTES_1, 4), EXPECTED_MULTI_LINE_FOUR_1);
+    Assert.assertEquals(HexUtils.bytesToMultiLineDump(new byte[0], 4), EXPECTED_MULTI_LINE_FOUR_2);
+    
+  }
 }

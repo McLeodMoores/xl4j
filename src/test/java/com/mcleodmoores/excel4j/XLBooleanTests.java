@@ -35,6 +35,8 @@ public final class XLBooleanTests {
     Assert.assertEquals(boolF.hashCode(), boolF1.hashCode());
     
     Assert.assertNotEquals(boolT, boolF);
+    Assert.assertNotEquals(null, boolF);
+    Assert.assertNotEquals("Hello", boolF);
     Assert.assertNotEquals(boolT.hashCode(), boolF.hashCode());
   }
   

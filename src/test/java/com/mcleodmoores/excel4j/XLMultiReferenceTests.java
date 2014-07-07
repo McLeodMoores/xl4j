@@ -107,9 +107,13 @@ public final class XLMultiReferenceTests {
     Assert.assertEquals(multiRefs2, multiRefs3);
     Assert.assertEquals(multiRefs3, multiRefs1);
     
-    Assert.assertNotEquals(multiRefs1, null);
-    Assert.assertNotEquals(multiRefs2, null);
-    Assert.assertNotEquals(multiRefs3, null);
+    Assert.assertNotEquals(null, multiRefs1);
+    Assert.assertNotEquals(null, multiRefs2);
+    Assert.assertNotEquals(null, multiRefs3);
+    
+    Assert.assertNotEquals("Hello", multiRefs1);
+    Assert.assertNotEquals("Hello", multiRefs2);
+    Assert.assertNotEquals("Hello", multiRefs3);
     
     Assert.assertEquals(multiRefs1.hashCode(), multiRefs2.hashCode());
     Assert.assertEquals(multiRefs2.hashCode(), multiRefs3.hashCode());

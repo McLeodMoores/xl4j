@@ -49,7 +49,7 @@ public class XLValueVisitorAdapter<T> implements XLValueVisitor<T> {
 
   @Override
   public T visitXLNumber(final XLNumber value) {
-    throw new Excel4JRuntimeException("XLString visitor not implemented");
+    throw new Excel4JRuntimeException("XLNumber visitor not implemented");
   }
 
   @Override

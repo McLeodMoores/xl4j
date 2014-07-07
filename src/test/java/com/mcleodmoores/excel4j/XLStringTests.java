@@ -45,6 +45,8 @@ public final class XLStringTests {
     Assert.assertEquals(empty.hashCode(), empty_1.hashCode());
 
     Assert.assertNotEquals(helloWorld, empty);
+    Assert.assertNotEquals(null, empty);
+    Assert.assertNotEquals("Hello World", empty);
     Assert.assertNotEquals(helloWorld.hashCode(), empty.hashCode());
   }
 

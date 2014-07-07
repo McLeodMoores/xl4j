@@ -35,6 +35,8 @@ public final class XLIntegerTests {
     Assert.assertEquals(integer0.hashCode(), integer0_1.hashCode());
 
     Assert.assertNotEquals(integer65536, integer0);
+    Assert.assertNotEquals(null, integer0);
+    Assert.assertNotEquals("Hello", integer0);
     Assert.assertNotEquals(integer65536.hashCode(), integer0.hashCode());
   }
 

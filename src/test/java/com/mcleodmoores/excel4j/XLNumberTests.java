@@ -18,6 +18,8 @@ public final class XLNumberTests {
 
   @Test
   public void testXLNumberEqualsAndHashCode() {
+    XLNumber longNum = XLNumber.of(48039284324380L);
+    Assert.assertEquals(longNum.getValue(), 48039284324380d);
     XLNumber number987_654321 = XLNumber.of(987.654321);
     XLNumber number987_654321_1 = XLNumber.of(987.654321);
     Assert.assertEquals(number987_654321.getValue(), 987.654321);
@@ -35,6 +37,8 @@ public final class XLNumberTests {
     Assert.assertEquals(number0.hashCode(), number0_1.hashCode());
 
     Assert.assertNotEquals(number987_654321, number0);
+    Assert.assertNotEquals(null, number0);
+    Assert.assertNotEquals("Hello World", number0);
     Assert.assertNotEquals(number987_654321.hashCode(), number0.hashCode());
   }
 

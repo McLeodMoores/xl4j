@@ -54,6 +54,14 @@ public final class XLRangeTests {
   public void testThirdGtForth() {
     XLRange.of(100, 101, 5, 3);
   }
+  
+  @Test void testGetters() {
+    XLRange range = XLRange.of(1, 2, 3, 4);
+    Assert.assertEquals(range.getRowFirst(), 1);
+    Assert.assertEquals(range.getRowLast(), 2);
+    Assert.assertEquals(range.getColumnFirst(), 3);
+    Assert.assertEquals(range.getColumnLast(), 4);
+  }
 
   @Test
   public void testSingleCol() {
@@ -108,6 +116,9 @@ public final class XLRangeTests {
     XLRange rangeClone = XLRange.of(0, 15, 0, 15);
     Assert.assertEquals(range, rangeClone);
     Assert.assertEquals(range.hashCode(), rangeClone.hashCode());
+    // null, other
+    Assert.assertNotEquals(null, range);
+    Assert.assertNotEquals("Hello World", range);
   }
   
   @Test
