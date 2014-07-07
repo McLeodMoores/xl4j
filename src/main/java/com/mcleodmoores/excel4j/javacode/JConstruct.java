@@ -15,13 +15,19 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @XLNamespace("J")
 public final class JConstruct {
+  /**
+   * Construct an instance of a class.
+   * @param className the name of the class, either fully qualified or with a registered short name
+   * @param args a vararg list of arguments
+   * @return the constructed object
+   */
   @XLFunction(name = "Construct",
-              description = "Construct a given Java object",
+              description = "Construct a named Java class instance",
               category = "Java")
   public Object jconstruct(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
-                             XLString className, 
-                             @XLArgument(name = "args", description = "") 
-                             XLValue... args) {
+                           final XLString className, 
+                           @XLArgument(name = "args", description = "") 
+                           final XLValue... args) {
     try {
       Class<?> clazz = Class.forName(className.getValue());
       
