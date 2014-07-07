@@ -6,6 +6,7 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.excel4j.util.HexUtils;
 //import com.mcleodmoores.excel4j.util.HexUtils;
 import com.mcleodmoores.excel4j.util.SerializationUtils;
 
@@ -35,9 +36,9 @@ public class SerializationUtilsTests {
   @Test(expectedExceptions = Excel4JRuntimeException.class, expectedExceptionsMessageRegExp = "Couldn't deserialize data: Class not found")
   public void testDeserializeBadClassName() {
   	byte[] data = SerializationUtils.serialize(LocalDate.of(2014, 4, 4));
-    // System.out.println(HexUtils.bytesToMultiLineDump(data, 16));
+    System.out.println(HexUtils.bytesToMultiLineDump(data, 16));
     data[8] = 0x62; // corrupt the class file so the package becomes brg.threeten.bp so the class can't be found.
-    // System.out.println(HexUtils.bytesToMultiLineDump(data, 16));
+    System.out.println(HexUtils.bytesToMultiLineDump(data, 16));
   	SerializationUtils.deserialize(data);
   }
 }

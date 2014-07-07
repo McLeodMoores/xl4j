@@ -7,6 +7,15 @@ public final class XLBoolean implements XLValue {
   private static final int PRIME2 = 1237;
   private static final int PRIME1 = 1231;
   private final boolean _value;
+  /**
+   * True value constant.
+   */
+  public static final XLBoolean TRUE = new XLBoolean(true);
+  /**
+   * False value constant.
+   */
+  public static final XLBoolean FALSE = new XLBoolean(false);
+  
   private XLBoolean(final boolean value) {
     _value = value;
   }
@@ -17,7 +26,11 @@ public final class XLBoolean implements XLValue {
    * @return an instance
    */
   public static XLBoolean of(final boolean value) {
-    return new XLBoolean(value);
+    if (value) {
+      return TRUE;
+    } else {
+      return FALSE;
+    }
   }
   
   /**

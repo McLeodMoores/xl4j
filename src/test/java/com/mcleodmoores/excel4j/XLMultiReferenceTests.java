@@ -87,7 +87,7 @@ public final class XLMultiReferenceTests {
     XLRange range_1 = XLRange.of(1, 15, 0, 15);
     
     XLSheetId sheetId = XLSheetId.of(5678);
-    
+    XLSheetId sheetId_1 = XLSheetId.of(123);
     List<XLRange> ranges1 = new ArrayList<XLRange>();
     ranges1.add(range);
     ranges1.add(range_1);
@@ -98,7 +98,7 @@ public final class XLMultiReferenceTests {
     XLMultiReference multiRefs2 = XLMultiReference.of(sheetId, ranges2);
     
     XLMultiReference multiRefs3 = XLMultiReference.of(sheetId, range, range_1);
-    
+        
     Assert.assertEquals(multiRefs1, multiRefs1);
     Assert.assertEquals(multiRefs2, multiRefs2);
     Assert.assertEquals(multiRefs3, multiRefs3);
@@ -122,6 +122,8 @@ public final class XLMultiReferenceTests {
     XLMultiReference multiRefs4 = XLMultiReference.of(sheetId, range_1, range);
     Assert.assertNotEquals(multiRefs3, multiRefs4);
     Assert.assertNotEquals(multiRefs4, multiRef);
+    XLMultiReference multiRefs5 = XLMultiReference.of(sheetId_1, range);
+    Assert.assertNotEquals(multiRefs5, multiRef);
   }
 
   private static final String SINGLE_ROW = "XLMultiReference[sheetId=9999, range=XLRange[Single Row row=100, columns=3 to 5]]";

@@ -8,6 +8,8 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
  * Java representation of the xloper type xltypeRef (aka xltypeMRef).
+ * This is usually preferable over XLLocalReference even if you're not referring 
+ * to multiple ranges because it's keyed to a particular sheetId.
  */
 public final class XLMultiReference implements XLValue {
 
@@ -92,8 +94,8 @@ public final class XLMultiReference implements XLValue {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((_ranges == null) ? 0 : _ranges.hashCode());
-    result = prime * result + ((_sheetId == null) ? 0 : _sheetId.hashCode());
+    result = prime * result + _ranges.hashCode();
+    result = prime * result + _sheetId.hashCode();
     return result;
   }
 
