@@ -39,7 +39,7 @@ Registering the same method twice with the same `@XLFunction.name` could be allo
 To allow a degree of namespaceing we need another anotation. In the case of a package it would go in the `package-java.java` file in the package you want:
 
 ``` java
-@XLNamespace(name = "Ex")
+@XLNamespace("Ex")
 package com.mcleodmoores.excel4j.examples;
 
 import com.mcleodmoores.excel4j.XLNamespace;
@@ -52,7 +52,7 @@ package com.mcleodmoores.examples;
 
 import com.mcleodmoores.excel4j.*;
 
-@XLNamespace(name = "Ex1")
+@XLNamespace("Ex1")
 public class Example1 {
   @XLFunction
   ...
