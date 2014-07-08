@@ -131,16 +131,21 @@ The aim here is for the developer to have something to fall back on if the autom
 ### XLValue
 This broadly mirrors the XLOPER* data structure.  The interesting question is whether this should be an object heirarchy or a type + object structure.  This could be done thus:
   - `XLString`
-  - `XLReference`? `XLRange`? - can we automatically manage the difference between local references and other worksheets (xltypeRef vs xltypeSRef)?
+  - `XLLocalReference` - sref
+    - `XLRange'
+  - `XLMultiReference` - ref/mref
+    - `XLSheetId`
+    - `List<XLRange>`
   - `XLBoolean`
   - `XLNumber`
-  - `XLArray` - mapped to multi
-  - `XLError` - do we need multiple types here?
+  - `XLValueRange` - mapped to multi
+  - `XLError`
+    - Enum
+    - We could do with a way of getting error messages back
   - `XLNil` - missing array elements
-  - do we need the more obscure stuff?
-    - `XLShort`
-    - `XLBigData`
-    - Macro flow control crap
+  - `XLInteger`
+  - `XLBigData`
+  - Assume we don't need Macro flow control 
 
 ### Type conversions
 
