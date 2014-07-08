@@ -221,7 +221,8 @@ Response invokeUDF(ID transaction_id, Phase phase, params...) {
 }
 ```
 
-then the actual execution thread might have something like:
+then the actual execution thread might have something like (we might be able to avoid this wrapper by putting it in the 
+asynchronous invocation mechanics).
 
 ``` java 
 void udfWrapperMethod(SynchronousQueue queue, params) {
