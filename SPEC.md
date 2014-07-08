@@ -191,30 +191,34 @@ But this misses the possibility that the UDF might call back into Excel to get/m
  - when a UDF is invoked, make a COM client call in a loop
 
 ``` java
-transaction_id = generateId();
+transaction_id = generateId(); // get a transaction id
+// call remote end, in BEGIN phase (i.e. initial method invocation
 response = invokeUDF(transaction_id, Phase.BEGIN, params.toXLOPERs());
+// while the respose we get is ExcelInvoke, that means the remote end wants 
+// to call back Excel4/12 in this thread.
 while (response.getResponseType() == ReponseType.ExcelInvoke) {
-  Object result = invokeExcel4or12(response.getInvokeParams());
-  response = invokeUDF(transaction_id, Phase.RESULT, result);
+  Object result = invokeExcel4or12(response.getInvokeParams()); // do the callback
+  response = invokeUDF(transaction_id, Phase.RESULT, result); // send the results
 } // assume response now == Result
-freeId(transaction_id)
-return response.getResult().toXLOPER()
+freeId(transaction_id);
+return response.getResult().toXLOPER();
 ```
 
 and on the server end, we have something like:
 
 ``` java 
 Response invokeUDF(ID transaction_id, Phase phase, params...) {
+  // dig up the queue so we can pass it on to the invoking thread and also 
+  // post results in the case of a callback.
   SynchronousQueue queue = getQueue(transaction_id);
   if (phase == Phase.BEGIN) {
-    Method method = findMethod(params);
-    method.asyncInvoke(queue, params); // non-blocking, happens in separate thread.
+    Method method = findMethod(params); // get the right wrapper method to call.
+    method.asyncInvoke(queue, params); // non-blocking invoke, happens in separate thread.
   } else if (phase == Phase.RESULT) {
     queue.put(queue, params); // post results of Excel4/12 blocking until they're taken
   }
-  return queue.take();
+  return queue.take(); // this will wait for either be a ReponseType.Result or ReponseType.ExcelInvoke
 }
-    
 ```
 
 then the actual execution thread might have something like:
@@ -222,12 +226,12 @@ then the actual execution thread might have something like:
 ``` java 
 void udfWrapperMethod(SynchronousQueue queue, params) {
   setResponseQueueForThread(queue); // stores queue in ThreadLocal
-  Object result = method(params);
-  Reponse = Response.ofType(ReponseType.RESULT).withResult(result);
+  Object result = method(params); // run the 'user' provided method.
+  Reponse = Response.ofType(ReponseType.RESULT).withResult(result); // wrap up it's response, and label it a real result.
 }
 ```
 
-and in `method()`
+and in `method()` (the user's UDF)
 
 ``` java
 Object method(XLValue params...) {
@@ -240,9 +244,13 @@ Object method(XLValue params...) {
 and in Excel.excel4()
 ``` java
 Object excel4(Excel4MethodId methodId, Object... params) {
+  // pull out the queue associated with this thread.
   SynchronousQueue queue = getReponseQueueForThread();
+  // send a request for the caller to call back Excel4/12
   queue.put(Reponse.ofType(ReponseType.ExcelInvoke).withInvokeParams(methodId, params));
+  // wait for a reponse.
   Object result = queue.take();
+  // return control flow to the UDF.
   return result;
 }
 ```
