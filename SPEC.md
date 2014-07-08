@@ -173,18 +173,76 @@ Direct Java Calls refers to the abililty to call into unmodified Java classes an
 > via COM, but I suspect synchronization issues would cause issues if used with e.g. Solver.  Can Solver work with RTD or Volatile 
 > UDFs at all?
 
-fdksjafkldsj
-fdaslkjflksdj
-fasdlkjfalksdjf
-fdlksajflkajsdlkfj
-ldsakjflajdslajfladskjf
-afkljdslfjasldjfldajs
-dskfjalksdjfkjadslkfj
-fdalskjflajsdlfja;ds
+# Method dispatch
+The simplistic idea is that we (ignoring memory management):
+ - generate registered UDF handlers 
+ - when a UDF is invoked, we make COM client call
+ - marshall the XLOPERs
+ - the JVM COM Server invokes a method on a Java handler
+ - the handler binds to a method (i.e. looks it up, possibly reflectively, cached presumably)
+ - the handler invokes that method
+ - the handler returns the result object to the JVM COM Server
+ - the COM server marshalls the result into a response
+ - the client recieves the response
+ - the client converts the reposnse into an XLOPER and returns it to Excel.
 
+But this misses the possibility that the UDF might call back into Excel to get/modify the sheet (I'm taking about Excel4 and Excel12, not COM).  In this case the issue is that the call-back is in a different thread to the caller, which won't work at all.  So it will need to be something more like this:
+ - generate regsitered UDF handlers
+ - when a UDF is invoked, make a COM client call in a loop
 
-Padding because dillinger doesn't scroll to bottom properly
+``` java
+transaction_id = generateId();
+response = invokeUDF(transaction_id, Phase.BEGIN, params.toXLOPERs());
+while (response.getResponseType() == ReponseType.ExcelInvoke) {
+  Object result = invokeExcel4or12(response.getInvokeParams());
+  response = invokeUDF(transaction_id, Phase.RESULT, result);
+} // assume response now == Result
+freeId(transaction_id)
+return response.getResult().toXLOPER()
+```
 
+and on the server end, we have something like:
 
+``` java 
+Response invokeUDF(ID transaction_id, Phase phase, params...) {
+  SynchronousQueue queue = getQueue(transaction_id);
+  if (phase == Phase.BEGIN) {
+    Method method = findMethod(params);
+    method.asyncInvoke(queue, params); // non-blocking, happens in separate thread.
+  } else if (phase == Phase.RESULT) {
+    queue.put(queue, params); // post results of Excel4/12 blocking until they're taken
+  }
+  return queue.take();
+}
+    
+```
 
+then the actual execution thread might have something like:
 
+``` java 
+void udfWrapperMethod(SynchronousQueue queue, params) {
+  setResponseQueueForThread(queue); // stores queue in ThreadLocal
+  Object result = method(params);
+  Reponse = Response.ofType(ReponseType.RESULT).withResult(result);
+}
+```
+
+and in `method()`
+
+``` java
+Object method(XLValue params...) {
+  // do some calcs
+  Object results = _excel.excel4(SOME_METHOD, 0, 1, 2);
+  // some more calcs
+  return result;
+}
+```
+and in Excel.excel4()
+``` java
+Object excel4(Excel4MethodId methodId, Object... params) {
+  SynchronousQueue queue = getReponseQueueForThread();
+  queue.put(Reponse.ofType(ReponseType.ExcelInvoke).withInvokeParams(methodId, params));
+  Object result = queue.take();
+  return result;
+}
+```
