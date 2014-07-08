@@ -1,30 +1,9 @@
 package com.mcleodmoores.excel4j;
 
 /**
- * General interface to Excel. 
- * Call getInstance() to get a (thread-safe) instance.
+ * Interface to provide access to Excel services and callbacks.
  */
-public final class Excel {
-
-  private Excel() {
-  }
-  
-  /**
-   * Bill Pugh singleton pattern helper class removes synchronization requirement.
-   */
-  private static class ExcelHelper {
-    private static final Excel INSTANCE = new Excel();
-  }
-  
-  /**
-   * Get an instance of the Excel interface.
-   * Thread-safe.
-   * @return an instance of the Excel interface.
-   */
-  public static Excel getInstance() {
-    return ExcelHelper.INSTANCE;
-  }
-  
+public interface Excel {
   /**
    * Look up a binary blob given the Windows HANDLE type and length.  As HANDLE
    * reduces to (void *), it's width is platform dependent and so longs are
@@ -33,8 +12,5 @@ public final class Excel {
    * @param length the length of the block.
    * @return the binary blob
    */
-  public byte[] getBinaryName(final long handle, final long length) {
-    // TODO: Call into XLL to lock, copy and unlock handle 
-    return new byte[0];
-  }
+  byte[] getBinaryName(final long handle, final long length);
 }

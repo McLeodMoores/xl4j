@@ -14,17 +14,20 @@ import com.mcleodmoores.excel4j.util.SerializationUtils;
 public final class XLBigData implements XLValue {
   private static final int MAX_BYTES = 32;
   private byte[] _valueToExcel;
+  private final Excel _excel;
   private final long _handleFromExcel;
   private final long _length;
   
   private XLBigData(final byte[] valueToExcel) {
     _valueToExcel = valueToExcel;
+    _excel = null;
     _handleFromExcel = 0;
     _length = 0; // length embedded in _valueToExcel array in this case.
   }
   
-  private XLBigData(final long handleFromExcel, final long length) {
+  private XLBigData(final Excel excel, final long handleFromExcel, final long length) {
     _valueToExcel = null;
+    _excel = excel;
     _handleFromExcel = handleFromExcel;
     _length = length;
   }
@@ -57,13 +60,15 @@ public final class XLBigData implements XLValue {
    * Create an instance from a Windows HANDLE and length.
    * This is used when passing an object from Excel to Java, but only getting the actual data on demand.
    * This allows more efficient communication between Excel and Java by avoid unnecessary data transfers.
+   * @param excel the excel callback interface, not null.  See ExcelFactory.
    * @param handleFromExcel a Windows HANDLE data type pointing at the data to retrieve.  This reduces to (void *)
    *                        so should fit in a 64-bit signed long.
    * @param length the length of the data block
    * @return an instance of XLBigData
    */  
-  public static XLBigData of(final long handleFromExcel, final long length) {
-    return new XLBigData(handleFromExcel, length);
+  public static XLBigData of(final Excel excel, final long handleFromExcel, final long length) {
+    ArgumentChecker.notNull(excel, "excel");
+    return new XLBigData(excel, handleFromExcel, length);
   }
   
   /**
@@ -75,7 +80,7 @@ public final class XLBigData implements XLValue {
    */
   public byte[] getBuffer() {
     if (_valueToExcel == null) { // if no byte buffer, pull it from XLL using handle.
-      _valueToExcel = Excel.getInstance().getBinaryName(_handleFromExcel, _length);
+      _valueToExcel = _excel.getBinaryName(_handleFromExcel, _length);
     }
     return _valueToExcel;
   }

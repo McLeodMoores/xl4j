@@ -69,7 +69,9 @@ public final class XLBoolean implements XLValue {
     if (_value != other._value) {
       return false;
     }
-    return true;
+    return true; 
+    // unreachable because we only give out TRUE or FALSE, so equality caught by first if above.
+    // but I'm leaving this here to be defensive.
   }
 
   @Override

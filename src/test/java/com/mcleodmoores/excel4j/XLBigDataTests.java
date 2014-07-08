@@ -21,13 +21,21 @@ import com.mcleodmoores.excel4j.values.XLBigData;
 public final class XLBigDataTests {
   // CHECKSTYLE:OFF
   private static final Logger s_logger = LoggerFactory.getLogger(XLBigDataTests.class);
+  private static final Excel EXCEL = ExcelFactory.getMockInstance();
+  
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testXLBigDataNull() {
     XLBigData.of(null);
   }
+  
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testXLBigDataSerializableNull() {
     XLBigData.of((Serializable) null);
+  }
+  
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testXLBigDataExcelCallbackNull() {
+    XLBigData.of((Excel) null, 0, 1);
   }
   
   @Test
@@ -64,15 +72,16 @@ public final class XLBigDataTests {
   
   @Test
   public void testXLBigDataHandleSize() {
-    XLBigData bigData = XLBigData.of(1, 0);
+    XLBigData bigData = XLBigData.of(EXCEL, 1, 0);
     Assert.assertEquals(bigData.getBuffer(), new byte[0]); // this will need changing when Excel interface actually does something!
   }
   
   @Test
   public void testEqualsAndHashCode() {
-    XLBigData bigData = XLBigData.of(1, 0);
+    XLBigData bigData = XLBigData.of(EXCEL, 1, 0);
     byte[] testData = new byte[0];
     XLBigData bigData2 = XLBigData.of(testData);
+    Assert.assertEquals(bigData, bigData);
     Assert.assertEquals(bigData2, bigData); // this will need changing when Excel interface actually does something! 
     Assert.assertNotEquals(bigData, null);
     Assert.assertNotEquals(bigData, testData);
