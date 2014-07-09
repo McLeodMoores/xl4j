@@ -125,7 +125,7 @@ public RTDCallback myRtdFunction() {
   return handler;
 }
 ```
-## Explcit types
+## Explicit types
 
 The aim here is for the developer to have something to fall back on if the automatic marshalling doesn't work.
 ### XLValue
