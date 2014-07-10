@@ -64,7 +64,7 @@
     <tests.testng.excludedgroups>integration,unitslow</tests.testng.excludedgroups>
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
     <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
-    <!--maven.compiler.source>1.7</maven.compiler.source-->
+    <maven.compiler.source>1.7</maven.compiler.source>
     <maven.compiler.target>1.7</maven.compiler.target>  
     <gpg.skip>true</gpg.skip>
   </properties>
@@ -271,6 +271,10 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
+          <configuration>
+            <source>${maven.compiler.source}</source>
+            <target>${maven.compiler.target}</target>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -332,6 +336,16 @@
       <groupId>commons-cli</groupId>
       <artifactId>commons-cli</artifactId>
       <version>1.2</version>
+    </dependency>
+    <dependency>
+    	<groupId>org.reflections</groupId>
+    	<artifactId>reflections</artifactId>
+    	<version>0.9.9-RC2</version>
+    </dependency>
+    <dependency>
+    	<groupId>com.google.guava</groupId>
+    	<artifactId>guava</artifactId>
+    	<version>17.0</version>
     </dependency>
   </dependencies>
   <profiles>
@@ -543,7 +557,7 @@
   </profiles>
   <inceptionYear>1 Jul 2014</inceptionYear>
   <organization>
-  	<name>McLeod</name>
+  	<name>McLeod Moores Software Limited</name>
   	<url>http://mcleodmoores.com</url>
   </organization>
 </project>
