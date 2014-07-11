@@ -3,11 +3,8 @@
  */
 package com.mcleodmoores.excel4j.javacode;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -18,10 +15,8 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * 
@@ -29,8 +24,8 @@ import com.mcleodmoores.excel4j.values.XLValue;
 public class TypeResolver {
   private static Logger s_logger = LoggerFactory.getLogger(TypeResolver.class);
   
-  private ConcurrentHashMap<Integer, Multimap<TypeMappingKey, TypeConverter>> _javaToExcelCascade = new ConcurrentHashMap<>();
-  private ConcurrentHashMap<Integer, Multimap<TypeMappingKey, TypeConverter>> _excelToJavaCascade = new ConcurrentHashMap<>();
+  private ConcurrentHashMap<Integer, Multimap<ExcelToJavaTypeMapping, TypeConverter>> _javaToExcelCascade = new ConcurrentHashMap<>();
+  private ConcurrentHashMap<Integer, Multimap<ExcelToJavaTypeMapping, TypeConverter>> _excelToJavaCascade = new ConcurrentHashMap<>();
   
   private void scanAndCreateTypeConverters() {
     Reflections reflections = new Reflections();
@@ -59,15 +54,7 @@ public class TypeResolver {
   
   private void buildCascades(Set<TypeConverter> converters) {
     for (TypeConverter converter : converters) {
-      int priority = converter.getPriority();
-      Multimap<TypeMappingKey, TypeConverter> javaToExcelMultimap;
-      if (!_javaToExcelCascade.containsKey(priority)) {
-        javaToExcelMultimap = HashMultimap.create(); // we might create one that will be instantly GC'd...
-        javaToExcelMultimap = _javaToExcelCascade.putIfAbsent((Integer) priority, javaToExcelMultimap);
-      } else {
-        javaToExcelMultimap = _javaToExcelCascade.get(priority);
-      }
-      Multimap<Type, Class<? extends XLValue>> javaToExcelMap = converter.getJavaToExcelMap();
+
       
     }
   }

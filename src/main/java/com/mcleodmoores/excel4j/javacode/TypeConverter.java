@@ -15,17 +15,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public interface TypeConverter {
   /**
-   * Get the multimap of supported conversions from an Excel type to a Java type.
-   * @return a map of supported Excel to Java conversions
+   * 
    */
-  Set<TypeMappingKey> getExcelToJavaMap();
-  
-  /**
-   * Get the multimap of supported conversions from a Java type to an Excel type.
-   * @return a map of supported Java to Excel conversions
-   */
-  Set<TypeMappingKey> getJavaToExcelMap();
-  
+  boolean canConvert();
   /**
    * Convert from the supported Java type to the supported Excel type.
    * @param from  the Java object to convert to an Excel type

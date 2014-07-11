@@ -31,9 +31,9 @@ import com.mcleodmoores.excel4j.values.XLValueVisitorAdapter;
 public class XLValueVisitorTests {
   // CHECKSTYLE:OFF
   private static final List<XLValue> VALUES = Lists.newArrayList(
-    XLBigData.of("Hello"), XLBoolean.of(true), XLError.Name, XLInteger.of(25),
-    XLLocalReference.of(XLRange.ofCell(0, 0)), XLMissing.getInstance(), 
-    XLMultiReference.of(XLSheetId.of(1234), XLRange.ofCell(0, 0)), XLNil.getInstance(),
+    XLBigData.of("Hello"), XLBoolean.from(true), XLError.Name, XLInteger.of(25),
+    XLLocalReference.of(XLRange.ofCell(0, 0)), XLMissing.INSTANCE, 
+    XLMultiReference.of(XLSheetId.of(1234), XLRange.ofCell(0, 0)), XLNil.INSTANCE,
     XLNumber.of(987.654321), XLString.of("Hello World"), XLValueRange.of(new XLValue[][] { { XLError.NA } })
   );
   
