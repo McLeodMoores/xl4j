@@ -39,7 +39,7 @@ Registering the same method twice with the same `@XLFunction.name` could be allo
 To allow a degree of namespaceing we need another anotation. In the case of a package it would go in the `package-java.java` file in the package you want:
 
 ``` java
-@XLNamespace(name = "Ex")
+@XLNamespace("Ex")
 package com.mcleodmoores.excel4j.examples;
 
 import com.mcleodmoores.excel4j.XLNamespace;
@@ -52,7 +52,7 @@ package com.mcleodmoores.examples;
 
 import com.mcleodmoores.excel4j.*;
 
-@XLNamespace(name = "Ex1")
+@XLNamespace("Ex1")
 public class Example1 {
   @XLFunction
   ...
@@ -125,22 +125,27 @@ public RTDCallback myRtdFunction() {
   return handler;
 }
 ```
-## Explcit types
+## Explicit types
 
 The aim here is for the developer to have something to fall back on if the automatic marshalling doesn't work.
 ### XLValue
 This broadly mirrors the XLOPER* data structure.  The interesting question is whether this should be an object heirarchy or a type + object structure.  This could be done thus:
   - `XLString`
-  - `XLReference`? `XLRange`? - can we automatically manage the difference between local references and other worksheets (xltypeRef vs xltypeSRef)?
+  - `XLLocalReference` - sref
+    - `XLRange'
+  - `XLMultiReference` - ref/mref
+    - `XLSheetId`
+    - `List<XLRange>`
   - `XLBoolean`
   - `XLNumber`
-  - `XLArray` - mapped to multi
-  - `XLError` - do we need multiple types here?
+  - `XLValueRange` - mapped to multi
+  - `XLError`
+    - Enum
+    - We could do with a way of getting error messages back
   - `XLNil` - missing array elements
-  - do we need the more obscure stuff?
-    - `XLShort`
-    - `XLBigData`
-    - Macro flow control crap
+  - `XLInteger`
+  - `XLBigData`
+  - Assume we don't need Macro flow control 
 
 ### Type conversions
 
@@ -168,18 +173,85 @@ Direct Java Calls refers to the abililty to call into unmodified Java classes an
 > via COM, but I suspect synchronization issues would cause issues if used with e.g. Solver.  Can Solver work with RTD or Volatile 
 > UDFs at all?
 
-fdksjafkldsj
-fdaslkjflksdj
-fasdlkjfalksdjf
-fdlksajflkajsdlkfj
-ldsakjflajdslajfladskjf
-afkljdslfjasldjfldajs
-dskfjalksdjfkjadslkfj
-fdalskjflajsdlfja;ds
+# Method dispatch
+The simplistic idea is that we (ignoring memory management):
+ - generate registered UDF handlers 
+ - when a UDF is invoked, we make COM client call
+ - marshall the XLOPERs
+ - the JVM COM Server invokes a method on a Java handler
+ - the handler binds to a method (i.e. looks it up, possibly reflectively, cached presumably)
+ - the handler invokes that method
+ - the handler returns the result object to the JVM COM Server
+ - the COM server marshalls the result into a response
+ - the client recieves the response
+ - the client converts the reposnse into an XLOPER and returns it to Excel.
 
+But this misses the possibility that the UDF might call back into Excel to get/modify the sheet (I'm taking about Excel4 and Excel12, not COM).  In this case the issue is that the call-back is in a different thread to the caller, which won't work at all.  So it will need to be something more like this:
+ - generate regsitered UDF handlers
+ - when a UDF is invoked, make a COM client call in a loop
 
-Padding because dillinger doesn't scroll to bottom properly
+``` java
+transaction_id = generateId(); // get a transaction id
+// call remote end, in BEGIN phase (i.e. initial method invocation
+response = invokeUDF(transaction_id, Phase.BEGIN, params.toXLOPERs());
+// while the respose we get is ExcelInvoke, that means the remote end wants 
+// to call back Excel4/12 in this thread.
+while (response.getResponseType() == ReponseType.ExcelInvoke) {
+  Object result = invokeExcel4or12(response.getInvokeParams()); // do the callback
+  response = invokeUDF(transaction_id, Phase.RESULT, result); // send the results
+} // assume response now == Result
+freeId(transaction_id);
+return response.getResult().toXLOPER();
+```
 
+and on the server end, we have something like:
 
+``` java 
+Response invokeUDF(ID transaction_id, Phase phase, params...) {
+  // dig up the queue so we can pass it on to the invoking thread and also 
+  // post results in the case of a callback.
+  SynchronousQueue queue = getQueue(transaction_id);
+  if (phase == Phase.BEGIN) {
+    Method method = findMethod(params); // get the right wrapper method to call.
+    method.asyncInvoke(queue, params); // non-blocking invoke, happens in separate thread.
+  } else if (phase == Phase.RESULT) {
+    queue.put(queue, params); // post results of Excel4/12 blocking until they're taken
+  }
+  return queue.take(); // this will wait for either be a ReponseType.Result or ReponseType.ExcelInvoke
+}
+```
 
+then the actual execution thread might have something like (we might be able to avoid this wrapper by putting it in the 
+asynchronous invocation mechanics).
 
+``` java 
+void udfWrapperMethod(SynchronousQueue queue, params) {
+  setResponseQueueForThread(queue); // stores queue in ThreadLocal
+  Object result = method(params); // run the 'user' provided method.
+  Reponse = Response.ofType(ReponseType.RESULT).withResult(result); // wrap up it's response, and label it a real result.
+}
+```
+
+and in `method()` (the user's UDF)
+
+``` java
+Object method(XLValue params...) {
+  // do some calcs
+  Object results = _excel.excel4(SOME_METHOD, 0, 1, 2);
+  // some more calcs
+  return result;
+}
+```
+and in Excel.excel4()
+``` java
+Object excel4(Excel4MethodId methodId, Object... params) {
+  // pull out the queue associated with this thread.
+  SynchronousQueue queue = getReponseQueueForThread();
+  // send a request for the caller to call back Excel4/12
+  queue.put(Reponse.ofType(ReponseType.ExcelInvoke).withInvokeParams(methodId, params));
+  // wait for a reponse.
+  Object result = queue.take();
+  // return control flow to the UDF.
+  return result;
+}
+```

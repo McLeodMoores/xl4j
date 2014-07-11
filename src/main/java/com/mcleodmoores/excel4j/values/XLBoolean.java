@@ -3,29 +3,22 @@ package com.mcleodmoores.excel4j.values;
 /**
  * Java representation of the xloper type xltypeBool.
  */
-public final class XLBoolean implements XLValue {
-  private static final int PRIME2 = 1237;
-  private static final int PRIME1 = 1231;
-  private final boolean _value;
+public enum XLBoolean implements XLValue {
   /**
-   * True value constant.
+   * True value.
    */
-  public static final XLBoolean TRUE = new XLBoolean(true);
+  TRUE,
   /**
-   * False value constant.
+   * False value.
    */
-  public static final XLBoolean FALSE = new XLBoolean(false);
-  
-  private XLBoolean(final boolean value) {
-    _value = value;
-  }
-  
+  FALSE;
+    
   /**
-   * Create an instance of an XLBoolean.
+   * Create an XLBoolean from a boolean.
    * @param value the value to embed
    * @return an instance
    */
-  public static XLBoolean of(final boolean value) {
+  public static XLBoolean from(final boolean value) {
     if (value) {
       return TRUE;
     } else {
@@ -38,7 +31,7 @@ public final class XLBoolean implements XLValue {
    * @return the value of the embedded boolean
    */
   public boolean getValue() {
-    return _value;
+    return this == TRUE;
   }
   
   @Override
@@ -47,35 +40,7 @@ public final class XLBoolean implements XLValue {
   }
   
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + (_value ? PRIME1 : PRIME2);
-    return result;
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (obj == null) {
-      return false;
-    }
-    if (!(obj instanceof XLBoolean)) {
-      return false;
-    }
-    XLBoolean other = (XLBoolean) obj;
-    if (_value != other._value) {
-      return false;
-    }
-    return true; 
-    // unreachable because we only give out TRUE or FALSE, so equality caught by first if above.
-    // but I'm leaving this here to be defensive.
-  }
-
-  @Override
   public String toString() {
-    return "XLBoolean[value=" + _value + "]";
+    return "XLBoolean[" + super.toString() + "]";
   }
 }

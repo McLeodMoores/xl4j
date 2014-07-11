@@ -14,8 +14,8 @@ public class XLNilErrorMissingTests {
 	// CHECKSTYLE:OFF
   @Test
   public void testNil() {
-  	XLNil nil = XLNil.getInstance();
-  	XLNil nil2 = XLNil.getInstance();
+  	XLNil nil = XLNil.INSTANCE;
+  	XLNil nil2 = XLNil.INSTANCE;
   	Assert.assertEquals(nil, nil);
   	Assert.assertEquals(nil.hashCode(), nil.hashCode());
   	Assert.assertEquals(nil, nil2);
@@ -26,13 +26,13 @@ public class XLNilErrorMissingTests {
   }
   
   public void testNilToString() {
-  	Assert.assertEquals(XLNil.getInstance().toString(), "XLNil");
+  	Assert.assertEquals(XLNil.INSTANCE.toString(), "XLNil");
   }
   
   @Test
   public void testMissing() {
-  	XLMissing missing = XLMissing.getInstance();
-  	XLMissing missing2 = XLMissing.getInstance();
+  	XLMissing missing = XLMissing.INSTANCE;
+  	XLMissing missing2 = XLMissing.INSTANCE;
   	Assert.assertEquals(missing, missing);
   	Assert.assertEquals(missing, missing2);
   	Assert.assertEquals(missing.hashCode(), missing.hashCode());
@@ -43,6 +43,6 @@ public class XLNilErrorMissingTests {
   }
   
   public void testMissingToString() {
-  	Assert.assertEquals(XLMissing.getInstance(), "XLMissing");
+  	Assert.assertEquals(XLMissing.INSTANCE, "XLMissing");
   }
 }

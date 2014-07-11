@@ -16,11 +16,11 @@ import com.mcleodmoores.excel4j.values.XLMissing;
 import com.mcleodmoores.excel4j.values.XLMultiReference;
 import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLNumber;
+import com.mcleodmoores.excel4j.values.XLRange;
 import com.mcleodmoores.excel4j.values.XLSheetId;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 import com.mcleodmoores.excel4j.values.XLValueRange;
-import com.mcleodmoores.excel4j.values.XLRange;
 
 /**
  * Unit tests for XLValueRange.
@@ -32,20 +32,20 @@ public final class XLValueRangeTests {
 	private static final XLValue[][] SINGLE_1 = new XLValue[][] { { XLBigData.of("Hello World") } };
 	
 	private static final XLValue[][] MULTI = new XLValue[][] { 
-		{ XLBoolean.of(true), XLError.NA, XLInteger.of(65536) },
-		{ XLLocalReference.of(XLRange.of(1, 1, 3, 5)), XLMissing.getInstance(), XLNil.getInstance() }, 
+		{ XLBoolean.from(true), XLError.NA, XLInteger.of(65536) },
+		{ XLLocalReference.of(XLRange.of(1, 1, 3, 5)), XLMissing.INSTANCE, XLNil.INSTANCE }, 
 		{ XLMultiReference.of(XLSheetId.of(1234), XLRange.of(1, 2, 3, 4), XLRange.ofCell(4, 5)), XLNumber.of(43.234) },
 		{ XLString.of("Hello World"), XLError.Null, XLError.Ref }
 	};
 	private static final XLValue[][] MULTI_1 = new XLValue[][] { 
-		{ XLBoolean.of(true), XLError.NA, XLInteger.of(65536) },
-		{ XLLocalReference.of(XLRange.of(1, 1, 3, 5)), XLMissing.getInstance(), XLNil.getInstance() }, 
+		{ XLBoolean.from(true), XLError.NA, XLInteger.of(65536) },
+		{ XLLocalReference.of(XLRange.of(1, 1, 3, 5)), XLMissing.INSTANCE, XLNil.INSTANCE }, 
 		{ XLMultiReference.of(XLSheetId.of(1234), XLRange.of(1, 2, 3, 4), XLRange.ofCell(4, 5)), XLNumber.of(43.234) },
 		{ XLString.of("Hello World"), XLError.Null, XLError.Ref }
 	};	
 	private static final XLValue[][] MULTI_2 = new XLValue[][] { // Note that the XLRange.ofCell() is changed from above.
-		{ XLBoolean.of(true), XLError.NA, XLInteger.of(65536) },
-		{ XLLocalReference.of(XLRange.of(1, 1, 3, 5)), XLMissing.getInstance(), XLNil.getInstance() }, 
+		{ XLBoolean.from(true), XLError.NA, XLInteger.of(65536) },
+		{ XLLocalReference.of(XLRange.of(1, 1, 3, 5)), XLMissing.INSTANCE, XLNil.INSTANCE }, 
 		{ XLMultiReference.of(XLSheetId.of(1234), XLRange.of(1, 2, 3, 4), XLRange.ofCell(5, 5)), XLNumber.of(43.234) },
 		{ XLString.of("Hello World"), XLError.Null, XLError.Ref }
 	};
@@ -104,7 +104,7 @@ public final class XLValueRangeTests {
   }
 
   private static final String SINGLE_TO_STRING = "XLValueRange[valueRange=[[XLBigData[len=18, buffer=[AC ED 00 05 74 00 0B 48 65 6C 6C 6F 20 57 6F 72 6C 64]]]]]";
-  private static final String MULTI_TO_STRING = "XLValueRange[valueRange=[[XLBoolean[value=true], NA, XLInteger[value=65536]], " + 
+  private static final String MULTI_TO_STRING = "XLValueRange[valueRange=[[XLBoolean[TRUE], NA, XLInteger[value=65536]], " + 
                                                 "[XLLocalReference[range=XLRange[Single Row row=1, columns=3 to 5]], XLMissing, XLNil], " + 
   		                                          "[XLMultiReference[sheetId=1234, ranges=[XLRange[Range rows=1 to 2, columns=3 to 4], " + 
                                                 "XLRange[Single Cell row=4, column=5]]], XLNumber[value=43.234]], [XLString[value=Hello World], Null, Ref]]]";
