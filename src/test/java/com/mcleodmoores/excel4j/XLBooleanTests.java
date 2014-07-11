@@ -18,12 +18,12 @@ public final class XLBooleanTests {
   
   @Test
   public void testXLBooleanEqualsAndHashCode() {
-    XLBoolean boolT = XLBoolean.of(true);
+    XLBoolean boolT = XLBoolean.from(true);
     Assert.assertTrue(boolT.getValue());
-    XLBoolean boolT1 = XLBoolean.of(true);
-    XLBoolean boolF = XLBoolean.of(false);
+    XLBoolean boolT1 = XLBoolean.from(true);
+    XLBoolean boolF = XLBoolean.from(false);
     Assert.assertFalse(boolF.getValue());
-    XLBoolean boolF1 = XLBoolean.of(false);
+    XLBoolean boolF1 = XLBoolean.from(false);
     Assert.assertEquals(boolT, boolT);
     Assert.assertEquals(boolT.hashCode(), boolT.hashCode());
     Assert.assertEquals(boolT, boolT1);
@@ -42,8 +42,8 @@ public final class XLBooleanTests {
   
   @Test
   public void testXLBooleanToString() {
-    XLBoolean boolT = XLBoolean.of(true);
-    XLBoolean boolF = XLBoolean.of(false);
+    XLBoolean boolT = XLBoolean.from(true);
+    XLBoolean boolF = XLBoolean.from(false);
     Assert.assertEquals(boolT.toString(), EXPECTED_TRUE);
     Assert.assertEquals(boolF.toString(), EXPECTED_FALSE);
   }

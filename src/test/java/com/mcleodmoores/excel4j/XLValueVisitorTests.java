@@ -17,6 +17,7 @@ import com.mcleodmoores.excel4j.values.XLMissing;
 import com.mcleodmoores.excel4j.values.XLMultiReference;
 import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLNumber;
+import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLRange;
 import com.mcleodmoores.excel4j.values.XLSheetId;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -39,7 +40,7 @@ public class XLValueVisitorTests {
   
   private static final List<String> EXPECTED = Lists.newArrayList(
     "XLBigData", "XLBoolean", "XLError", "XLInteger", "XLLocalReference", "XLMissing", 
-    "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLValueRange"
+    "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLValueRange", "XLObject"
   );
   
   @Test
@@ -98,6 +99,11 @@ public class XLValueVisitorTests {
       @Override
       public String visitXLValueRange(final XLValueRange value) {
         return "XLValueRange";
+      }
+
+      @Override
+      public String visitXLObject(XLObject value) {
+        return "XLObject";
       }     
     };
     
