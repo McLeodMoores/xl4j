@@ -3,11 +3,6 @@
  */
 package com.mcleodmoores.excel4j.javacode;
 
-import java.lang.reflect.Type;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.collect.Multimap;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -15,22 +10,33 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public interface TypeConverter {
   /**
-   * 
+   * Test whether this converter can handle a particular conversion.
+   * @param excelToJava an excel to java type mapping
+   * @return true, if this converter can handle the conversion
    */
-  boolean canConvert();
+  boolean canConvert(ExcelToJavaTypeMapping excelToJava);
+  /**
+   * Test whether this converter can handle a particular conversion.
+   * @param javaToExcel a java to excel type mapping
+   * @return true, if this converter can handle the conversion
+   */
+  boolean canConvert(JavaToExcelTypeMapping javaToExcel);
+  
   /**
    * Convert from the supported Java type to the supported Excel type.
+   * @param requiredConversion the required conversion
    * @param from  the Java object to convert to an Excel type
    * @return an Excel conversion of a Java type
    */
-  XLValue toXLValue(Object from);
+  XLValue toXLValue(JavaToExcelTypeMapping requiredConversion, Object from);
   
   /**
-   * Convert from the supoprted Excel type to the supported Java type.
+   * Convert from the supported Excel type to the supported Java type.
+   * @param requiredConversion the required conversion
    * @param from  the Excel object to convert into a Java type
    * @return a Java object converted from an Excel object
    */
-  Object toJavaObject(XLValue from);
+  Object toJavaObject(ExcelToJavaTypeMapping requiredConversion, XLValue from);
   
   /**
    * Get the priority level of this converter, higher values have higher priority.

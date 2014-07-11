@@ -8,6 +8,7 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  */
 public final class XLString implements XLValue {
 
+  private static final String OBJECT_PREFIX = "\u0026";
   private String _value;
   
   private XLString(final String value) {
@@ -29,6 +30,13 @@ public final class XLString implements XLValue {
    */
   public String getValue() {
     return _value;
+  }
+  
+  /**
+   * @return true, if this XLString represents an XLObject
+   */
+  public boolean isXLObject() {
+    return _value.startsWith(OBJECT_PREFIX);
   }
   
   @Override

@@ -81,4 +81,12 @@ public interface XLValueVisitor<T> {
    * @return the result of the implementing visitor
    */
   T visitXLValueRange(XLValueRange value);
+
+  /**
+   * Visit an XLObject type.
+   * @param value an XLObject value
+   * @return the result of the implementing visitor
+   */
+  T visitXLObject(XLObject value);
+
 }

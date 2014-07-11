@@ -62,4 +62,8 @@ public class XLValueVisitorAdapter<T> implements XLValueVisitor<T> {
     throw new Excel4JRuntimeException("XLValueRange visitor not implemented");
   }
 
+  @Override
+  public T visitXLObject(final XLObject value) {
+    throw new Excel4JRuntimeException("XLObject visitor not implemented");
+  }
 }

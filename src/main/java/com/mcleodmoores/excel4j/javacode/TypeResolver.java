@@ -5,9 +5,10 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import javassist.Modifier;
 
@@ -15,29 +16,37 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Multimap;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
 /**
- * 
+ * Type resolver.
  */
 public class TypeResolver {
   private static Logger s_logger = LoggerFactory.getLogger(TypeResolver.class);
   
-  private ConcurrentHashMap<Integer, Multimap<ExcelToJavaTypeMapping, TypeConverter>> _javaToExcelCascade = new ConcurrentHashMap<>();
-  private ConcurrentHashMap<Integer, Multimap<ExcelToJavaTypeMapping, TypeConverter>> _excelToJavaCascade = new ConcurrentHashMap<>();
+  private ConcurrentSkipListMap<Integer, List<TypeConverter>> _converters = new ConcurrentSkipListMap<>();
+  
+  /**
+   * Construct a TypeResolver.
+   */
+  public TypeResolver() {
+    scanAndCreateTypeConverters();
+  }
   
   private void scanAndCreateTypeConverters() {
     Reflections reflections = new Reflections();
     Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
-    Set<TypeConverter> typeConverters = new ConcurrentSkipListSet<TypeConverter>();
     for (Class<? extends TypeConverter> typeConverterClass : typeConverterClasses) {
       Method method;
       try {
         method = typeConverterClass.getMethod("getInstance", (Class<?>[]) null);
         if (Modifier.isStatic(method.getModifiers())) {
           TypeConverter typeConverter = (TypeConverter) method.invoke(null, (Object[]) null);
-          typeConverters.add(typeConverter);
+          int priority = typeConverter.getPriority();
+          if (!_converters.containsKey(priority)) {
+            _converters.putIfAbsent(priority, new ArrayList<TypeConverter>());
+          }
+          _converters.get(typeConverter.getPriority()).add(typeConverter);
         }
       } catch (NoSuchMethodException e) {
         s_logger.error("Could not find getInstance() factory method on TypeConverter {}", typeConverterClass, e);
@@ -52,14 +61,22 @@ public class TypeResolver {
     }
   }
   
-  private void buildCascades(Set<TypeConverter> converters) {
-    for (TypeConverter converter : converters) {
-
-      
+  /**
+   * Find a type converter to perform the required conversion, searching linearly in priority order
+   * and returning the first match.
+   * @param requiredMapping the required conversion
+   * @return a type converter to perform the conversion
+   */
+  public TypeConverter findConverter(final ExcelToJavaTypeMapping requiredMapping) {
+    for (int priority : _converters.keySet()) {
+      List<TypeConverter> converters = _converters.get(priority);
+      for (TypeConverter typeConverter : converters) {
+        if (typeConverter.canConvert(requiredMapping)) {
+          return typeConverter;
+        }
+      }
     }
+    return null;
   }
-//  public List<TypeConverter> typeBind(Constructor constructor, XLValue[] arguments) {
-//    Type[] genericParameterTypes = constructor.getGenericParameterTypes();
-//    if ()
-//  }
+  
 }

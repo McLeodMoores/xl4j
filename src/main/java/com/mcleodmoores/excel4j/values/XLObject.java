@@ -1,0 +1,97 @@
+package com.mcleodmoores.excel4j.values;
+
+import com.mcleodmoores.excel4j.util.ArgumentChecker;
+
+/**
+ * Special version of XLString that holds a String with unprintable characters 
+ * at the start that encodes an object handle.
+ */
+public final class XLObject implements XLValue {
+
+  private static final char OBJECT_PREFIX = '\u0026';
+  private Class<?> _clazz;
+  private long _handle;
+  
+  private XLObject(final Class<?> clazz, final long handle) {
+    _clazz = clazz;
+    _handle = handle;
+  }
+  
+  /**
+   * Static factory method to create an instance of an XLString.
+   * @param clazz the Class that this object points to
+   * @param handle the object handle
+   * @return an instance
+   */
+  public static XLObject of(final Class<?> clazz, final long handle) {
+    ArgumentChecker.notNull(clazz, "clazz");
+    return new XLObject(clazz, handle);
+  }
+  
+  /**
+   * @return the object's class
+   */
+  public Class<?> getClazz() {
+    return _clazz;
+  }
+  
+  /**
+   * @return the object handle
+   */
+  public long getHandle() {
+    return _handle;
+  }
+  
+  /**
+   * Convert this XLObject into an XLString for passing back to Excel.
+   * It adds a ^Z control character to the front of the string so Excel
+   * users cannot create arbitrary object references, but can read them.
+   * The string produced is in the form ClassName-000000000000000000000.
+   * @return an XLString object containing the object handle and class name.
+   */
+  public XLString toXLString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append(OBJECT_PREFIX);
+    sb.append(_clazz.getSimpleName());
+    sb.append('-');
+    sb.append(_handle);
+    return XLString.of(sb.toString());
+  }
+  
+  @Override
+  public <E> E accept(final XLValueVisitor<E> visitor) {
+    return visitor.visitXLObject(this);
+  }
+
+  @Override
+  public int hashCode() {
+    return (int) _handle;
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (!(obj instanceof XLObject)) {
+      return false;
+    }
+    XLObject other = (XLObject) obj;
+    if (_handle != other._handle) {
+      return false;
+    }
+    if (_clazz != other._clazz) {
+      return false;
+    }
+    return true;
+  }
+
+  @Override
+  public String toString() {
+    return "XLObject[class=" + _clazz + ", " + _handle + "]";
+  }
+
+}
