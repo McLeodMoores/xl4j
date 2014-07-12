@@ -1,5 +1,10 @@
 package com.mcleodmoores.excel4j.heap;
 
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.nio.ByteBuffer;
+import java.security.SecureRandom;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -15,7 +20,7 @@ public class WorksheetHeap {
   private ConcurrentHashMap<Long, Object> _handleToObj;
   private ConcurrentHashMap<Object, Long> _objToHandle;
   
-  private AtomicLong _sequence = new AtomicLong(System.currentTimeMillis());
+  private AtomicLong _sequence;
   private HashSet<Long> _keySnap;
   private XLSheetId _sheetId;
   
@@ -27,6 +32,29 @@ public class WorksheetHeap {
     _sheetId = sheetId;
     _handleToObj = new ConcurrentHashMap<Long, Object>();
     _objToHandle = new ConcurrentHashMap<Object, Long>();
+    // we try and create the handle counter by combining the local MAC, the time and the sheet id.
+    // this should minimize the possibility of stale handles in sheets being interpreted as valid.
+    long baseHandle;
+    Enumeration<NetworkInterface> networkInterfaces;
+    try {
+      networkInterfaces = NetworkInterface.getNetworkInterfaces();
+      if (networkInterfaces.hasMoreElements()) {
+        NetworkInterface networkInterface = networkInterfaces.nextElement();
+        byte[] hardwareAddress = networkInterface.getHardwareAddress();
+        byte[] extendedTo64bits = new byte[8];
+        // we assume the hardware address is going to be 6 bytes, but we handle if it isn't, but top out at 8 bytes
+        System.arraycopy(hardwareAddress, 0, extendedTo64bits, 0, Math.min(hardwareAddress.length, 8));
+        ByteBuffer byteBuffer = ByteBuffer.wrap(extendedTo64bits);
+        baseHandle = byteBuffer.getLong();
+      } else {
+        baseHandle = new SecureRandom().nextLong();
+      }
+    } catch (SocketException e) {
+      baseHandle = new SecureRandom().nextLong();
+    }
+    baseHandle += System.currentTimeMillis() / 1000; // we only need seconds.
+    baseHandle += sheetId.getSheetId() * (2 ^ 16); // include the sheet id as well.
+    _sequence = new AtomicLong(baseHandle);
   }
   
   /**
