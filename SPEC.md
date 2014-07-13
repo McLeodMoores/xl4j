@@ -147,9 +147,15 @@ This broadly mirrors the XLOPER* data structure.  The interesting question is wh
   - `XLBigData`
   - Assume we don't need Macro flow control 
 
-### Type conversions
+# Type conversions
+## Direct Java Mode
+Going from Excel to Java, we have a set of possible target methods that match the method (or constructor name and class). For each one we have a source type (passed by Excel), and a destination type (specified by the signature of the destination method).  We can then attempt to find a converter capable of converting source -> destination type.
+ - When there are multiple matches we choose the one with the higest priority converter.
+ - We can't tell what the return conversion should be - in this case the converter needs to tell us
+   - If we're using a mode that always returns an object, we just return an XLObject.
+   - If we're in an aggressive type conversion mode, we find a converter that can convert java -> excel, but without
+     knowing the destination type.  The converter must provide that.
 
-# Direct Java Calls
 Direct Java Calls refers to the abililty to call into unmodified Java classes and methods directly from Excel.  
 
  - `JConstruct(<class-name>, { <argument-x> }[0..n] })` - call a constructor, returning an object handle.
