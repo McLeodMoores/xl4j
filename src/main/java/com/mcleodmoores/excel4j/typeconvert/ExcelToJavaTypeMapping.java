@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.javacode;
+package com.mcleodmoores.excel4j.typeconvert;
 
 import java.lang.reflect.Type;
 
@@ -15,22 +15,22 @@ public final class ExcelToJavaTypeMapping {
   private Type _javaType;
 
   /**
-   * @param javaType the Java type
    * @param excelType the Excel type
+   * @param javaType the Java type
    */
-  private ExcelToJavaTypeMapping(final Type javaType, final Class<? extends XLValue> excelType) {
+  private ExcelToJavaTypeMapping(final Class<? extends XLValue> excelType, final Type javaType) {
     _javaType = javaType;
     _excelType = excelType;
   }
   
   /**
    * Static factory method.
-   * @param javaType the Java type
    * @param excelType the Excel type
+   * @param javaType the Java type
    * @return an instance
    */
-  public static ExcelToJavaTypeMapping of(final Type javaType, final Class<? extends XLValue> excelType) {
-    return new ExcelToJavaTypeMapping(javaType, excelType);
+  public static ExcelToJavaTypeMapping of(final Class<? extends XLValue> excelType, final Type javaType) {
+    return new ExcelToJavaTypeMapping(excelType, javaType);
   }
 
   /**

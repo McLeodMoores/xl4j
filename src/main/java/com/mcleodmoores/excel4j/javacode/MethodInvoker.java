@@ -2,37 +2,30 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
+import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * A class holding the converters required to convert arguments into the appropriate types and convert the result. 
  */
-public class MethodTypeConverters {
+public class MethodInvoker {
   private Method _method;
   private TypeConverter[] _argumentConverters;
   private TypeConverter _returnConverter;
-  private Type[] _parameterTypes;
-  private Type _returnType;
-  private Class<XLValue> _excelResultType;
 
   /**
    * Constructor.
    * @param method the method to call.
    * @param argumentConverters the converters required to call the method
    * @param returnConverter the converter required to convert he result back to an Excel type
-   * @param excelResultType the type to convert the result to
    */
-  public MethodTypeConverters(final Method method, final TypeConverter[] argumentConverters, 
-                              final TypeConverter returnConverter, final Class<XLValue> excelResultType) {
+  public MethodInvoker(final Method method, final TypeConverter[] argumentConverters, 
+                       final TypeConverter returnConverter) {
     _method = method;
     _argumentConverters = argumentConverters;
     _returnConverter = returnConverter;
-    _excelResultType = excelResultType;
-    _parameterTypes = method.getGenericParameterTypes();
-    _returnType = method.getGenericReturnType();
   }
   
   /**
@@ -44,11 +37,11 @@ public class MethodTypeConverters {
   public XLValue invoke(final Object object, final XLValue[] arguments) {
     Object[] args = new Object[arguments.length];
     for (int i = 0; i < _argumentConverters.length; i++) {
-      args[i] = _argumentConverters[i].toJavaObject(ExcelToJavaTypeMapping.of(_parameterTypes[i], arguments[i].getClass()), arguments[i]);
+      args[i] = _argumentConverters[i].toJavaObject(arguments[i]);
     }
     try {
       Object result = _method.invoke(object, args);
-      return _returnConverter.toXLValue(JavaToExcelTypeMapping.of(_returnType, _excelResultType), result);
+      return _returnConverter.toXLValue(result);
     } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException e) {
       throw new Excel4JRuntimeException("Error invoking method", e);

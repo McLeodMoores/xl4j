@@ -1,5 +1,7 @@
 package com.mcleodmoores.excel4j;
 
+import com.mcleodmoores.excel4j.javacode.InvokerFactory;
+
 /**
  * Interface to provide access to Excel services and callbacks.
  */
@@ -13,4 +15,9 @@ public interface Excel {
    * @return the binary blob
    */
   byte[] getBinaryName(final long handle, final long length);
+  /**
+   * Get the local invoker factory to allow Excel types to be bound to java constructors, methods and fields.
+   * @return an instance of an invoker factory
+   */
+  InvokerFactory getInvokerFactory();
 }

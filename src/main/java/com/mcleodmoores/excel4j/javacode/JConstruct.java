@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.excel4j.javacode;
 
+import com.mcleodmoores.excel4j.Excel;
+import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.XLArgument;
 import com.mcleodmoores.excel4j.XLFunction;
 import com.mcleodmoores.excel4j.XLNamespace;
@@ -29,11 +31,12 @@ public final class JConstruct {
                            @XLArgument(name = "args", description = "") 
                            final XLValue... args) {
     try {
-      Class<?> clazz = Class.forName(className.getValue());
-      
+      Excel excelFactory = ExcelFactory.getMockInstance();
+      InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
+      ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(className, args);
+      return constructorTypeConverter.invoke(args);
     } catch (ClassNotFoundException e) {
       return XLError.Null;
     }
-    return XLString.of("Ref");
   }
 }
