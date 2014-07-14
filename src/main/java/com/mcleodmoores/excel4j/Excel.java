@@ -1,5 +1,6 @@
 package com.mcleodmoores.excel4j;
 
+import com.mcleodmoores.excel4j.heap.WorksheetHeap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 
 /**
@@ -20,4 +21,9 @@ public interface Excel {
    * @return an instance of an invoker factory
    */
   InvokerFactory getInvokerFactory();
+  /**
+   * Get the local heap for this sheet.
+   * @return the heap for the current worksheet.
+   */
+  WorksheetHeap getWorksheetHeap();
 }

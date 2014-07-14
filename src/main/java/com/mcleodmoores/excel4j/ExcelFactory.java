@@ -15,8 +15,8 @@ public final class ExcelFactory {
   /**
    * Bill Pugh singleton pattern helper class removes synchronization requirement.
    */
-  private static class COMExcelHelper {
-    private static final Excel INSTANCE = new COMExcel();
+  private static class NativeExcelHelper {
+    private static final Excel INSTANCE = new NativeExcel();
   }
   
   /**
@@ -25,7 +25,7 @@ public final class ExcelFactory {
    * @return an instance of the Excel interface.
    */
   public static Excel getInstance() {
-    return COMExcelHelper.INSTANCE;
+    return NativeExcelHelper.INSTANCE;
   }
   
   /**

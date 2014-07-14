@@ -101,38 +101,5 @@ public class TypeConverterRegistry {
     return null;
   }
   
-  /**
-   * Return a constructor type converter ready to process calls for a given constructor.
-   * Throws a Excel4JRuntimeException if it can't find a matching constructor.
-   * @param className the class name as an XLString
-   * @param args a VarArg of XLValues to be marshalled into Java types
-   * @return a ConstructorTypeConverter that can perform the necessary conversions when necessary
-   * @throws ClassNotFoundException if the specified class cannot be found
-   */
-  public ConstructorInvoker getConstructorTypeConverter(final XLString className, final XLValue... args) throws ClassNotFoundException {
-    Class<?> clazz = resolveClass(className);
-    for (Constructor<?> constructor : clazz.getConstructors()) {
-      Type[] genericParameterTypes = constructor.getGenericParameterTypes();
-      if (args.length != genericParameterTypes.length) {
-        continue; // number of arguments don't match so skip this one.
-      }
-      TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
-      for (int i = 0; i < genericParameterTypes.length; i++) {
-        argumentConverters[i] = findConverter(ExcelToJavaTypeMapping.of(args[i].getClass(), genericParameterTypes[i]));
-      }
-      TypeConverter resultConverter = findConverter(clazz);
-      return new ConstructorInvoker(constructor, argumentConverters, resultConverter);
-    }
-    throw new Excel4JRuntimeException("Could not find matching constructor");
-  }
 
-  /**
-   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String).
-   * @param className
-   * @return a resolved class
-   * @throws ClassNotFoundException 
-   */
-  private Class<?> resolveClass(final XLString className) throws ClassNotFoundException {
-    return Class.forName(className.getValue());
-  }
 }
