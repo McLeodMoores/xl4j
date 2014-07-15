@@ -22,6 +22,6 @@ public final class DoubleXLNumberTypeConverter extends AbstractTypeConverter {
 
   @Override
   public Object toJavaObject(final XLValue from) {
-    return ((XLNumber) from).getValue();
+    return (double) ((XLNumber) from).getValue();
   }
 }

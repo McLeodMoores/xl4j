@@ -5,23 +5,23 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Type converter to convert from integers to Excel Numbers and back again.
+ * Type converter to convert from Floats to Excel Numbers and back again.
  */
-public final class IntegerXLNumberTypeConverter extends AbstractTypeConverter {
+public final class FloatXLNumberTypeConverter extends AbstractTypeConverter {
   /**
    * Default constructor.
    */
-  public IntegerXLNumberTypeConverter() {
-    super(Integer.class, XLNumber.class);
+  public FloatXLNumberTypeConverter() {
+    super(Float.class, XLNumber.class);
   }
-
+  
   @Override
   public XLValue toXLValue(final Object from) {
-    return XLNumber.of((Integer) from);
+    return XLNumber.of((Float) from);
   }
 
   @Override
   public Object toJavaObject(final XLValue from) {
-    return (int) ((XLNumber) from).getValue();
+    return (float) ((XLNumber) from).getValue();
   }
 }

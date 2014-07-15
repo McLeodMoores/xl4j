@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import javassist.Modifier;
+
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcleodmoores.excel4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLString;
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Type resolver.
@@ -40,6 +39,9 @@ public class TypeConverterRegistry {
     Reflections reflections = new Reflections();
     Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
     for (Class<? extends TypeConverter> typeConverterClass : typeConverterClasses) {
+      if (Modifier.isAbstract(typeConverterClass.getModifiers())) {
+        continue; // skip over abstract type converters.
+      }
       Constructor constructor;
       try {
         constructor = typeConverterClass.getConstructor((Class<?>[]) null);

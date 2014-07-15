@@ -5,23 +5,23 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Type converter to convert from integers to Excel Numbers and back again.
+ * Type converter to convert from Longs to Excel Numbers and back again.
  */
-public final class IntegerXLNumberTypeConverter extends AbstractTypeConverter {
+public final class LongXLNumberTypeConverter extends AbstractTypeConverter {
   /**
    * Default constructor.
    */
-  public IntegerXLNumberTypeConverter() {
-    super(Integer.class, XLNumber.class);
+  public LongXLNumberTypeConverter() {
+    super(Long.class, XLNumber.class);
   }
 
   @Override
   public XLValue toXLValue(final Object from) {
-    return XLNumber.of((Integer) from);
+    return XLNumber.of((Long) from);
   }
 
   @Override
   public Object toJavaObject(final XLValue from) {
-    return (int) ((XLNumber) from).getValue();
+    return (long) ((XLNumber) from).getValue();
   }
 }
