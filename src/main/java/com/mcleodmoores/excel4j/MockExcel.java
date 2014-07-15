@@ -46,9 +46,10 @@ public class MockExcel implements Excel {
   
   /**
    * Set the current Sheet Id for this thread.
+   * This should not be called by user code.
    * @param sheetId the sheet id
    */
-  public void setCurrentSheetId(final XLSheetId sheetId) {
+  /*package*/ void setCurrentSheetId(final XLSheetId sheetId) {
     _sheetId.set(sheetId);
   }
 

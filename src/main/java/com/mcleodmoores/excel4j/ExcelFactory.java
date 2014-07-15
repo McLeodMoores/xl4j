@@ -16,7 +16,7 @@ public final class ExcelFactory {
    * Bill Pugh singleton pattern helper class removes synchronization requirement.
    */
   private static class NativeExcelHelper {
-    private static final Excel INSTANCE = new NativeExcel();
+    private static final Excel INSTANCE = new MockExcel();
   }
   
   /**

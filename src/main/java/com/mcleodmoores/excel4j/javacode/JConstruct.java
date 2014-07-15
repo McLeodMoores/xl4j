@@ -33,10 +33,19 @@ public final class JConstruct {
     try {
       Excel excelFactory = ExcelFactory.getMockInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(className, args);
+      ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(className, getArgTypes(args));
       return constructorTypeConverter.invoke(args);
     } catch (ClassNotFoundException e) {
       return XLError.Null;
     }
+  }
+  
+  private Class<? extends XLValue>[] getArgTypes(final XLValue... args) {
+    @SuppressWarnings("unchecked")
+    Class<? extends XLValue>[] result = new Class[args.length];
+    for (int i = 0; i < args.length; i++) {
+      result[i] = args[i].getClass();
+    }
+    return result;
   }
 }
