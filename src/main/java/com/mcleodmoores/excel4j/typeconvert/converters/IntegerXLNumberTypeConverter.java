@@ -12,7 +12,7 @@ public final class IntegerXLNumberTypeConverter extends AbstractTypeConverter {
    * Default constructor.
    */
   public IntegerXLNumberTypeConverter() {
-    super(Integer.class, XLNumber.class);
+    super(Integer.TYPE, XLNumber.class);
   }
 
   @Override

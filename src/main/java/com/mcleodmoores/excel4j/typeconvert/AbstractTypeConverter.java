@@ -1,6 +1,4 @@
 package com.mcleodmoores.excel4j.typeconvert;
-import java.lang.reflect.Type;
-
 import com.mcleodmoores.excel4j.values.XLValue;
 
 
@@ -22,7 +20,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
    * @param excelType the Excel type, subclass of XLValue
    * @param priority the priority level, with larger values indicating higher priority
    */
-  protected AbstractTypeConverter(final Type javaType, final Class<? extends XLValue> excelType, final int priority) {
+  protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType, final int priority) {
     _excelToJavaTypeMapping = ExcelToJavaTypeMapping.of(excelType, javaType);
     _javaToExcelTypeMapping = JavaToExcelTypeMapping.of(javaType, excelType);
     _priority = priority;
@@ -33,7 +31,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
    * @param javaType the Java type, any object type
    * @param excelType the Excel type, subclass of XLValue
    */
-  protected AbstractTypeConverter(final Type javaType, final Class<? extends XLValue> excelType) {
+  protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType) {
     this(javaType, excelType, DEFAULT_PRIORITY);
   }
   

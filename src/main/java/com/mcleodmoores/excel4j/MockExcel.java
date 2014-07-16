@@ -32,7 +32,11 @@ public class MockExcel implements Excel {
     XLSheetId currentSheetId = XLSheetId.of(0);
     WorksheetHeap worksheetHeap = _heaps.get(currentSheetId);
     if (worksheetHeap == null) {
-      worksheetHeap = _heaps.putIfAbsent(currentSheetId, new WorksheetHeap(currentSheetId));
+      WorksheetHeap newWorksheetHeap = new WorksheetHeap(currentSheetId);
+      worksheetHeap = _heaps.putIfAbsent(currentSheetId, newWorksheetHeap);
+      if (worksheetHeap == null) {
+        worksheetHeap = newWorksheetHeap;
+      }
     }
     return worksheetHeap;
   }

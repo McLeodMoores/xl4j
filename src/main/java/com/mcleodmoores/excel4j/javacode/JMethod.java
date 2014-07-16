@@ -35,7 +35,7 @@ public final class JMethod {
                         @XLArgument(name = "args", description = "") 
                         final XLValue... args) {
     try {
-      Excel excelFactory = ExcelFactory.getMockInstance();
+      Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(objectReference, methodName, getArgTypes(args));
       return methodTypeConverter.invoke(null, args, true); // reduce return type to excel friendly type if possible.
@@ -61,7 +61,7 @@ public final class JMethod {
                                @XLArgument(name = "args", description = "") 
                                final XLValue... args) {
     try {
-      Excel excelFactory = ExcelFactory.getMockInstance();
+      Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(objectReference, methodName, getArgTypes(args));
       return methodTypeConverter.invoke(null, args, false); // reduce return type to excel friendly type if possible.
@@ -87,7 +87,7 @@ public final class JMethod {
                            @XLArgument(name = "args", description = "") 
                            final XLValue... args) {
     try {
-      Excel excelFactory = ExcelFactory.getMockInstance();
+      Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       MethodInvoker methodTypeConverter = invokerFactory.getStaticMethodTypeConverter(className, methodName, getArgTypes(args));
       return methodTypeConverter.invoke(null, args, true); // reduce return type to excel friendly type if possible.
@@ -113,7 +113,7 @@ public final class JMethod {
                            @XLArgument(name = "args", description = "") 
                            final XLValue... args) {
     try {
-      Excel excelFactory = ExcelFactory.getMockInstance();
+      Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       MethodInvoker methodTypeConverter = invokerFactory.getStaticMethodTypeConverter(className, methodName, getArgTypes(args));
       return methodTypeConverter.invoke(null, args, false); // reduce return type to excel friendly type if possible.

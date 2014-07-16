@@ -1,7 +1,5 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
-import java.lang.reflect.Type;
-
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -13,11 +11,9 @@ public final class StringXLStringTypeConverter extends AbstractTypeConverter {
 
   /**
    * Default Constructor.
-   * @param javaType the Java type to convert from/to
-   * @param excelType the Excel type to convert to/from
    */
-  public StringXLStringTypeConverter(final Type javaType, final Class<? extends XLValue> excelType) {
-    super(javaType, excelType);
+  public StringXLStringTypeConverter() {
+    super(String.class, XLString.class);
   }
 
   @Override

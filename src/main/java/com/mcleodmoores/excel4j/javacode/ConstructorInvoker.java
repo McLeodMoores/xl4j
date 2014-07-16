@@ -22,7 +22,7 @@ public class ConstructorInvoker {
    * @param returnConverter the converter required to convert he result back to an Excel type
    */
   public ConstructorInvoker(final Constructor<?> constructor, final TypeConverter[] argumentConverters, 
-                                   final TypeConverter returnConverter) {
+                            final TypeConverter returnConverter) {
     _constructor = constructor;
     _argumentConverters = argumentConverters;
     _returnConverter = returnConverter;

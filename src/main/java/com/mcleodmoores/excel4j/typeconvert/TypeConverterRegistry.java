@@ -38,7 +38,7 @@ public class TypeConverterRegistry {
   
   @SuppressWarnings("rawtypes")
   private void scanAndCreateTypeConverters() {
-    Reflections reflections = new Reflections();
+    Reflections reflections = new Reflections("com.mcleodmoores");
     Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
     for (Class<? extends TypeConverter> typeConverterClass : typeConverterClasses) {
       if (Modifier.isAbstract(typeConverterClass.getModifiers())) {
@@ -47,6 +47,7 @@ public class TypeConverterRegistry {
       Constructor constructor;
       try {
         constructor = typeConverterClass.getConstructor((Class<?>[]) null);
+        System.err.println("Registering type converter " + constructor);
         TypeConverter typeConverter = (TypeConverter) constructor.newInstance((Object[]) null);
         int priority = typeConverter.getPriority();
         if (!_converters.containsKey(priority)) {
@@ -78,8 +79,13 @@ public class TypeConverterRegistry {
     for (int priority : _converters.keySet()) {
       List<TypeConverter> converters = _converters.get(priority);
       for (TypeConverter typeConverter : converters) {
-        if (requiredMapping.isAssignableFrom(typeConverter.getExcelToJavaTypeMapping())) {
+        System.err.print("Comparing " + requiredMapping + " to " + typeConverter.getExcelToJavaTypeMapping());
+        //if (requiredMapping.isAssignableFrom(typeConverter.getExcelToJavaTypeMapping())) {
+        if (typeConverter.getExcelToJavaTypeMapping().isAssignableFrom(requiredMapping)) {
+          System.err.println("... compatible!");
           return (TypeConverter) typeConverter;
+        } else {
+          System.err.println("... not compatible");
         }
       }
     }

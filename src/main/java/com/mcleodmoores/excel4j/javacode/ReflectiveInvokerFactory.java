@@ -5,7 +5,6 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.ExcelFactory;
@@ -23,7 +22,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * 
  */
 public class ReflectiveInvokerFactory implements InvokerFactory {
-  private TypeConverterRegistry _typeConverterRegistry;
+  private TypeConverterRegistry _typeConverterRegistry = new TypeConverterRegistry();
   private static final TypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
   
   @Override
@@ -31,14 +30,18 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
                                                         @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                                         throws ClassNotFoundException {
     Class<?> clazz = resolveClass(className);
+    outer:
     for (Constructor<?> constructor : clazz.getConstructors()) {
-      Type[] genericParameterTypes = constructor.getGenericParameterTypes();
+      Class<?>[] genericParameterTypes = constructor.getParameterTypes();
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
       TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
       for (int i = 0; i < genericParameterTypes.length; i++) {
         argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
+        if (argumentConverters[i] == null) {
+          continue outer;
+        }
       }
       return new ConstructorInvoker(constructor, argumentConverters, OBJECT_XLOBJECT_CONVERTER);
     }
@@ -55,15 +58,18 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     Class<?> clazz = object.getClass();
 
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
-    
+    outer:
     for (Method method : clazz.getMethods()) {
-      Type[] genericParameterTypes = method.getGenericParameterTypes();
+      Class<?>[] genericParameterTypes = (Class<?>[]) method.getParameterTypes();
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
       TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
       for (int i = 0; i < genericParameterTypes.length; i++) {
         argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
+        if (argumentConverters[i] == null) {
+          continue outer;
+        }
       }
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);  // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       return new MethodInvoker(method, argumentConverters, resultConverter);
@@ -85,19 +91,23 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
                                                     throws ClassNotFoundException {
     Class<?> clazz = resolveClass(className); 
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
-    
+    outer:
     for (Method method : clazz.getMethods()) {
       if (!method.getName().equals(methodName)) {
         continue; // method name doesn't match
       }
-      Type[] genericParameterTypes = method.getGenericParameterTypes();
+      Class<?>[] genericParameterTypes = method.getParameterTypes();
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
       TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
       for (int i = 0; i < genericParameterTypes.length; i++) {
         argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
+        if (argumentConverters[i] == null) {
+          continue outer;
+        }
       }
+      
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }

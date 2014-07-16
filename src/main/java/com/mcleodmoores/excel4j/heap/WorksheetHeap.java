@@ -70,7 +70,7 @@ public class WorksheetHeap {
     } else {
       synchronized (object) { // should be low contention at least, can we get rid of this lock?
         // check no one snuck in while we were waiting with the same object.
-        Long keyAgain = _objToHandle.get(key);
+        Long keyAgain = _objToHandle.get(object);
         if (keyAgain != null) {  
           return keyAgain;
         }

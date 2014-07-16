@@ -26,12 +26,12 @@ public final class JConstruct {
   @XLFunction(name = "Construct",
               description = "Construct a named Java class instance",
               category = "Java")
-  public Object jconstruct(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
+  public XLValue jconstruct(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
                            final XLString className, 
                            @XLArgument(name = "args", description = "") 
                            final XLValue... args) {
     try {
-      Excel excelFactory = ExcelFactory.getMockInstance();
+      Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(className, getArgTypes(args));
       return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.

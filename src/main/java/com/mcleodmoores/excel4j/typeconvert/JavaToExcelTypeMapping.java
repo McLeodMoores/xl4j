@@ -3,8 +3,6 @@
  */
 package com.mcleodmoores.excel4j.typeconvert;
 
-import java.lang.reflect.Type;
-
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -12,13 +10,13 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public final class JavaToExcelTypeMapping {
   private Class<? extends XLValue> _excelType;
-  private Type _javaType;
+  private Class<?> _javaType;
 
   /**
    * @param javaType the Java type
    * @param excelType the Excel type
    */
-  private JavaToExcelTypeMapping(final Type javaType, final Class<? extends XLValue> excelType) {
+  private JavaToExcelTypeMapping(final Class<?> javaType, final Class<? extends XLValue> excelType) {
     _javaType = javaType;
     _excelType = excelType;
   }
@@ -29,7 +27,7 @@ public final class JavaToExcelTypeMapping {
    * @param excelType the Excel type
    * @return an instance
    */
-  public static JavaToExcelTypeMapping of(final Type javaType, final Class<? extends XLValue> excelType) {
+  public static JavaToExcelTypeMapping of(final Class<?> javaType, final Class<? extends XLValue> excelType) {
     return new JavaToExcelTypeMapping(javaType, excelType);
   }
 
@@ -43,7 +41,7 @@ public final class JavaToExcelTypeMapping {
   /**
    * @return the java type in this key 
    */
-  public Type getJavaType() {
+  public Class<?> getJavaType() {
     return _javaType;
   }
   
@@ -60,7 +58,7 @@ public final class JavaToExcelTypeMapping {
     if (other == null) {
       return false;
     }
-    if (!_javaType.getClass().isAssignableFrom(other._javaType.getClass())) {
+    if (!_javaType.isAssignableFrom(other._javaType)) {
       return false;
     }
     if (!_excelType.isAssignableFrom(other._excelType)) {
@@ -97,5 +95,10 @@ public final class JavaToExcelTypeMapping {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public String toString() {
+    return "JavaToExcelTypeMapping[excelType=" + _excelType + ", javaType=" + _javaType + "]";
   }
 }
