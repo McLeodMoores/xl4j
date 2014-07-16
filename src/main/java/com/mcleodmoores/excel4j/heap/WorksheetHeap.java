@@ -26,6 +26,7 @@ public class WorksheetHeap {
   
   /**
    * Construct a worksheet heap.
+   * TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations.
    * @param sheetId the worksheet id that this heap is for
    */
   public WorksheetHeap(final XLSheetId sheetId) {

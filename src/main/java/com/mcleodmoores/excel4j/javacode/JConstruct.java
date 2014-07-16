@@ -34,7 +34,7 @@ public final class JConstruct {
       Excel excelFactory = ExcelFactory.getMockInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(className, getArgTypes(args));
-      return constructorTypeConverter.invoke(args);
+      return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
     }

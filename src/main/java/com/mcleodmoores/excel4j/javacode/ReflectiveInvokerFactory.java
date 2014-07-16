@@ -13,6 +13,7 @@ import com.mcleodmoores.excel4j.heap.WorksheetHeap;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
+import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -23,6 +24,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class ReflectiveInvokerFactory implements InvokerFactory {
   private TypeConverterRegistry _typeConverterRegistry;
+  private static final TypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
   
   @Override
   public ConstructorInvoker getConstructorTypeConverter(final XLString className, 
@@ -38,8 +40,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       for (int i = 0; i < genericParameterTypes.length; i++) {
         argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
       }
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);
-      return new ConstructorInvoker(constructor, argumentConverters, resultConverter);
+      return new ConstructorInvoker(constructor, argumentConverters, OBJECT_XLOBJECT_CONVERTER);
     }
     throw new Excel4JRuntimeException("Could not find matching constructor");
   }
@@ -64,7 +65,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       for (int i = 0; i < genericParameterTypes.length; i++) {
         argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
       }
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);  // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }
     throw new Excel4JRuntimeException("Could not find matching constructor");

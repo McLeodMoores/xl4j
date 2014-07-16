@@ -14,7 +14,7 @@ public class ConstructorInvoker {
   private Constructor<?> _constructor;
   private TypeConverter[] _argumentConverters;
   private TypeConverter _returnConverter;
-
+  
   /**
    * Constructor.
    * @param constructor the constructor to call.
@@ -41,7 +41,7 @@ public class ConstructorInvoker {
     try {
       Object result = _constructor.newInstance(args);
       return _returnConverter.toXLValue(null, result);
-    } catch (IllegalAccessException | IllegalArgumentException
+     } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor", e);
     }

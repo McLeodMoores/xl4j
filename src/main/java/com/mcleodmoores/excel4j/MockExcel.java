@@ -28,7 +28,8 @@ public class MockExcel implements Excel {
   
   @Override
   public WorksheetHeap getWorksheetHeap() {
-    XLSheetId currentSheetId = getCurrentSheetId();
+    // disable multiple heaps for now.
+    XLSheetId currentSheetId = XLSheetId.of(0);
     WorksheetHeap worksheetHeap = _heaps.get(currentSheetId);
     if (worksheetHeap == null) {
       worksheetHeap = _heaps.putIfAbsent(currentSheetId, new WorksheetHeap(currentSheetId));
