@@ -47,6 +47,28 @@ public final class ExcelToJavaTypeMapping {
     return _javaType;
   }
   
+  /**
+   * Checks whether both the excel type and java type are assignable from 
+   * the other type (i.e. are the types compatible).
+   * @param other  the ExcelToJavaTypeMapping to compare against
+   * @return true, if both the excel and java types are assignable from
+   */
+  public boolean isAssignableFrom(final ExcelToJavaTypeMapping other) {
+    if (this == other) {
+      return true;
+    }
+    if (other == null) {
+      return false;
+    }
+    if (!_excelType.isAssignableFrom(other._excelType)) {
+      return false;
+    }
+    if (!_javaType.getClass().isAssignableFrom(other._javaType.getClass())) {
+      return false;
+    }
+    return true;
+  }
+  
   @Override
   public int hashCode() {
     final int prime = 31;

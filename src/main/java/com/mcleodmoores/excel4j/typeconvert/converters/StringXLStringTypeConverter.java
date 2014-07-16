@@ -21,12 +21,12 @@ public final class StringXLStringTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public XLValue toXLValue(final Object from) {
+  public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     return XLString.of((String) from);
   }
 
   @Override
-  public Object toJavaObject(final XLValue from) {
+  public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
     return ((XLString) from).getValue();
   }
 

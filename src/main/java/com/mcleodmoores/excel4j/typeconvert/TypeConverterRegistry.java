@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -25,7 +26,8 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 public class TypeConverterRegistry {
   private static Logger s_logger = LoggerFactory.getLogger(TypeConverterRegistry.class);
   
-  private ConcurrentSkipListMap<Integer, List<TypeConverter>> _converters = new ConcurrentSkipListMap<>();
+  // we want highest priority keys first, so we use a reversing comparator.
+  private ConcurrentSkipListMap<Integer, List<TypeConverter>> _converters = new ConcurrentSkipListMap<>(Collections.reverseOrder());
   
   /**
    * Construct a TypeResolver.
@@ -76,7 +78,7 @@ public class TypeConverterRegistry {
     for (int priority : _converters.keySet()) {
       List<TypeConverter> converters = _converters.get(priority);
       for (TypeConverter typeConverter : converters) {
-        if (typeConverter.getExcelToJavaTypeMapping().equals(requiredMapping)) {
+        if (requiredMapping.isAssignableFrom(typeConverter.getExcelToJavaTypeMapping())) {
           return (TypeConverter) typeConverter;
         }
       }
@@ -95,7 +97,7 @@ public class TypeConverterRegistry {
     for (int priority : _converters.keySet()) {
       List<TypeConverter> converters = _converters.get(priority);
       for (TypeConverter typeConverter : converters) {
-        if (typeConverter.getJavaToExcelTypeMapping().getJavaType().equals(requiredJava)) {
+        if (requiredJava.getClass().isAssignableFrom(typeConverter.getJavaToExcelTypeMapping().getJavaType().getClass())) {
           return (TypeConverter) typeConverter;
         }
       }

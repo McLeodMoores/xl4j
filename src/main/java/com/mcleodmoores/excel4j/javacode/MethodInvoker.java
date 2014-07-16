@@ -37,11 +37,11 @@ public class MethodInvoker {
   public XLValue invoke(final Object object, final XLValue[] arguments) {
     Object[] args = new Object[arguments.length];
     for (int i = 0; i < _argumentConverters.length; i++) {
-      args[i] = _argumentConverters[i].toJavaObject(arguments[i]);
+      args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
     }
     try {
       Object result = _method.invoke(object, args);
-      return _returnConverter.toXLValue(result);
+      return _returnConverter.toXLValue(null, result);
     } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException e) {
       throw new Excel4JRuntimeException("Error invoking method", e);

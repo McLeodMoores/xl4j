@@ -22,13 +22,13 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public XLValue toXLValue(final Object from) {
+  public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     WorksheetHeap heap = ExcelFactory.getInstance().getWorksheetHeap();
     return XLObject.of(from.getClass(), heap.getHandle(from));
   }
 
   @Override
-  public Object toJavaObject(final XLValue from) {
+  public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
     WorksheetHeap heap = ExcelFactory.getInstance().getWorksheetHeap();
     XLObject xlObj = (XLObject) from;
     return heap.getObject(xlObj.getHandle());

@@ -27,12 +27,12 @@ public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter 
   private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(1900, 1, 1), LocalDate.ofEpochDay(0)) + 1;
 
   @Override
-  public XLValue toXLValue(final Object from) {
+  public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     return XLNumber.of(((LocalDate) from).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
   }
 
   @Override
-  public Object toJavaObject(final XLValue from) {
+  public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
     final long epochDays = ((long) ((XLNumber) from).getValue()) - DAYS_FROM_EXCEL_EPOCH;
     return LocalDate.ofEpochDay(epochDays);
   }

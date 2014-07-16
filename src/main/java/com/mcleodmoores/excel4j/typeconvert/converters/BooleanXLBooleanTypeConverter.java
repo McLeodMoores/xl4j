@@ -16,12 +16,12 @@ public final class BooleanXLBooleanTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public XLValue toXLValue(final Object from) {
+  public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     return XLBoolean.from((Boolean) from);
   }
 
   @Override
-  public Object toJavaObject(final XLValue from) {
+  public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
     return (boolean) ((XLBoolean) from).getValue();
   }
 }

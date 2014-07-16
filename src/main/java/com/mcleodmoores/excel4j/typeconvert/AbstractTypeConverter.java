@@ -48,10 +48,10 @@ public abstract class AbstractTypeConverter implements TypeConverter {
   }
 
   @Override
-  public abstract XLValue toXLValue(Object from);
+  public abstract XLValue toXLValue(Class<? extends XLValue> expectedClass, Object from);
   
   @Override
-  public abstract Object toJavaObject(XLValue from);
+  public abstract Object toJavaObject(Class<?> expectedClass, XLValue from);
   
   @Override
   public int getPriority() {

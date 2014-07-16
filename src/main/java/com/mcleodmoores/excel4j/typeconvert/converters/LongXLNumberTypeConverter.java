@@ -16,12 +16,12 @@ public final class LongXLNumberTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public XLValue toXLValue(final Object from) {
+  public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     return XLNumber.of((Long) from);
   }
 
   @Override
-  public Object toJavaObject(final XLValue from) {
+  public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
     return (long) ((XLNumber) from).getValue();
   }
 }

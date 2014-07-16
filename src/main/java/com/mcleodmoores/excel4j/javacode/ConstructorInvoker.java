@@ -36,11 +36,11 @@ public class ConstructorInvoker {
   public XLValue invoke(final XLValue[] arguments) {
     Object[] args = new Object[arguments.length];
     for (int i = 0; i < _argumentConverters.length; i++) {
-      args[i] = _argumentConverters[i].toJavaObject(arguments[i]);
+      args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
     }
     try {
       Object result = _constructor.newInstance(args);
-      return _returnConverter.toXLValue(result);
+      return _returnConverter.toXLValue(null, result);
     } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor", e);

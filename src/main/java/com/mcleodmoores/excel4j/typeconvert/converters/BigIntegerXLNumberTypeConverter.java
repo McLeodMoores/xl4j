@@ -18,12 +18,12 @@ public final class BigIntegerXLNumberTypeConverter extends AbstractTypeConverter
   }
 
   @Override
-  public XLValue toXLValue(final Object from) {
+  public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     return XLNumber.of(((BigInteger) from).doubleValue());
   }
 
   @Override
-  public Object toJavaObject(final XLValue from) {
+  public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
     return BigInteger.valueOf((long) ((XLNumber) from).getValue());
   }
 }
