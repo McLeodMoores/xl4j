@@ -99,11 +99,11 @@ public class TypeConverterRegistry {
    * @param requiredJava the Java type required to convert from.
    * @return a type converter to perform the conversion
    */
-  public TypeConverter findConverter(final Type requiredJava) {
+  public TypeConverter findConverter(final Class<?> requiredJava) {
     for (int priority : _converters.keySet()) {
       List<TypeConverter> converters = _converters.get(priority);
       for (TypeConverter typeConverter : converters) {
-        if (requiredJava.getClass().isAssignableFrom(typeConverter.getJavaToExcelTypeMapping().getJavaType().getClass())) {
+        if (typeConverter.getJavaToExcelTypeMapping().getJavaType().isAssignableFrom(requiredJava)) {
           return (TypeConverter) typeConverter;
         }
       }

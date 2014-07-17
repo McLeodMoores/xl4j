@@ -52,14 +52,16 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   public MethodInvoker getMethodTypeConverter(final XLObject objectHandle, final XLString methodName, 
                                               @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                               throws ClassNotFoundException {
-    Excel excel = ExcelFactory.getMockInstance();
+    Excel excel = ExcelFactory.getInstance();
     WorksheetHeap worksheetHeap = excel.getWorksheetHeap();
     Object object = worksheetHeap.getObject(objectHandle.getHandle());
     Class<?> clazz = object.getClass();
-
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
     outer:
     for (Method method : clazz.getMethods()) {
+      if (!method.getName().equals(methodName.getValue())) {
+        continue; // name of method doesn't match.
+      }
       Class<?>[] genericParameterTypes = (Class<?>[]) method.getParameterTypes();
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
@@ -74,7 +76,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);  // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }
-    throw new Excel4JRuntimeException("Could not find matching constructor");
+    throw new Excel4JRuntimeException("Could not find matching method");
   }
 
   /**

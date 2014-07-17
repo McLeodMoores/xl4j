@@ -18,6 +18,10 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @XLNamespace("J")
 public final class JMethod {
+  
+  private JMethod() {  
+  }
+  
   /**
    * Invoke a static method on a class, converting the result to an Excel type if possible.
    * @param objectReference the object reference
@@ -28,7 +32,7 @@ public final class JMethod {
   @XLFunction(name = "Method",
               description = "Call a named Java method",
               category = "Java")
-  public Object jMethod(@XLArgument(name = "object reference", description = "The object reference") 
+  public static Object jMethod(@XLArgument(name = "object reference", description = "The object reference") 
                         final XLObject objectReference,
                         @XLArgument(name = "method name", description = "The method name without parentheses")
                         final XLString methodName,
@@ -38,23 +42,24 @@ public final class JMethod {
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(objectReference, methodName, getArgTypes(args));
-      return methodTypeConverter.invoke(null, args, true); // reduce return type to excel friendly type if possible.
+      Object object = excelFactory.getWorksheetHeap().getObject(objectReference.getHandle());
+      return methodTypeConverter.invoke(object, args, true); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
     }
   }
   
   /**
-   * Invoke a static method on a class, leaving the result as an object reference.
+   * Invoke a method on a class, leaving the result as an object reference.
    * @param objectReference the object reference
    * @param methodName the name of the method
    * @param args a vararg list of arguments
    * @return the result, converted to an Excel type if possible
    */
-  @XLFunction(name = "StaticMethodX",
+  @XLFunction(name = "MethodX",
               description = "Call a named Java method",
               category = "Java")
-  public Object jStaticMethodX(@XLArgument(name = "object reference", description = "The object reference") 
+  public static Object jMethodX(@XLArgument(name = "object reference", description = "The object reference") 
                                final XLObject objectReference,
                                @XLArgument(name = "method name", description = "The method name without parentheses")
                                final XLString methodName,
@@ -64,7 +69,8 @@ public final class JMethod {
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(objectReference, methodName, getArgTypes(args));
-      return methodTypeConverter.invoke(null, args, false); // reduce return type to excel friendly type if possible.
+      Object object = excelFactory.getWorksheetHeap().getObject(objectReference.getHandle());
+      return methodTypeConverter.invoke(object, args, false); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
     }
@@ -80,7 +86,7 @@ public final class JMethod {
   @XLFunction(name = "StaticMethod",
               description = "Call a named Java method",
               category = "Java")
-  public Object jStaticMethod(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
+  public static Object jStaticMethod(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
                            final XLString className,
                            @XLArgument(name = "method name", description = "The method name without parentheses")
                            final XLString methodName,
@@ -106,7 +112,7 @@ public final class JMethod {
   @XLFunction(name = "StaticMethodX",
               description = "Call a named Java method",
               category = "Java")
-  public Object jStaticMethodX(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
+  public static Object jStaticMethodX(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
                            final XLString className,
                            @XLArgument(name = "method name", description = "The method name without parentheses")
                            final XLString methodName,
@@ -122,7 +128,7 @@ public final class JMethod {
     }
   }
   
-  private Class<? extends XLValue>[] getArgTypes(final XLValue... args) {
+  private static Class<? extends XLValue>[] getArgTypes(final XLValue... args) {
     @SuppressWarnings("unchecked")
     Class<? extends XLValue>[] result = new Class[args.length];
     for (int i = 0; i < args.length; i++) {

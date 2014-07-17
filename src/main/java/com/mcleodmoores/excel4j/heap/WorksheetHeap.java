@@ -6,6 +6,7 @@ import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -96,7 +97,9 @@ public class WorksheetHeap {
     if (object != null) {
       return object;
     } else {
+      System.err.println(_handleToObj.toString());
       throw new Excel4JRuntimeException("Cannot find object with handle " + handle);
+      
     }
   }
   
