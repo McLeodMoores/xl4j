@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -23,15 +24,12 @@ public class WorksheetHeap {
   
   private AtomicLong _sequence;
   private HashSet<Long> _keySnap;
-  private XLSheetId _sheetId;
   
   /**
-   * Construct a worksheet heap.
+   * Construct a heap.
    * TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations.
-   * @param sheetId the worksheet id that this heap is for
    */
-  public WorksheetHeap(final XLSheetId sheetId) {
-    _sheetId = sheetId;
+  public WorksheetHeap() {
     _handleToObj = new ConcurrentHashMap<Long, Object>();
     _objToHandle = new ConcurrentHashMap<Object, Long>();
     // we try and create the handle counter by combining the local MAC, the time and the sheet id.
@@ -55,7 +53,6 @@ public class WorksheetHeap {
       baseHandle = new SecureRandom().nextLong();
     }
     baseHandle += System.currentTimeMillis() / 1000; // we only need seconds.
-    baseHandle += sheetId.getSheetId() * (2 ^ 16); // include the sheet id as well.
     _sequence = new AtomicLong(baseHandle);
   }
   
@@ -104,13 +101,6 @@ public class WorksheetHeap {
   }
   
   /**
-   * @return the sheet id
-   */
-  public XLSheetId getSheetId() {
-    return _sheetId;
-  }
-  
-  /**
    * Start a garbage collection pass.
    */
   public void startGC() {
@@ -137,4 +127,19 @@ public class WorksheetHeap {
     }
   }
   
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("WorksheetHeap[\n");
+    for (Entry<Long, Object> entry : _handleToObj.entrySet()) {
+      String number = Long.toString(entry.getKey());
+      sb.append("  ");
+      sb.append(number);
+      sb.append(" = > ");
+      sb.append(entry.getValue().toString());
+      sb.append("\n");
+    }
+    sb.append("]");
+    return sb.toString();
+  }
 }

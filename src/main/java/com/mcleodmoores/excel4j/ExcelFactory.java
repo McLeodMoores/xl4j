@@ -9,7 +9,18 @@ package com.mcleodmoores.excel4j;
  */
 public final class ExcelFactory {
   
+  private static final String TEST_PROPRERTY_NAME = "test.mode";
+
+  private static boolean s_testMode;
   private ExcelFactory() {
+    String property = System.getProperty(TEST_PROPRERTY_NAME);
+    if (property == null) {
+      s_testMode = false;
+    } else if (property.toUpperCase().startsWith("T")) {
+      s_testMode = true;
+    } else {
+      s_testMode = false;
+    }
   }
   
   /**
@@ -20,15 +31,6 @@ public final class ExcelFactory {
   }
   
   /**
-   * Get an instance of the Excel interface.
-   * Thread-safe.
-   * @return an instance of the Excel interface.
-   */
-  public static Excel getInstance() {
-    return NativeExcelHelper.INSTANCE;
-  }
-  
-  /**
    * Bill Pugh singleton pattern helper class removes synchronization requirement.
    */
   private static class MockExcelHelper {
@@ -36,12 +38,16 @@ public final class ExcelFactory {
   }
   
   /**
-   * Get a mock instance of the Excel interface.
+   * Get an instance of the Excel interface.
    * Thread-safe.
-   * @return a mock instance of the Excel interface.
+   * @return an instance of the Excel interface.
    */
-  public static Excel getMockInstance() {
-    return MockExcelHelper.INSTANCE;
+  public static Excel getInstance() {
+    if (s_testMode) {
+      return MockExcelHelper.INSTANCE; 
+    } else {
+      return NativeExcelHelper.INSTANCE;
+    }
   }
   
 }

@@ -50,4 +50,13 @@ public interface InvokerFactory {
                                        @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) 
                                        throws ClassNotFoundException;
 
+  /**
+   * Return a method type converter read to process calls for a given static method.
+   * @param method  the method to be bound to.
+   * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
+   * @throws ClassNotFoundException if the specified class cannot be found
+   * throws Excel4JRuntimeException if a matching method cannot be found
+   */
+  MethodInvoker getStaticMethodTypeConverter(Method method) 
+                                             throws ClassNotFoundException;
 }
