@@ -1,0 +1,107 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>uk.co.beerdragon</groupId>
+  <artifactId>comjvm-win32</artifactId>
+  <version>0.1.0-SNAPSHOT</version>
+  <packaging>native-exec</packaging>
+
+  <name>comjvm</name>
+  <description>Java as a COM server</description>
+
+  <licenses>
+    <license>
+      <name>GNU General Public License, Version 3.0</name>
+      <url>http://www.gnu.org/licenses/gpl.txt</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <maven-native-packing.version>0.2.0</maven-native-packing.version>
+    <java.version>1.7.0</java.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>uk.co.beerdragon</groupId>
+        <artifactId>maven-native-packaging</artifactId>
+        <version>${maven-native-packing.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <defaults>windows</defaults>
+        </configuration>
+        <executions>
+          <execution>
+            <id>default-package-exec</id>
+            <configuration>
+              <executables>
+                <executable>
+                  <arch>i386</arch>
+                  <path>target/Release-Win32</path>
+                  <dynamicLibs>
+                    <dynamicLib>
+                      <path>target/Release-Win32</path>
+                      <headers>
+                        <header>
+                          <path>target/Release-Win32</path>
+                          <pattern>*_h.h</pattern>
+                          <dest>comjvm</dest>
+                        </header>
+                      </headers>
+                      <libraries>
+                        <staticLib>
+                          <path>target/Release-Win32</path>
+                          <headers>
+                            <header>
+                              <path>core</path>
+                              <pattern>core.h</pattern>
+                              <dest>comjvm</dest>
+                            </header>
+                          </headers>
+                        </staticLib>
+                      </libraries>
+                    </dynamicLib>
+                  </dynamicLibs>
+                </executable>
+                <executable>
+                  <arch>x64</arch>
+                  <path>target/Release-x64</path>
+                  <dynamicLibs>
+                    <dynamicLib>
+                      <path>target/Release-x64</path>
+                      <headers/>
+                      <libraries>
+                        <staticLib>
+                          <path>target/Release-x64</path>
+                          <headers>
+                            <header>
+                              <path>core</path>
+                              <pattern>core.h</pattern>
+                              <dest>comjvm</dest>
+                            </header>
+                          </headers>
+                        </staticLib>
+                      </libraries>
+                    </dynamicLib>
+                  </dynamicLibs>
+                </executable>
+              </executables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.oracle.jdk</groupId>
+      <artifactId>win32</artifactId>
+      <version>${java.version}</version>
+      <type>native-static</type>
+    </dependency>
+  </dependencies>
+
+</project>
