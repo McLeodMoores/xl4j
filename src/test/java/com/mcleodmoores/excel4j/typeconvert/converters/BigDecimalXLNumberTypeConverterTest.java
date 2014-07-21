@@ -22,13 +22,13 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class BigDecimalXLNumberTypeConverterTest {
-  /** XLNumber class holding a double. */
+  /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
-  /** XLNumber class holding a long. */
+  /** XLNumber holding a long. */
   private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
-  /** XLNumber class holding an int. */
+  /** XLNumber holding an int. */
   private static final XLNumber XL_NUMBER_INT = XLNumber.of(10);
-  /** BigDecimal class. */
+  /** BigDecimal. */
   private static final BigDecimal BIG_DECIMAL = BigDecimal.valueOf(10.);
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new BigDecimalXLNumberTypeConverter();

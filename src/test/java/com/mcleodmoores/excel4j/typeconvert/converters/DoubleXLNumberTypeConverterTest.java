@@ -6,7 +6,7 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import java.math.BigInteger;
+import java.math.BigDecimal;
 
 import org.testng.annotations.Test;
 
@@ -18,28 +18,28 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link BigIntegerXLNumberTypeConverter}.
+ * Unit tests for {@link DoubleXLNumberTypeConverter}.
  */
 @Test
-public class BigIntegerXLNumberTypeConverterTest {
-  // REVIEW isn't it a bit odd that there's no complaint when a double is successfully converted?
+public class DoubleXLNumberTypeConverterTest {
+  // REVIEW isn't it a bit odd that there's no complaint when there's an upcast to Double?
   /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
   /** XLNumber holding a long. */
   private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
   /** XLNumber holding an int. */
   private static final XLNumber XL_NUMBER_INT = XLNumber.of(10);
-  /** BigInteger. */
-  private static final BigInteger BIG_INTEGER = BigInteger.valueOf(10);
+  /** Double. */
+  private static final Double DOUBLE = 10.;
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new BigIntegerXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new DoubleXLNumberTypeConverter();
 
   /**
-   * Tests that the java type is {@link BigInteger}.
+   * Tests that the java type is {@link Double}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Long.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Double.class));
   }
 
   /**
@@ -47,7 +47,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Long.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Double.class, XLNumber.class));
   }
 
   /**
@@ -63,7 +63,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, BIG_INTEGER);
+    CONVERTER.toXLValue(null, DOUBLE);
   }
 
   /**
@@ -87,7 +87,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(BigInteger.class, null);
+    CONVERTER.toJavaObject(Double.class, null);
   }
 
   /**
@@ -95,7 +95,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(BigInteger.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(Double.class, XLInteger.of(10));
   }
 
   /**
@@ -103,7 +103,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(10.));
   }
 
   /**
@@ -111,7 +111,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Integer.valueOf(10));
+    CONVERTER.toXLValue(XLNumber.class, BigDecimal.valueOf(10.));
   }
 
   /**
@@ -119,15 +119,15 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLValue.class, BigInteger.ONE);
+    CONVERTER.toXLValue(XLValue.class, 1.);
   }
 
   /**
-   * Tests the conversion from a {@link BigInteger}.
+   * Tests the conversion from a {@link Double}.
    */
   @Test
-  public void testConversionFromBigInteger() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), BIG_INTEGER);
+  public void testConversionFromDouble() {
+    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), DOUBLE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), 10., 0);
@@ -138,17 +138,17 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromXLNumber() {
-    Object converted = CONVERTER.toJavaObject(BigInteger.class, XL_NUMBER_INT);
-    assertTrue(converted instanceof BigInteger);
-    BigInteger bigInteger = (BigInteger) converted;
-    assertEquals(bigInteger, BIG_INTEGER);
-    converted = CONVERTER.toJavaObject(BigInteger.class, XL_NUMBER_LONG);
-    assertTrue(converted instanceof BigInteger);
-    bigInteger = (BigInteger) converted;
-    assertEquals(bigInteger, BIG_INTEGER);
-    converted = CONVERTER.toJavaObject(BigInteger.class, XL_NUMBER_DOUBLE);
-    assertTrue(converted instanceof BigInteger);
-    bigInteger = (BigInteger) converted;
-    assertEquals(bigInteger, BIG_INTEGER);
+    Object converted = CONVERTER.toJavaObject(Double.class, XL_NUMBER_INT);
+    assertTrue(converted instanceof Double);
+    Double doub = (Double) converted;
+    assertEquals(doub, DOUBLE);
+    converted = CONVERTER.toJavaObject(Double.class, XL_NUMBER_LONG);
+    assertTrue(converted instanceof Double);
+    doub = (Double) converted;
+    assertEquals(doub, DOUBLE);
+    converted = CONVERTER.toJavaObject(Double.class, XL_NUMBER_DOUBLE);
+    assertTrue(converted instanceof Double);
+    doub = (Double) converted;
+    assertEquals(doub, DOUBLE);
   }
 }

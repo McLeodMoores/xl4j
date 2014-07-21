@@ -10,6 +10,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Type converter to convert from Longs to Excel Numbers and back again.
  */
 public final class BigIntegerXLNumberTypeConverter extends AbstractTypeConverter {
+  // REVIEW emcleod 21-7-2014 should the java type really be Long?
   /**
    * Default constructor.
    */
