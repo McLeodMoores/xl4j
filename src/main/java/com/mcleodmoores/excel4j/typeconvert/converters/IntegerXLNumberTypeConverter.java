@@ -11,6 +11,7 @@ public final class IntegerXLNumberTypeConverter extends AbstractTypeConverter {
   /**
    * Default constructor.
    */
+  // REVIEW emcleod 21-7-2014 inconsistent with the Double, Long and Short converters
   public IntegerXLNumberTypeConverter() {
     super(Integer.TYPE, XLNumber.class);
   }

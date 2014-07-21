@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -21,7 +22,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 @Test
 public class ShortXLNumberTypeConverterTest {
   // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Short?
-  /** XLNumber holding a Short. */
+  /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
   /** XLNumber holding a short. */
   private static final XLNumber XL_NUMBER_SHORT = XLNumber.of((short) 10);
@@ -117,7 +118,7 @@ public class ShortXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLValue.class, (short) 1);
+    CONVERTER.toXLValue(XLBoolean.class, (short) 1);
   }
 
   /**

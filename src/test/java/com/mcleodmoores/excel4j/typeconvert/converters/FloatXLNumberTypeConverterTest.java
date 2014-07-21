@@ -19,28 +19,28 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link LongXLNumberTypeConverter}.
+ * Unit tests for {@link FloatXLNumberTypeConverter}.
  */
 @Test
-public class LongXLNumberTypeConverterTest {
-  // REVIEW isn't it a bit odd that there's no complaint when there's an upcast or downcast to Long?
-  /** XLNumber holding a double. */
-  private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
+public class FloatXLNumberTypeConverterTest {
+  // REVIEW isn't it a bit odd that there's no complaint when there's an upcast to Float?
+  /** XLNumber holding a float. */
+  private static final XLNumber XL_NUMBER_FLOAT = XLNumber.of(10.F);
   /** XLNumber holding a long. */
   private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
   /** XLNumber holding an int. */
   private static final XLNumber XL_NUMBER_INT = XLNumber.of(10);
-  /** Long. */
-  private static final Long LONG = 10L;
+  /** Float. */
+  private static final Float FLOAT = 10.F;
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new LongXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new FloatXLNumberTypeConverter();
 
   /**
-   * Tests that the java type is {@link Long}.
+   * Tests that the java type is {@link Float}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Long.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Float.class));
   }
 
   /**
@@ -48,7 +48,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Long.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Float.class, XLNumber.class));
   }
 
   /**
@@ -64,7 +64,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, LONG);
+    CONVERTER.toXLValue(null, FLOAT);
   }
 
   /**
@@ -80,7 +80,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XL_NUMBER_DOUBLE);
+    CONVERTER.toJavaObject(null, XL_NUMBER_FLOAT);
   }
 
   /**
@@ -88,7 +88,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(Long.class, null);
+    CONVERTER.toJavaObject(Float.class, null);
   }
 
   /**
@@ -96,7 +96,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Long.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(Float.class, XLInteger.of(10));
   }
 
   /**
@@ -112,7 +112,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, 10.);
+    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(10.));
   }
 
   /**
@@ -120,18 +120,18 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1L);
+    CONVERTER.toXLValue(XLBoolean.class, 1.F);
   }
 
   /**
-   * Tests the conversion from a {@link Long}.
+   * Tests the conversion from a {@link Float}.
    */
   @Test
-  public void testConversionFromLong() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_LONG.getClass(), LONG);
+  public void testConversionFromFloat() {
+    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_FLOAT.getClass(), FLOAT);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
-    assertEquals(xlNumber.getValue(), 10, 0);
+    assertEquals(xlNumber.getValue(), 10., 0);
   }
 
   /**
@@ -139,17 +139,17 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromXLNumber() {
-    Object converted = CONVERTER.toJavaObject(Long.class, XL_NUMBER_INT);
-    assertTrue(converted instanceof Long);
-    Long lon = (Long) converted;
-    assertEquals(lon, LONG);
-    converted = CONVERTER.toJavaObject(Long.class, XL_NUMBER_LONG);
-    assertTrue(converted instanceof Long);
-    lon = (Long) converted;
-    assertEquals(lon, LONG);
-    converted = CONVERTER.toJavaObject(Long.class, XL_NUMBER_DOUBLE);
-    assertTrue(converted instanceof Long);
-    lon = (Long) converted;
-    assertEquals(lon, LONG);
+    Object converted = CONVERTER.toJavaObject(Float.class, XL_NUMBER_INT);
+    assertTrue(converted instanceof Float);
+    Float floa = (Float) converted;
+    assertEquals(floa, FLOAT);
+    converted = CONVERTER.toJavaObject(Float.class, XL_NUMBER_LONG);
+    assertTrue(converted instanceof Float);
+    floa = (Float) converted;
+    assertEquals(floa, FLOAT);
+    converted = CONVERTER.toJavaObject(Float.class, XL_NUMBER_FLOAT);
+    assertTrue(converted instanceof Float);
+    floa = (Float) converted;
+    assertEquals(floa, FLOAT);
   }
 }

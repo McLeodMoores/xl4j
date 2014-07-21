@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -117,7 +118,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLValue.class, 1);
+    CONVERTER.toXLValue(XLBoolean.class, 1);
   }
 
   /**
