@@ -20,9 +20,9 @@ public class MethodInvoker {
 
   /**
    * Constructor.
-   * @param method the method to call.
-   * @param argumentConverters the converters required to call the method
-   * @param returnConverter the converter required to convert he result back to an Excel type
+   * @param method  the method to call.
+   * @param argumentConverters  the converters required to call the method
+   * @param returnConverter  the converter required to convert he result back to an Excel type
    */
   public MethodInvoker(final Method method, final TypeConverter[] argumentConverters, 
                        final TypeConverter returnConverter) {
@@ -33,9 +33,9 @@ public class MethodInvoker {
   
   /**
    * Actually execute a method, performing the necessary type conversions.
-   * @param object the object on which to execute the method, or null if static
-   * @param arguments the arguments to pass to the method
-   * @param simplestResult whether to try to convert the result to the simplest type possible
+   * @param object  the object on which to execute the method, or null if static
+   * @param arguments  the arguments to pass to the method
+   * @param simplestResult  whether to try to convert the result to the simplest type possible
    * @return the value to return to Excel
    */
   public XLValue invoke(final Object object, final XLValue[] arguments, final boolean simplestResult) {

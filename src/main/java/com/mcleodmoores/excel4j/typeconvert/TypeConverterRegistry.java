@@ -18,6 +18,7 @@ import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
 /**
@@ -99,11 +100,11 @@ public class TypeConverterRegistry {
    * @param requiredJava the Java type required to convert from.
    * @return a type converter to perform the conversion
    */
-  public TypeConverter findConverter(final Class<?> requiredJava) {
+  public TypeConverter findConverter(final Type requiredJava) {
     for (int priority : _converters.keySet()) {
       List<TypeConverter> converters = _converters.get(priority);
       for (TypeConverter typeConverter : converters) {
-        if (typeConverter.getJavaToExcelTypeMapping().getJavaType().isAssignableFrom(requiredJava)) {
+        if (typeConverter.getJavaToExcelTypeMapping().getJavaClass().isAssignableFrom(Excel4JReflectionUtils.reduceToClass(requiredJava))) {
           return (TypeConverter) typeConverter;
         }
       }

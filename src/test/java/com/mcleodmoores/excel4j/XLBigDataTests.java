@@ -21,7 +21,7 @@ import com.mcleodmoores.excel4j.values.XLBigData;
 public final class XLBigDataTests {
   // CHECKSTYLE:OFF
   private static final Logger s_logger = LoggerFactory.getLogger(XLBigDataTests.class);
-  private static final Excel EXCEL = ExcelFactory.getMockInstance();
+  private static final Excel EXCEL = ExcelFactory.getInstance();
   
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testXLBigDataNull() {

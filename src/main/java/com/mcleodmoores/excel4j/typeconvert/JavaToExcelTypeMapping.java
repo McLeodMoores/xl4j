@@ -3,6 +3,9 @@
  */
 package com.mcleodmoores.excel4j.typeconvert;
 
+import java.lang.reflect.Type;
+
+import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -10,14 +13,16 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public final class JavaToExcelTypeMapping {
   private Class<? extends XLValue> _excelType;
-  private Class<?> _javaType;
+  private Type _javaType;
+  private Class<?> _javaClass;
 
   /**
    * @param javaType the Java type
    * @param excelType the Excel type
    */
-  private JavaToExcelTypeMapping(final Class<?> javaType, final Class<? extends XLValue> excelType) {
+  private JavaToExcelTypeMapping(final Type javaType, final Class<? extends XLValue> excelType) {
     _javaType = javaType;
+    _javaClass = Excel4JReflectionUtils.reduceToClass(javaType);
     _excelType = excelType;
   }
   
@@ -27,21 +32,28 @@ public final class JavaToExcelTypeMapping {
    * @param excelType the Excel type
    * @return an instance
    */
-  public static JavaToExcelTypeMapping of(final Class<?> javaType, final Class<? extends XLValue> excelType) {
+  public static JavaToExcelTypeMapping of(final Type javaType, final Class<? extends XLValue> excelType) {
     return new JavaToExcelTypeMapping(javaType, excelType);
   }
 
   /**
-   * @return the excel type in this key
+   * @return the excel Class in this key
    */
-  public Class<? extends XLValue> getExcelType() {
+  public Class<? extends XLValue> getExcelClass() {
     return _excelType;
+  }
+  
+  /**
+   * @return the java Class in this key 
+   */
+  public Class<?> getJavaClass() {
+    return _javaClass;
   }
   
   /**
    * @return the java type in this key 
    */
-  public Class<?> getJavaType() {
+  public Type getJavaType() {
     return _javaType;
   }
   
@@ -58,7 +70,7 @@ public final class JavaToExcelTypeMapping {
     if (other == null) {
       return false;
     }
-    if (!_javaType.isAssignableFrom(other._javaType)) {
+    if (!_javaClass.isAssignableFrom(other._javaClass)) {
       return false;
     }
     if (!_excelType.isAssignableFrom(other._excelType)) {

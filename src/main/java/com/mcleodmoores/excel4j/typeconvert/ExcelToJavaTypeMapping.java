@@ -3,6 +3,9 @@
  */
 package com.mcleodmoores.excel4j.typeconvert;
 
+import java.lang.reflect.Type;
+
+import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -10,14 +13,16 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public final class ExcelToJavaTypeMapping {
   private Class<? extends XLValue> _excelType;
-  private Class<?> _javaType;
+  private Type _javaType;
+  private Class<?> _javaClass;
 
   /**
    * @param excelType the Excel type
    * @param javaType the Java type
    */
-  private ExcelToJavaTypeMapping(final Class<? extends XLValue> excelType, final Class<?> javaType) {
+  private ExcelToJavaTypeMapping(final Class<? extends XLValue> excelType, final Type javaType) {
     _javaType = javaType;
+    _javaClass = Excel4JReflectionUtils.reduceToClass(javaType);
     _excelType = excelType;
   }
   
@@ -27,22 +32,29 @@ public final class ExcelToJavaTypeMapping {
    * @param javaType the Java type
    * @return an instance
    */
-  public static ExcelToJavaTypeMapping of(final Class<? extends XLValue> excelType, final Class<?> javaType) {
+  public static ExcelToJavaTypeMapping of(final Class<? extends XLValue> excelType, final Type javaType) {
     return new ExcelToJavaTypeMapping(excelType, javaType);
   }
 
   /**
-   * @return the excel type in this key
+   * @return the excel Class in this key
    */
-  public Class<? extends XLValue> getExcelType() {
+  public Class<? extends XLValue> getExcelClass() {
     return _excelType;
   }
   
   /**
    * @return the java type in this key 
    */
-  public Class<?> getJavaType() {
+  public Type getJavaType() {
     return _javaType;
+  }
+  
+  /**
+   * @return the java type in this key 
+   */
+  public Class<?> getJavaClass() {
+    return _javaClass;
   }
   
   /**
@@ -61,7 +73,7 @@ public final class ExcelToJavaTypeMapping {
     if (!_excelType.isAssignableFrom(other._excelType)) {
       return false;
     }
-    if (!_javaType.isAssignableFrom(other._javaType)) {
+    if (!_javaClass.isAssignableFrom(other._javaClass)) {
       return false;
     }
     return true;

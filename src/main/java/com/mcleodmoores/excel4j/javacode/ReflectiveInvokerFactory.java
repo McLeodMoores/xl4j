@@ -73,7 +73,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
           continue outer;
         }
       }
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);  // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }
     throw new Excel4JRuntimeException("Could not find matching method");
@@ -110,11 +110,12 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
         }
       }
       
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(clazz);
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }
     throw new Excel4JRuntimeException("Could not find matching constructor");
   }
+  
   /**
    * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String).
    * @param className
@@ -123,5 +124,27 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
    */
   private Class<?> resolveClass(final XLString className) throws ClassNotFoundException {
     return Class.forName(className.getValue());
+  }
+
+  /**
+   * Return a method type converter read to process calls for a given static method.
+   * This method is used when you already know the correct method to bind, such is when scanning annotated methods.
+   * @param method  the method to be bound to.
+   * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
+   * throws Excel4JRuntimeException if a type converter cannot be found
+   */
+  @Override
+  public MethodInvoker getStaticMethodTypeConverter(final Method method) {
+    Class<?>[] genericParameterTypes = method.getParameterTypes();
+    TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
+    for (int i = 0; i < genericParameterTypes.length; i++) {
+      argumentConverters[i] = _typeConverterRegistry.findConverter(genericParameterTypes[i]);
+      if (argumentConverters[i] == null) {
+        throw new Excel4JRuntimeException("Could not find type converter for " + genericParameterTypes[i] + " (param " + i + ") method " + method.getName());
+      }
+    }
+    
+    TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+    return new MethodInvoker(method, argumentConverters, resultConverter);
   }
 }
