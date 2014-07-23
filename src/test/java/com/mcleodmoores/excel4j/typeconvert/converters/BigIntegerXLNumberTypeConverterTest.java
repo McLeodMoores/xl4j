@@ -15,6 +15,7 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
+import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -78,7 +79,7 @@ public class BigIntegerXLNumberTypeConverterTest {
   /**
    * Tests that passing in a null expected Java is successful.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test
   public void testNullExpectedClass() {
     CONVERTER.toJavaObject(null, XL_NUMBER_DOUBLE);
   }
@@ -86,7 +87,7 @@ public class BigIntegerXLNumberTypeConverterTest {
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
     CONVERTER.toJavaObject(BigInteger.class, null);
   }
@@ -96,7 +97,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(BigInteger.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(BigInteger.class, XLInteger.of(10));
   }
 
   /**

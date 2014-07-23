@@ -37,7 +37,7 @@ public class JavaToExcelTypeMappingTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullExcelClass() {
-    JavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
+    JavaToExcelTypeMapping.of(JAVA_CLASS, null);
   }
 
   /**
