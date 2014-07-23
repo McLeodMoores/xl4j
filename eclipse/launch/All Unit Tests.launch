@@ -14,6 +14,7 @@
 <listEntry value="com.mcleodmoores.excel4j"/>
 <listEntry value="com.mcleodmoores.excel4j.javacode"/>
 <listEntry value="com.mcleodmoores.excel4j.typeconvert.converters"/>
+<listEntry value="com.mcleodmoores.excel4j.typeconvert"/>
 </listAttribute>
 <intAttribute key="org.testng.eclipse.TYPE" value="5"/>
 </launchConfiguration>

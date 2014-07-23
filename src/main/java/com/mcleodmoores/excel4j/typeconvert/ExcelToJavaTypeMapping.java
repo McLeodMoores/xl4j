@@ -5,6 +5,7 @@ package com.mcleodmoores.excel4j.typeconvert;
 
 import java.lang.reflect.Type;
 
+import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -12,20 +13,22 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Class to represent a Java source and Excel destination type or vice versa.
  */
 public final class ExcelToJavaTypeMapping {
-  private Class<? extends XLValue> _excelType;
-  private Type _javaType;
-  private Class<?> _javaClass;
+  private final Class<? extends XLValue> _excelType;
+  private final Type _javaType;
+  private final Class<?> _javaClass;
 
   /**
-   * @param excelType the Excel type
-   * @param javaType the Java type
+   * @param excelType the Excel type, not null
+   * @param javaType the Java type, not null
    */
   private ExcelToJavaTypeMapping(final Class<? extends XLValue> excelType, final Type javaType) {
+    ArgumentChecker.notNull(excelType, "excelType");
+    ArgumentChecker.notNull(javaType, "javaType");
     _javaType = javaType;
     _javaClass = Excel4JReflectionUtils.reduceToClass(javaType);
     _excelType = excelType;
   }
-  
+
   /**
    * Static factory method.
    * @param excelType the Excel type
@@ -42,23 +45,23 @@ public final class ExcelToJavaTypeMapping {
   public Class<? extends XLValue> getExcelClass() {
     return _excelType;
   }
-  
+
   /**
-   * @return the java type in this key 
+   * @return the java type in this key
    */
   public Type getJavaType() {
     return _javaType;
   }
-  
+
   /**
-   * @return the java type in this key 
+   * @return the java type in this key
    */
   public Class<?> getJavaClass() {
     return _javaClass;
   }
-  
+
   /**
-   * Checks whether both the excel type and java type are assignable from 
+   * Checks whether both the excel type and java type are assignable from
    * the other type (i.e. are the types compatible).
    * @param other  the ExcelToJavaTypeMapping to compare against
    * @return true, if both the excel and java types are assignable from
@@ -78,7 +81,7 @@ public final class ExcelToJavaTypeMapping {
     }
     return true;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -99,7 +102,7 @@ public final class ExcelToJavaTypeMapping {
     if (!(obj instanceof ExcelToJavaTypeMapping)) {
       return false;
     }
-    ExcelToJavaTypeMapping other = (ExcelToJavaTypeMapping) obj;
+    final ExcelToJavaTypeMapping other = (ExcelToJavaTypeMapping) obj;
     if (!_excelType.equals(other._excelType)) {
       return false;
     }
@@ -108,7 +111,7 @@ public final class ExcelToJavaTypeMapping {
     }
     return true;
   }
-  
+
   @Override
   public String toString() {
     return "ExcelToJavaTypeMapping[excelType=" + _excelType + ", javaType=" + _javaType + "]";

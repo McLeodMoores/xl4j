@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.mcleodmoores.excel4j.typeconvert.converters;
+package com.mcleodmoores.excel4j.typeconvert;
 
 import org.testng.annotations.Test;
 
