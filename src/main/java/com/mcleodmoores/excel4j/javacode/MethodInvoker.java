@@ -56,4 +56,30 @@ public class MethodInvoker {
     }
   }
   
+  /**
+   * @return an array containing the Excel class of each parameter to this method
+   */
+  public Class<? extends XLValue>[] getExcelParameterTypes() {
+    @SuppressWarnings("unchecked")
+    Class<? extends XLValue>[] parameterTypes = new Class[_argumentConverters.length];
+    int i = 0;
+    for (TypeConverter typeConverter : _argumentConverters) {
+      parameterTypes[i] = typeConverter.getJavaToExcelTypeMapping().getExcelClass(); 
+    }
+    return parameterTypes;
+  }
+  
+  /**
+   * @return the Excel class returned by this method
+   */
+  public Class<? extends XLValue> getExcelReturnType() {
+    return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
+  }
+  
+  /**
+   * @return the method name
+   */
+  public String getMethodName() {
+    return _method.getName();
+  }
 }

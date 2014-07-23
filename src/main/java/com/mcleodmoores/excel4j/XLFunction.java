@@ -44,6 +44,17 @@ public @interface XLFunction {
    */
   boolean isVolatile() default false;
   /**
+   * Whether the function can be executed from multiple threads safely.
+   * @return true, if this function can be executed concurrently safely
+   */
+  boolean isMultiThreadSafe() default true;
+  /**
+   * @return true, if this function needs access to macro-level features
+   * Note this cannot be used in conjunction with isMultiThreadSafe, but is required if
+   * access to certain call-backs or range references is needed.
+   */
+  boolean isMacroEquivalent() default false;
+  /**
    * Whether to allow LocalReference or MultiReferences to be passed to this
    * function.  This requires different security characteristics on the sheet,
    * so should be avoided where possible.  If not specified, it is assumed
@@ -51,4 +62,10 @@ public @interface XLFunction {
    * @return true, if this function is allowed to handle references
    */
   boolean allowReferences() default false;
+  
+  /**
+   * The type of function
+   * @return the function type, defaults to FUNCTION
+   */
+  XLFunctionType functionType() default XLFunctionType.FUNCTION;
 }

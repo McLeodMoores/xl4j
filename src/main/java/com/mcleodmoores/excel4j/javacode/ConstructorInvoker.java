@@ -47,4 +47,24 @@ public class ConstructorInvoker {
     }
   }
   
+  /**
+   * @return an array containing the Excel class of each parameter to this constructor
+   */
+  public Class<? extends XLValue>[] getExcelParameterTypes() {
+    @SuppressWarnings("unchecked")
+    Class<? extends XLValue>[] parameterTypes = new Class[_argumentConverters.length];
+    int i = 0;
+    for (TypeConverter typeConverter : _argumentConverters) {
+      parameterTypes[i] = typeConverter.getJavaToExcelTypeMapping().getExcelClass(); 
+    }
+    return parameterTypes;
+  }
+  
+  /**
+   * @return the Excel class returned by this constructor (should be XLObject)
+   */
+  public Class<? extends XLValue> getExcelReturnType() {
+    return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
+  }
+  
 }

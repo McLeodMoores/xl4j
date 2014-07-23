@@ -73,7 +73,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
           continue outer;
         }
       }
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
+      // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }
     throw new Excel4JRuntimeException("Could not find matching method");
@@ -106,10 +107,9 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       for (int i = 0; i < genericParameterTypes.length; i++) {
         argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
         if (argumentConverters[i] == null) {
-          continue outer;
+          continue outer; // couldn't find a converter so try next method.
         }
       }
-      
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
       return new MethodInvoker(method, argumentConverters, resultConverter);
     }
@@ -143,7 +143,6 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
         throw new Excel4JRuntimeException("Could not find type converter for " + genericParameterTypes[i] + " (param " + i + ") method " + method.getName());
       }
     }
-    
     TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
     return new MethodInvoker(method, argumentConverters, resultConverter);
   }

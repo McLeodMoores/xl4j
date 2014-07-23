@@ -5,17 +5,12 @@ package com.mcleodmoores.excel4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import org.reflections.Reflections;
 
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
-import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
-import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
-import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * 
  */
@@ -31,6 +26,7 @@ public class FunctionRegistry {
   }
   
   private void scanAndCreateFunctions() {
+    // TODO: don't limit to our package.
     Reflections reflections = new Reflections("com.mcleodmoores");
     Set<Method> methodsAnnotatedWith = reflections.getMethodsAnnotatedWith(XLFunction.class);
     for (Method method : methodsAnnotatedWith) {
@@ -59,22 +55,5 @@ public class FunctionRegistry {
     }
   }
   
-  private Class<? extends XLValue>[] getExpectedExcelTypes(final Method method) {
-    Type[] genericParameterTypes = method.getGenericParameterTypes();
-    @SuppressWarnings("unchecked")
-    Class<? extends XLValue>[] excelTypes = new Class[genericParameterTypes.length];
-    TypeConverterRegistry typeConverterRegistry = new TypeConverterRegistry();
-    int i = 0;
-    for (Type parameterType : genericParameterTypes) {
-      TypeConverter converter = typeConverterRegistry.findConverter(parameterType);
-      if (converter != null) {
-        Class<? extends XLValue> excelClass = converter.getJavaToExcelTypeMapping().getExcelClass();
-        excelTypes[i] = excelClass;
-      } else {
-        throw new Excel4JRuntimeException("Can't find Java->Excel converter for parameter type " + parameterType + " (arg " + i + ") of method " + method);
-      }
-      i++;
-    }
-    return excelTypes;
-  }
+
 }
