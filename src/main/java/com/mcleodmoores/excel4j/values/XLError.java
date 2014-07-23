@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 /**
@@ -35,7 +38,7 @@ public enum XLError implements XLValue {
    * #N/A means some data in missing or that inappropriate arguments have been passed to loopup functions (vlookup, etc).
    */
   NA;
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLError(this);

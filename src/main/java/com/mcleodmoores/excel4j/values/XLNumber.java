@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 /**
@@ -7,15 +10,15 @@ package com.mcleodmoores.excel4j.values;
  */
 public final class XLNumber implements XLValue {
   /**
-   * 
+   *
    */
   private static final int HASHCODE_BITSHIFT = 32;
-  private double _value;
-  
+  private final double _value;
+
   private XLNumber(final double value) {
     _value = value;
   }
-  
+
   /**
    * Static factory method to create an instance of an XLNumber.
    * NOTE: currently accepts NaN/Inf even though Excel doesn't support them.
@@ -32,25 +35,25 @@ public final class XLNumber implements XLValue {
    * @return XLNumber
    */
   public static XLNumber of(final int value) {
-    return new XLNumber((double) value);
+    return new XLNumber(value);
   }
-  
+
   /**
    * Static factory method to create an instance of an XLNumber.
    * @param value the value
    * @return XLNumber
    */
   public static XLNumber of(final long value) {
-    return new XLNumber((double) value);
+    return new XLNumber(value);
   }
-  
+
   /**
    * @return the value
    */
   public double getValue() {
     return _value;
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLNumber(this);
@@ -77,7 +80,7 @@ public final class XLNumber implements XLValue {
     if (!(obj instanceof XLNumber)) {
       return false;
     }
-    XLNumber other = (XLNumber) obj;
+    final XLNumber other = (XLNumber) obj;
     if (Double.doubleToLongBits(_value) != Double.doubleToLongBits(other._value)) {
       return false;
     }

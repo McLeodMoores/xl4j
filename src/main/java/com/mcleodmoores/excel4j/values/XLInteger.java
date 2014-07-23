@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 /**
@@ -6,11 +9,11 @@ package com.mcleodmoores.excel4j.values;
  */
 public final class XLInteger implements XLValue {
   private final int _value;
-  
+
   private XLInteger(final int value) {
     _value = value;
   }
-  
+
   /**
    * Static factory method to return an instance.
    * @param value the value
@@ -19,7 +22,7 @@ public final class XLInteger implements XLValue {
   public static XLInteger of(final int value) {
     return new XLInteger(value);
   }
-  
+
   /**
    * Get the value.
    * @return the value
@@ -27,7 +30,7 @@ public final class XLInteger implements XLValue {
   public int getValue() {
     return _value;
   }
-  
+
   @Override
   public int hashCode() {
     final int prime = 31;
@@ -47,7 +50,7 @@ public final class XLInteger implements XLValue {
     if (!(obj instanceof XLInteger)) {
       return false;
     }
-    XLInteger other = (XLInteger) obj;
+    final XLInteger other = (XLInteger) obj;
     if (_value != other._value) {
       return false;
     }

@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 
@@ -7,15 +10,15 @@ package com.mcleodmoores.excel4j.values;
  */
 public enum XLNil implements XLValue {
   /**
-   * Singleton instance.  
+   * Singleton instance.
    */
   INSTANCE;
-    
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLNil(this);
   }
-  
+
   @Override
   public String toString() {
     return "XLNil";

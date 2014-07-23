@@ -1,22 +1,25 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
- * Special version of XLString that holds a String with unprintable characters 
+ * Special version of XLString that holds a String with unprintable characters
  * at the start that encodes an object handle.
  */
 public final class XLObject implements XLValue {
 
   private static final char OBJECT_PREFIX = '\u0026';
-  private Class<?> _clazz;
-  private long _handle;
-  
+  private final Class<?> _clazz;
+  private final long _handle;
+
   private XLObject(final Class<?> clazz, final long handle) {
     _clazz = clazz;
     _handle = handle;
   }
-  
+
   /**
    * Static factory method to create an instance of an XLString.
    * @param clazz the Class that this object points to
@@ -27,21 +30,21 @@ public final class XLObject implements XLValue {
     ArgumentChecker.notNull(clazz, "clazz");
     return new XLObject(clazz, handle);
   }
-  
+
   /**
    * @return the object's class
    */
   public Class<?> getClazz() {
     return _clazz;
   }
-  
+
   /**
    * @return the object handle
    */
   public long getHandle() {
     return _handle;
   }
-  
+
   /**
    * Convert this XLObject into an XLString for passing back to Excel.
    * It adds a ^Z control character to the front of the string so Excel
@@ -50,14 +53,14 @@ public final class XLObject implements XLValue {
    * @return an XLString object containing the object handle and class name.
    */
   public XLString toXLString() {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
     sb.append(OBJECT_PREFIX);
     sb.append(_clazz.getSimpleName());
     sb.append('-');
     sb.append(_handle);
     return XLString.of(sb.toString());
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLObject(this);
@@ -79,7 +82,7 @@ public final class XLObject implements XLValue {
     if (!(obj instanceof XLObject)) {
       return false;
     }
-    XLObject other = (XLObject) obj;
+    final XLObject other = (XLObject) obj;
     if (_handle != other._handle) {
       return false;
     }

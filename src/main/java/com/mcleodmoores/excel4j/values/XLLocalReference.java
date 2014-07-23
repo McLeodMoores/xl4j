@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
@@ -8,12 +11,12 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  */
 public final class XLLocalReference implements XLValue {
 
-  private XLRange _range;
+  private final XLRange _range;
 
   private XLLocalReference(final XLRange range) {
     _range = range;
   }
-  
+
   /**
    * Static factory method to create an instance of XLLocalReference.
    * @param range a single contiguous 2D range of cells
@@ -23,14 +26,14 @@ public final class XLLocalReference implements XLValue {
     ArgumentChecker.notNull(range, "range");
     return new XLLocalReference(range);
   }
-  
+
   /**
    * @return the range, not null
    */
   public XLRange getRange() {
     return _range;
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLLocalReference(this);
@@ -55,7 +58,7 @@ public final class XLLocalReference implements XLValue {
     if (!(obj instanceof XLLocalReference)) {
       return false;
     }
-    XLLocalReference other = (XLLocalReference) obj;
+    final XLLocalReference other = (XLLocalReference) obj;
     if (!_range.equals(other._range)) {
       return false;
     }
@@ -66,6 +69,6 @@ public final class XLLocalReference implements XLValue {
   public String toString() {
     return "XLLocalReference[range=" + _range + "]";
   }
-  
-  
+
+
 }
