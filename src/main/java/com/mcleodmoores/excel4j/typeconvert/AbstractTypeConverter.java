@@ -46,15 +46,9 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     return _javaToExcelTypeMapping;
   }
 
-  // REVIEW emcleod 21-7-2014 - expecting ClassCastException?
-  // expectedClass doesn't appear to be tested in the majority
-  // of the converters. Would it be safest to do so?
   @Override
   public abstract XLValue toXLValue(Class<? extends XLValue> expectedClass, Object from);
 
-  // REVIEW emcleod 21-7-2014 - expecting ClassCastException?
-  // expectedClass doesn't appear to be tested in the majority
-  // of the converters. Would it be safest to do so?
   @Override
   public abstract Object toJavaObject(Class<?> expectedClass, XLValue from);
 
