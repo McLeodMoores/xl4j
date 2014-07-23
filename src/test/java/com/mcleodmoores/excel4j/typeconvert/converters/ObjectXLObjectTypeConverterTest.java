@@ -6,43 +6,45 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.util.List;
+
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLNumber;
-import com.mcleodmoores.excel4j.values.XLString;
+import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link StringXLStringTypeConverter}.
+ * Unit tests for {@link ObjectXLObjectTypeConverter}.
  */
 @Test
-public class StringXLStringTypeConverterTest {
-  /** XLString. */
-  private static final XLString XL_STRING = XLString.of("TEST");
-  /** String. */
-  private static final String STRING = "TEST";
-
+public class ObjectXLObjectTypeConverterTest {
+  /** XLObject. */
+  private static final XLObject XL_OBJECT = XLObject.of(List.class, 1L);
+  /** Empty Object. */
+  private static final Object OBJECT = new Object();
   /** The converter */
-  private static final AbstractTypeConverter CONVERTER = new StringXLStringTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter();
 
+  // TODO need to set system property test.mode - how to do this?
   /**
-   * Tests that the java type is {@link String}.
+   * Tests that the java type is {@link Object}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLString.class, String.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLObject.class, Object.class));
   }
 
   /**
-   * Tests that the excel type is {@link XLString}.
+   * Tests that the excel type is {@link XLObject}.
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(String.class, XLString.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Object.class, XLObject.class));
   }
 
   /**
@@ -50,7 +52,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), 5);
   }
 
   /**
@@ -58,7 +60,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, STRING);
+    CONVERTER.toXLValue(null, OBJECT);
   }
 
   /**
@@ -66,7 +68,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLString.class, null);
+    CONVERTER.toXLValue(XLObject.class, null);
   }
 
   /**
@@ -74,7 +76,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XL_STRING);
+    CONVERTER.toJavaObject(null, XL_OBJECT);
   }
 
   /**
@@ -82,7 +84,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = NullPointerException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(String.class, null);
+    CONVERTER.toJavaObject(Object.class, null);
   }
 
   /**
@@ -90,7 +92,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(String.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(Object.class, XLInteger.of(10));
   }
 
   /**
@@ -98,7 +100,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Double.class, XL_STRING);
+    CONVERTER.toJavaObject(Double.class, XL_OBJECT);
   }
 
   /**
@@ -106,7 +108,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, 10.);
+    CONVERTER.toXLValue(XLObject.class, 10);
   }
 
   /**
@@ -114,29 +116,27 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, 10.);
+    CONVERTER.toXLValue(XLObject.class, 10.);
   }
 
   /**
-   * Tests the conversion from a {@link String}.
+   * Tests the conversion from a {@link Object}.
    */
   @Test
-  public void testConversionFromString() {
-    final XLValue converted = CONVERTER.toXLValue(XL_STRING.getClass(), STRING);
-    assertTrue(converted instanceof XLString);
-    final XLString xlString = (XLString) converted;
-    assertEquals(xlString, XL_STRING);
+  public void testConversionFromObject() {
+    final XLValue converted = CONVERTER.toXLValue(XL_OBJECT.getClass(), OBJECT);
+    assertTrue(converted instanceof XLObject);
+    final XLObject xlObject = (XLObject) converted;
+    assertEquals(xlObject, XL_OBJECT);
   }
 
   /**
-   * Tests the conversion from a {@link XLString}.
+   * Tests the conversion from a {@link XLObject}.
    */
   @Test
-  public void testConversionFromXLString() {
-    final Object converted = CONVERTER.toJavaObject(String.class, XL_STRING);
-    assertTrue(converted instanceof String);
-    final String str = (String) converted;
-    assertEquals(str, STRING);
+  public void testConversionFromXLObject() {
+    final Object converted = CONVERTER.toJavaObject(String.class, XL_OBJECT);
+    assertEquals(converted, OBJECT);
   }
 
 }
