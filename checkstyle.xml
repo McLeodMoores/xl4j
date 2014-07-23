@@ -114,10 +114,6 @@
   <module name="Translation"/>
   <module name="FileLength"/>
   <module name="FileTabCharacter"/>
-  <module name="Indentation">
-    <property name="basicOffset" value="2"/>
-    <property name="caseIndent" value="2"/>
-  </module>
   <module name="RegexpSingleline">
     <property name="severity" value="ignore"/>
     <property name="format" value="\s+$"/>
