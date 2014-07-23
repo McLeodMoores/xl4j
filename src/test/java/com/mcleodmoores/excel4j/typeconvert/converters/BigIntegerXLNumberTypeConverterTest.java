@@ -14,7 +14,6 @@ import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -40,15 +39,15 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Long.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, BigInteger.class));
   }
 
   /**
-   * Tests that the excel type is {@link XLNumber}.
+   * Tests that the Excel type is {@link XLNumber}.
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Long.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(BigInteger.class, XLNumber.class));
   }
 
   /**
@@ -104,7 +103,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(Integer.class, XLNumber.of(10));
   }
 
   /**
