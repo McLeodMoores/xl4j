@@ -1,5 +1,6 @@
 package com.mcleodmoores.excel4j.typeconvert;
 
+import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -19,6 +20,8 @@ public abstract class AbstractTypeConverter implements TypeConverter {
    * @param priority the priority level, with larger values indicating higher priority
    */
   protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType, final int priority) {
+    ArgumentChecker.notNull(javaType, "javaType");
+    ArgumentChecker.notNull(excelType, "excelType");
     _excelToJavaTypeMapping = ExcelToJavaTypeMapping.of(excelType, javaType);
     _javaToExcelTypeMapping = JavaToExcelTypeMapping.of(javaType, excelType);
     _priority = priority;
