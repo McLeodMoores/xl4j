@@ -6,8 +6,6 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Base class for type converters, removes need for some boilerplate.
  */
 public abstract class AbstractTypeConverter implements TypeConverter {
-  // REVIEW emcleod 21-7-2014 No input checks - NullPointerExceptions are
-  // wanted?
   private static final int DEFAULT_PRIORITY = 10;
 
   private final ExcelToJavaTypeMapping _excelToJavaTypeMapping;
@@ -16,13 +14,9 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
   /**
    * Convenience constructor, produces converter with default priority.
-   *
-   * @param javaType
-   *          the Java type, any object type
-   * @param excelType
-   *          the Excel type, subclass of XLValue
-   * @param priority
-   *          the priority level, with larger values indicating higher priority
+   * @param javaType the Java type, any object type
+   * @param excelType the Excel type, subclass of XLValue
+   * @param priority the priority level, with larger values indicating higher priority
    */
   protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType, final int priority) {
     _excelToJavaTypeMapping = ExcelToJavaTypeMapping.of(excelType, javaType);
@@ -32,11 +26,8 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
   /**
    * Convenience constructor, produces converter with default priority.
-   *
-   * @param javaType
-   *          the Java type, any object type
-   * @param excelType
-   *          the Excel type, subclass of XLValue
+   * @param javaType the Java type, any object type
+   * @param excelType the Excel type, subclass of XLValue
    */
   protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType) {
     this(javaType, excelType, DEFAULT_PRIORITY);

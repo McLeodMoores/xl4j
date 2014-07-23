@@ -58,9 +58,9 @@ public class EnumXLStringTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
+   * Tests that passing in a null expected {@link XLValue} is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedXLValueClass() {
     CONVERTER.toXLValue(null, TestEnum.TEST);
   }
@@ -76,7 +76,7 @@ public class EnumXLStringTypeConverterTest {
   /**
    * Tests that passing in a null expected Java class gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullExpectedClass() {
     CONVERTER.toJavaObject(null, XL_STRING);
   }
@@ -84,7 +84,7 @@ public class EnumXLStringTypeConverterTest {
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
     CONVERTER.toJavaObject(TestEnum.class, null);
   }
