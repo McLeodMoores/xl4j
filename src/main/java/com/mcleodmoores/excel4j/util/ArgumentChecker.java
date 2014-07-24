@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
  * Utility class for checking arguments.
  */
 public final class ArgumentChecker {
-  private static Logger s_logger = LoggerFactory.getLogger(ArgumentChecker.class);
-  
+  private static final Logger s_logger = LoggerFactory.getLogger(ArgumentChecker.class);
+
   private ArgumentChecker() {
   }
-  
+
   /**
    * Throws an exception if the argument is negative.
    * @param argument the object to check
@@ -25,7 +25,7 @@ public final class ArgumentChecker {
       throw new Excel4JRuntimeException("Value " + name + " was negative");
     }
   }
-  
+
   /**
    * Throws an exception if the argument is negative.
    * @param argument the object to check
@@ -37,7 +37,7 @@ public final class ArgumentChecker {
       throw new Excel4JRuntimeException("Value " + name + " was negative");
     }
   }
-  
+
   /**
    * Throws an exception if the argument is negative.
    * @param argument the object to check
@@ -49,7 +49,7 @@ public final class ArgumentChecker {
       throw new Excel4JRuntimeException("Value " + name + " was negative");
     }
   }
-  
+
   /**
    * Throws an exception if the argument is not null.
    * @param argument the object to check
@@ -61,7 +61,7 @@ public final class ArgumentChecker {
       throw new Excel4JRuntimeException("Value " + name + " was not null");
     }
   }
-  
+
   /**
    * Throws an exception if the array argument is not null or empty.
    * @param <E> type of array
@@ -77,7 +77,7 @@ public final class ArgumentChecker {
       throw new Excel4JRuntimeException("Value " + name + " was empty array");
     }
   }
-  
+
   /**
    * Throws an exception if the collection argument is not null or empty.
    * @param <E> type of array
@@ -88,12 +88,12 @@ public final class ArgumentChecker {
     if (argument == null) {
       s_logger.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was not null");
-    } else if (argument.size() == 0) {
+    } else if (argument.isEmpty()) {
       s_logger.error("Argument {} was empty collection", name);
       throw new Excel4JRuntimeException("Value " + name + " was empty collection");
     }
   }
-  
+
   /**
    * Throws an exception if the string argument is not null or empty.
    * @param argument the String to check

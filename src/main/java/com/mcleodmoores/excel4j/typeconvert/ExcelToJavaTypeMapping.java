@@ -13,8 +13,11 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Class to represent a Java source and Excel destination type or vice versa.
  */
 public final class ExcelToJavaTypeMapping {
+  /** The Excel source class */
   private final Class<? extends XLValue> _excelType;
+  /** The Java destination type */
   private final Type _javaType;
+  /** The Java destination class */
   private final Class<?> _javaClass;
 
   /**

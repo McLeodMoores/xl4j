@@ -5,7 +5,6 @@ package com.mcleodmoores.excel4j.typeconvert;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
