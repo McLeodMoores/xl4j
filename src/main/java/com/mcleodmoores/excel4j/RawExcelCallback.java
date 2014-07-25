@@ -3,8 +3,6 @@
  */
 package com.mcleodmoores.excel4j;
 
-import com.mcleodmoores.excel4j.values.XLInteger;
-import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 

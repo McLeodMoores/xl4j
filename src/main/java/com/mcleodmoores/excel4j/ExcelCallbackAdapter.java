@@ -32,13 +32,14 @@ public class ExcelCallbackAdapter implements ExcelCallback {
   }
   
   @Override
-  public void registerFunction(final FunctionDefinition functionDefinition) {
+  public void registerFunction(final FunctionDefinition functionDefinition, final String functionExportName) {
     FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
     MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
     XLNamespace namespaceAnnotation = functionMetadata.getNamespace();
     XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
     XLArgument[] argumentAnnotations = functionMetadata.getArguments();
-    
+    final XLString dllPath = XLString.of(_dllPath.getPath());
+    final XLString exportName = XLString.of(functionExportName);
     final XLString functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
     final XLString argumentNames = buildArgNames(argumentAnnotations);
     final XLInteger functionTypeInt = getFunctionType(functionAnnotation);
@@ -46,10 +47,25 @@ public class ExcelCallbackAdapter implements ExcelCallback {
     final XLValue functionCategory = buildFunctionCategory(functionAnnotation, methodInvoker);
     final XLValue helpTopic = buildHelpTopic(functionAnnotation);
     final XLValue description = buildDescription(functionAnnotation);
+    final XLValue[] argsHelp = buildArgsHelp(argumentAnnotations);
+    _rawCallback.xlfRegister(dllPath, exportName, signature, functionName, argumentNames, 
+                             functionTypeInt, functionCategory, XLNil.INSTANCE, helpTopic, description, argsHelp);
+  }
+  
+  private XLValue[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
+    XLValue[] results = new XLValue[argumentAnnotations.length];
+    for (int i = 0; i < argumentAnnotations.length; i++) {
+      if (argumentAnnotations[i] != null && !argumentAnnotations[i].description().isEmpty()) {
+        results[i] = XLString.of(argumentAnnotations[i].description());
+      } else {
+        results[i] = XLNil.INSTANCE;
+      }
+    }
+    return results;
   }
   
   private XLValue buildDescription(final XLFunction functionAnnotation) {
-    if (functionAnnotation != null && functionAnnotation.description() != null) {
+    if (functionAnnotation != null && !functionAnnotation.description().isEmpty()) {
       return XLString.of(functionAnnotation.description());
     } else {
       return XLNil.INSTANCE;
@@ -57,14 +73,14 @@ public class ExcelCallbackAdapter implements ExcelCallback {
   }
   
   private XLValue buildHelpTopic(final XLFunction functionAnnotation) {
-    if (functionAnnotation != null && functionAnnotation.helpTopic() != null) {
+    if (functionAnnotation != null && !functionAnnotation.helpTopic().isEmpty()) {
       return XLString.of(functionAnnotation.helpTopic());
     } else {
       return XLNil.INSTANCE;
     }
   }
   private XLValue buildFunctionCategory(final XLFunction functionAnnotation, final MethodInvoker methodInvoker) {
-    if (functionAnnotation != null && functionAnnotation.category() != null) {
+    if (functionAnnotation != null && !functionAnnotation.category().isEmpty()) {
       return XLString.of(functionAnnotation.category());
     } else {
       return XLString.of(methodInvoker.getMethodDeclaringClass().getSimpleName());
@@ -139,7 +155,7 @@ public class ExcelCallbackAdapter implements ExcelCallback {
       functionName.append(namespaceAnnotation.value());
     }
     if (functionAnnotation != null) {
-      if (functionAnnotation.name() != null) {
+      if (!functionAnnotation.name().isEmpty()) {
         functionName.append(functionAnnotation.name());
       } else {
         functionName.append(methodInvoker.getMethodName());
@@ -159,7 +175,7 @@ public class ExcelCallbackAdapter implements ExcelCallback {
     for (int i = 0; i < argumentAnnotations.length; i++) {
       XLArgument argumentAnnotation = argumentAnnotations[i];
       if (argumentAnnotation != null) {
-        if (argumentAnnotation.name() != null) {
+        if (!argumentAnnotation.name().isEmpty()) {
           argumentNames.append(argumentAnnotation.name());
         } else {
           // TODO: try paranamer/JavaDocs?

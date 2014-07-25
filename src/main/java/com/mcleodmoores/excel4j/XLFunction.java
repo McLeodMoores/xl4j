@@ -23,24 +23,24 @@ public @interface XLFunction {
    * leading capital camel case.  E.g. myMethod() becomes MyMethod().
    * @return the name
    */
-  String name();
+  String name() default "";
   /**
    * The category this function should be registered in. 
    * If this is not specified, it defaults to the class name.
    * TODO see StandardCategories.
    * @return the category
    */
-  String category();
+  String category() default "";
   /**
    * The description of this function.
    * @return the description
    */
-  String description();
+  String description() default "";
   /**
    * The help topic
    * @return the help topic
    */
-  String helpTopic();
+  String helpTopic() default "";
   /**
    * Whether the function should be re-evaluated on any sheet changes.
    * In other words, is it a volatile function.  If not specified, it is 

@@ -12,8 +12,9 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 public final class FunctionDefinition {
   private FunctionMetadata _functionMetadata;
   private MethodInvoker _methodInvoker;
+  private String _exportName;
 
-  private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker) {
+  private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final String exportName) {
     _functionMetadata = functionMetadata;
     _methodInvoker = methodInvoker;
   }
@@ -22,12 +23,14 @@ public final class FunctionDefinition {
    * Static factory method to create an instance.
    * @param functionMetadata  the annotation-based metadata about the function
    * @param methodInvoker  the type conversion and method invocation binding for this function
+   * @param exportName  the name of the DLL export that handles this function
    * @return an instance of a FunctionDefinition
    */
-  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker) {
+  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final String exportName) {
     ArgumentChecker.notNull(functionMetadata, "functionMetadata");
     ArgumentChecker.notNull(methodInvoker, "methodInvoker");
-    return new FunctionDefinition(functionMetadata, methodInvoker);
+    ArgumentChecker.notNull(exportName, "exportName");
+    return new FunctionDefinition(functionMetadata, methodInvoker, exportName);
   }
 
   /**
@@ -42,5 +45,12 @@ public final class FunctionDefinition {
    */
   public MethodInvoker getMethodInvoker() {
     return _methodInvoker;
+  }
+  
+  /**
+   * @return the export name, not null
+   */
+  public String getExportName() {
+    return _exportName;
   }
 }
