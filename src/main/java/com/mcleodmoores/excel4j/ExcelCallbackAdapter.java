@@ -6,6 +6,8 @@ package com.mcleodmoores.excel4j;
 import java.io.File;
 
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
+import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
@@ -34,8 +36,33 @@ public class ExcelCallbackAdapter implements ExcelCallback {
     
     final String functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
     final String argumentNames = buildArgNames(argumentAnnotations);
-    final int functionType = getFunctionType(functionAnnotation);
+    final int functionTypeInt = getFunctionType(functionAnnotation);
+    boolean isMultiThreadSafe = true; // the default
+    boolean isMacroEquivalent = false; // the default
+    boolean isVolatile = false; // the default
+    XLFunctionType functionType = XLFunctionType.FUNCTION;
+    if (functionAnnotation != null) {
+      isMultiThreadSafe = functionAnnotation.isMultiThreadSafe();
+      isMacroEquivalent = functionAnnotation.isMacroEquivalent();
+      isVolatile = functionAnnotation.isVolatile();
+      functionType = functionAnnotation.functionType();
+    }
+    
+    StringBuilder signature = new StringBuilder();
+    Class<? extends XLValue>[] excelParameterTypes = methodInvoker.getExcelParameterTypes();
+    Class<? extends XLValue> excelReturnType = methodInvoker.getExcelReturnType();
+    if (functionType == XLFunctionType.COMMAND) {
+      if (!(excelReturnType instanceof XLInteger)) {
+        
+      }
+    }
+    for (int i = 0; i < argumentAnnotations.length; i++) {
+      XLArgument argumentAnnotation = argumentAnnotations[i];
+      if (argument)      
+    }
   }
+  
+  
 
   /**
    * Build the function name string using the namespace if specified.
