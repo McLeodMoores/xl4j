@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 import java.util.Arrays;
@@ -11,12 +14,12 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  */
 public final class XLValueRange implements XLValue {
 
-  private XLValue[][] _valueRange;
-  
+  private final XLValue[][] _valueRange;
+
   private XLValueRange(final XLValue[][] valueRange) {
     _valueRange = valueRange;
   }
-  
+
   /**
    * Static factory method to create an instance of XLValueRange.
    * @param valueRange a two dimensional array containing XLValues
@@ -26,7 +29,7 @@ public final class XLValueRange implements XLValue {
     ArgumentChecker.notNullOrEmpty(valueRange, "valueRange"); // not checking for squareness.
     return new XLValueRange(valueRange);
   }
-  
+
   /**
    * @return a two dimensional array of values, not null
    */
@@ -58,7 +61,7 @@ public final class XLValueRange implements XLValue {
     if (!(obj instanceof XLValueRange)) {
       return false;
     }
-    XLValueRange other = (XLValueRange) obj;
+    final XLValueRange other = (XLValueRange) obj;
     if (!Arrays.deepEquals(_valueRange, other._valueRange)) {
       return false;
     }

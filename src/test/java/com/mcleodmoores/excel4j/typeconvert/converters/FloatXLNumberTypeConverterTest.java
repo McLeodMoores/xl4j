@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
@@ -60,9 +61,9 @@ public class FloatXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
+   * Tests that passing in a null expected {@link XLValue} class is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedXLValueClass() {
     CONVERTER.toXLValue(null, FLOAT);
   }
@@ -70,15 +71,15 @@ public class FloatXLNumberTypeConverterTest {
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
     CONVERTER.toXLValue(XLNumber.class, null);
   }
 
   /**
-   * Tests that passing in a null expected Java class gives the expected exception.
+   * Tests that passing in a null expected Java class is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedClass() {
     CONVERTER.toJavaObject(null, XL_NUMBER_FLOAT);
   }
@@ -86,7 +87,7 @@ public class FloatXLNumberTypeConverterTest {
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
     CONVERTER.toJavaObject(Float.class, null);
   }

@@ -6,47 +6,45 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.util.List;
+
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLNumber;
-import com.mcleodmoores.excel4j.values.XLString;
+import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link EnumXLStringTypeConverter}.
+ * Unit tests for {@link ObjectXLObjectTypeConverter}.
  */
 @Test
-public class EnumXLStringTypeConverterTest {
-  /** XLString. */
-  private static final XLString XL_STRING = XLString.of("TEST");
-
-  /** Enum. */
-  private static enum TestEnum {
-    /** Test value */
-    TEST
-  };
-
+public class ObjectXLObjectTypeConverterTest {
+  /** XLObject. */
+  private static final XLObject XL_OBJECT = XLObject.of(List.class, 1L);
+  /** Empty Object. */
+  private static final Object OBJECT = new Object();
   /** The converter */
-  private static final AbstractTypeConverter CONVERTER = new EnumXLStringTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter();
 
+  // TODO need to set system property test.mode - how to do this?
   /**
-   * Tests that the java type is {@link TestEnum}.
+   * Tests that the java type is {@link Object}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLString.class, Enum.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLObject.class, Object.class));
   }
 
   /**
-   * Tests that the excel type is {@link XLString}.
+   * Tests that the excel type is {@link XLObject}.
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Enum.class, XLString.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Object.class, XLObject.class));
   }
 
   /**
@@ -54,15 +52,15 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 7);
+    assertEquals(CONVERTER.getPriority(), 5);
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} is successful.
+   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
    */
-  @Test
+  @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, TestEnum.TEST);
+    CONVERTER.toXLValue(null, OBJECT);
   }
 
   /**
@@ -70,23 +68,23 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLString.class, null);
+    CONVERTER.toXLValue(XLObject.class, null);
   }
 
   /**
    * Tests that passing in a null expected Java class gives the expected exception.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XL_STRING);
+    CONVERTER.toJavaObject(null, XL_OBJECT);
   }
 
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = NullPointerException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(TestEnum.class, null);
+    CONVERTER.toJavaObject(Object.class, null);
   }
 
   /**
@@ -94,7 +92,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(TestEnum.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(Object.class, XLInteger.of(10));
   }
 
   /**
@@ -102,7 +100,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(String.class, XL_STRING);
+    CONVERTER.toJavaObject(Double.class, XL_OBJECT);
   }
 
   /**
@@ -110,7 +108,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, 10.);
+    CONVERTER.toXLValue(XLObject.class, 10);
   }
 
   /**
@@ -118,29 +116,27 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, "TEST");
+    CONVERTER.toXLValue(XLObject.class, 10.);
   }
 
   /**
-   * Tests the conversion from a {@link TestEnum}.
+   * Tests the conversion from a {@link Object}.
    */
   @Test
-  public void testConversionFromString() {
-    final XLValue converted = CONVERTER.toXLValue(XL_STRING.getClass(), TestEnum.TEST);
-    assertTrue(converted instanceof XLString);
-    final XLString xlString = (XLString) converted;
-    assertEquals(xlString.getValue(), TestEnum.TEST.name());
+  public void testConversionFromObject() {
+    final XLValue converted = CONVERTER.toXLValue(XL_OBJECT.getClass(), OBJECT);
+    assertTrue(converted instanceof XLObject);
+    final XLObject xlObject = (XLObject) converted;
+    assertEquals(xlObject, XL_OBJECT);
   }
 
   /**
-   * Tests the conversion from a {@link XLString}.
+   * Tests the conversion from a {@link XLObject}.
    */
   @Test
-  public void testConversionFromXLString() {
-    final Object converted = CONVERTER.toJavaObject(TestEnum.class, XL_STRING);
-    assertTrue(converted instanceof TestEnum);
-    final TestEnum en = (TestEnum) converted;
-    assertEquals(en, TestEnum.TEST);
+  public void testConversionFromXLObject() {
+    final Object converted = CONVERTER.toJavaObject(String.class, XL_OBJECT);
+    assertEquals(converted, OBJECT);
   }
 
 }

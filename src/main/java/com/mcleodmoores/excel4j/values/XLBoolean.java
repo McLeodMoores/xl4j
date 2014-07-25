@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 /**
@@ -12,7 +15,7 @@ public enum XLBoolean implements XLValue {
    * False value.
    */
   FALSE;
-    
+
   /**
    * Create an XLBoolean from a boolean.
    * @param value the value to embed
@@ -25,7 +28,7 @@ public enum XLBoolean implements XLValue {
       return FALSE;
     }
   }
-  
+
   /**
    * Get the value of the embedded boolean.
    * @return the value of the embedded boolean
@@ -33,12 +36,12 @@ public enum XLBoolean implements XLValue {
   public boolean getValue() {
     return this == TRUE;
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLBoolean(this);
   }
-  
+
   @Override
   public String toString() {
     return "XLBoolean[" + super.toString() + "]";

@@ -37,6 +37,11 @@ public @interface XLFunction {
    */
   String description();
   /**
+   * The help topic
+   * @return the help topic
+   */
+  String helpTopic();
+  /**
    * Whether the function should be re-evaluated on any sheet changes.
    * In other words, is it a volatile function.  If not specified, it is 
    * assumed the function is not volatile.
@@ -51,18 +56,17 @@ public @interface XLFunction {
   /**
    * @return true, if this function needs access to macro-level features
    * Note this cannot be used in conjunction with isMultiThreadSafe, but is required if
-   * access to certain call-backs or range references is needed.
+   * access to certain call-backs or range references (XLLocalReference or XLMultiReference) 
+   * are needed.
    */
   boolean isMacroEquivalent() default false;
   /**
-   * Whether to allow LocalReference or MultiReferences to be passed to this
-   * function.  This requires different security characteristics on the sheet,
-   * so should be avoided where possible.  If not specified, it is assumed
-   * the function does not allow references.
-   * @return true, if this function is allowed to handle references
+   * @return true, if this function executes asynchronously
+   * Note this cannot be used in conjunction with volatile or macro equivalent, but is required if
+   * access to certain call-backs or range references is needed.
    */
-  boolean allowReferences() default false;
-  
+  boolean isAsynchronous() default false;
+ 
   /**
    * The type of function
    * @return the function type, defaults to FUNCTION

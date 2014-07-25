@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
@@ -38,7 +39,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.TYPE));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.class));
   }
 
   /**
@@ -46,7 +47,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Integer.TYPE, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Integer.class, XLNumber.class));
   }
 
   /**
@@ -58,9 +59,9 @@ public class IntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
+   * Tests that passing in a null expected {@link XLValue} class is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedXLValueClass() {
     CONVERTER.toXLValue(null, INTEGER);
   }
@@ -68,15 +69,15 @@ public class IntegerXLNumberTypeConverterTest {
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
     CONVERTER.toXLValue(XLNumber.class, null);
   }
 
   /**
-   * Tests that passing in a null expected Java class gives the expected exception.
+   * Tests that passing in a null expected Java class is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedClass() {
     CONVERTER.toJavaObject(null, XL_NUMBER_DOUBLE);
   }
@@ -84,7 +85,7 @@ public class IntegerXLNumberTypeConverterTest {
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
     CONVERTER.toJavaObject(Integer.class, null);
   }

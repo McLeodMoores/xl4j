@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 import java.io.Serializable;
@@ -17,21 +20,21 @@ public final class XLBigData implements XLValue {
   private final Excel _excel;
   private final long _handleFromExcel;
   private final long _length;
-  
+
   private XLBigData(final byte[] valueToExcel) {
     _valueToExcel = valueToExcel;
     _excel = null;
     _handleFromExcel = 0;
     _length = 0; // length embedded in _valueToExcel array in this case.
   }
-  
+
   private XLBigData(final Excel excel, final long handleFromExcel, final long length) {
     _valueToExcel = null;
     _excel = excel;
     _handleFromExcel = handleFromExcel;
     _length = length;
   }
-  
+
   /**
    * Create an instance from a byte array.
    * This is used when you're using a specific manual encoding and we're sending data
@@ -46,7 +49,7 @@ public final class XLBigData implements XLValue {
 
   /**
    * Create an instance from a Serializable Java object.
-   * This is used when you want to save an object (or graph of objects) and have it automatically 
+   * This is used when you want to save an object (or graph of objects) and have it automatically
    * serialized before sending to Excel rather than receiving data from Excel.
    * @param object the object to serialize
    * @return an instance of XLBigData
@@ -55,7 +58,7 @@ public final class XLBigData implements XLValue {
     ArgumentChecker.notNull(object, "object");
     return new XLBigData(SerializationUtils.serialize(object));
   }
-  
+
   /**
    * Create an instance from a Windows HANDLE and length.
    * This is used when passing an object from Excel to Java, but only getting the actual data on demand.
@@ -65,14 +68,14 @@ public final class XLBigData implements XLValue {
    *                        so should fit in a 64-bit signed long.
    * @param length the length of the data block
    * @return an instance of XLBigData
-   */  
+   */
   public static XLBigData of(final Excel excel, final long handleFromExcel, final long length) {
     ArgumentChecker.notNull(excel, "excel");
     return new XLBigData(excel, handleFromExcel, length);
   }
-  
+
   /**
-   * Return the raw byte buffer.  
+   * Return the raw byte buffer.
    * This will either use the embedded byte array or call back into Windows/Excel to copy
    * the buffer into Java.  Once this has been done, further requests use the embedded array, so just bear in
    * mind the first call can be expensive if the data is being passed from the XLL side.
@@ -84,11 +87,11 @@ public final class XLBigData implements XLValue {
     }
     return _valueToExcel;
   }
-  
+
   /**
-   * Return buffer deserialized into an object.  
-   * This will either use the embedded byte array as a source for the deserialization or call back into 
-   * Windows/Excel to copy the buffer into Java.  Once this has been done, further requests use the embedded 
+   * Return buffer deserialized into an object.
+   * This will either use the embedded byte array as a source for the deserialization or call back into
+   * Windows/Excel to copy the buffer into Java.  Once this has been done, further requests use the embedded
    * array, so just bear in mind the first call can be expensive if the data is being passed from the XLL side.
    * This may throw a ClassNotFoundException embedded inside an Excel4JRuntimeException if the class cannot
    * be found.
@@ -97,7 +100,7 @@ public final class XLBigData implements XLValue {
   public Serializable getValue() {
     return SerializationUtils.deserialize(getBuffer());
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLBigData(this);
@@ -119,7 +122,7 @@ public final class XLBigData implements XLValue {
     if (!(obj instanceof XLBigData)) {
       return false;
     }
-    XLBigData other = (XLBigData) obj;
+    final XLBigData other = (XLBigData) obj;
     if (!Arrays.equals(getBuffer(), other.getBuffer())) {
       return false;
     }

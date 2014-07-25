@@ -82,4 +82,11 @@ public class MethodInvoker {
   public String getMethodName() {
     return _method.getName();
   }
+  
+  /**
+   * @return the Class the method is declared in
+   */
+  public Class<?> getMethodDeclaringClass() {
+    return _method.getDeclaringClass();
+  }
 }

@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;

@@ -9,11 +9,11 @@ package com.mcleodmoores.excel4j;
  */
 public final class ExcelFactory {
   
-  private static final String TEST_PROPRERTY_NAME = "test.mode";
+  private static final String TEST_PROPERTY_NAME = "test.mode";
 
   private static boolean s_testMode;
   private ExcelFactory() {
-    String property = System.getProperty(TEST_PROPRERTY_NAME);
+    String property = System.getProperty(TEST_PROPERTY_NAME);
     if (property == null) {
       s_testMode = false;
     } else if (property.toUpperCase().startsWith("T")) {

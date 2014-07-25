@@ -38,4 +38,8 @@ public @interface XLArgument {
    * @return whether this argument is optional
    */
   boolean optional() default false;
+  /**
+   * @return true, if the argument is a reference type (e.g. an XLLocalReference or XLMultiReference or XLValueRangel byref)
+   */
+  boolean referenceType() default false;
 }

@@ -6,42 +6,40 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import java.math.BigInteger;
-
 import org.testng.annotations.Test;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.temporal.ChronoUnit;
 
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link BigIntegerXLNumberTypeConverter}.
+ * Unit tests for {@link LocalDateXLNumberTypeConverterTest}.
  */
 @Test
-public class BigIntegerXLNumberTypeConverterTest {
-  // REVIEW isn't it a bit odd that there's no complaint when a double is successfully converted?
-  /** XLNumber holding a double. */
-  private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
-  /** XLNumber holding a long. */
-  private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
-  /** XLNumber holding an int. */
-  private static final XLNumber XL_NUMBER_INT = XLNumber.of(10);
-  /** BigInteger. */
-  private static final BigInteger BIG_INTEGER = BigInteger.valueOf(10);
+public class LocalDateXLNumberTypeConverterTest {
+  /** The number of days from the Excel epoch */
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(1900, 1, 1), LocalDate.ofEpochDay(0)) + 1;
+  /** The number of days from Excel epoch to 2000-01-01 */
+  private static final long DAYS = LocalDate.of(2000, 1, 1).toEpochDay() + DAYS_FROM_EXCEL_EPOCH;
+  /** XLNumber holding a double representing 2000-01-01. */
+  private static final XLNumber XL_DATE = XLNumber.of(DAYS);
+  /** Local date. */
+  private static final LocalDate LOCAL_DATE = LocalDate.of(2000, 1, 1);
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new BigIntegerXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new LocalDateXLNumberTypeConverter();
 
   /**
-   * Tests that the java type is {@link BigInteger}.
+   * Tests that the java type is {@link LocalDate}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, BigInteger.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, LocalDate.class));
   }
 
   /**
@@ -49,7 +47,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(BigInteger.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(LocalDate.class, XLNumber.class));
   }
 
   /**
@@ -61,11 +59,11 @@ public class BigIntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} is successful.
+   * Tests that passing in a null expected {@link XLValue} class is successful.
    */
   @Test
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, BIG_INTEGER);
+    CONVERTER.toXLValue(null, LOCAL_DATE);
   }
 
   /**
@@ -77,11 +75,11 @@ public class BigIntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected Java is successful.
+   * Tests that passing in a null expected Java class is successful.
    */
   @Test
   public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XL_NUMBER_DOUBLE);
+    CONVERTER.toJavaObject(null, XL_DATE);
   }
 
   /**
@@ -89,7 +87,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(BigInteger.class, null);
+    CONVERTER.toJavaObject(LocalDate.class, null);
   }
 
   /**
@@ -97,7 +95,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(BigInteger.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(LocalDate.class, XLBoolean.FALSE);
   }
 
   /**
@@ -105,7 +103,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLNumber.of(10));
+    CONVERTER.toJavaObject(Integer.class, XLNumber.of(10.));
   }
 
   /**
@@ -121,18 +119,18 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, BigInteger.ONE);
+    CONVERTER.toXLValue(XLBoolean.class, LOCAL_DATE);
   }
 
   /**
-   * Tests the conversion from a {@link BigInteger}.
+   * Tests the conversion from a {@link LocalDate}.
    */
   @Test
-  public void testConversionFromBigInteger() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), BIG_INTEGER);
+  public void testConversionFromLocalDate() {
+    final XLValue converted = CONVERTER.toXLValue(XL_DATE.getClass(), LOCAL_DATE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
-    assertEquals(xlNumber.getValue(), 10., 0);
+    assertEquals(xlNumber.getValue(), DAYS, 0);
   }
 
   /**
@@ -140,17 +138,9 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromXLNumber() {
-    Object converted = CONVERTER.toJavaObject(BigInteger.class, XL_NUMBER_INT);
-    assertTrue(converted instanceof BigInteger);
-    BigInteger bigInteger = (BigInteger) converted;
-    assertEquals(bigInteger, BIG_INTEGER);
-    converted = CONVERTER.toJavaObject(BigInteger.class, XL_NUMBER_LONG);
-    assertTrue(converted instanceof BigInteger);
-    bigInteger = (BigInteger) converted;
-    assertEquals(bigInteger, BIG_INTEGER);
-    converted = CONVERTER.toJavaObject(BigInteger.class, XL_NUMBER_DOUBLE);
-    assertTrue(converted instanceof BigInteger);
-    bigInteger = (BigInteger) converted;
-    assertEquals(bigInteger, BIG_INTEGER);
+    final Object converted = CONVERTER.toJavaObject(LocalDate.class, XL_DATE);
+    assertTrue(converted instanceof LocalDate);
+    final LocalDate localDate = (LocalDate) converted;
+    assertEquals(localDate, LOCAL_DATE);
   }
 }

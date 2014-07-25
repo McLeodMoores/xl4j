@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.values;
 
 import java.util.Arrays;
@@ -8,19 +11,19 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
  * Java representation of the xloper type xltypeRef (aka xltypeMRef).
- * This is usually preferable over XLLocalReference even if you're not referring 
+ * This is usually preferable over XLLocalReference even if you're not referring
  * to multiple ranges because it's keyed to a particular sheetId.
  */
 public final class XLMultiReference implements XLValue {
 
-  private List<XLRange> _ranges;
-  private XLSheetId _sheetId;
+  private final List<XLRange> _ranges;
+  private final XLSheetId _sheetId;
 
   private XLMultiReference(final XLSheetId sheetId, final List<XLRange> ranges) {
     _sheetId = sheetId;
     _ranges = ranges;
   }
-  
+
   /**
    * Static factory method to create an instance of XLReference.
    * @param sheetId the worksheet ID
@@ -32,7 +35,7 @@ public final class XLMultiReference implements XLValue {
     ArgumentChecker.notNull(range, "range");
     return new XLMultiReference(sheetId, Collections.singletonList(range));
   }
-  
+
   /**
    * Static factory method to create an instance of XLReference.
    * @param sheetId the worksheet ID
@@ -44,7 +47,7 @@ public final class XLMultiReference implements XLValue {
     ArgumentChecker.notNullOrEmpty(ranges, "ranges");
     return new XLMultiReference(sheetId, ranges);
   }
-  
+
   /**
    * Static factory method to create an instance of XLReference.
    * @param sheetId the worksheet ID
@@ -56,35 +59,35 @@ public final class XLMultiReference implements XLValue {
     ArgumentChecker.notNullOrEmpty(ranges, "ranges");
     return new XLMultiReference(sheetId, Arrays.asList(ranges));
   }
-  
+
   /**
    * @return the range, not null
    */
   public List<XLRange> getRanges() {
     return _ranges;
   }
-  
+
   /**
    * @return true, if a single range
    */
   public boolean isSingleRange() {
     return _ranges.size() == 1;
   }
-  
+
   /**
    * @return the range if single range, or first range if multiple ranges.
    */
   public XLRange getSingleRange() {
     return _ranges.get(0);
   }
-  
+
   /**
    * @return the worksheet ID
    */
   public XLSheetId getSheetId() {
     return _sheetId;
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLMultiReference(this);
@@ -110,7 +113,7 @@ public final class XLMultiReference implements XLValue {
     if (!(obj instanceof XLMultiReference)) {
       return false;
     }
-    XLMultiReference other = (XLMultiReference) obj;
+    final XLMultiReference other = (XLMultiReference) obj;
     if (!_ranges.equals(other._ranges)) {
       return false;
     }

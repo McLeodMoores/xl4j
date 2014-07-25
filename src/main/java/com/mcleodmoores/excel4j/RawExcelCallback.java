@@ -6,6 +6,7 @@ package com.mcleodmoores.excel4j;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLString;
+import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * The Excel callback interface. 
@@ -41,11 +42,11 @@ public interface RawExcelCallback {
                   final XLString functionSignature,
                   final XLString functionWorksheetName,
                   final XLString argumentNames,
-                  final XLInteger functionType,
-                  final XLString functionCategory,
-                  final XLNil notUsed,
-                  final XLString helpTopic,
-                  final XLString description,
-                  final XLString... argsHelp);
+                  final XLValue functionType,
+                  final XLValue functionCategory,
+                  final XLValue notUsed,
+                  final XLValue helpTopic,
+                  final XLValue description,
+                  final XLValue... argsHelp);
   // CHECKSTYLE:ON
 }

@@ -10,3 +10,6 @@ synchronize
 snuck
 generics
 metadata
+moores
+int
+mapper
