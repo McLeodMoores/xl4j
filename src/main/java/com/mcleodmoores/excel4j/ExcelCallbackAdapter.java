@@ -6,6 +6,7 @@ package com.mcleodmoores.excel4j;
 import java.io.File;
 
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
 /**
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
@@ -35,6 +36,20 @@ public class ExcelCallbackAdapter implements ExcelCallback {
     final String functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
     final String argumentNames = buildArgNames(argumentAnnotations);
     final int functionType = getFunctionType(functionAnnotation);
+  }
+  
+  private String buildFunctionSignature(XLFunction functionAnnotation, MethodInvoker methodInvoker) {
+    StringBuilder signature = new StringBuilder();
+    boolean isVolatile = (functionAnnotation != null) ? functionAnnotation.isVolatile() : false; // default
+    boolean isMTSafe = (functionAnnotation != null) ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
+    boolean isMacroEquivalent = (functionAnnotation != null) ? functionAnnotation.isMacroEquivalent() : false; // default
+    boolean isAsynchronous = (functionAnnotation != null) ? functionAnnotation.isAsynchronous() : false; // default
+    XLFunctionType functionType = (functionAnnotation != null) ? functionAnnotation.functionType() : XLFunctionType.FUNCTION; // default;
+    if ((isVolatile && isMTSafe) || (isMTSafe && isMacroEquivalent)) {
+      throw new Excel4JRuntimeException("Illegal combination of XLFunction attributes, cannot be volatile & thread-safe or macro-equivalent & thread-safe");
+    }
+    
+    return signature.toString();
   }
 
   /**
