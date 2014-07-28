@@ -2072,14 +2072,21 @@ public class MockDLLExports implements RawExcelCallback {
   public XLValue UDF(final int block, final XLValue... args) {
     return _callHandler.invoke(block, args);
   }
-  // CHECKSTYLE:ON
-  /* (non-Javadoc)
-   * @see com.mcleodmoores.excel4j.RawExcelCallback#xlfRegister(com.mcleodmoores.excel4j.values.XLString, com.mcleodmoores.excel4j.values.XLString, com.mcleodmoores.excel4j.values.XLString, com.mcleodmoores.excel4j.values.XLString, com.mcleodmoores.excel4j.values.XLString, com.mcleodmoores.excel4j.values.XLValue, com.mcleodmoores.excel4j.values.XLValue, com.mcleodmoores.excel4j.values.XLValue, com.mcleodmoores.excel4j.values.XLValue, com.mcleodmoores.excel4j.values.XLValue, com.mcleodmoores.excel4j.values.XLValue[])
-   */
+
   @Override
-  public int xlfRegister(XLString dllPath, XLString functionExportName, XLString functionSignature, XLString functionWorksheetName, XLString argumentNames,
-      XLValue functionType, XLValue functionCategory, XLValue notUsed, XLValue helpTopic, XLValue description, XLValue... argsHelp) {
-    // TODO Auto-generated method stub
+  public int xlfRegister(
+      final XLString dllPath, 
+      final XLString functionExportName,
+      final XLString functionSignature,
+      final XLString functionWorksheetName,
+      final XLString argumentNames,
+      final XLValue functionType,
+      final XLValue functionCategory,
+      final XLValue notUsed,
+      final XLValue helpTopic,
+      final XLValue description,
+      final XLValue... argsHelp) {
+    
     return 0;
   }
 }
