@@ -5,6 +5,7 @@ package com.mcleodmoores.excel4j;
 
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.util.ExportUtils;
 
 /**
  * Class to store meta data and type conversion information about excel functions.
@@ -12,25 +13,33 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 public final class FunctionDefinition {
   private FunctionMetadata _functionMetadata;
   private MethodInvoker _methodInvoker;
-  private String _exportName;
+  private int _exportNumber;
+  private int _exportParams;
 
-  private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final String exportName) {
+  private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {
     _functionMetadata = functionMetadata;
     _methodInvoker = methodInvoker;
+    int exportParams = methodInvoker.getExcelParameterTypes().length;
+    if (functionMetadata.getFunctionSpec() != null) {
+      if (functionMetadata.getFunctionSpec().isAsynchronous()) {
+        exportParams++; // account for async callback handle that's hidden from Java. 
+      }
+    }
+    _exportParams = exportParams;
   }
   
   /**
    * Static factory method to create an instance.
    * @param functionMetadata  the annotation-based metadata about the function
    * @param methodInvoker  the type conversion and method invocation binding for this function
-   * @param exportName  the name of the DLL export that handles this function
+   * @param exportNumber  the number of the DLL export that handles this function (only unique to the number of parameters used)
    * @return an instance of a FunctionDefinition
    */
-  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final String exportName) {
+  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {
     ArgumentChecker.notNull(functionMetadata, "functionMetadata");
     ArgumentChecker.notNull(methodInvoker, "methodInvoker");
-    ArgumentChecker.notNull(exportName, "exportName");
-    return new FunctionDefinition(functionMetadata, methodInvoker, exportName);
+    ArgumentChecker.notNull(exportNumber, "exportNumber");
+    return new FunctionDefinition(functionMetadata, methodInvoker, exportNumber);
   }
 
   /**
@@ -51,6 +60,6 @@ public final class FunctionDefinition {
    * @return the export name, not null
    */
   public String getExportName() {
-    return _exportName;
+    return ExportUtils.buildExportName(_exportParams, _exportNumber);
   }
 }

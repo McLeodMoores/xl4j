@@ -32,14 +32,14 @@ public class ExcelCallbackAdapter implements ExcelCallback {
   }
   
   @Override
-  public void registerFunction(final FunctionDefinition functionDefinition, final String functionExportName) {
+  public void registerFunction(final FunctionDefinition functionDefinition) {
     FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
     MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
     XLNamespace namespaceAnnotation = functionMetadata.getNamespace();
     XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
     XLArgument[] argumentAnnotations = functionMetadata.getArguments();
     final XLString dllPath = XLString.of(_dllPath.getPath());
-    final XLString exportName = XLString.of(functionExportName);
+    final XLString exportName = XLString.of(functionDefinition.getExportName());
     final XLString functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
     final XLString argumentNames = buildArgNames(argumentAnnotations);
     final XLInteger functionTypeInt = getFunctionType(functionAnnotation);
