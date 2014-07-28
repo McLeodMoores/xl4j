@@ -22,763 +22,775 @@ interface IJvmContainer;
 interface IJvmSupport;
 interface IJvmTemplate;
 
+/// <summary>Folder, on disk, containing Java class files.</summary>
+///
+/// <para>An IClassFolder instance may contribute towards an IClasspath when
+/// constructing a JVM</para>
+[
+	object,
+	uuid (b646b5bb-26e9-4ac2-abc3-863eaf4f5348)
+] interface IClassFolder : IClasspathEntry {
+	/// <summary>Absolute local path of the folder.</summary>
+	///
+	/// <para>Gets the absolute path, local to the object instance and not the
+	/// caller.</para>
+	///
+	/// <param name="pbstrPath">Receives the path</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
+	/// <summary>Queries the caching/validity testing information.</summary>
+	///
+	/// <para>The caller may have a matching local path; the information here
+	/// is used to test whether the files held in that location match that of
+	/// the object instance.</para>
+	///
+	/// <param name="pbstrHost">Receives the host name</param>
+	/// <param name="plFiles">Receives the number of files in the folder</param>
+	/// <param name="plLength">Receives the total size of the files in the folder</param>
+	/// <param name="puTimestampHash">Receives a hash of the timestamps of the files</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT CacheInfo ([out] BSTR *pbstrHost, [out] long *plFiles, [out] long *plLength, [out] unsigned hyper *puTimestampHash);
+	/// <summary>Writes the content of this folder to a file system.</summary>
+	///
+	/// <para>If the IFileSystemWriter is local to host A and the IClassFolder is local
+	/// to host B then this method can be used to transfer data from A to B.</para>
+	///
+	/// <param name="pWriter">Destination to write to</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Write ([in] IDirectoryWriter *pWriter);
+};
+
+/// <summary>Classpath that will be used to construct a JVM.</summary>
+///
+/// <para>The JVM must be created with classpath entries that are applicable to the
+/// available class loaders. A typical instance will recognise contributing IClassFolder
+/// and IJarFile instances as either "local" or "remote". The referenced locations can
+/// be used directly for the former case. Class file, or JAR, payload must be
+/// transferred to a suitable "local" location in order to handle the "remote" case
+/// correctly.</para>
+///
+/// <para>Instances of IClasspath are created by the component that is about to create
+/// a JVM. Instances of IClasspathEntry are then required to contribute towards it.</para>
+[
+	object,
+	uuid (f0f716d2-27d9-4679-8d05-7889f7959ff4)
+] interface IClasspath : IUnknown {
+	/// <summary>Adds a class folder to this path.</summary>
+	///
+	/// <para>If the class folder is available locally to this instance then it may be
+	/// used directly. If the folder is remote then it will be requested as a binary JAR
+	/// that can be used by the local JVM invocation.</para>
+	///
+	/// <param name="pFolder">The folder to add</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT AddFolder ([in] IClassFolder *pFolder);
+	/// <summary>Adds a JAR to this path.</summary>
+	///
+	/// <para>If the JAR is available locally to this instance then it may be used
+	/// directly. If the JAR is remote then a binary copy will be requested that can be
+	/// used by the local JVM invocation.</para>
+	///
+	/// <param name="pJar">The JAR to add</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT AddJar ([in] IJarFile *pJar);
+	/// <summary>Local classpath value.</summary>
+	///
+	/// <para>Gets the resolved classpath, local to the object instance and not the
+	/// caller.</para>
+	///
+	/// <param name="pbstrPath">Receives the resolved classpath</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
+};
+
+/// <summary>Collection of IClasspathEntry instances.</summary>
+///
+/// <para>One or more IClasspathEntry instances can be used to populate a
+/// IClasspath when constructing a JVM.</para>
+[
+	object,
+	uuid (7087cf73-6691-4a27-b54a-b1ae4a9fab35)
+] interface IClasspathEntries : IUnknown {
+	/// <summary>Number of entries in the collection.</summary>
+	///
+	/// <param name="plCount">Receives the number of entries</param>
+	/// <returns>S_OK if successful, an error code otherwise</summary>
+	[propget] HRESULT Count ([out, retval] long *plCount);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Returns the item at the given index.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="ppEntry">Receives the element from the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Item ([in] long lIndex, [out, retval] IClasspathEntry **ppEntry);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Sets the item at the given index. If the index already exists then the
+	/// element at that index is replaced. If the index is the first unallocated value
+	/// then the collection is extended ni the same was as if Add was called.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Item ([in] long lIndex, [in] IClasspathEntry *pEntry);
+	/// <summary>Adds an element to the collection.</summary>
+	///
+	/// <para>The element is appended to the end of the collection.</para>
+	///
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Add ([in] IClasspathEntry *pEntry);
+	/// <summary>Empties the collection.</summary>
+	///
+	/// <para>The collection is reset to its initial/empty state.</para>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Clear ();
+	/// <summary>Removes an element from the collection</summary>
+	///
+	/// <para>The element at the given index is removed and all elements at
+	/// greater indices are shifted down.</para>
+	///
+	/// <param name="lIndex">The 1-based index of the element to remove</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Remove ([in] long lIndex);
+};
+
+/// <summary>Fragment contributing towards an IClasspath.</summary>
+///
+/// <para>The full JVM class path is comprised of JAR files and folders of classes
+/// that are local to the JVM library. An IClasspathEntry instance can contribute
+/// one or more of these to an IClasspath for the JVM to be constructed.</para>
+///
+/// <para>An instance may itself implement IJarFile or IClassFolder. Alternatively
+/// it might just deliver appropriate implementations of these interfaces to the
+/// IClasspath when requested.</para>
+[
+	object,
+	uuid (9e95046b-1a36-4d05-838e-e44f11213503)
+] interface IClasspathEntry : IUnknown {
+	/// <summary>Displayable/construction name of the entry.</summary>
+	///
+	/// <para>Entries are typically created by IJvmSupport#CreateClasspathEntry. The
+	/// name of the entry corresponds to the string passed to that method. This might
+	/// be a local path, but only with respect to the host of the IJvmSupport instance
+	/// that created it.</para>
+	///
+	/// <param name="pbstrName">Receives the name of this entry</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Name ([out, retval] BSTR *pbstrName);
+	/// <summary>Adds this entry to the given classpath.</summary>
+	///
+	/// <para>If this entry corresponds to a Jar file or class folder then it may simply
+	/// call IClasspath#AddJar or IClasspath#AddFolder respectively. If this is a more
+	/// complex entry then this might result in multiple calls to methods on the IClasspath
+	/// instance.</para>
+	///
+	/// <param name="pClasspath">The classpath to append this entry to</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT AddToClasspath ([in] IClasspath *pClasspath);
+};
+
+/// <summary>Output folder, allowing other folders and files to be written.</summary>
+///
+/// <para>This is used in place of more complete file system access (such as Scripting.FilesystemObject)
+/// to simplify implementations supporting JVMs outside of the Win32 environment.</para>
+[
+	object,
+	uuid (1f894bf1-99a4-4c25-8dab-e212d9d46ae3)
+] interface IDirectoryWriter : IUnknown {
+	/// <summary>Creates a sub-folder.</summary>
+	///
+	/// <para>The returned value is positioned in the newly created (or already existing) folder.</para>
+	///
+	/// <param name="bstrFolder">Folder to open or create</param>
+	/// <param name="ppWriter">Receives the writing instance to use for the sub-folder</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Directory ([in] BSTR bstrFolder, [out, retval] IDirectoryWriter **ppWriter);
+	/// <summary>Creates a file.</summary>
+	///
+	/// <para>If the file already exists then it is truncated.</para>
+	///
+	/// <param name="bstrFile">File name to create</param>
+	/// <param name="ppWriter">Receives the writing instance to use for the file</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT File ([in] BSTR bstrFile, [out, retval] IFileWriter **ppWriter);
+};
+
+/// <summary>Output stream, writing binary data to a file on disk.</summary>
+///
+/// <para>This is used in place of more complete file system access (such as Scripting.FilesystemObject)
+/// to simplify implementations supporting JVMs outside of the Win32 environment.</para>
+[
+	object,
+	uuid (e0a6756d-b91a-497f-9980-7de1213b9243)
+] interface IFileWriter : IUnknown {
+	/// <summary>Closes the stream.</summary>
+	///
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Close ();
+	/// <summary>Writes a block of data to the stream.</summary>
+	///
+	/// <param name="pData">Data to write</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Write ([in] BYTE_SIZEDARR *pData);
+};
+
+/// <summary>JAR file, on disk, containing Java class files.</summary>
+///
+/// <para>An IJarFile instance may contribute towards an IClasspath when
+/// constructing a JVM</param>
+[
+	object,
+	uuid (e9fee3f8-f1b7-47c7-b85e-4e40259fc43f)
+] interface IJarFile : IClasspathEntry {
+	/// <summary>Absolute local path of the file.</summary>
+	///
+	/// <para>Gets the absolute path, local to the object instance and not the
+	/// caller.</para>
+	///
+	/// <param name="pbstrPath">Receives the path</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
+	/// <summary>Queries the caching/validity testing information.</summary>
+	///
+	/// <para>The caller may have a matching local path; the information here
+	/// is used to test whether the files held in that location match that of
+	/// the object instance.</para>
+	///
+	/// <param name="pbstrHost">Receives the host name</param>
+	/// <param name="plLength">Receives the length of the file</param>
+	/// <param name="puTimestamp">Receives the timestamp of the file</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT CacheInfo ([out] BSTR *pbstrHost, [out] long *plLength, [out] unsigned hyper *puTimestamp);
+	/// <summary>Writes the JAR contents.</summary>
+	///
+	/// <para>If the IFileWriter is local to host A and the IClassFolder is local to host B
+	/// then this method can be used to transfer data from A to B.</para>
+	///
+	/// <param name="pWriter">Destination to write to</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Write ([in] IFileWriter *pWriter);
+};
+
+const long JTYPE_OBJECT = 'L';
+const long JTYPE_BOOLEAN = 'Z';
+const long JTYPE_BYTE = 'B';
+const long JTYPE_CHAR = 'C';
+const long JTYPE_SHORT = 'S';
+const long JTYPE_INT = 'I';
+const long JTYPE_LONG = 'J';
+const long JTYPE_FLOAT = 'F';
+const long JTYPE_DOUBLE = 'D';
+const long JTYPE_VOID = 'V';
+
+midl_pragma warning (disable: 2362)
+/// <summary>One or more JNI operations.</summary>
+///
+/// <para>The JNI transaction may be associated with its owning JVM which will be used to
+/// execute it when requested. If the JVM has failed then the transaction will fail and may
+/// no longer be used. Such circumstances must be handled by the client, typically by
+/// requesting a new JVM from the managing container and re-creating the transaction object.</para>
+///
+/// <para>An alternative implementation is provided by IJvmSupport#CreateManagedJNI which
+/// associates the transaction instance with an IJvmContainer to automatically handle trivial
+/// JVM disconnect/reconnect scenarios.</para>
+[
+	object,
+	uuid (bf027fd9-f1b6-4b85-80cd-8dfb2cbd681f)
+] interface IJniSequence : IUnknown {
+	/// <summary>Number of control parameters.</summary>
+	///
+	/// <para>Control parameters are allocated by the Argument method. The value of this
+	/// property is the number of items that must be passed to the Execute method to run
+	/// the JNI operations.</para>
+	///
+	/// <param name="pcArgs">Receives the number of parameters</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Arguments ([out, retval] long *pcArgs);
+	/// <summary>Number of results.</summary>
+	///
+	/// <para>Results are allocated by the Result method. The value of this property is the
+	/// number of items that the Execute method can return after running the JNI operations.</para>
+	///
+	/// <param name="pcResults">Receives the number of results</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Results ([out, retval] long *pcResults);
+	/// <summary>Executes the sequence.</summary>
+	///
+	/// <param name="cArgs">Number of control parameters</param>
+	/// <param name="aArgs">Control parameters</param>
+	/// <param name="cResults">Number of results</param>
+	/// <param name="aResults">Receives the results</param>
+	/// <returns>S_OK if the sequence was executed, an error code otherwise</returns>
+	HRESULT Execute ([in] long cArgs, [in, size_is (cArgs)] VARIANT *aArgs, [in] long cResults, [out, size_is (cResults)] VARIANT *aResults);
+	/// <summary>Declares a control parameter for the sequence.</summary>
+	///
+	/// <para>The number of expected control parameters needed for Execute will be increased.
+	/// The value of this argument may be used for JNI operations using the returned handle.</para>
+	///
+	/// <param name="plVauleRef">Receives the handle referencing this parameter's value</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Argument ([out, retval] long *plValueRef);
+	/// <summary>Declares a result exported by this sequence.</summary>
+	///
+	/// <para>The number of expected results produced by Execute will be increased.
+	/// The value of this result will be the value referenced by the supplied handle.</para>
+	///
+	/// <param name="lValueRef">Handle to an intermediate value created by a JNI operation</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Result ([in] long lValueRef);
+	/// <summary>Stores a string constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass a string constant it must first
+	/// be loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="bstrConstant">String to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT StringConstant ([in] BSTR bstr, [out, retval] long *plValueRef);
+	/// <summary>Stores an 8-bit integer constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass an integer constant it must first
+	/// be loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="nValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT ByteConstant ([in] byte nValue, [out, retval] long *plValueRef);
+	/// <summary>Stores a 16-bit integer constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass an integer constant it must first
+	/// be loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="nValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT ShortConstant ([in] short nValue, [out, retval] long *plValueRef);
+	/// <summary>Stores a 32-bit integer constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass an integer constant it must first
+	/// be loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="nValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT IntConstant ([in] long nValue, [out, retval] long *plValueRef);
+	/// <summary>Stores a 64-bit integer constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass an integer constant it must first
+	/// be loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="nValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT LongConstant ([in] hyper nValue, [out, retval] long *plValueRef);
+	/// <summary>Stores a boolean constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass an integer constant it must first
+	/// be loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="fValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT BooleanConstant ([in] BOOL fValue, [out, retval] long *plValueRef);
+
+	// TODO: Float, Double, Char, NULL constants
+	// TODO: Label/Goto-If for conditional stuff
+	// TODO: Callback - passes values into the callback and receives the result back into one or more local variables
+	// TODO: Allocate/Release arbitrary buffers
+	// TODO: Pointer arithmetic
+
+	HRESULT jni_GetVersion ([out] long *plValueRef);
+	HRESULT jni_DefineClass ([in] long lNameRef, [in] long lLoaderRef, [in] long lBufRef, [in] long lLenRef, [out, retval] long *plClassRef);
+	HRESULT jni_FindClass ([in] long lNameRef, [out, retval] long *plClassRef);
+	HRESULT jni_FromReflectedMethod ([in] long lMethodRef, [out, retval] long *plMethodIDRef);
+	HRESULT jni_FromReflectedField ([in] long lFieldRef, [out, retval] long *plFieldIDRef);
+	HRESULT jni_ToReflectedMethod ([in] long lClsRef, [in] long lMethodIDRef, [in] long lIsStaticRef, [out, retval] long *plObjectRef);
+	HRESULT jni_GetSuperclass ([in] long lSubRef, [out, retval] long *plClassRef);
+	HRESULT jni_IsAssignableFrom ([in] long lSubRef, [in] long lSupRef, [out, retval] long *plBooleanRef);
+	HRESULT jni_ToReflectedField ([in] long lClsRef, [in] long lFieldIDRef, [in] long lIsStaticRef, [out, retval] long *plObjectRef);
+	HRESULT jni_Throw ([in] long lObjRef, [out, retval] long *plIntRef);
+	HRESULT jni_ThrowNew ([in] long lClassRef, [in] long lMsgRef, [out, retval] long *plIntRef);
+	HRESULT jni_ExceptionOccurred ([out, retval] long *plThrowableRef);
+	HRESULT jni_ExceptionDescribe ();
+	HRESULT jni_ExceptionClear ();
+	HRESULT jni_FatalError ([in] long lMsgRef);
+	HRESULT jni_PushLocalFrame ([in] long lCapacityRef, [out, retval] long *plIntRef);
+	HRESULT jni_PopLocalFrame ([in] long lResultRef, [out, retval] long *plObjectRef);
+	HRESULT jni_NewGlobalRef ([in] long lLobjRef, [out, retval] long *plObjectRef);
+	HRESULT jni_DeleteGlobalRef ([in] long lGrefRef);
+	HRESULT jni_DeleteLocalRef ([in] long lObjRef);
+	HRESULT jni_IsSameObject ([in] long lObj1Ref, [in] long lObj2Ref, [out, retval] long *plBooleanRef);
+	HRESULT jni_NewLocalRef ([in] long lRefRef, [out, retval] long *plObjectRef);
+	HRESULT jni_EnsureLocalCapacity ([in] long lCapacityRet, [out, retval] long *plIntRef);
+	HRESULT jni_AllocObject ([in] long lClassRef, [out, retval] long *plObjectRef);
+	HRESULT jni_NewObject ([in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plObjectRef);
+	HRESULT jni_GetObjectClass ([in] long lObjRef, [out, retval] long *plClassRef);
+	HRESULT jni_IsInstanceOf ([in] long lObjRef, [in] long lClassRef, [out, retval] long *plBooleanRef);
+	HRESULT jni_GetMethodID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plMethodIDRef);
+	HRESULT jni_CallMethod ([in] long lType, [in] long lObjRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plResultRef);
+	HRESULT jni_CallNonVirtualMethod ([in] long lType, [in] long lObjRef, [in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plResultRef);
+	HRESULT jni_GetFieldID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plFieldIDRef);
+	HRESULT jni_GetField ([in] long lType, [in] long lObjRef, [in] long lFieldIDRef, [out, retval] long *plResultRef);
+	HRESULT jni_SetField ([in] long lType, [in] long lObjRef, [in] long lFieldIDRef, [in] long lValueRef);
+	HRESULT jni_GetStaticMethodID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plMethodIDRef);
+	HRESULT jni_CallStaticMethod ([in] long lType, [in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgsRef, [out, retval] long *plResultRef);
+	HRESULT jni_GetStaticFieldID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plFieldIDRef);
+	HRESULT jni_GetStaticField ([in] long lType, [in] long lClassRef, [in] long lFieldIDRef, [out, retval] long *plResultRef);
+	HRESULT jni_SetStaticField ([in] long lType, [in] long lClassRef, [in] long lFieldIDRef, [in] long lValueRef);
+	HRESULT jni_NewString ([in] long lUnicodeRef, [in] long lSizeRef, [out, retval] long *plStringRef);
+	HRESULT jni_GetStringLength ([in] long lStrRef, [out, retval] long *plSizeRef);
+	HRESULT jni_GetStringChars ([in] long lStrRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
+	HRESULT jni_ReleaseStringChars ([in] long lStrRef, [in] long lCharsRef);
+	HRESULT jni_NewStringUTF ([in] long lUtfRef, [out, retval] long *plStringRef);
+	HRESULT jni_GetStringUTFLength ([in] long lStrRef, [out, retval] long *plSizeRef);
+	HRESULT jni_GetStringUTFChars ([in] long lStrRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
+	HRESULT jni_ReleaseStringUTFChars ([in] long lStrRef, [in] long lCharsRef);
+	HRESULT jni_GetArrayLength ([in] long lArrayRef, [out, retval] long *plSizeRef);
+	HRESULT jni_NewObjectArray ([in] long lLenRef, [in] long lClassRef, [in] long lInitRef, [out, retval] long *plArrayRef);
+	HRESULT jni_GetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [out, retval] long *plObjectRef);
+	HRESULT jni_SetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [in] long lValRef);
+	HRESULT jni_NewArray ([in] long lType, [in] long lLenRef, [out, retval] long *plArrayRef);
+	HRESULT jni_GetArrayElements ([in] long lType, [in] long lArrayRef, [out] long *plIsCopyRef, [out, retval] long *plPointerRef);
+	HRESULT jni_ReleaseArrayElements ([in] long lType, [in] long lArrayRef, [in] long lElemsRef, [in] long lModeRef);
+	HRESULT jni_GetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
+	HRESULT jni_SetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
+	HRESULT jni_RegisterNatives ([in] long lClassRef, [in] long lMethodsRef, [in] long lNMethodsef, [out, retval] long *plIntRef);
+	HRESULT jni_UnregisterNatives ([in] long lClassRef, [out, retval] long *plIntRef);
+	HRESULT jni_MonitorEntry ([in] long lObjRef, [out, retval] long *plIntRef);
+	HRESULT jni_MonitorExit ([in] long lObjRef, [out, retval] long *plIntRef);
+	HRESULT jni_GetStringRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
+	HRESULT jni_GetStringUTFRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
+	HRESULT jni_GetPrimitiveArrayCritical ([in] long lArrayRef, [out] long *plIsCopyRef, [out, retval] long *plVoidRef);
+	HRESULT jni_ReleasePrimitiveArrayCritical ([in] long lArrayRef, [in] long lCArrayRef, [in] long lModeRef);
+	HRESULT jni_GetStringCritical ([in] long lStringRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
+	HRESULT jni_ReleaseStringCritical ([in] long lStringRef, [in] long lCStringRef);
+	HRESULT jni_NewWeakGlobalRef ([in] long lObjRef, [out, retval] long *plWeakRef);
+	HRESULT jni_DeleteWeakGlobalRef ([in] long lRefRef);
+	HRESULT jni_ExceptionCheck ([out, retval] long *plBooleanRef);
+	HRESULT jni_NewDirectByteBuffer ([in] long lAddressRef, [in] long lCapacityRef, [out, retval] long *plObjectRef);
+	HRESULT jni_GetDirectBufferAddress ([in] long lBufRef, [out, retval] long *plVoidRef);
+	HRESULT jni_GetDirectBufferCapacity ([in] long lBufRef, [out, retval] long *plLongRef);
+	HRESULT jni_GetObjectRefType ([in] long lObjRef, [out, retval] long *plObjectRefTypeRef);
+};
+
+/// <summary>JVM abstraction.</summary>
+///
+/// <para>The main JNI functions are exposed through an instance of IJvm. The instance
+/// is typically obtained through, and managed by, an IJvmContainer instance. The
+/// container is capable of handling restart and re-connection events that are not part
+/// of a local JNI session but may be necessary to consider for the case of a JVM in a
+/// remote or shared process.</para>
+[
+	object,
+	uuid (cf3b6bca-afc3-4337-9529-e340a9b7808e)
+] interface IJvm : IUnknown {
+	/// <summary>JVM physical identifier.</summary>
+	///
+	/// <para>Returns the unique identifier allocated for the JNI session this instance
+	/// encapsulates.</para>
+	///
+	/// <para>It is possible to obtain different IJvm instances that correspond to the
+	/// same JVM, depending on the implementation of the IJvmConnector used by the
+	/// managing IJvmContainer. If two instances correspond to the same physical JVM then
+	/// the identifiers returned by each will be the same.</para>
+	///
+	/// <para>It is possible to obtain IJvm instances, from the same IJvmContainer, that
+	/// correspond to different physical JVMs because of a fault which required the
+	/// container construct a new physical JVM for that logical configuration.</para>
+	///
+	/// <param name="pguidIdentifier">Receives the JVM identifier</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Identifier ([out, retval] GUID *pguidIdentifier);
+	/// <summary>JVM template.</summary>
+	///
+	/// <para>Returns the configuration template used to create this JVM, or the effective
+	/// template if the JVM supports modification while it is running.</para>
+	///
+	/// <para>This is a copy of the template. Any changes to the template returned by this
+	/// method will not affect the behaviour of the JVM.</para>
+	///
+	/// <param name="ppTemplate">Receives the configuration template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Template ([out, retval] IJvmTemplate **ppTemplate);
+	/// <summary>Tests if the JVM is operational.</summary>
+	///
+	/// <para>This is a "cheap" method (no parameter or result marshalling) that can be used
+	/// to test the COM infrastructure as to whether the JVM is available for use. There may
+	/// be internal checks from the JVM - such as whether it has been shutdown by the Java
+	/// code - but more likely this will only fail if there is a COM proxy error for the case
+	/// when the JVM is running out-of-process.</para>
+	///
+	/// <returns>S_OK if the JVM is available, an error code otherwise</returns>
+	HRESULT Heartbeat ();
+	/// <summary>Creates a JNI transaction.</summary>
+	///
+	/// <para>The transaction can be used to invoke a sequence of one or more JNI calls to
+	/// this JVM. The transaction may be executed one or more times, with different control
+	/// parameters, or never be executed.</para>
+	///
+	/// <param name="ppTransaction">Receives the new transaction object</param>
+	/// <returns>S_OK if the transaction was created, an error code otherwise</returns>
+	HRESULT CreateJni ([out, retval] IJniSequence **ppTransaction);
+}
+
+/// <summary>JVM resolution and connection abstraction.</summary>
+///
+/// <para>An implementation, selected by the connection type from the template used to
+/// construct an IJvmContainer, determines how the JVM is resolved or a new JVM started
+/// if there is no existing one.</para>
+[
+	object,
+	uuid (e41afc88-0617-485a-9de8-393619d921b9)
+] interface IJvmConnector : IUnknown {
+	/// <summary>Acquires the connector's lock.</summary>
+	///
+	/// <para>Connectors are used to first check for existing JVMs and then create a new
+	/// JVM using the FindJvm and CreateJVM methods while holding this lock.</para>
+	///
+	/// <para>Successful calls must be matched with a call to Unlock. Implementations may
+	/// need to be implemented with a level of resiliance if they are out-of-process COM
+	/// servers and time-out any locks from clients which have not released the lock and
+	/// not used the connector for a period.</para>
+	///
+	/// <returns>S_OK if the lock was acquired, an error code otherwise</returns>
+	HRESULT Lock ();
+	/// <summary>Enumerates existing JVM instances.</summary>
+	///
+	/// <para>JVMs are referenced by their logical identifier - the identifier of the
+	/// IJvmContainer using this connector. There may be multiple, incompatible, JVMs
+	/// available for the same logical identifier which are distinguished by a 1-based
+	/// index. This may occur if there are multiple versions of an application
+	/// running which are using the same logical JVM name but use different configuration
+	/// templates.</para>
+	///
+	/// <para>A container should normally verify the JVM is operational using the IJvm#Heartbeat
+	/// method before returning it as the active JVM instance.</para>
+	///
+	/// <param name="lIndex">1-based index to distinguish multiple JVMs</param>
+	/// <param name="bstrLogicalIdentifier">Logical JVM identifier, omit for anonymous JVMs</param>
+	/// <param name="ppJvm">Receives the JVM instance</param>
+	/// <returns>S_OK if a JVM was found, an error code otherwise</returns>
+	HRESULT FindJvm ([in] long lIndex, [in, optional] BSTR bstrLogicalIdentifier, [out, retval] IJvm **ppJvm);
+	/// <summary>Creates a new JVM instance.</summary>
+	///
+	/// <para>This will always create a new JVM. It is the caller's responsibilty to have checked
+	/// for any existing, compatible, JVMs using the FindJvm method.</para>
+	///
+	/// <para>A container should normally verify the JVM is operational using the IJvm#Heartbeat
+	/// method before returning it as the active JVM instance.</para>
+	///
+	/// <param name="pTemplate">Configuration template</param>
+	/// <param name="bstrLogicalIdentifier">Logical JVM identifier, omit for anonymous JVMs</param>
+	/// <param name="ppJvm">Receives the JVM instance</param>
+	/// <returns>S_OK if a JVM was created, an error code otherwise</returns>
+	HRESULT CreateJvm ([in] IJvmTemplate *pTemplate, [in, optional] BSTR bstrLogicalIdentifier, [out, retval] IJvm **ppJvm);
+	/// <summary>Releases the connector's lock.</summary>
+	///
+	/// <para>Although it is possible for this method to fail, this should only occur in the event
+	/// of COM proxy errors for out-of-process connect instances. Such cases cannot be reasonably
+	/// recovered from by the client. It is the out-of-process' server's responsibility to use a
+	/// mechanism such as time-out to release the lock and allow other clients to progress and
+	/// not be blocked indefinately.</para>
+	///
+	/// <returns>S_OK if the lock was released, an error code otherwise</returns>
+	HRESULT Unlock ();
+}
+
+/// <summary>Provides access to an IJvm instance.</summary>
+///
+/// <para>A container may manage either a JVM directly or a connection to a JVM
+/// in an external process depending on the connection type requested by the
+/// template and defaults for the JVM identifier.</para>
+///
+/// <para>The JVM, and any COM objects it returns are only valid while a reference is held
+/// to the managing container. For example, releasing the last reference to the container may
+/// cause DLLs to be unloaded or other system resources to be released which may result in
+/// unstable behaviour from any orphaned JVM instances.</para>
+[
+	object,
+	uuid (249d1804-c433-4e15-a1c8-f7158e316e1e)
+] interface IJvmContainer : IUnknown {
+	/// <summary>JVM configuration template.</summary>
+	///
+	/// <para>Returns either the configuration template used to establish this container
+	/// or the one from an existing container that was compatible with the one requested
+	/// for the connection.</para>
+	///
+	/// <para>This is a copy of the template. Any changes to the template returned by this
+	/// method will not affect the behaviour of the JVM.</para>
+	///
+	/// <param name="ppTemplate">Receives the configuration template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Template ([out, retval] IJvmTemplate **ppTemplate);
+	/// <summary>JVM logical identifier.</summary>
+	///
+	/// <para>Returns the logical name of the JVM. This may be used in conjunction with certain
+	/// JVM connection types to manage JVM instances shared by multiple processes. If this is
+	/// an anonymous JVM that cannot be shared then this may be NULL.</para>
+	///
+	/// <param name="pbstrIdentifier">Receives the JVM identifier</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Identifier ([out, retval] BSTR *pbstrIdentifier);
+	/// <summary>Returns a connection to the JVM.</summary>
+	///
+	/// <para>Calls to this method may result in either the JVM being constructed or a
+	/// reference to the already running JVM, managed by this container, being returned.</para>
+	///
+	/// <param name="ppJvm">Receives the JVM instance</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Jvm ([out, retval] IJvm **ppJvm);
+};
+
+/// <summary>Library entrypoint instance.</summary>
+///
+/// <para>Using members of this object are equivalent to calling the exported
+/// functions from the DLL. An instance is typically obtained through either an
+/// object factory, or by loading the DLL and calling the ComJvmCreateInstance
+/// method on it.</para>
+[
+	object,
+	uuid (9d2641b2-579d-4a15-8b63-3cb01ddcc0c4)
+] interface IJvmSupport : IUnknown {
+	/// <summary>Logical host name.</summary>
+	///
+	/// <para>The name of this host can be used along with any host information available
+	/// from other object instances (for example IJarFile and IClassFolder) to determine
+	/// whether the instances are local or not.</para>
+	///
+	/// <param name="pbstrHost">Receives the host name</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Host ([out, retval] BSTR *pbstrHost);
+	/// <summary>Creates an ITemplate instance.</summary>
+	///
+	/// <para>The template will be either initially empty, or pre-populated with
+	/// any local definitions for the supplied identifier. It may also have
+	/// associated over-rides.</para>
+	///
+	/// <param name="bstrIdentifier">Template identifier, omit for an empty template</param>
+	/// <param name="ppTemplate">Receives the created template instance</param>
+	/// <returns>S_OK if the template was created, an error code otherwise</returns>
+	HRESULT CreateTemplate ([in, optional] BSTR bstrIdentifier, [out, retval] IJvmTemplate **ppTemplate);
+	/// <summary>Copies an ITemplate instance.</summary>
+	///
+	/// <para>A new, empty, template is created and the configuration from the
+	/// supplied one copied into it.</para>
+	///
+	/// <para>Note that any over-rides associated with the source template are
+	/// not copied.</para>
+	///
+	/// <param name="pSource">Source template to copy details from</param>
+	/// <param name="ppDest">Receives the new template instance</param>
+	/// <returns>S_OK if the template was copied, an error code otherwise</returns>
+	HRESULT CopyTemplate ([in] IJvmTemplate *pSource, [out, retval] IJvmTemplate **ppDest);
+	/// <summary>Connects to a JVM container</summary>
+	///
+	/// <para>If an identifier is specified then an existing JVM, with that identifier, that
+	/// is compatible with the requested template may be connected to. The returned container
+	/// will manage that connection.</para>
+	///
+	/// <para>If no identifier is specified or the template is not compatible with an existing
+	/// JVM, with that identifier, or the caller does not have sufficient rights to access that
+	/// existing JVM then a new JVM will be created. The returned container will manage that
+	/// creation.</para>
+	///
+	/// <para>Local configuation may dictate template defaults for a given identifier. For
+	/// example, an application identifier may be configured to mandate a particular JVM type
+	/// or classpath configuration to over-ride anything provided programatically.</para>
+	///
+	/// <param name="bstrIdentifier">JVM identifier, omit if an anonymous JVM is required</param>
+	/// <param name="pTemplate">JVM configuration template, omit for defaults mandated by the identifier or to connect to an existing JVM</param>
+	/// <param name="ppJvmContainer">Receives the IJvmContainer instance which will give access to the underlying JVM</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Connect ([in, optional] BSTR bstrIdentifier, [in, optional] IJvmTemplate *pTemplate, [out, retval] IJvmContainer **ppJvmContainer);
+	/// <summary>Creates an IClasspathEntry instance.</summary>
+	///
+	/// <para>The type of instance created will depend on the path.</para>
+	///
+	/// <para>If the path is to a folder then an IClassFolder instance will be created.</para>
+	///
+	/// <para>If the path is to a file then an IJarFile instance will be created.</para>
+	///
+	/// <para>If the path contains one or more wild-card characters then an instance
+	/// will be returned that can deliver the corresponding IClassFolder and IJarFile instances
+	/// when it is used to construct an IClasspath.</para>
+	///
+	/// <param name="bstrLocalPath">Path to create the instance for, local to the host where this IJvmSupport instance resides</param>
+	/// <param name="ppEntry">Receives the new IClasspathEntry instance</param>
+	/// <returns>S_OK if the entry was created, an error code otherwise</returns>
+	HRESULT CreateClasspathEntry ([in] BSTR bstrLocalPath, [out, retval] IClasspathEntry **ppEntry);
+	/// <summary>Creates a managed IJniSequence associated with an IJvmContainer instance.</summary>
+	///
+	/// <para>The IJvm implementing the underlying sequence will be constructed or re-constructed
+	/// from the container on demand.</para>
+	///
+	/// <param name="ppJni">Receives the new IJniSequence instance</param>
+	/// <returns>S_OK if the object was created, an error code otherwise</returns>
+	HRESULT CreateManagedJni ([out, retval] IJniSequence **ppJni);
+};
+
+/// <summary>Describes a JVM's construction configuration.</summary>
+///
+/// <para>JVMs are created by a container based on a template. The template
+/// defines all configurable parameters such as the classpath.</para>
+[
+	object,
+	uuid (9c3c1f6f-eb49-4b4d-b57c-2eaa66ed2920)
+] interface IJvmTemplate : IUnknown {
+	/// <summary>Classpath settings.</summary>
+	///
+	/// <para>The classpath is held as a collection of IClasspathEntry instances that
+	/// can be resolved to an IClasspath at the point of JVM construction.</para>
+	///
+	/// <param name="ppClasspath">Receives the classpath</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Classpath ([out, retval] IClasspathEntries **ppClasspath);
+	/// <summary>JVM connection/container type.</summary>
+	///
+	/// <para>Queries the method used to construct/connect to a JVM, if mandated
+	/// by this template.</para>
+	///
+	/// <param name="pbstrType">Receives the JVM type, or NULL if none is specified in the template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Type ([out, retval] BSTR *pbstrType);
+	/// <summary>JVM connection/container type.</summary>
+	///
+	/// <para>Sets the method used to construct/connect to a JVM. This may be NULL
+	/// if the template does not mandate any particular connection type.</para>
+	///
+	/// <param name="bstrType">The JVM type, or NULL if this template should not specify any</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Type ([in] BSTR bstrType);
+	/// <summary>Updates this template with any over-ride settings.</summary>
+	///
+	/// <para>When a template is created from a named identifier it may include
+	/// one or more over-rides which will always take precedence over anything set
+	/// programatically. Practical uses of this include allowing an end-user to
+	/// force the classpath to include a particular debugging JAR.</para>
+	///
+	/// <returns>S_OK if over-rides were applied, S_FALSE if no over-rides were defined, or an error code otherwise</returns>
+	HRESULT AppendDefaults ();
+};
+
 [
 	uuid (0e07a0b8-0fa3-4497-bc66-6d2af2a0b9c8),
 	helpstring ("Core JVM Support 1.0 Type Library"),
 	version (1.0)
 ] library ComJvmCore {
-
-	/// <summary>Folder, on disk, containing Java class files.</summary>
-	///
-	/// <para>An IClassFolder instance may contribute towards an IClasspath when
-	/// constructing a JVM</para>
-	[
-		object,
-		uuid (b646b5bb-26e9-4ac2-abc3-863eaf4f5348)
-	] interface IClassFolder : IClasspathEntry {
-		/// <summary>Absolute local path of the folder.</summary>
-		///
-		/// <para>Gets the absolute path, local to the object instance and not the
-		/// caller.</para>
-		///
-		/// <param name="pbstrPath">Receives the path</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
-		/// <summary>Queries the caching/validity testing information.</summary>
-		///
-		/// <para>The caller may have a matching local path; the information here
-		/// is used to test whether the files held in that location match that of
-		/// the object instance.</para>
-		///
-		/// <param name="pbstrHost">Receives the host name</param>
-		/// <param name="plFiles">Receives the number of files in the folder</param>
-		/// <param name="plLength">Receives the total size of the files in the folder</param>
-		/// <param name="puTimestampHash">Receives a hash of the timestamps of the files</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT CacheInfo ([out] BSTR *pbstrHost, [out] long *plFiles, [out] long *plLength, [out] unsigned hyper *puTimestampHash);
-		/// <summary>Writes the content of this folder to a file system.</summary>
-		///
-		/// <para>If the IFileSystemWriter is local to host A and the IClassFolder is local
-		/// to host B then this method can be used to transfer data from A to B.</para>
-		///
-		/// <param name="pWriter">Destination to write to</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Write ([in] IDirectoryWriter *pWriter);
-	};
-
-	/// <summary>Classpath that will be used to construct a JVM.</summary>
-	///
-	/// <para>The JVM must be created with classpath entries that are applicable to the
-	/// available class loaders. A typical instance will recognise contributing IClassFolder
-	/// and IJarFile instances as either "local" or "remote". The referenced locations can
-	/// be used directly for the former case. Class file, or JAR, payload must be
-	/// transferred to a suitable "local" location in order to handle the "remote" case
-	/// correctly.</para>
-	///
-	/// <para>Instances of IClasspath are created by the component that is about to create
-	/// a JVM. Instances of IClasspathEntry are then required to contribute towards it.</para>
-	[
-		object,
-		uuid (f0f716d2-27d9-4679-8d05-7889f7959ff4)
-	] interface IClasspath : IUnknown {
-		/// <summary>Adds a class folder to this path.</summary>
-		///
-		/// <para>If the class folder is available locally to this instance then it may be
-		/// used directly. If the folder is remote then it will be requested as a binary JAR
-		/// that can be used by the local JVM invocation.</para>
-		///
-		/// <param name="pFolder">The folder to add</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT AddFolder ([in] IClassFolder *pFolder);
-		/// <summary>Adds a JAR to this path.</summary>
-		///
-		/// <para>If the JAR is available locally to this instance then it may be used
-		/// directly. If the JAR is remote then a binary copy will be requested that can be
-		/// used by the local JVM invocation.</para>
-		///
-		/// <param name="pJar">The JAR to add</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT AddJar ([in] IJarFile *pJar);
-		/// <summary>Local classpath value.</summary>
-		///
-		/// <para>Gets the resolved classpath, local to the object instance and not the
-		/// caller.</para>
-		///
-		/// <param name="pbstrPath">Receives the resolved classpath</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
-	};
-
-	/// <summary>Collection of IClasspathEntry instances.</summary>
-	///
-	/// <para>One or more IClasspathEntry instances can be used to populate a
-	/// IClasspath when constructing a JVM.</para>
-	[
-		object,
-		uuid (7087cf73-6691-4a27-b54a-b1ae4a9fab35)
-	] interface IClasspathEntries : IUnknown {
-		/// <summary>Number of entries in the collection.</summary>
-		///
-		/// <param name="plCount">Receives the number of entries</param>
-		/// <returns>S_OK if successful, an error code otherwise</summary>
-		[propget] HRESULT Count ([out, retval] long *plCount);
-		/// <summary>An item within the collection.</summary>
-		///
-		/// <para>Returns the item at the given index.</para>
-		///
-		/// <param name="lIndex">The 1-based index into the collection</param>
-		/// <param name="ppEntry">Receives the element from the collection</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Item ([in] long lIndex, [out, retval] IClasspathEntry **ppEntry);
-		/// <summary>An item within the collection.</summary>
-		///
-		/// <para>Sets the item at the given index. If the index already exists then the
-		/// element at that index is replaced. If the index is the first unallocated value
-		/// then the collection is extended ni the same was as if Add was called.</para>
-		///
-		/// <param name="lIndex">The 1-based index into the collection</param>
-		/// <param name="pEntry">The element to add to the collection</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propput] HRESULT Item ([in] long lIndex, [in] IClasspathEntry *pEntry);
-		/// <summary>Adds an element to the collection.</summary>
-		///
-		/// <para>The element is appended to the end of the collection.</para>
-		///
-		/// <param name="pEntry">The element to add to the collection</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Add ([in] IClasspathEntry *pEntry);
-		/// <summary>Empties the collection.</summary>
-		///
-		/// <para>The collection is reset to its initial/empty state.</para>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Clear ();
-		/// <summary>Removes an element from the collection</summary>
-		///
-		/// <para>The element at the given index is removed and all elements at
-		/// greater indices are shifted down.</para>
-		///
-		/// <param name="lIndex">The 1-based index of the element to remove</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Remove ([in] long lIndex);
-	};
-
-	/// <summary>Fragment contributing towards an IClasspath.</summary>
-	///
-	/// <para>The full JVM class path is comprised of JAR files and folders of classes
-	/// that are local to the JVM library. An IClasspathEntry instance can contribute
-	/// one or more of these to an IClasspath for the JVM to be constructed.</para>
-	///
-	/// <para>An instance may itself implement IJarFile or IClassFolder. Alternatively
-	/// it might just deliver appropriate implementations of these interfaces to the
-	/// IClasspath when requested.</para>
-	[
-		object,
-		uuid (9e95046b-1a36-4d05-838e-e44f11213503)
-	] interface IClasspathEntry : IUnknown {
-		/// <summary>Displayable/construction name of the entry.</summary>
-		///
-		/// <para>Entries are typically created by IJvmSupport#CreateClasspathEntry. The
-		/// name of the entry corresponds to the string passed to that method. This might
-		/// be a local path, but only with respect to the host of the IJvmSupport instance
-		/// that created it.</para>
-		///
-		/// <param name="pbstrName">Receives the name of this entry</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Name ([out, retval] BSTR *pbstrName);
-		/// <summary>Adds this entry to the given classpath.</summary>
-		///
-		/// <para>If this entry corresponds to a Jar file or class folder then it may simply
-		/// call IClasspath#AddJar or IClasspath#AddFolder respectively. If this is a more
-		/// complex entry then this might result in multiple calls to methods on the IClasspath
-		/// instance.</para>
-		///
-		/// <param name="pClasspath">The classpath to append this entry to</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT AddToClasspath ([in] IClasspath *pClasspath);
-	};
-
-	/// <summary>Output folder, allowing other folders and files to be written.</summary>
-	///
-	/// <para>This is used in place of more complete file system access (such as Scripting.FilesystemObject)
-	/// to simplify implementations supporting JVMs outside of the Win32 environment.</para>
-	[
-		object,
-		uuid (1f894bf1-99a4-4c25-8dab-e212d9d46ae3)
-	] interface IDirectoryWriter : IUnknown {
-		/// <summary>Creates a sub-folder.</summary>
-		///
-		/// <para>The returned value is positioned in the newly created (or already existing) folder.</para>
-		///
-		/// <param name="bstrFolder">Folder to open or create</param>
-		/// <param name="ppWriter">Receives the writing instance to use for the sub-folder</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Directory ([in] BSTR bstrFolder, [out, retval] IDirectoryWriter **ppWriter);
-		/// <summary>Creates a file.</summary>
-		///
-		/// <para>If the file already exists then it is truncated.</para>
-		///
-		/// <param name="bstrFile">File name to create</param>
-		/// <param name="ppWriter">Receives the writing instance to use for the file</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT File ([in] BSTR bstrFile, [out, retval] IFileWriter **ppWriter);
-	};
-
-	/// <summary>Output stream, writing binary data to a file on disk.</summary>
-	///
-	/// <para>This is used in place of more complete file system access (such as Scripting.FilesystemObject)
-	/// to simplify implementations supporting JVMs outside of the Win32 environment.</para>
-	[
-		object,
-		uuid (e0a6756d-b91a-497f-9980-7de1213b9243)
-	] interface IFileWriter : IUnknown {
-		/// <summary>Closes the stream.</summary>
-		///
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Close ();
-		/// <summary>Writes a block of data to the stream.</summary>
-		///
-		/// <param name="pData">Data to write</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Write ([in] BYTE_SIZEDARR *pData);
-	};
-
-	/// <summary>JAR file, on disk, containing Java class files.</summary>
-	///
-	/// <para>An IJarFile instance may contribute towards an IClasspath when
-	/// constructing a JVM</param>
-	[
-		object,
-		uuid (e9fee3f8-f1b7-47c7-b85e-4e40259fc43f)
-	] interface IJarFile : IClasspathEntry {
-		/// <summary>Absolute local path of the file.</summary>
-		///
-		/// <para>Gets the absolute path, local to the object instance and not the
-		/// caller.</para>
-		///
-		/// <param name="pbstrPath">Receives the path</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
-		/// <summary>Queries the caching/validity testing information.</summary>
-		///
-		/// <para>The caller may have a matching local path; the information here
-		/// is used to test whether the files held in that location match that of
-		/// the object instance.</para>
-		///
-		/// <param name="pbstrHost">Receives the host name</param>
-		/// <param name="plLength">Receives the length of the file</param>
-		/// <param name="puTimestamp">Receives the timestamp of the file</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT CacheInfo ([out] BSTR *pbstrHost, [out] long *plLength, [out] unsigned hyper *puTimestamp);
-		/// <summary>Writes the JAR contents.</summary>
-		///
-		/// <para>If the IFileWriter is local to host A and the IClassFolder is local to host B
-		/// then this method can be used to transfer data from A to B.</para>
-		///
-		/// <param name="pWriter">Destination to write to</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Write ([in] IFileWriter *pWriter);
-	};
-
-	const long JTYPE_OBJECT = 'L';
-	const long JTYPE_BOOLEAN = 'Z';
-	const long JTYPE_BYTE = 'B';
-	const long JTYPE_CHAR = 'C';
-	const long JTYPE_SHORT = 'S';
-	const long JTYPE_INT = 'I';
-	const long JTYPE_LONG = 'J';
-	const long JTYPE_FLOAT = 'F';
-	const long JTYPE_DOUBLE = 'D';
-	const long JTYPE_VOID = 'V';
-
-	midl_pragma warning (disable: 2362)
-	/// <summary>One or more JNI operations.</summary>
-	///
-	/// <para>The JNI transaction may be associated with its owning JVM which will be used to
-	/// execute it when requested. If the JVM has failed then the transaction will fail and may
-	/// no longer be used. Such circumstances must be handled by the client, typically by
-	/// requesting a new JVM from the managing container and re-creating the transaction object.</para>
-	///
-	/// <para>An alternative implementation is provided by IJvmSupport#CreateManagedJNI which
-	/// associates the transaction instance with an IJvmContainer to automatically handle trivial
-	/// JVM disconnect/reconnect scenarios.</para>
-	[
-		object,
-		uuid (bf027fd9-f1b6-4b85-80cd-8dfb2cbd681f)
-	] interface IJniSequence : IUnknown {
-		/// <summary>Number of control parameters.</summary>
-		///
-		/// <para>Control parameters are allocated by the Argument method. The value of this
-		/// property is the number of items that must be passed to the Execute method to run
-		/// the JNI operations.</para>
-		///
-		/// <param name="pcArgs">Receives the number of parameters</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Arguments ([out, retval] long *pcArgs);
-		/// <summary>Number of results.</summary>
-		///
-		/// <para>Results are allocated by the Result method. The value of this property is the
-		/// number of items that the Execute method can return after running the JNI operations.</para>
-		///
-		/// <param name="pcResults">Receives the number of results</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Results ([out, retval] long *pcResults);
-		/// <summary>Executes the sequence.</summary>
-		///
-		/// <param name="cArgs">Number of control parameters</param>
-		/// <param name="aArgs">Control parameters</param>
-		/// <param name="cResults">Number of results</param>
-		/// <param name="aResults">Receives the results</param>
-		/// <returns>S_OK if the sequence was executed, an error code otherwise</returns>
-		HRESULT Execute ([in] long cArgs, [in, size_is (cArgs)] VARIANT *aArgs, [in] long cResults, [out, size_is (cResults)] VARIANT *aResults);
-		/// <summary>Declares a control parameter for the sequence.</summary>
-		///
-		/// <para>The number of expected control parameters needed for Execute will be increased.
-		/// The value of this argument may be used for JNI operations using the returned handle.</para>
-		///
-		/// <param name="plVauleRef">Receives the handle referencing this parameter's value</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Argument ([out, retval] long *plValueRef);
-		/// <summary>Declares a result exported by this sequence.</summary>
-		///
-		/// <para>The number of expected results produced by Execute will be increased.
-		/// The value of this result will be the value referenced by the supplied handle.</para>
-		///
-		/// <param name="lValueRef">Handle to an intermediate value created by a JNI operation</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Result ([in] long lValueRef);
-		/// <summary>Stores a string constant for use by JNI operations.</summary>
-		///
-		/// <para>All operations take a value reference. To pass a string constant it must first
-		/// be loaded using this method to obtain a reference.</para>
-		///
-		/// <param name="bstrConstant">String to load</param>
-		/// <param name="plValueRef">Receives the handle referencing this constant</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT StringConstant ([in] BSTR bstr, [out, retval] long *plValueRef);
-		/// <summary>Stores an 8-bit integer constant for use by JNI operations.</summary>
-		///
-		/// <para>All operations take a value reference. To pass an integer constant it must first
-		/// be loaded using this method to obtain a reference.</para>
-		///
-		/// <param name="nValue">Value to load</param>
-		/// <param name="plValueRef">Receives the handle referencing this constant</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT ByteConstant ([in] byte nValue, [out, retval] long *plValueRef);
-		/// <summary>Stores a 16-bit integer constant for use by JNI operations.</summary>
-		///
-		/// <para>All operations take a value reference. To pass an integer constant it must first
-		/// be loaded using this method to obtain a reference.</para>
-		///
-		/// <param name="nValue">Value to load</param>
-		/// <param name="plValueRef">Receives the handle referencing this constant</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT ShortConstant ([in] short nValue, [out, retval] long *plValueRef);
-		/// <summary>Stores a 32-bit integer constant for use by JNI operations.</summary>
-		///
-		/// <para>All operations take a value reference. To pass an integer constant it must first
-		/// be loaded using this method to obtain a reference.</para>
-		///
-		/// <param name="nValue">Value to load</param>
-		/// <param name="plValueRef">Receives the handle referencing this constant</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT IntConstant ([in] long nValue, [out, retval] long *plValueRef);
-		/// <summary>Stores a 64-bit integer constant for use by JNI operations.</summary>
-		///
-		/// <para>All operations take a value reference. To pass an integer constant it must first
-		/// be loaded using this method to obtain a reference.</para>
-		///
-		/// <param name="nValue">Value to load</param>
-		/// <param name="plValueRef">Receives the handle referencing this constant</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT LongConstant ([in] hyper nValue, [out, retval] long *plValueRef);
-		/// <summary>Stores a boolean constant for use by JNI operations.</summary>
-		///
-		/// <para>All operations take a value reference. To pass an integer constant it must first
-		/// be loaded using this method to obtain a reference.</para>
-		///
-		/// <param name="fValue">Value to load</param>
-		/// <param name="plValueRef">Receives the handle referencing this constant</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT BooleanConstant ([in] BOOL fValue, [out, retval] long *plValueRef);
-
-		// TODO: Float, Double, Char, NULL constants
-		// TODO: Label/Goto-If for conditional stuff
-		// TODO: Callback - passes values into the callback and receives the result back into one or more local variables
-		// TODO: Allocate/Release arbitrary buffers
-		// TODO: Pointer arithmetic
-
-		HRESULT jni_GetVersion ([out] long *plValueRef);
-		HRESULT jni_DefineClass ([in] long lNameRef, [in] long lLoaderRef, [in] long lBufRef, [in] long lLenRef, [out, retval] long *plClassRef);
-		HRESULT jni_FindClass ([in] long lNameRef, [out, retval] long *plClassRef);
-		HRESULT jni_FromReflectedMethod ([in] long lMethodRef, [out, retval] long *plMethodIDRef);
-		HRESULT jni_FromReflectedField ([in] long lFieldRef, [out, retval] long *plFieldIDRef);
-		HRESULT jni_ToReflectedMethod ([in] long lClsRef, [in] long lMethodIDRef, [in] long lIsStaticRef, [out, retval] long *plObjectRef);
-		HRESULT jni_GetSuperclass ([in] long lSubRef, [out, retval] long *plClassRef);
-		HRESULT jni_IsAssignableFrom ([in] long lSubRef, [in] long lSupRef, [out, retval] long *plBooleanRef);
-		HRESULT jni_ToReflectedField ([in] long lClsRef, [in] long lFieldIDRef, [in] long lIsStaticRef, [out, retval] long *plObjectRef);
-		HRESULT jni_Throw ([in] long lObjRef, [out, retval] long *plIntRef);
-		HRESULT jni_ThrowNew ([in] long lClassRef, [in] long lMsgRef, [out, retval] long *plIntRef);
-		HRESULT jni_ExceptionOccurred ([out, retval] long *plThrowableRef);
-		HRESULT jni_ExceptionDescribe ();
-		HRESULT jni_ExceptionClear ();
-		HRESULT jni_FatalError ([in] long lMsgRef);
-		HRESULT jni_PushLocalFrame ([in] long lCapacityRef, [out, retval] long *plIntRef);
-		HRESULT jni_PopLocalFrame ([in] long lResultRef, [out, retval] long *plObjectRef);
-		HRESULT jni_NewGlobalRef ([in] long lLobjRef, [out, retval] long *plObjectRef);
-		HRESULT jni_DeleteGlobalRef ([in] long lGrefRef);
-		HRESULT jni_DeleteLocalRef ([in] long lObjRef);
-		HRESULT jni_IsSameObject ([in] long lObj1Ref, [in] long lObj2Ref, [out, retval] long *plBooleanRef);
-		HRESULT jni_NewLocalRef ([in] long lRefRef, [out, retval] long *plObjectRef);
-		HRESULT jni_EnsureLocalCapacity ([in] long lCapacityRet, [out, retval] long *plIntRef);
-		HRESULT jni_AllocObject ([in] long lClassRef, [out, retval] long *plObjectRef);
-		HRESULT jni_NewObject ([in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plObjectRef);
-		HRESULT jni_GetObjectClass ([in] long lObjRef, [out, retval] long *plClassRef);
-		HRESULT jni_IsInstanceOf ([in] long lObjRef, [in] long lClassRef, [out, retval] long *plBooleanRef);
-		HRESULT jni_GetMethodID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plMethodIDRef);
-		HRESULT jni_CallMethod ([in] long lType, [in] long lObjRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plResultRef);
-		HRESULT jni_CallNonVirtualMethod ([in] long lType, [in] long lObjRef, [in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plResultRef);
-		HRESULT jni_GetFieldID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plFieldIDRef);
-		HRESULT jni_GetField ([in] long lType, [in] long lObjRef, [in] long lFieldIDRef, [out, retval] long *plResultRef);
-		HRESULT jni_SetField ([in] long lType, [in] long lObjRef, [in] long lFieldIDRef, [in] long lValueRef);
-		HRESULT jni_GetStaticMethodID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plMethodIDRef);
-		HRESULT jni_CallStaticMethod ([in] long lType, [in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgsRef, [out, retval] long *plResultRef);
-		HRESULT jni_GetStaticFieldID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plFieldIDRef);
-		HRESULT jni_GetStaticField ([in] long lType, [in] long lClassRef, [in] long lFieldIDRef, [out, retval] long *plResultRef);
-		HRESULT jni_SetStaticField ([in] long lType, [in] long lClassRef, [in] long lFieldIDRef, [in] long lValueRef);
-		HRESULT jni_NewString ([in] long lUnicodeRef, [in] long lSizeRef, [out, retval] long *plStringRef);
-		HRESULT jni_GetStringLength ([in] long lStrRef, [out, retval] long *plSizeRef);
-		HRESULT jni_GetStringChars ([in] long lStrRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
-		HRESULT jni_ReleaseStringChars ([in] long lStrRef, [in] long lCharsRef);
-		HRESULT jni_NewStringUTF ([in] long lUtfRef, [out, retval] long *plStringRef);
-		HRESULT jni_GetStringUTFLength ([in] long lStrRef, [out, retval] long *plSizeRef);
-		HRESULT jni_GetStringUTFChars ([in] long lStrRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
-		HRESULT jni_ReleaseStringUTFChars ([in] long lStrRef, [in] long lCharsRef);
-		HRESULT jni_GetArrayLength ([in] long lArrayRef, [out, retval] long *plSizeRef);
-		HRESULT jni_NewObjectArray ([in] long lLenRef, [in] long lClassRef, [in] long lInitRef, [out, retval] long *plArrayRef);
-		HRESULT jni_GetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [out, retval] long *plObjectRef);
-		HRESULT jni_SetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [in] long lValRef);
-		HRESULT jni_NewArray ([in] long lType, [in] long lLenRef, [out, retval] long *plArrayRef);
-		HRESULT jni_GetArrayElements ([in] long lType, [in] long lArrayRef, [out] long *plIsCopyRef, [out, retval] long *plPointerRef);
-		HRESULT jni_ReleaseArrayElements ([in] long lType, [in] long lArrayRef, [in] long lElemsRef, [in] long lModeRef);
-		HRESULT jni_GetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
-		HRESULT jni_SetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
-		HRESULT jni_RegisterNatives ([in] long lClassRef, [in] long lMethodsRef, [in] long lNMethodsef, [out, retval] long *plIntRef);
-		HRESULT jni_UnregisterNatives ([in] long lClassRef, [out, retval] long *plIntRef);
-		HRESULT jni_MonitorEntry ([in] long lObjRef, [out, retval] long *plIntRef);
-		HRESULT jni_MonitorExit ([in] long lObjRef, [out, retval] long *plIntRef);
-		HRESULT jni_GetStringRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
-		HRESULT jni_GetStringUTFRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
-		HRESULT jni_GetPrimitiveArrayCritical ([in] long lArrayRef, [out] long *plIsCopyRef, [out, retval] long *plVoidRef);
-		HRESULT jni_ReleasePrimitiveArrayCritical ([in] long lArrayRef, [in] long lCArrayRef, [in] long lModeRef);
-		HRESULT jni_GetStringCritical ([in] long lStringRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
-		HRESULT jni_ReleaseStringCritical ([in] long lStringRef, [in] long lCStringRef);
-		HRESULT jni_NewWeakGlobalRef ([in] long lObjRef, [out, retval] long *plWeakRef);
-		HRESULT jni_DeleteWeakGlobalRef ([in] long lRefRef);
-		HRESULT jni_ExceptionCheck ([out, retval] long *plBooleanRef);
-		HRESULT jni_NewDirectByteBuffer ([in] long lAddressRef, [in] long lCapacityRef, [out, retval] long *plObjectRef);
-		HRESULT jni_GetDirectBufferAddress ([in] long lBufRef, [out, retval] long *plVoidRef);
-		HRESULT jni_GetDirectBufferCapacity ([in] long lBufRef, [out, retval] long *plLongRef);
-		HRESULT jni_GetObjectRefType ([in] long lObjRef, [out, retval] long *plObjectRefTypeRef);
-	};
-
-	/// <summary>JVM abstraction.</summary>
-	///
-	/// <para>The main JNI functions are exposed through an instance of IJvm. The instance
-	/// is typically obtained through, and managed by, an IJvmContainer instance. The
-	/// container is capable of handling restart and re-connection events that are not part
-	/// of a local JNI session but may be necessary to consider for the case of a JVM in a
-	/// remote or shared process.</para>
-	[
-		object,
-		uuid (cf3b6bca-afc3-4337-9529-e340a9b7808e)
-	] interface IJvm : IUnknown {
-		/// <summary>JVM physical identifier.</summary>
-		///
-		/// <para>Returns the unique identifier allocated for the JNI session this instance
-		/// encapsulates.</para>
-		///
-		/// <para>It is possible to obtain different IJvm instances that correspond to the
-		/// same JVM, depending on the implementation of the IJvmConnector used by the
-		/// managing IJvmContainer. If two instances correspond to the same physical JVM then
-		/// the identifiers returned by each will be the same.</para>
-		///
-		/// <para>It is possible to obtain IJvm instances, from the same IJvmContainer, that
-		/// correspond to different physical JVMs because of a fault which required the
-		/// container construct a new physical JVM for that logical configuration.</para>
-		///
-		/// <param name="pguidIdentifier">Receives the JVM identifier</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Identifier ([out, retval] GUID *pguidIdentifier);
-		/// <summary>JVM template.</summary>
-		///
-		/// <para>Returns the configuration template used to create this JVM, or the effective
-		/// template if the JVM supports modification while it is running.</para>
-		///
-		/// <para>This is a copy of the template. Any changes to the template returned by this
-		/// method will not affect the behaviour of the JVM.</para>
-		///
-		/// <param name="ppTemplate">Receives the configuration template</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Template ([out, retval] IJvmTemplate **ppTemplate);
-		/// <summary>Tests if the JVM is operational.</summary>
-		///
-		/// <para>This is a "cheap" method (no parameter or result marshalling) that can be used
-		/// to test the COM infrastructure as to whether the JVM is available for use. There may
-		/// be internal checks from the JVM - such as whether it has been shutdown by the Java
-		/// code - but more likely this will only fail if there is a COM proxy error for the case
-		/// when the JVM is running out-of-process.</para>
-		///
-		/// <returns>S_OK if the JVM is available, an error code otherwise</returns>
-		HRESULT Heartbeat ();
-		/// <summary>Creates a JNI transaction.</summary>
-		///
-		/// <para>The transaction can be used to invoke a sequence of one or more JNI calls to
-		/// this JVM. The transaction may be executed one or more times, with different control
-		/// parameters, or never be executed.</para>
-		///
-		/// <param name="ppTransaction">Receives the new transaction object</param>
-		/// <returns>S_OK if the transaction was created, an error code otherwise</returns>
-		HRESULT CreateJni ([out, retval] IJniSequence **ppTransaction);
-	}
-
-	/// <summary>JVM resolution and connection abstraction.</summary>
-	///
-	/// <para>An implementation, selected by the connection type from the template used to
-	/// construct an IJvmContainer, determines how the JVM is resolved or a new JVM started
-	/// if there is no existing one.</para>
-	[
-		object,
-		uuid (e41afc88-0617-485a-9de8-393619d921b9)
-	] interface IJvmConnector : IUnknown {
-		/// <summary>Acquires the connector's lock.</summary>
-		///
-		/// <para>Connectors are used to first check for existing JVMs and then create a new
-		/// JVM using the FindJvm and CreateJVM methods while holding this lock.</para>
-		///
-		/// <para>Successful calls must be matched with a call to Unlock. Implementations may
-		/// need to be implemented with a level of resiliance if they are out-of-process COM
-		/// servers and time-out any locks from clients which have not released the lock and
-		/// not used the connector for a period.</para>
-		///
-		/// <returns>S_OK if the lock was acquired, an error code otherwise</returns>
-		HRESULT Lock ();
-		/// <summary>Enumerates existing JVM instances.</summary>
-		///
-		/// <para>JVMs are referenced by their logical identifier - the identifier of the
-		/// IJvmContainer using this connector. There may be multiple, incompatible, JVMs
-		/// available for the same logical identifier which are distinguished by a 1-based
-		/// index. This may occur if there are multiple versions of an application
-		/// running which are using the same logical JVM name but use different configuration
-		/// templates.</para>
-		///
-		/// <para>A container should normally verify the JVM is operational using the IJvm#Heartbeat
-		/// method before returning it as the active JVM instance.</para>
-		///
-		/// <param name="lIndex">1-based index to distinguish multiple JVMs</param>
-		/// <param name="bstrLogicalIdentifier">Logical JVM identifier, omit for anonymous JVMs</param>
-		/// <param name="ppJvm">Receives the JVM instance</param>
-		/// <returns>S_OK if a JVM was found, an error code otherwise</returns>
-		HRESULT FindJvm ([in] long lIndex, [in, optional] BSTR bstrLogicalIdentifier, [out, retval] IJvm **ppJvm);
-		/// <summary>Creates a new JVM instance.</summary>
-		///
-		/// <para>This will always create a new JVM. It is the caller's responsibilty to have checked
-		/// for any existing, compatible, JVMs using the FindJvm method.</para>
-		///
-		/// <para>A container should normally verify the JVM is operational using the IJvm#Heartbeat
-		/// method before returning it as the active JVM instance.</para>
-		///
-		/// <param name="pTemplate">Configuration template</param>
-		/// <param name="bstrLogicalIdentifier">Logical JVM identifier, omit for anonymous JVMs</param>
-		/// <param name="ppJvm">Receives the JVM instance</param>
-		/// <returns>S_OK if a JVM was created, an error code otherwise</returns>
-		HRESULT CreateJvm ([in] IJvmTemplate *pTemplate, [in, optional] BSTR bstrLogicalIdentifier, [out, retval] IJvm **ppJvm);
-		/// <summary>Releases the connector's lock.</summary>
-		///
-		/// <para>Although it is possible for this method to fail, this should only occur in the event
-		/// of COM proxy errors for out-of-process connect instances. Such cases cannot be reasonably
-		/// recovered from by the client. It is the out-of-process' server's responsibility to use a
-		/// mechanism such as time-out to release the lock and allow other clients to progress and
-		/// not be blocked indefinately.</para>
-		///
-		/// <returns>S_OK if the lock was released, an error code otherwise</returns>
-		HRESULT Unlock ();
-	}
-
-	/// <summary>Provides access to an IJvm instance.</summary>
-	///
-	/// <para>A container may manage either a JVM directly or a connection to a JVM
-	/// in an external process depending on the connection type requested by the
-	/// template and defaults for the JVM identifier.</para>
-	///
-	/// <para>The JVM, and any COM objects it returns are only valid while a reference is held
-	/// to the managing container. For example, releasing the last reference to the container may
-	/// cause DLLs to be unloaded or other system resources to be released which may result in
-	/// unstable behaviour from any orphaned JVM instances.</para>
-	[
-		object,
-		uuid (249d1804-c433-4e15-a1c8-f7158e316e1e)
-	] interface IJvmContainer : IUnknown {
-		/// <summary>JVM configuration template.</summary>
-		///
-		/// <para>Returns either the configuration template used to establish this container
-		/// or the one from an existing container that was compatible with the one requested
-		/// for the connection.</para>
-		///
-		/// <para>This is a copy of the template. Any changes to the template returned by this
-		/// method will not affect the behaviour of the JVM.</para>
-		///
-		/// <param name="ppTemplate">Receives the configuration template</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Template ([out, retval] IJvmTemplate **ppTemplate);
-		/// <summary>JVM logical identifier.</summary>
-		///
-		/// <para>Returns the logical name of the JVM. This may be used in conjunction with certain
-		/// JVM connection types to manage JVM instances shared by multiple processes. If this is
-		/// an anonymous JVM that cannot be shared then this may be NULL.</para>
-		///
-		/// <param name="pbstrIdentifier">Receives the JVM identifier</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Identifier ([out, retval] BSTR *pbstrIdentifier);
-		/// <summary>Returns a connection to the JVM.</summary>
-		///
-		/// <para>Calls to this method may result in either the JVM being constructed or a
-		/// reference to the already running JVM, managed by this container, being returned.</para>
-		///
-		/// <param name="ppJvm">Receives the JVM instance</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Jvm ([out, retval] IJvm **ppJvm);
-	};
-
-	/// <summary>Library entrypoint instance.</summary>
-	///
-	/// <para>Using members of this object are equivalent to calling the exported
-	/// functions from the DLL. An instance is typically obtained through either an
-	/// object factory, or by loading the DLL and calling the ComJvmCreateInstance
-	/// method on it.</para>
-	[
-		object,
-		uuid (9d2641b2-579d-4a15-8b63-3cb01ddcc0c4)
-	] interface IJvmSupport : IUnknown {
-		/// <summary>Logical host name.</summary>
-		///
-		/// <para>The name of this host can be used along with any host information available
-		/// from other object instances (for example IJarFile and IClassFolder) to determine
-		/// whether the instances are local or not.</para>
-		///
-		/// <param name="pbstrHost">Receives the host name</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Host ([out, retval] BSTR *pbstrHost);
-		/// <summary>Creates an ITemplate instance.</summary>
-		///
-		/// <para>The template will be either initially empty, or pre-populated with
-		/// any local definitions for the supplied identifier. It may also have
-		/// associated over-rides.</para>
-		///
-		/// <param name="bstrIdentifier">Template identifier, omit for an empty template</param>
-		/// <param name="ppTemplate">Receives the created template instance</param>
-		/// <returns>S_OK if the template was created, an error code otherwise</returns>
-		HRESULT CreateTemplate ([in, optional] BSTR bstrIdentifier, [out, retval] IJvmTemplate **ppTemplate);
-		/// <summary>Copies an ITemplate instance.</summary>
-		///
-		/// <para>A new, empty, template is created and the configuration from the
-		/// supplied one copied into it.</para>
-		///
-		/// <para>Note that any over-rides associated with the source template are
-		/// not copied.</para>
-		///
-		/// <param name="pSource">Source template to copy details from</param>
-		/// <param name="ppDest">Receives the new template instance</param>
-		/// <returns>S_OK if the template was copied, an error code otherwise</returns>
-		HRESULT CopyTemplate ([in] IJvmTemplate *pSource, [out, retval] IJvmTemplate **ppDest);
-		/// <summary>Connects to a JVM container</summary>
-		///
-		/// <para>If an identifier is specified then an existing JVM, with that identifier, that
-		/// is compatible with the requested template may be connected to. The returned container
-		/// will manage that connection.</para>
-		///
-		/// <para>If no identifier is specified or the template is not compatible with an existing
-		/// JVM, with that identifier, or the caller does not have sufficient rights to access that
-		/// existing JVM then a new JVM will be created. The returned container will manage that
-		/// creation.</para>
-		///
-		/// <para>Local configuation may dictate template defaults for a given identifier. For
-		/// example, an application identifier may be configured to mandate a particular JVM type
-		/// or classpath configuration to over-ride anything provided programatically.</para>
-		///
-		/// <param name="bstrIdentifier">JVM identifier, omit if an anonymous JVM is required</param>
-		/// <param name="pTemplate">JVM configuration template, omit for defaults mandated by the identifier or to connect to an existing JVM</param>
-		/// <param name="ppJvmContainer">Receives the IJvmContainer instance which will give access to the underlying JVM</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		HRESULT Connect ([in, optional] BSTR bstrIdentifier, [in, optional] IJvmTemplate *pTemplate, [out, retval] IJvmContainer **ppJvmContainer);
-		/// <summary>Creates an IClasspathEntry instance.</summary>
-		///
-		/// <para>The type of instance created will depend on the path.</para>
-		///
-		/// <para>If the path is to a folder then an IClassFolder instance will be created.</para>
-		///
-		/// <para>If the path is to a file then an IJarFile instance will be created.</para>
-		///
-		/// <para>If the path contains one or more wild-card characters then an instance
-		/// will be returned that can deliver the corresponding IClassFolder and IJarFile instances
-		/// when it is used to construct an IClasspath.</para>
-		///
-		/// <param name="bstrLocalPath">Path to create the instance for, local to the host where this IJvmSupport instance resides</param>
-		/// <param name="ppEntry">Receives the new IClasspathEntry instance</param>
-		/// <returns>S_OK if the entry was created, an error code otherwise</returns>
-		HRESULT CreateClasspathEntry ([in] BSTR bstrLocalPath, [out, retval] IClasspathEntry **ppEntry);
-		/// <summary>Creates a managed IJniSequence associated with an IJvmContainer instance.</summary>
-		///
-		/// <para>The IJvm implementing the underlying sequence will be constructed or re-constructed
-		/// from the container on demand.</para>
-		///
-		/// <param name="ppJni">Receives the new IJniSequence instance</param>
-		/// <returns>S_OK if the object was created, an error code otherwise</returns>
-		HRESULT CreateManagedJni ([out, retval] IJniSequence **ppJni);
-	};
-
-	/// <summary>Describes a JVM's construction configuration.</summary>
-	///
-	/// <para>JVMs are created by a container based on a template. The template
-	/// defines all configurable parameters such as the classpath.</para>
-	[
-		object,
-		uuid (9c3c1f6f-eb49-4b4d-b57c-2eaa66ed2920)
-	] interface IJvmTemplate : IUnknown {
-		/// <summary>Classpath settings.</summary>
-		///
-		/// <para>The classpath is held as a collection of IClasspathEntry instances that
-		/// can be resolved to an IClasspath at the point of JVM construction.</para>
-		///
-		/// <param name="ppClasspath">Receives the classpath</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Classpath ([out, retval] IClasspathEntries **ppClasspath);
-		/// <summary>JVM connection/container type.</summary>
-		///
-		/// <para>Queries the method used to construct/connect to a JVM, if mandated
-		/// by this template.</para>
-		///
-		/// <param name="pbstrType">Receives the JVM type, or NULL if none is specified in the template</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propget] HRESULT Type ([out, retval] BSTR *pbstrType);
-		/// <summary>JVM connection/container type.</summary>
-		///
-		/// <para>Sets the method used to construct/connect to a JVM. This may be NULL
-		/// if the template does not mandate any particular connection type.</para>
-		///
-		/// <param name="bstrType">The JVM type, or NULL if this template should not specify any</param>
-		/// <returns>S_OK if successful, an error code otherwise</returns>
-		[propput] HRESULT Type ([in] BSTR bstrType);
-		/// <summary>Updates this template with any over-ride settings.</summary>
-		///
-		/// <para>When a template is created from a named identifier it may include
-		/// one or more over-rides which will always take precedence over anything set
-		/// programatically. Practical uses of this include allowing an end-user to
-		/// force the classpath to include a particular debugging JAR.</para>
-		///
-		/// <returns>S_OK if over-rides were applied, S_FALSE if no over-rides were defined, or an error code otherwise</returns>
-		HRESULT AppendDefaults ();
-	};
-
+	interface IClassFolder;
+	interface IClasspath;
+	interface IClasspathEntries;
+	interface IClasspathEntry;
+	interface IDirectoryWriter;
+	interface IFileWriter;
+	interface IJarFile;
+	interface IJniSequence;
+	interface IJvm;
+	interface IJvmConnector;
+	interface IJvmContainer;
+	interface IJvmSupport;
+	interface IJvmTemplate;
 	[
 		uuid (34b9de97-d756-4d18-a65c-e7a688cdf3e7),
 		helpstring ("Library entry point"),
