@@ -41,7 +41,7 @@ for (my $params = 0; $params < $MAX_PARAMS; $params++) {
       }
     }
     print ") {\n";
-    print "    UDF(${block}";
+    print "    return UDF(${block}";
     for (my $paramCount = 0; $paramCount < $params; $paramCount++) {
       print ", param${paramCount}";
     }
