@@ -2,6 +2,7 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
@@ -74,6 +75,13 @@ public class MethodInvoker {
    */
   public Class<? extends XLValue> getExcelReturnType() {
     return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
+  }
+  
+  /**
+   * @return true, if the underlying method is static
+   */
+  public boolean isStatic() {
+    return Modifier.isStatic(_method.getModifiers());
   }
   
   /**
