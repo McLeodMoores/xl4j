@@ -12,7 +12,7 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.values.XLValueRange;
+import com.mcleodmoores.excel4j.values.XLArray;
 
 /**
  * Class containing set of static inner classes for identity converters at higher
@@ -124,7 +124,7 @@ public class XLValueIdentityConverters {
   public static class XLValueRangeIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
     public XLValueRangeIdentityConverter() {
-      super(XLValueRange.class);
+      super(XLArray.class);
     }
   }
 }

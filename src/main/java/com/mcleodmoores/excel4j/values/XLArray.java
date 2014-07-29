@@ -12,41 +12,41 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  * It can take the form of a two dimensional array of mixed types of xlopers.
  * REVIEW: should this be generic?
  */
-public final class XLValueRange implements XLValue {
+public final class XLArray implements XLValue, XLReference {
 
-  private final XLValue[][] _valueRange;
+  private final XLValue[][] _array;
 
-  private XLValueRange(final XLValue[][] valueRange) {
-    _valueRange = valueRange;
+  private XLArray(final XLValue[][] valueRange) {
+    _array = valueRange;
   }
 
   /**
    * Static factory method to create an instance of XLValueRange.
-   * @param valueRange a two dimensional array containing XLValues
+   * @param array a two dimensional array containing XLValues
    * @return an instance
    */
-  public static XLValueRange of(final XLValue[][] valueRange) {
-    ArgumentChecker.notNullOrEmpty(valueRange, "valueRange"); // not checking for squareness.
-    return new XLValueRange(valueRange);
+  public static XLArray of(final XLValue[][] array) {
+    ArgumentChecker.notNullOrEmpty(array, "array"); // not checking for squareness.
+    return new XLArray(array);
   }
 
   /**
    * @return a two dimensional array of values, not null
    */
-  public XLValue[][] getValueRange() {
-    return _valueRange;
+  public XLValue[][] getArray() {
+    return _array;
   }
 
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
-    return visitor.visitXLValueRange(this);
+    return visitor.visitXLArray(this);
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + Arrays.deepHashCode(_valueRange); // Arrays.hashCode() had issues.
+    result = prime * result + Arrays.deepHashCode(_array); // Arrays.hashCode() had issues.
     return result;
   }
 
@@ -58,11 +58,11 @@ public final class XLValueRange implements XLValue {
     if (obj == null) {
       return false;
     }
-    if (!(obj instanceof XLValueRange)) {
+    if (!(obj instanceof XLArray)) {
       return false;
     }
-    final XLValueRange other = (XLValueRange) obj;
-    if (!Arrays.deepEquals(_valueRange, other._valueRange)) {
+    final XLArray other = (XLArray) obj;
+    if (!Arrays.deepEquals(_array, other._array)) {
       return false;
     }
     return true;
@@ -70,7 +70,7 @@ public final class XLValueRange implements XLValue {
 
   @Override
   public String toString() {
-    return "XLValueRange[valueRange=" + Arrays.deepToString(_valueRange) + "]";
+    return "XLArray[" + Arrays.deepToString(_array) + "]";
   }
 
 }

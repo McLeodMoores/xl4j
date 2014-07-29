@@ -22,7 +22,7 @@ import com.mcleodmoores.excel4j.values.XLRange;
 import com.mcleodmoores.excel4j.values.XLSheetId;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.values.XLValueRange;
+import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLValueVisitor;
 import com.mcleodmoores.excel4j.values.XLValueVisitorAdapter;
 
@@ -35,7 +35,7 @@ public class XLValueVisitorTests {
     XLBigData.of("Hello"), XLBoolean.from(true), XLError.Name, XLInteger.of(25),
     XLLocalReference.of(XLRange.ofCell(0, 0)), XLMissing.INSTANCE, 
     XLMultiReference.of(XLSheetId.of(1234), XLRange.ofCell(0, 0)), XLNil.INSTANCE,
-    XLNumber.of(987.654321), XLString.of("Hello World"), XLValueRange.of(new XLValue[][] { { XLError.NA } })
+    XLNumber.of(987.654321), XLString.of("Hello World"), XLArray.of(new XLValue[][] { { XLError.NA } })
   );
   
   private static final List<String> EXPECTED = Lists.newArrayList(
@@ -97,7 +97,7 @@ public class XLValueVisitorTests {
       }
 
       @Override
-      public String visitXLValueRange(final XLValueRange value) {
+      public String visitXLArray(final XLArray value) {
         return "XLValueRange";
       }
 
