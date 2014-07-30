@@ -66,7 +66,10 @@ public @interface XLFunction {
    * access to certain call-backs or range references is needed.
    */
   boolean isAsynchronous() default false;
- 
+  /**
+   * @return the way to handle results
+   */
+  XLResultType resultType() default XLResultType.SIMPLEST;
   /**
    * The type of function
    * @return the function type, defaults to FUNCTION
