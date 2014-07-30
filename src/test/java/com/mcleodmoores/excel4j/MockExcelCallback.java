@@ -9,11 +9,8 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * 
  */
-public class MockExcel implements RawExcelCallback {
+public class MockExcelCallback implements RawExcelCallback {
 
-  public void EDF_0_0() {
-    
-  }
   
   @Override
   public int xlfRegister(XLString dllPath, XLString functionExportName, XLString functionSignature, XLString functionWorksheetName, XLString argumentNames,

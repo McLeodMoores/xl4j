@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: McLeod Moores modified Sun Checks (eclipse)
+    Checkstyle-Configuration: McLeod Moores modified Sun Checks (Eclipse)
     Description: none
 -->
 <module name="Checker">
@@ -46,7 +46,9 @@
       <property name="tabWidth" value="2"/>
     </module>
     <module name="MethodLength"/>
-    <module name="ParameterNumber"/>
+    <module name="ParameterNumber">
+      <property name="max" value="8"/>
+    </module>
     <module name="EmptyForIteratorPad"/>
     <module name="MethodParamPad"/>
     <module name="NoWhitespaceAfter">
