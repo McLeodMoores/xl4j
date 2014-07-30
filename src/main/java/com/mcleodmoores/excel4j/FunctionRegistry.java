@@ -41,28 +41,43 @@ public class FunctionRegistry {
       if (method.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = method.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
-      Annotation[][] allParameterAnnotations = method.getParameterAnnotations();
-      XLArgument[] xlArgumentAnnotations = new XLArgument[allParameterAnnotations.length];
-      for (int i = 0; i < allParameterAnnotations.length; i++) {
-        if (allParameterAnnotations[i] != null) {
-          for (int j = 0; j < allParameterAnnotations[i].length; j++) {
-            if (allParameterAnnotations[i][j].annotationType().equals(XLArgument.class)) {
-              xlArgumentAnnotations[i] = (XLArgument) allParameterAnnotations[i][j];
-              break;
-            }
-          }
-        } else {
-          xlArgumentAnnotations[i] = null;
-        }
+      XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(method);
+      // scan the result type if there is one to determine whether function should return simplest type or always
+      // an object type
+      XLResultType resultType;
+      if (functionAnnotation != null) {
+        resultType = functionAnnotation.resultType();
+      } else {
+        resultType = XLResultType.SIMPLEST;
       }
-      MethodInvoker methodInvoker = ExcelFactory.getInstance().getInvokerFactory().getStaticMethodTypeConverter(method);
+      // build a method invoker
+      MethodInvoker methodInvoker = ExcelFactory.getInstance().getInvokerFactory().getMethodTypeConverter(method, resultType);
+      // build the meta-data data structure and store it all in a FunctionDefinition
       FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, xlArgumentAnnotations);
       int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);
       FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
       long key = makeKey(getNumParamPointers(methodInvoker, functionAnnotation), allocatedExportNumber);
+      // put the definition in some look-up tables.
       _functionDefinitionLookup.put(key, functionDefinition);
       _functionDefinitions.add(functionDefinition);
     }
+  }
+  
+  private XLArgument[] getXLArgumentAnnotations(final Method method) {
+    Annotation[][] allParameterAnnotations = method.getParameterAnnotations();
+    XLArgument[] xlArgumentAnnotations = new XLArgument[allParameterAnnotations.length];
+    // we rely here on the array being initialized to null
+    for (int i = 0; i < allParameterAnnotations.length; i++) {
+      if (allParameterAnnotations[i] != null) {
+        for (int j = 0; j < allParameterAnnotations[i].length; j++) {
+          if (allParameterAnnotations[i][j].annotationType().equals(XLArgument.class)) {
+            xlArgumentAnnotations[i] = (XLArgument) allParameterAnnotations[i][j];
+            break;
+          }
+        }
+      }
+    }
+    return xlArgumentAnnotations;
   }
   
   private int getNumParamPointers(final MethodInvoker invoker, final XLFunction functionAnnotation) {

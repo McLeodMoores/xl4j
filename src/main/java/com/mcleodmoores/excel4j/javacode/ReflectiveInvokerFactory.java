@@ -6,15 +6,12 @@ package com.mcleodmoores.excel4j.javacode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.Excel;
-import com.mcleodmoores.excel4j.ExcelFactory;
-import com.mcleodmoores.excel4j.heap.WorksheetHeap;
+import com.mcleodmoores.excel4j.XLResultType;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -26,22 +23,18 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   private static final TypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
   
   @Override
-  public ConstructorInvoker getConstructorTypeConverter(final XLString className, 
+  public ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, 
                                                         @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                                         throws ClassNotFoundException {
-    Class<?> clazz = resolveClass(className);
     outer:
     for (Constructor<?> constructor : clazz.getConstructors()) {
       Class<?>[] genericParameterTypes = constructor.getParameterTypes();
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
-      TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
-      for (int i = 0; i < genericParameterTypes.length; i++) {
-        argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
-        if (argumentConverters[i] == null) {
-          continue outer;
-        }
+      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
+      if (argumentConverters == null) {
+        continue outer;
       }
       return new ConstructorInvoker(constructor, argumentConverters, OBJECT_XLOBJECT_CONVERTER);
     }
@@ -49,13 +42,9 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   }
   
   @Override
-  public MethodInvoker getMethodTypeConverter(final XLObject objectHandle, final XLString methodName, 
-                                              @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
-                                              throws ClassNotFoundException {
-    Excel excel = ExcelFactory.getInstance();
-    WorksheetHeap worksheetHeap = excel.getWorksheetHeap();
-    Object object = worksheetHeap.getObject(objectHandle.getHandle());
-    Class<?> clazz = object.getClass();
+  public MethodInvoker getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final XLResultType resultType,
+                                               @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
+                                               throws ClassNotFoundException {
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
     outer:
     for (Method method : clazz.getMethods()) {
@@ -66,84 +55,59 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
-      TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
-      for (int i = 0; i < genericParameterTypes.length; i++) {
-        argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
-        if (argumentConverters[i] == null) {
-          continue outer;
-        }
+      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
+      if (argumentConverters == null) {
+        continue outer;
       }
       // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
-      return new MethodInvoker(method, argumentConverters, resultConverter);
+      if (resultType == XLResultType.SIMPLEST) {
+        return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+      } else {
+        return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
+      }
     }
     throw new Excel4JRuntimeException("Could not find matching method");
   }
-
-  /**
-   * Invoke a static method.
-   * @param className  the name of the class
-   * @param methodName  the name of the method to invoke
-   * @param argTypes  the arguments to pass to the method
-   * @return a Method invoker
-   * @throws ClassNotFoundException if the class is not found
-   */
-  @Override
-  public MethodInvoker getStaticMethodTypeConverter(final XLString className, final XLString methodName, 
-                                                    @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
-                                                    throws ClassNotFoundException {
-    Class<?> clazz = resolveClass(className); 
-    // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
-    outer:
-    for (Method method : clazz.getMethods()) {
-      if (!method.getName().equals(methodName)) {
-        continue; // method name doesn't match
+  
+  private TypeConverter[] buildArgumentConverters(final Class<?>[] targetArgTypes, final Class<? extends XLValue>[] argTypes) {
+    TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
+    for (int i = 0; i < targetArgTypes.length; i++) {
+      argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], targetArgTypes[i]));
+      if (argumentConverters[i] == null) {
+        return null;
       }
-      Class<?>[] genericParameterTypes = method.getParameterTypes();
-      if (argTypes.length != genericParameterTypes.length) {
-        continue; // number of arguments don't match so skip this one.
-      }
-      TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
-      for (int i = 0; i < genericParameterTypes.length; i++) {
-        argumentConverters[i] = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(argTypes[i], genericParameterTypes[i]));
-        if (argumentConverters[i] == null) {
-          continue outer; // couldn't find a converter so try next method.
-        }
-      }
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
-      return new MethodInvoker(method, argumentConverters, resultConverter);
     }
-    throw new Excel4JRuntimeException("Could not find matching constructor");
+    return argumentConverters;
   }
   
-  /**
-   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String).
-   * @param className
-   * @return a resolved class
-   * @throws ClassNotFoundException 
-   */
-  private Class<?> resolveClass(final XLString className) throws ClassNotFoundException {
-    return Class.forName(className.getValue());
-  }
-
-  /**
-   * Return a method type converter read to process calls for a given static method.
-   * This method is used when you already know the correct method to bind, such is when scanning annotated methods.
-   * @param method  the method to be bound to.
-   * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
-   * throws Excel4JRuntimeException if a type converter cannot be found
-   */
-  @Override
-  public MethodInvoker getStaticMethodTypeConverter(final Method method) {
-    Class<?>[] genericParameterTypes = method.getParameterTypes();
-    TypeConverter[] argumentConverters = new TypeConverter[genericParameterTypes.length];
-    for (int i = 0; i < genericParameterTypes.length; i++) {
-      argumentConverters[i] = _typeConverterRegistry.findConverter(genericParameterTypes[i]);
+  private TypeConverter[] buildArgumentConverters(final Class<?>[] targetArgTypes) {
+    TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
+    for (int i = 0; i < targetArgTypes.length; i++) {
+      argumentConverters[i] = _typeConverterRegistry.findConverter(targetArgTypes[i]);
       if (argumentConverters[i] == null) {
-        throw new Excel4JRuntimeException("Could not find type converter for " + genericParameterTypes[i] + " (param " + i + ") method " + method.getName());
+        throw new Excel4JRuntimeException("Could not find type converter for " + targetArgTypes[i] + " (param " + i + ")");
       }
     }
-    TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
-    return new MethodInvoker(method, argumentConverters, resultConverter);
+    return argumentConverters;
+  }
+  
+
+  @Override
+  public MethodInvoker getMethodTypeConverter(final Method method, final XLResultType resultType) {
+    Class<?>[] genericParameterTypes = method.getParameterTypes();
+    try {
+      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      if (resultType == XLResultType.SIMPLEST) {
+        return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+      } else {
+        return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
+      }
+    } catch (Excel4JRuntimeException e) {
+      // here we chain on the exception that details the parameter name that doesn't match.
+      throw new Excel4JRuntimeException("Could not find matching method " + method, e);
+    }
+    
   }
 }

@@ -5,7 +5,7 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.values.XLObject;
+import com.mcleodmoores.excel4j.XLResultType;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -17,38 +17,26 @@ public interface InvokerFactory {
   /**
    * Return a constructor type converter ready to process calls for a given constructor.
    * Throws a Excel4JRuntimeException if it can't find a matching constructor.
-   * @param className  the class name as an XLString
+   * @param clazz  the class to get the constructor for
    * @param argTypes  a VarArg of the classes of the XLValues to be marshaled into Java types
    * @return a ConstructorTypeConverter that can perform the necessary conversions each time the constructor is invoked
    * @throws ClassNotFoundException if the specified class cannot be found
    */
-  ConstructorInvoker getConstructorTypeConverter(final XLString className, 
+  ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, 
                                                  @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                                  throws ClassNotFoundException;
 
   /**
-   * Return a method type converter read to process calls for a given static method.
-   * @param className  the name of the class as an XLString
-   * @param methodName  the name of the method as an XLString
-   * @param argTypes  a VarArg of the classes of the XLValues to be marshaled into Java types
-   * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
-   * @throws ClassNotFoundException if the specified class cannot be found
-   * throws Excel4JRuntimeException if a matching method cannot be found
-   */
-  MethodInvoker getStaticMethodTypeConverter(XLString className, XLString methodName, 
-                                             @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) 
-                                             throws ClassNotFoundException;
-
-  /**
    * Return a method type converter read to process calls for a given method.
-   * @param objectHandle  the handle for the object on which the method is to be invoked (XLObject)
+   * @param clazz  the class the method belongs to
    * @param methodName  the name of the method as an XLString
+   * @param resultType  whether the result should be an object or simplified if possible
    * @param argTypes a VarArg of the classes of the XLValues to be marshaled into Java types
    * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
    * @throws ClassNotFoundException if the specified class cannot be found
    * throws Excel4JRuntimeException if a matching method cannot be found
    */
-  MethodInvoker getMethodTypeConverter(XLObject objectHandle, XLString methodName, 
+  MethodInvoker getMethodTypeConverter(Class<?> clazz, XLString methodName, XLResultType resultType,
                                        @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) 
                                        throws ClassNotFoundException;
 
@@ -56,8 +44,9 @@ public interface InvokerFactory {
    * Return a method type converter read to process calls for a given static method.
    * This method is used when you already know the correct method to bind, such is when scanning annotated methods.
    * @param method  the method to be bound to.
+   * @param resultType  whether the result should be an object or simplified if possible
    * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
    * throws Excel4JRuntimeException if a type converter cannot be found
    */
-  MethodInvoker getStaticMethodTypeConverter(Method method);
+  MethodInvoker getMethodTypeConverter(Method method, XLResultType resultType);
 }

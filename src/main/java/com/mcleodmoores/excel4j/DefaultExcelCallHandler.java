@@ -31,13 +31,13 @@ public class DefaultExcelCallHandler implements ExcelCallHandler {
     final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(numParams, exportNumber);
     final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
     if (methodInvoker.isStatic()) {
-      return methodInvoker.invoke(null, args, true);  
+      return methodInvoker.invoke(null, args);  
     } else {
       XLObject object = (XLObject) args[0];
       final Object obj = _heap.getObject(object.getHandle());
       XLValue[] newArgs = new XLValue[args.length - 1];
       System.arraycopy(args, 1, newArgs, 0, args.length - 1);
-      return methodInvoker.invoke(object, newArgs, true);
+      return methodInvoker.invoke(object, newArgs);
     }
   }
 }

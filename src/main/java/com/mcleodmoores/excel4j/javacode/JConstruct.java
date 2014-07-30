@@ -36,7 +36,7 @@ public final class JConstruct {
     try {
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(className, getArgTypes(args));
+      ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(resolveClass(className), getArgTypes(args));
       return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
@@ -50,5 +50,16 @@ public final class JConstruct {
       result[i] = args[i].getClass();
     }
     return result;
+  }
+  
+  /**
+   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String).
+   * Note this is duplicated in JMethod
+   * @param className
+   * @return a resolved class
+   * @throws ClassNotFoundException 
+   */
+  private static Class<?> resolveClass(final XLString className) throws ClassNotFoundException {
+    return Class.forName(className.getValue());
   }
 }
