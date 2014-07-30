@@ -3,6 +3,10 @@
  */
 package com.mcleodmoores.excel4j;
 
+import java.lang.reflect.Method;
+
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.excel4j.values.XLReference;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -2086,7 +2090,81 @@ public class MockDLLExports implements RawExcelCallback {
       final XLValue helpTopic,
       final XLValue description,
       final XLValue... argsHelp) {
-    
+    Method method = getMethod(functionExportName, argumentNames);
+    String[] argNames = getArgumentNames(argumentNames);
+    Class<?>[] argumentTypes = getArgumentTypes(functionSignature);
+    Class<?> returnType = getReturnType(functionSignature);
+    String[] argumentsHelp = getArgumentsHelp(argsHelp);
     return 0;
+  }
+  
+  private String[] getArgumentsHelp(final XLValue[] argsHelp) {
+    String[] results = new String[argsHelp.length];
+    for (int i = 0; i < argsHelp.length; i++) {
+      XLString argHelp = (XLString) argsHelp[i];
+      results[i] = argHelp.getValue();
+    }
+    return null;
+  }
+  private Class<?> getReturnType(XLString functionSignature) {
+    char returnCode = functionSignature.getValue().charAt(0);
+    switch (returnCode) {
+      case 'T':
+        return Integer.TYPE;
+      case 'Q':
+        return XLValue.class;
+      case 'U':
+        return XLReference.class;
+      case '>':
+        return Void.TYPE;
+      default:
+        throw new Excel4JRuntimeException("Unknown return type code " + returnCode);
+    }
+  }
+  
+  private Class<?>[] getArgumentTypes(XLString functionSignature) {
+    char[] functionSig = functionSignature.getValue().toCharArray();
+    boolean special;
+    switch (functionSig[functionSig.length - 1]) {
+      case '!':
+      case '#':
+      case '$':
+        special = true;
+        break;
+      default:
+        special = false;
+        break;
+    }
+    int length = functionSig.length - (special ? 2 : 1);
+    Class<?>[] results  = new Class<?>[length];
+    // -1 if not special (omit return type), -2 if special (omit return type and special char)
+    for (int i = 0; i < length; i++) { 
+      switch (functionSig[i + 1]) { // skip the return type
+        case 'Q':
+        case 'R':
+          results[i] = XLValue.class;
+          break;
+        default:
+          throw new Excel4JRuntimeException("Unknown type in function signature " + functionSig[i + 1]);
+      }
+    }
+    return results;
+  }
+  
+  private String[] getArgumentNames(XLString argumentNames) {
+    return argumentNames.getValue().split(",");
+  }
+  
+  private Method getMethod(final XLString functionExportName, XLString argumentNames) {
+    int numArgs = argumentNames.getValue().split(",").length;
+    Class<?>[] parameterTypes = new Class[numArgs];
+    for (int i = 0; i < numArgs; i++) {
+      parameterTypes[i] = XLValue.class;
+    }
+    try {
+      return this.getClass().getMethod(functionExportName.getValue(), parameterTypes);
+    } catch (NoSuchMethodException | SecurityException e) {
+      throw new Excel4JRuntimeException("Cannot find method with name " + functionExportName, e);
+    }
   }
 }
