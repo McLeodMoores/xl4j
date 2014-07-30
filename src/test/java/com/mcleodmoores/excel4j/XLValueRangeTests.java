@@ -20,7 +20,7 @@ import com.mcleodmoores.excel4j.values.XLRange;
 import com.mcleodmoores.excel4j.values.XLSheetId;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.values.XLValueRange;
+import com.mcleodmoores.excel4j.values.XLArray;
 
 /**
  * Unit tests for XLValueRange.
@@ -52,38 +52,38 @@ public final class XLValueRangeTests {
 
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNull() {
-    XLValueRange.of(null);
+    XLArray.of(null);
   }
   
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testEmpty() {
-    XLValueRange.of(new XLValue[][] {});
+    XLArray.of(new XLValue[][] {});
   }
   
   @Test // (expectedExceptions = Excel4JRuntimeException.class) - this perhaps should be caught, enable this if we decide to check for it.
   public void testEmptyNested() {
-    XLValueRange.of(new XLValue[][] {{}}); // single empty array: [1][0]
+    XLArray.of(new XLValue[][] {{}}); // single empty array: [1][0]
   }
   
   @Test
   public void testConstructionAndGetterSingle() {
-    XLValueRange localRef = XLValueRange.of(SINGLE);
-    Assert.assertEquals(localRef.getValueRange(), SINGLE);
+    XLArray localRef = XLArray.of(SINGLE);
+    Assert.assertEquals(localRef.getArray(), SINGLE);
   }  
   
   @Test
   public void testConstructionAndGetterMulti() {
-    XLValueRange localRef = XLValueRange.of(MULTI);
-    Assert.assertEquals(localRef.getValueRange(), MULTI);
+    XLArray localRef = XLArray.of(MULTI);
+    Assert.assertEquals(localRef.getArray(), MULTI);
   }  
   
   @Test
   public void testEqualsAndHashCode() {
-    XLValueRange single = XLValueRange.of(SINGLE);
-    XLValueRange single_1 = XLValueRange.of(SINGLE_1);
-    XLValueRange multi = XLValueRange.of(MULTI);
-    XLValueRange multi_1 = XLValueRange.of(MULTI_1);
-    XLValueRange multi_2 = XLValueRange.of(MULTI_2);
+    XLArray single = XLArray.of(SINGLE);
+    XLArray single_1 = XLArray.of(SINGLE_1);
+    XLArray multi = XLArray.of(MULTI);
+    XLArray multi_1 = XLArray.of(MULTI_1);
+    XLArray multi_2 = XLArray.of(MULTI_2);
     Assert.assertEquals(single, single);
     Assert.assertNotEquals(null, single);
     Assert.assertNotEquals("Hello", single);
@@ -111,9 +111,9 @@ public final class XLValueRangeTests {
   
   @Test
   public void testToString() {
-    XLValueRange single = XLValueRange.of(SINGLE);
+    XLArray single = XLArray.of(SINGLE);
     Assert.assertEquals(single.toString(), SINGLE_TO_STRING);
-    XLValueRange multi = XLValueRange.of(MULTI);
+    XLArray multi = XLArray.of(MULTI);
     Assert.assertEquals(multi.toString(), MULTI_TO_STRING);
   }
 }
