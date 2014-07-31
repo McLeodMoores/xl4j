@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.mock;
 
 import java.lang.reflect.Method;
 
@@ -28,7 +28,8 @@ public final class FunctionEntry {
    * @param functionAttributes  the function attributes
    * @param entryPointMethod  the method used to handle this function call
    */
-  private FunctionEntry(final String functionName, final String[] argumentNames, final Class<?>[] argumentTypes, final Class<?> returnType, final String[] argumentsHelp, 
+  private FunctionEntry(final String functionName, final String[] argumentNames, final Class<?>[] argumentTypes, 
+                        final Class<?> returnType, final String[] argumentsHelp, 
       final String description, final FunctionAttributes functionAttributes, final Method entryPointMethod) {
     _functionName = functionName;
     _argumentNames = argumentNames;
@@ -52,8 +53,9 @@ public final class FunctionEntry {
    * @param entryPointMethod  the method used to handle this function call
    * @return an instance
    */
-  public static FunctionEntry of(final String functionName, final String[] argumentNames, final Class<?>[] argumentTypes, final Class<?> returnType, final String[] argumentsHelp, 
-      final String description, final FunctionAttributes functionAttributes, final Method entryPointMethod) {
+  public static FunctionEntry of(final String functionName, final String[] argumentNames, final Class<?>[] argumentTypes, 
+                                 final Class<?> returnType, final String[] argumentsHelp, final String description, 
+                                 final FunctionAttributes functionAttributes, final Method entryPointMethod) {
     return new FunctionEntry(functionName, argumentNames, argumentTypes, returnType, argumentsHelp, description, 
         functionAttributes, entryPointMethod);
   }

@@ -1,32 +1,33 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.mock;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import com.mcleodmoores.excel4j.RawExcelCallback;
+import com.mcleodmoores.excel4j.XLFunctionType;
+import com.mcleodmoores.excel4j.XLResultType;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLReference;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * 
+ * Represents a mock Excel process and it's own internal storage of function definitions, not to be confused with
+ * FunctionRegistry, which stores the definitions on the Java side.
  */
-public class WorksheetFunctionSimulator implements RawExcelCallback {
-  private MockDLLExports _dllExports;
-
-  /**
-   * Public constructor.
-   * @param dllExports  the simulated DLL entry point object
-   */
-  public WorksheetFunctionSimulator(final MockDLLExports dllExports) {
-    _dllExports = dllExports;
-  }
+public class MockExcelFunctionRegistry implements RawExcelCallback {
+  private ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>(); 
   
+  // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
-  public int xlfRegister(
+  public XLValue xlfRegister(
       final XLString dllPath, 
       final XLString functionExportName,
       final XLString functionSignature,
@@ -45,17 +46,31 @@ public class WorksheetFunctionSimulator implements RawExcelCallback {
     String[] argumentsHelp = getArgumentsHelp(argsHelp);
     XLFunctionType xlFunctionType = getFunctionType(functionType);
     boolean isAsynchronous = functionSignature.getValue().contains(">X");
-    boolean isVolatile = functionSignature.getValue().endsWith("!");
     boolean isMacroEquivalent = functionSignature.getValue().endsWith("#");
+    // REVIEW: t might be a mistake to make isVolatile based on isMacroEquivalent here because we haven't elsewhere.
+    boolean isVolatile = isMacroEquivalent || functionSignature.getValue().endsWith("!");
     boolean isMultiThreadSafe = functionSignature.getValue().endsWith("$");
     //XLResultType resultType = functionSignature.getValue().startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
-    // REVIEW: need to sort out result type not simplest.
     FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, 
         isMacroEquivalent, isMultiThreadSafe, XLResultType.SIMPLEST);
     FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName.getValue(), argNames, argumentTypes, returnType, 
         argumentsHelp, description.toString(), functionAttributes, method);
-    
-    return 0;
+    FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName.getValue(), functionEntry);
+    if (existing == null) {
+      return XLNumber.of(functionWorksheetName.getValue().hashCode());
+    } else {
+      return XLError.Value;
+    }
+  }
+  // CHECKSTYLE:ON
+
+  /**
+   * Get the function entry for the named function.
+   * @param functionName the function name
+   * @return the function entry containing all the registration information
+   */
+  public FunctionEntry getFunctionEntry(final String functionName) {
+    return _functions.get(functionName);
   }
   
   /**

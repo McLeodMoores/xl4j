@@ -21,4 +21,19 @@ public class NativeExcel implements Excel {
   public WorksheetHeap getWorksheetHeap() {
     return null;
   }
+
+  @Override
+  public FunctionRegistry getFunctionRegistry() {
+    return null;
+  }
+
+  @Override
+  public ExcelCallback getExcelCallback() {
+    return null;
+  }
+
+  @Override
+  public ExcelCallHandler getExcelCallHandler() {
+    return null;
+  }
 }

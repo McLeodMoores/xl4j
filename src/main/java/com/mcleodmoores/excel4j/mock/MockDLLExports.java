@@ -1,13 +1,10 @@
+// CHECKSTYLE:OFF -- we can't help it's a long file checkstyle.
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.mock;
 
-import java.lang.reflect.Method;
-
-import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLReference;
-import com.mcleodmoores.excel4j.values.XLString;
+import com.mcleodmoores.excel4j.ExcelCallHandler;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**

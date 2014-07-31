@@ -35,7 +35,7 @@ public interface RawExcelCallback {
    * 128 = not allowed during multi-threaded calc
    */
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters.  Take it up with Microsoft.
-  int xlfRegister(final XLString dllPath,
+  XLValue xlfRegister(final XLString dllPath,
                   final XLString functionExportName,
                   final XLString functionSignature,
                   final XLString functionWorksheetName,

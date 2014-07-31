@@ -1,7 +1,10 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.mock;
+
+import com.mcleodmoores.excel4j.XLFunctionType;
+import com.mcleodmoores.excel4j.XLResultType;
 
 /**
  * Class to hold some meta-data about a worksheet function/macro.

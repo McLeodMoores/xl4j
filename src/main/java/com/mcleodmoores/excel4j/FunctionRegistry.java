@@ -5,7 +5,10 @@ package com.mcleodmoores.excel4j;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentSkipListSet;
@@ -19,16 +22,49 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
  * 
  */
 public class FunctionRegistry {
+
   // REVIEW: is this the best structure to use?
   private Set<FunctionDefinition> _functionDefinitions = new ConcurrentSkipListSet<FunctionDefinition>();
   private ConcurrentMap<Integer, AtomicInteger> _exportCounters = new ConcurrentHashMap<Integer, AtomicInteger>();
   private ConcurrentMap<Long, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<Long, FunctionDefinition>();
-  
+  private BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
   /**
    * Default no-arg constructor.
    */
   public FunctionRegistry() {
-    scanAndCreateFunctions();
+    Thread scanningThread = new Thread(new ReflectionScanner());
+    scanningThread.start();
+  }
+  
+  /**
+   * Thread (well, Runnable) that scans the annotations in the background and sends the results to registerFunctions, 
+   * which will block until the results arrive.  We could make it streaming fairly easily.
+   */
+  private class ReflectionScanner implements Runnable {
+    @Override
+    public void run() {
+      scanAndCreateFunctions();
+      try {
+        _finishedScan.put(_functionDefinitions);
+      } catch (InterruptedException e) {
+        throw new Excel4JRuntimeException("Unexpected interrupt while sending function definitions over queue");
+      }
+    }
+  }
+  
+  /**
+   * Register functions.
+   * @param callback the Excel callback interface
+   */
+  public void registerFunctions(final ExcelCallback callback) {
+    try {
+      Collection<FunctionDefinition> take = _finishedScan.take();
+      for (FunctionDefinition functionDefinition : take) {
+        callback.registerFunction(functionDefinition);
+      }
+    } catch (InterruptedException e) {
+      throw new Excel4JRuntimeException("Unexpected interrupt while waiting for function definitions from queue");
+    }
   }
   
   private void scanAndCreateFunctions() {

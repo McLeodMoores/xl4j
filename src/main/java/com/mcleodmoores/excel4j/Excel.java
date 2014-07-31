@@ -22,8 +22,20 @@ public interface Excel {
    */
   InvokerFactory getInvokerFactory();
   /**
-   * Get the local heap for this sheet.
-   * @return the heap for the current worksheet.
+   * @return the heap for storing sheet hosted objects
    */
   WorksheetHeap getWorksheetHeap();
+  /**
+   * @return the function registry
+   */
+  FunctionRegistry getFunctionRegistry();
+  /**
+   * @return the ExcelCallback interface
+   */
+  ExcelCallback getExcelCallback();
+  /**
+   * REVIEW: this should be somewhere else.
+   * @return the ExcelCallHandler for dispatching from Excel.
+   */
+  ExcelCallHandler getExcelCallHandler();
 }

@@ -3,22 +3,19 @@
  */
 package com.mcleodmoores.excel4j.javacode;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
-import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * 
  */
 public class JConstructTest {
   private static final String CLASSNAME = "java.util.ArrayList";
-  private static final String CLASSNAME2 = "java.util.HashSet";
+ // private static final String CLASSNAME2 = "java.util.HashSet";
   private static final String CLASSNAME_INTEGER = "java.lang.Integer";
   // CHECKSTYLE:OFF
   
@@ -41,15 +38,6 @@ public class JConstructTest {
 //    XLObject hashSet = (XLObject) jconstruct2;
 //    Assert.assertEquals(jconstruct2.getClass(), XLObject.class);
 //  }
-  
-  @Test
-  public void testJMethod() {
-    XLObject arrayList = (XLObject) JConstruct.jconstruct(XLString.of(CLASSNAME), XLNumber.of(6d));
-    XLObject integer = (XLObject) JConstruct.jconstruct(XLString.of(CLASSNAME_INTEGER), XLNumber.of(3d));
-    JMethod.jMethod(arrayList, XLString.of("add"), integer);
-    Object arrList2 = ExcelFactory.getInstance().getWorksheetHeap().getObject(arrayList.getHandle());
-    System.err.println(arrList2);
-  }
   
   @Test
   public void testJMethod() {
