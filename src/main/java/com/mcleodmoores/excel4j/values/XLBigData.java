@@ -83,7 +83,7 @@ public final class XLBigData implements XLValue {
    */
   public byte[] getBuffer() {
     if (_valueToExcel == null) { // if no byte buffer, pull it from XLL using handle.
-      _valueToExcel = _excel.getBinaryName(_handleFromExcel, _length);
+      _valueToExcel = _excel.getExcelCallback().getBinaryName(_handleFromExcel, _length);
     }
     return _valueToExcel;
   }

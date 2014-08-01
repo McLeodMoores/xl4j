@@ -13,4 +13,14 @@ public interface ExcelCallback {
    * @param functionDefinition  the function definition, not null
    */
   void registerFunction(final FunctionDefinition functionDefinition);
+
+  /**
+   * Look up a binary blob given the Windows HANDLE type and length.  As HANDLE
+   * reduces to (void *), it's width is platform dependent and so longs are
+   * used here as they should cover both 32-bit and 64-bit use cases.
+   * @param handle the Windows HANDLE type, cast to a Java long.
+   * @param length the length of the block.
+   * @return the binary blob
+   */
+  byte[] getBinaryName(final long handle, final long length);
 }

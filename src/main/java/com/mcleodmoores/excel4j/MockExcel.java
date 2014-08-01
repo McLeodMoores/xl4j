@@ -27,11 +27,6 @@ public class MockExcel implements Excel {
     _excelCallback = new ExcelCallbackAdapter(getDLLPath(), rawCallback);
   }
   
-  @Override
-  public byte[] getBinaryName(final long handle, final long length) {
-    return new byte[0];
-  }
-
   /**
    * @return the DLL path
    */
