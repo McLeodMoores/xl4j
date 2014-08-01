@@ -32,6 +32,11 @@ public class ExcelCallbackAdapter implements ExcelCallback {
   }
   
   @Override
+  public byte[] getBinaryName(final long handle, final long length) {
+    return new byte[0];
+  }
+  
+  @Override
   public void registerFunction(final FunctionDefinition functionDefinition) {
     FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
     MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
