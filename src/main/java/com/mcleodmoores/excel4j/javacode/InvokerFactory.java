@@ -5,7 +5,7 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.XLResultType;
+import com.mcleodmoores.excel4j.ResultType;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -36,7 +36,7 @@ public interface InvokerFactory {
    * @throws ClassNotFoundException if the specified class cannot be found
    * throws Excel4JRuntimeException if a matching method cannot be found
    */
-  MethodInvoker getMethodTypeConverter(Class<?> clazz, XLString methodName, XLResultType resultType,
+  MethodInvoker getMethodTypeConverter(Class<?> clazz, XLString methodName, ResultType resultType,
                                        @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) 
                                        throws ClassNotFoundException;
 
@@ -48,5 +48,5 @@ public interface InvokerFactory {
    * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
    * throws Excel4JRuntimeException if a type converter cannot be found
    */
-  MethodInvoker getMethodTypeConverter(Method method, XLResultType resultType);
+  MethodInvoker getMethodTypeConverter(Method method, ResultType resultType);
 }

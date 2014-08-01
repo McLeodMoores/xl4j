@@ -1,5 +1,9 @@
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.xll;
 
+import com.mcleodmoores.excel4j.Excel;
+import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
+import com.mcleodmoores.excel4j.FunctionRegistry;
+import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.heap.WorksheetHeap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 
@@ -29,7 +33,7 @@ public class NativeExcel implements Excel {
   }
 
   @Override
-  public ExcelCallHandler getExcelCallHandler() {
+  public ExcelFunctionCallHandler getExcelCallHandler() {
     return null;
   }
 }

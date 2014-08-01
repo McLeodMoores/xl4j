@@ -69,10 +69,10 @@ public @interface XLFunction {
   /**
    * @return the way to handle results
    */
-  XLResultType resultType() default XLResultType.SIMPLEST;
+  ResultType resultType() default ResultType.SIMPLEST;
   /**
    * The type of function
    * @return the function type, defaults to FUNCTION
    */
-  XLFunctionType functionType() default XLFunctionType.FUNCTION;
+  FunctionType functionType() default FunctionType.FUNCTION;
 }

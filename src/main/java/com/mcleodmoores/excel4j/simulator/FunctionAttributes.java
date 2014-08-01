@@ -1,21 +1,21 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.mock;
+package com.mcleodmoores.excel4j.simulator;
 
-import com.mcleodmoores.excel4j.XLFunctionType;
-import com.mcleodmoores.excel4j.XLResultType;
+import com.mcleodmoores.excel4j.FunctionType;
+import com.mcleodmoores.excel4j.ResultType;
 
 /**
  * Class to hold some meta-data about a worksheet function/macro.
  */
 public final class FunctionAttributes {
-  private XLFunctionType _functionType;
+  private FunctionType _functionType;
   private boolean _asynchronous;
   private boolean _volatile;
   private boolean _macroEquivalent;
   private boolean _multiThreadSafe;
-  private XLResultType _resultType;
+  private ResultType _resultType;
   
   /**
    * Private constructor.
@@ -26,8 +26,8 @@ public final class FunctionAttributes {
    * @param multiThreadSafe  whether this function is declared as being multi-thread safe
    * @param resultType  whether this function should simplify it's results to a base Excel type if possible
    */
-  private FunctionAttributes(final XLFunctionType functionType, final boolean asynchronous, final boolean volatile1, 
-      final boolean macroEquivalent, final boolean multiThreadSafe, final XLResultType resultType) {
+  private FunctionAttributes(final FunctionType functionType, final boolean asynchronous, final boolean volatile1, 
+      final boolean macroEquivalent, final boolean multiThreadSafe, final ResultType resultType) {
     super();
     _functionType = functionType;
     _asynchronous = asynchronous;
@@ -47,14 +47,14 @@ public final class FunctionAttributes {
    * @param resultType  whether this function should simplify it's results to a base Excel type if possible
    * @return an instance
    */
-  public static FunctionAttributes of(final XLFunctionType functionType, final boolean asynchronous, final boolean volatile1, 
-      final boolean macroEquivalent, final boolean multiThreadSafe, final XLResultType resultType) {
+  public static FunctionAttributes of(final FunctionType functionType, final boolean asynchronous, final boolean volatile1, 
+      final boolean macroEquivalent, final boolean multiThreadSafe, final ResultType resultType) {
     return new FunctionAttributes(functionType, asynchronous, volatile1, macroEquivalent, multiThreadSafe, resultType);
   }
   /**
    * @return the functionType
    */
-  public XLFunctionType getFunctionType() {
+  public FunctionType getFunctionType() {
     return _functionType;
   }
   /**
@@ -84,7 +84,7 @@ public final class FunctionAttributes {
   /**
    * @return the resultType
    */
-  public XLResultType getResultType() {
+  public ResultType getResultType() {
     return _resultType;
   }
 }

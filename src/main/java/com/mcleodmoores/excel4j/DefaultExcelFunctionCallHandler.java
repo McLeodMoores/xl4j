@@ -11,7 +11,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * The default Excel call handler.
  */
-public class DefaultExcelCallHandler implements ExcelCallHandler {
+public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler {
   private FunctionRegistry _functionRegistry;
   private WorksheetHeap _heap;
   
@@ -20,7 +20,7 @@ public class DefaultExcelCallHandler implements ExcelCallHandler {
    * @param functionRegistry  the function registry
    * @param heap  the heap
    */
-  public DefaultExcelCallHandler(final FunctionRegistry functionRegistry, final WorksheetHeap heap) {
+  public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final WorksheetHeap heap) {
     _functionRegistry = functionRegistry;
     _heap = heap;
   }

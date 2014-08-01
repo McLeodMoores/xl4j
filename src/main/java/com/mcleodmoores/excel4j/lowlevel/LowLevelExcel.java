@@ -1,14 +1,17 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.lowlevel;
+
+import com.mcleodmoores.excel4j.Excel;
+import com.mcleodmoores.excel4j.ExcelFactory;
 
 /**
  * Interface Excel itself would call.
  */
-public final class RawExcel {
+public final class LowLevelExcel {
   
-  private RawExcel() {
+  private LowLevelExcel() {
   }
   
   /**

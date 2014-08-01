@@ -1,15 +1,15 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.mock;
+package com.mcleodmoores.excel4j.simulator;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import com.mcleodmoores.excel4j.RawExcelCallback;
-import com.mcleodmoores.excel4j.XLFunctionType;
-import com.mcleodmoores.excel4j.XLResultType;
+import com.mcleodmoores.excel4j.FunctionType;
+import com.mcleodmoores.excel4j.ResultType;
+import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -22,7 +22,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Represents a mock Excel process and it's own internal storage of function definitions, not to be confused with
  * FunctionRegistry, which stores the definitions on the Java side.
  */
-public class MockExcelFunctionRegistry implements RawExcelCallback {
+public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   private ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>(); 
   
   // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
@@ -44,7 +44,7 @@ public class MockExcelFunctionRegistry implements RawExcelCallback {
     Class<?>[] argumentTypes = getArgumentTypes(functionSignature);
     Class<?> returnType = getReturnType(functionSignature);
     String[] argumentsHelp = getArgumentsHelp(argsHelp);
-    XLFunctionType xlFunctionType = getFunctionType(functionType);
+    FunctionType xlFunctionType = getFunctionType(functionType);
     boolean isAsynchronous = functionSignature.getValue().contains(">X");
     boolean isMacroEquivalent = functionSignature.getValue().endsWith("#");
     // REVIEW: t might be a mistake to make isVolatile based on isMacroEquivalent here because we haven't elsewhere.
@@ -52,7 +52,7 @@ public class MockExcelFunctionRegistry implements RawExcelCallback {
     boolean isMultiThreadSafe = functionSignature.getValue().endsWith("$");
     //XLResultType resultType = functionSignature.getValue().startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
     FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, 
-        isMacroEquivalent, isMultiThreadSafe, XLResultType.SIMPLEST);
+        isMacroEquivalent, isMultiThreadSafe, ResultType.SIMPLEST);
     FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName.getValue(), argNames, argumentTypes, returnType, 
         argumentsHelp, description.toString(), functionAttributes, method);
     FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName.getValue(), functionEntry);
@@ -77,13 +77,13 @@ public class MockExcelFunctionRegistry implements RawExcelCallback {
    * @param functionType either an XLString or XLInteger containing 1 or 2 (1=Function, 2=Command
    * @return an XLFunctionType instance
    */
-  private XLFunctionType getFunctionType(final XLValue functionType) {
+  private FunctionType getFunctionType(final XLValue functionType) {
     if (functionType instanceof XLString) {
       XLString xlString = (XLString) functionType;
       if (xlString.getValue().equals("1")) {
-        return XLFunctionType.FUNCTION;
+        return FunctionType.FUNCTION;
       } else if (xlString.getValue().equals("2")) {
-        return XLFunctionType.COMMAND;
+        return FunctionType.COMMAND;
       } else {
         throw new Excel4JRuntimeException("Unknown function type " + functionType);
       }
@@ -91,9 +91,9 @@ public class MockExcelFunctionRegistry implements RawExcelCallback {
       XLInteger xlInteger = (XLInteger) functionType;
       switch (xlInteger.getValue()) {
         case 0:
-          return XLFunctionType.FUNCTION;
+          return FunctionType.FUNCTION;
         case 1:
-          return XLFunctionType.COMMAND;
+          return FunctionType.COMMAND;
         default:
           throw new Excel4JRuntimeException("Unknown function type " + functionType);
       }

@@ -6,7 +6,7 @@ package com.mcleodmoores.excel4j;
 /**
  * Enum representing the type of Excel function to be registered.
  */
-public enum XLFunctionType {
+public enum FunctionType {
   /**
    * Function is a worksheet function.
    */
@@ -18,7 +18,7 @@ public enum XLFunctionType {
   
   private int _xlValue;
 
-  private XLFunctionType(final int xlValue) {
+  private FunctionType(final int xlValue) {
     _xlValue = xlValue;
   }
   

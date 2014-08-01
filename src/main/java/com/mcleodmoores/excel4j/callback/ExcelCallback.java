@@ -1,7 +1,9 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.callback;
+
+import com.mcleodmoores.excel4j.FunctionDefinition;
 
 
 /**

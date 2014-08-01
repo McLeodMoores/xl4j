@@ -6,7 +6,7 @@ package com.mcleodmoores.excel4j;
 /**
  * Enum representing how function results should be converted before returning.
  */
-public enum XLResultType {
+public enum ResultType {
   /**
    * Results should be reduced to the simplest possible type, e.g. XLString, XLNumber, XLBoolean etc.
    */

@@ -6,7 +6,7 @@ package com.mcleodmoores.excel4j.javacode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.XLResultType;
+import com.mcleodmoores.excel4j.ResultType;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
@@ -42,7 +42,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   }
   
   @Override
-  public MethodInvoker getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final XLResultType resultType,
+  public MethodInvoker getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final ResultType resultType,
                                                @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                                throws ClassNotFoundException {
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
@@ -61,7 +61,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       }
       // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
-      if (resultType == XLResultType.SIMPLEST) {
+      if (resultType == ResultType.SIMPLEST) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
         return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
@@ -94,12 +94,12 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   
 
   @Override
-  public MethodInvoker getMethodTypeConverter(final Method method, final XLResultType resultType) {
+  public MethodInvoker getMethodTypeConverter(final Method method, final ResultType resultType) {
     Class<?>[] genericParameterTypes = method.getParameterTypes();
     try {
       TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
-      if (resultType == XLResultType.SIMPLEST) {
+      if (resultType == ResultType.SIMPLEST) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
         return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);

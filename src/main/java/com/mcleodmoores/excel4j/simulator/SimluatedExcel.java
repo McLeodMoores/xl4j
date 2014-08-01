@@ -1,30 +1,36 @@
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.simulator;
 
 import java.io.File;
 
+import com.mcleodmoores.excel4j.DefaultExcelFunctionCallHandler;
+import com.mcleodmoores.excel4j.Excel;
+import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
+import com.mcleodmoores.excel4j.FunctionRegistry;
+import com.mcleodmoores.excel4j.callback.DefaultExcelCallback;
+import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.heap.WorksheetHeap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 import com.mcleodmoores.excel4j.javacode.ReflectiveInvokerFactory;
-import com.mcleodmoores.excel4j.mock.MockExcelFunctionRegistry;
+import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 
 /**
  * A mock implementation of the Excel interface for use in testing.
  */
-public class MockExcel implements Excel {
+public class SimluatedExcel implements Excel {
   private final WorksheetHeap _heap;
   private final FunctionRegistry _functionRegistry;
   private final ExcelCallback _excelCallback;
-  private final ExcelCallHandler _excelCallHandler;
+  private final ExcelFunctionCallHandler _excelCallHandler;
   
   /**
    * Create an instance of the Excel interface suitable for testing.
    */
-  public MockExcel() {
+  public SimluatedExcel() {
     _heap = new WorksheetHeap();
     _functionRegistry = new FunctionRegistry();
-    _excelCallHandler = new DefaultExcelCallHandler(_functionRegistry, _heap);
-    RawExcelCallback rawCallback = new MockExcelFunctionRegistry();
-    _excelCallback = new ExcelCallbackAdapter(getDLLPath(), rawCallback);
+    _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
+    LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
+    _excelCallback = new DefaultExcelCallback(getDLLPath(), rawCallback);
   }
   
   /**
@@ -55,7 +61,7 @@ public class MockExcel implements Excel {
   }
   
   @Override
-  public ExcelCallHandler getExcelCallHandler() {
+  public ExcelFunctionCallHandler getExcelCallHandler() {
     return _excelCallHandler;
   }
 

@@ -1,15 +1,15 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.lowlevel;
 
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * The Excel callback interface. 
+ * The Excel low-level callback interface.  This may or may not be necessary. 
  */
-public interface RawExcelCallback {
+public interface LowLevelExcelCallback {
   /**
    * Excel callback interface to register a function.
    * @param dllPath  the path the DLL in the file system, not null
@@ -19,11 +19,28 @@ public interface RawExcelCallback {
    * @param argumentNames  a comma separated list of function argument names (no padding spaces)
    * @param functionType  an integer representing the function type (1=Function, 2=Command)
    * @param functionCategory  the paste function category (see StandardFunctionCategories)
-   * @param notUsed  not used, pass XLNil or XLMissing
+   * @param acceleratorKey  for commands, represents a CTRL-SHIFT-<acceleratorKey> shortcut.  If not used, pass XLNil or XLMissing
    * @param helpTopic  the help topic
    * @param description  a description of this function or command
    * @param argsHelp  a varargs/array of help strings for each parameter
-   * @return the return code, see below
+   * @return the function registration number
+   */
+  // CHECKSTYLE:OFF -- says we shouldn't have this many parameters.  Take it up with Microsoft.
+  XLValue xlfRegister(final XLString dllPath,
+                      final XLString functionExportName,
+                      final XLString functionSignature,
+                      final XLString functionWorksheetName,
+                      final XLString argumentNames,
+                      final XLValue functionType,
+                      final XLValue functionCategory,
+                      final XLValue acceleratorKey,
+                      final XLValue helpTopic,
+                      final XLValue description,
+                      final XLValue... argsHelp);
+  // CHECKSTYLE:ON
+  /*
+   * This block is to be ignored:
+   * return code, see below
    *   0 = success 
    *   1 = macro halted
    *   2 = invalid function number 
@@ -34,17 +51,4 @@ public interface RawExcelCallback {
    *  64 = uncalced cell
    * 128 = not allowed during multi-threaded calc
    */
-  // CHECKSTYLE:OFF -- says we shouldn't have this many parameters.  Take it up with Microsoft.
-  XLValue xlfRegister(final XLString dllPath,
-                  final XLString functionExportName,
-                  final XLString functionSignature,
-                  final XLString functionWorksheetName,
-                  final XLString argumentNames,
-                  final XLValue functionType,
-                  final XLValue functionCategory,
-                  final XLValue notUsed,
-                  final XLValue helpTopic,
-                  final XLValue description,
-                  final XLValue... argsHelp);
-  // CHECKSTYLE:ON
 }

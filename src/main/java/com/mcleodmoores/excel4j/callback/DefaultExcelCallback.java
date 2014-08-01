@@ -1,11 +1,18 @@
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.excel4j.callback;
 
 import java.io.File;
 
+import com.mcleodmoores.excel4j.FunctionDefinition;
+import com.mcleodmoores.excel4j.FunctionMetadata;
+import com.mcleodmoores.excel4j.XLArgument;
+import com.mcleodmoores.excel4j.XLFunction;
+import com.mcleodmoores.excel4j.FunctionType;
+import com.mcleodmoores.excel4j.XLNamespace;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
+import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLLocalReference;
 import com.mcleodmoores.excel4j.values.XLMultiReference;
@@ -17,16 +24,16 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 /**
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
  */
-public class ExcelCallbackAdapter implements ExcelCallback {
+public class DefaultExcelCallback implements ExcelCallback {
   private File _dllPath;
-  private RawExcelCallback _rawCallback;
+  private LowLevelExcelCallback _rawCallback;
 
   /**
    * Create a callback adapter.
    * @param dllPath  the path of the DLL implementing this XLL
    * @param rawCallback  the raw callback interface to call through to
    */
-  public ExcelCallbackAdapter(final File dllPath, final RawExcelCallback rawCallback) {
+  public DefaultExcelCallback(final File dllPath, final LowLevelExcelCallback rawCallback) {
     _dllPath = dllPath;
     _rawCallback = rawCallback;
   }
@@ -100,12 +107,12 @@ public class ExcelCallbackAdapter implements ExcelCallback {
     boolean isMTSafe = (functionAnnotation != null) ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
     boolean isMacroEquivalent = (functionAnnotation != null) ? functionAnnotation.isMacroEquivalent() : false; // default
     boolean isAsynchronous = (functionAnnotation != null) ? functionAnnotation.isAsynchronous() : false; // default
-    XLFunctionType functionType = (functionAnnotation != null) ? functionAnnotation.functionType() : XLFunctionType.FUNCTION; // default;
+    FunctionType functionType = (functionAnnotation != null) ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
     if ((isVolatile && isMTSafe) || (isMTSafe && isMacroEquivalent)) {
       throw new Excel4JRuntimeException("Illegal combination of XLFunction attributes, cannot be volatile & thread-safe or macro-equivalent & thread-safe");
     }
     // Return type character
-    if (functionType == XLFunctionType.COMMAND) {
+    if (functionType == FunctionType.COMMAND) {
       if (!excelReturnType.isAssignableFrom(XLInteger.class)) {
         throw new Excel4JRuntimeException("Commands must have a return type XLInteger (gets convertered to type J (int))");
       }
@@ -207,7 +214,7 @@ public class ExcelCallbackAdapter implements ExcelCallback {
     if (functionAnnotation != null) {
       return XLInteger.of(functionAnnotation.functionType().getExcelValue());
     } else {
-      return XLInteger.of(XLFunctionType.FUNCTION.getExcelValue());
+      return XLInteger.of(FunctionType.FUNCTION.getExcelValue());
     }
   }
 

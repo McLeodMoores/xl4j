@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reflections.Reflections;
 
+import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 /**
@@ -80,11 +81,11 @@ public class FunctionRegistry {
       XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(method);
       // scan the result type if there is one to determine whether function should return simplest type or always
       // an object type
-      XLResultType resultType;
+      ResultType resultType;
       if (functionAnnotation != null) {
         resultType = functionAnnotation.resultType();
       } else {
-        resultType = XLResultType.SIMPLEST;
+        resultType = ResultType.SIMPLEST;
       }
       // build a method invoker
       MethodInvoker methodInvoker = ExcelFactory.getInstance().getInvokerFactory().getMethodTypeConverter(method, resultType);

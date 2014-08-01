@@ -1,5 +1,6 @@
 package com.mcleodmoores.excel4j;
 
+import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.heap.WorksheetHeap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 
@@ -28,5 +29,5 @@ public interface Excel {
    * REVIEW: this should be somewhere else.
    * @return the ExcelCallHandler for dispatching from Excel.
    */
-  ExcelCallHandler getExcelCallHandler();
+  ExcelFunctionCallHandler getExcelCallHandler();
 }

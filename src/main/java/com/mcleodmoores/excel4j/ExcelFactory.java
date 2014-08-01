@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.excel4j;
 
+import com.mcleodmoores.excel4j.simulator.SimluatedExcel;
+
 /**
  * Factory for getting instances of the Excel interface.  
  * This should not be called directly from application code, instances should be injected as required.
@@ -27,14 +29,14 @@ public final class ExcelFactory {
    * Bill Pugh singleton pattern helper class removes synchronization requirement.
    */
   private static class NativeExcelHelper {
-    private static final Excel INSTANCE = new MockExcel();
+    private static final Excel INSTANCE = new SimluatedExcel();
   }
   
   /**
    * Bill Pugh singleton pattern helper class removes synchronization requirement.
    */
   private static class MockExcelHelper {
-    private static final Excel INSTANCE = new MockExcel();
+    private static final Excel INSTANCE = new SimluatedExcel();
   }
   
   /**
