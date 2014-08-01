@@ -22,6 +22,10 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class IntegerXLNumberTypeConverterTest {
+  private static final int EXPECTED_PRIORITY = 10;
+  private static final int TEN_I = 10;
+  private static final long TEN_L = 10L;
+  private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Integer?
   /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
@@ -55,7 +59,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), EXPECTED_PRIORITY);
   }
 
   /**
@@ -95,7 +99,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.TYPE, XLInteger.of(10));
+    CONVERTER.toJavaObject(Integer.TYPE, XLInteger.of(TEN_I));
   }
 
   /**
@@ -103,7 +107,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Long.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(Long.class, XLNumber.of(TEN_D));
   }
 
   /**
@@ -111,7 +115,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, 10L);
+    CONVERTER.toXLValue(XLNumber.class, TEN_L);
   }
 
   /**
@@ -130,7 +134,7 @@ public class IntegerXLNumberTypeConverterTest {
     final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_INT.getClass(), INTEGER);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
-    assertEquals(xlNumber.getValue(), 10, 0);
+    assertEquals(xlNumber.getValue(), TEN_I, 0);
   }
 
   /**

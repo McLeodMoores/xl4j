@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.excel4j;
 
-import com.mcleodmoores.excel4j.heap.WorksheetHeap;
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -13,14 +13,14 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler {
   private FunctionRegistry _functionRegistry;
-  private WorksheetHeap _heap;
+  private Heap _heap;
   
   /**
    * Create a default call handler.
    * @param functionRegistry  the function registry
    * @param heap  the heap
    */
-  public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final WorksheetHeap heap) {
+  public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final Heap heap) {
     _functionRegistry = functionRegistry;
     _heap = heap;
   }

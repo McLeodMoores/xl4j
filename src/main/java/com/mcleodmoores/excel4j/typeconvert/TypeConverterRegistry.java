@@ -25,7 +25,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
  * Type resolver.
  */
 public class TypeConverterRegistry {
-  private static final Logger s_logger = LoggerFactory.getLogger(TypeConverterRegistry.class);
+  private static Logger s_logger = LoggerFactory.getLogger(TypeConverterRegistry.class);
 
   // we want highest priority keys first, so we use a reversing comparator.
   private final ConcurrentSkipListMap<Integer, List<TypeConverter>> _converters = new ConcurrentSkipListMap<>(Collections.reverseOrder());

@@ -24,14 +24,17 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class BigDecimalXLNumberTypeConverterTest {
+  private static final double TEN_D = 10d;
+  private static final int TEN_I = 10;
+  
   /** XLNumber holding a double. */
-  private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
+  private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10d);
   /** XLNumber holding a long. */
   private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
   /** XLNumber holding an int. */
   private static final XLNumber XL_NUMBER_INT = XLNumber.of(10);
   /** BigDecimal. */
-  private static final BigDecimal BIG_DECIMAL = BigDecimal.valueOf(10.);
+  private static final BigDecimal BIG_DECIMAL = BigDecimal.valueOf(10d);
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new BigDecimalXLNumberTypeConverter();
 
@@ -56,7 +59,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), TEN_I);
   }
 
   /**
@@ -96,7 +99,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(BigDecimal.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(BigDecimal.class, XLInteger.of((int) TEN_D));
   }
 
   /**
@@ -104,7 +107,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Double.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(Double.class, XLNumber.of(TEN_D));
   }
 
   /**
@@ -112,7 +115,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(10.));
+    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(TEN_D));
   }
 
   /**
@@ -131,7 +134,7 @@ public class BigDecimalXLNumberTypeConverterTest {
     final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), BIG_DECIMAL);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
-    assertEquals(xlNumber.getValue(), 10., 0);
+    assertEquals(xlNumber.getValue(), TEN_D, 0);
   }
 
   /**

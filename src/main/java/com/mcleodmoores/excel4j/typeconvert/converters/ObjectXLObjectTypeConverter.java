@@ -1,7 +1,7 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
-import com.mcleodmoores.excel4j.heap.WorksheetHeap;
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -23,13 +23,13 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   @Override
   public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
-    WorksheetHeap heap = ExcelFactory.getInstance().getWorksheetHeap();
+    Heap heap = ExcelFactory.getInstance().getHeap();
     return XLObject.of(from.getClass(), heap.getHandle(from));
   }
 
   @Override
   public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
-    WorksheetHeap heap = ExcelFactory.getInstance().getWorksheetHeap();
+    Heap heap = ExcelFactory.getInstance().getHeap();
     XLObject xlObj = (XLObject) from;
     return heap.getObject(xlObj.getHandle());
   }

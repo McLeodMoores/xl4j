@@ -24,9 +24,12 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class FloatXLNumberTypeConverterTest {
+  private static final int EXPECTED_PRIORITY = 10;
+  private static final int TEN_I = 10;
+  private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when there's an upcast to Float?
   /** XLNumber holding a float. */
-  private static final XLNumber XL_NUMBER_FLOAT = XLNumber.of(10.F);
+  private static final XLNumber XL_NUMBER_FLOAT = XLNumber.of(10f);
   /** XLNumber holding a long. */
   private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
   /** XLNumber holding an int. */
@@ -57,7 +60,7 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), EXPECTED_PRIORITY);
   }
 
   /**
@@ -97,7 +100,7 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Float.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(Float.class, XLInteger.of(TEN_I));
   }
 
   /**
@@ -105,7 +108,7 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D));
   }
 
   /**
@@ -113,7 +116,7 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(10.));
+    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(TEN_D));
   }
 
   /**
@@ -132,7 +135,7 @@ public class FloatXLNumberTypeConverterTest {
     final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_FLOAT.getClass(), FLOAT);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
-    assertEquals(xlNumber.getValue(), 10., 0);
+    assertEquals(xlNumber.getValue(), TEN_D, 0);
   }
 
   /**

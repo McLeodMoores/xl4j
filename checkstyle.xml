@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: McLeod Moores modified Sun Checks (Eclipse)
+    Checkstyle-Configuration: McLeod Moores modified Sun Checks (eclipse)
     Description: none
 -->
 <module name="Checker">
@@ -80,7 +80,6 @@
     <module name="IllegalInstantiation"/>
     <module name="InnerAssignment"/>
     <module name="MagicNumber">
-      <property name="tokens" value="NUM_DOUBLE,NUM_FLOAT"/>
       <property name="ignoreHashCodeMethod" value="true"/>
     </module>
     <module name="MissingSwitchDefault"/>

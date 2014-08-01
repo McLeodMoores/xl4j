@@ -21,6 +21,8 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class StringXLStringTypeConverterTest {
+  private static final int EXPECTED_PRIORITY = 10;
+  private static final double TEN_D = 10d;
   /** XLString. */
   private static final XLString XL_STRING = XLString.of("TEST");
   /** String. */
@@ -50,7 +52,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), EXPECTED_PRIORITY);
   }
 
   /**
@@ -90,7 +92,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(String.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(String.class, XLNumber.of(TEN_D));
   }
 
   /**
@@ -106,7 +108,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, 10.);
+    CONVERTER.toXLValue(XLString.class, TEN_D);
   }
 
   /**
@@ -114,7 +116,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, 10.);
+    CONVERTER.toXLValue(XLNumber.class, TEN_D);
   }
 
   /**

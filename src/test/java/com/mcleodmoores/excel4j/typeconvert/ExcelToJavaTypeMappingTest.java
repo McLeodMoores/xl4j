@@ -22,6 +22,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class ExcelToJavaTypeMappingTest {
+  private static final int THREE = 3;
   /** The Java class */
   private static final Class<Number> JAVA_CLASS = Number.class;
   /** The XL class */
@@ -55,7 +56,7 @@ public class ExcelToJavaTypeMappingTest {
     assertEquals(MAPPING.getJavaType(), JAVA_CLASS);
     assertEquals(MAPPING, MAPPING);
     assertNotEquals(null, MAPPING);
-    assertNotEquals(Double.valueOf(3), MAPPING);
+    assertNotEquals(Double.valueOf(THREE), MAPPING);
     final String expectedString = "ExcelToJavaTypeMapping[excelType=class com.mcleodmoores.excel4j.values.XLNumber, javaType=class java.lang.Number]";
     assertEquals(MAPPING.toString(), expectedString);
     ExcelToJavaTypeMapping other = ExcelToJavaTypeMapping.of(EXCEL_CLASS, JAVA_CLASS);

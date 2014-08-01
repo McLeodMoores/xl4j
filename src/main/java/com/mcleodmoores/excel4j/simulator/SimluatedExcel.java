@@ -8,7 +8,7 @@ import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
 import com.mcleodmoores.excel4j.FunctionRegistry;
 import com.mcleodmoores.excel4j.callback.DefaultExcelCallback;
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
-import com.mcleodmoores.excel4j.heap.WorksheetHeap;
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 import com.mcleodmoores.excel4j.javacode.ReflectiveInvokerFactory;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
@@ -17,7 +17,7 @@ import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
  * A mock implementation of the Excel interface for use in testing.
  */
 public class SimluatedExcel implements Excel {
-  private final WorksheetHeap _heap;
+  private final Heap _heap;
   private final FunctionRegistry _functionRegistry;
   private final ExcelCallback _excelCallback;
   private final ExcelFunctionCallHandler _excelCallHandler;
@@ -26,7 +26,7 @@ public class SimluatedExcel implements Excel {
    * Create an instance of the Excel interface suitable for testing.
    */
   public SimluatedExcel() {
-    _heap = new WorksheetHeap();
+    _heap = new Heap();
     _functionRegistry = new FunctionRegistry();
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
@@ -46,7 +46,7 @@ public class SimluatedExcel implements Excel {
   }
   
   @Override
-  public WorksheetHeap getWorksheetHeap() {
+  public Heap getHeap() {
     return _heap;
   }
 

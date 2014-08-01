@@ -1,7 +1,7 @@
 package com.mcleodmoores.excel4j;
 
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
-import com.mcleodmoores.excel4j.heap.WorksheetHeap;
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 
 /**
@@ -16,7 +16,7 @@ public interface Excel {
   /**
    * @return the heap for storing sheet hosted objects
    */
-  WorksheetHeap getWorksheetHeap();
+  Heap getHeap();
   /**
    * @return the function registry
    */

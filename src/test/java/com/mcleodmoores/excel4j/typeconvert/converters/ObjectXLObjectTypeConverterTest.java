@@ -23,6 +23,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class ObjectXLObjectTypeConverterTest {
+  private static final int EXPECTED_PRIORITY = 5;
+  private static final int TEN_I = 10;
+  private static final double TEN_D = 10d;
   /** XLObject. */
   private static final XLObject XL_OBJECT = XLObject.of(List.class, 1L);
   /** Empty Object. */
@@ -52,7 +55,7 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 5);
+    assertEquals(CONVERTER.getPriority(), EXPECTED_PRIORITY);
   }
 
   /**
@@ -92,7 +95,7 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Object.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(Object.class, XLInteger.of(TEN_I));
   }
 
   /**
@@ -108,7 +111,7 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLObject.class, 10);
+    CONVERTER.toXLValue(XLObject.class, TEN_I);
   }
 
   /**
@@ -116,7 +119,7 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLObject.class, 10.);
+    CONVERTER.toXLValue(XLObject.class, TEN_D);
   }
 
   /**

@@ -46,6 +46,7 @@ public final class Excel4JReflectionUtils {
     }
   }
 
+  @SuppressWarnings("unused")
   private Class<? extends XLValue>[] getExpectedExcelTypes(final Method method) {
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
     @SuppressWarnings("unchecked")

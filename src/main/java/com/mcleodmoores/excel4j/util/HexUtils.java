@@ -21,6 +21,7 @@ public final class HexUtils {
    * @param bytes the byte array
    * @return a String containing a sequence of hexadecimal digits with no padding 
    */
+  // CHECKSTYLE:OFF -- we need to use some inline constants here!
   public static String bytesToHex(final byte[] bytes) {
     ArgumentChecker.notNull(bytes, "bytes");
     char[] hexChars = new char[bytes.length * 2];
@@ -31,6 +32,7 @@ public final class HexUtils {
     }
     return new String(hexChars);
   }
+  // CHECKSTYLE:ON
   
   /**
    * Convert an array of bytes to the equivalent string of Hex digits, with each byte padded by
@@ -39,6 +41,7 @@ public final class HexUtils {
    * @param bytes the byte array, not null
    * @return a String containing a sequence of hexadecimal digits with no padding 
    */
+  // CHECKSTYLE:OFF -- we need to use some inline constants here!
   public static String bytesToPaddedHex(final byte[] bytes) {
     ArgumentChecker.notNull(bytes, "bytes");
     char[] hexChars = new char[(bytes.length * 2) + Math.max(0, bytes.length - 1)];
@@ -52,6 +55,7 @@ public final class HexUtils {
     }
     return new String(hexChars);
   }
+  // CHECKSTYLE:ON 
   
   /**
    * Convert an array of bytes to the equivalent string of Hex digits, with each byte padded by
@@ -62,6 +66,7 @@ public final class HexUtils {
    * @param maxBytes the maximum number of bytes (positive) to render, okay if larger than bytes.length
    * @return a String containing a sequence of hexadecimal digits with no padding 
    */
+  // CHECKSTYLE:OFF -- we need to use some inline constants here!
   public static String bytesToTruncatedPaddedHex(final byte[] bytes, final int maxBytes) {
     ArgumentChecker.notNull(bytes, "bytes");
     ArgumentChecker.notNegative(maxBytes, "maxBytes");
@@ -77,6 +82,7 @@ public final class HexUtils {
     }
     return new String(hexChars);
   }
+  // CHECKSTYLE:ON
   
   /**
    * Multi-line hex/character dump - similar to a hex editor layout.

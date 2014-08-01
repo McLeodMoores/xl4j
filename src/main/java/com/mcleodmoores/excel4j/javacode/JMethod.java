@@ -9,7 +9,7 @@ import com.mcleodmoores.excel4j.XLArgument;
 import com.mcleodmoores.excel4j.XLFunction;
 import com.mcleodmoores.excel4j.XLNamespace;
 import com.mcleodmoores.excel4j.ResultType;
-import com.mcleodmoores.excel4j.heap.WorksheetHeap;
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -44,8 +44,8 @@ public final class JMethod {
     try {
       Excel excel = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excel.getInvokerFactory();
-      WorksheetHeap worksheetHeap = excel.getWorksheetHeap();
-      Object object = worksheetHeap.getObject(objectReference.getHandle());
+      Heap heap = excel.getHeap();
+      Object object = heap.getObject(objectReference.getHandle());
       Class<?> clazz = object.getClass();
       MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(clazz, methodName, ResultType.SIMPLEST, getArgTypes(args));
       return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
@@ -74,8 +74,8 @@ public final class JMethod {
     try {
       Excel excel = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excel.getInvokerFactory();
-      WorksheetHeap worksheetHeap = excel.getWorksheetHeap();
-      Object object = worksheetHeap.getObject(objectReference.getHandle());
+      Heap heap = excel.getHeap();
+      Object object = heap.getObject(objectReference.getHandle());
       Class<?> clazz = object.getClass();
       MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(clazz, methodName, ResultType.OBJECT, getArgTypes(args));
       return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.

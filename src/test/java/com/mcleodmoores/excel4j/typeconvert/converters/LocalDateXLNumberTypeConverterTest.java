@@ -23,10 +23,15 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class LocalDateXLNumberTypeConverterTest {
+  private static final int TEN_I = 10;
+  private static final double TEN_D = 10d;
+  private static final int TWO_THOUSAND = 2000;
+  private static final int EXCEL_EPOCH_YEAR = 1900;
   /** The number of days from the Excel epoch */
-  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(1900, 1, 1), LocalDate.ofEpochDay(0)) + 1;
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), 
+                                                                            LocalDate.ofEpochDay(0)) + 1;
   /** The number of days from Excel epoch to 2000-01-01 */
-  private static final long DAYS = LocalDate.of(2000, 1, 1).toEpochDay() + DAYS_FROM_EXCEL_EPOCH;
+  private static final long DAYS = LocalDate.of(TWO_THOUSAND, 1, 1).toEpochDay() + DAYS_FROM_EXCEL_EPOCH;
   /** XLNumber holding a double representing 2000-01-01. */
   private static final XLNumber XL_DATE = XLNumber.of(DAYS);
   /** Local date. */
@@ -55,7 +60,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), TEN_I);
   }
 
   /**
@@ -103,7 +108,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(Integer.class, XLNumber.of(TEN_D));
   }
 
   /**
@@ -111,7 +116,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Integer.valueOf(10));
+    CONVERTER.toXLValue(XLNumber.class, Integer.valueOf(TEN_I));
   }
 
   /**

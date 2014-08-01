@@ -44,7 +44,7 @@ public class JConstructTest {
     XLObject arrayList = (XLObject) JConstruct.jconstruct(XLString.of(CLASSNAME), XLNumber.of(6d));
     XLObject integer = (XLObject) JConstruct.jconstruct(XLString.of(CLASSNAME_INTEGER), XLNumber.of(3d));
     JMethod.jMethod(arrayList, XLString.of("add"), integer);
-    Object arrList2 = ExcelFactory.getInstance().getWorksheetHeap().getObject(arrayList.getHandle());
+    Object arrList2 = ExcelFactory.getInstance().getHeap().getObject(arrayList.getHandle());
     System.err.println(arrList2);
   }
   

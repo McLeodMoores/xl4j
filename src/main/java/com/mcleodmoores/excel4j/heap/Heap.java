@@ -15,8 +15,10 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 /**
  * Class to store objects and allocate handles for objects.
  */
-public class WorksheetHeap {
+public class Heap {
 
+  private static final int MILLIS_PER_SECOND = 1000;
+  private static final int BYTES_IN_64BITS = 8;
   private final ConcurrentHashMap<Long, Object> _handleToObj;
   private final ConcurrentHashMap<Object, Long> _objToHandle;
 
@@ -27,7 +29,7 @@ public class WorksheetHeap {
    * Construct a heap.
    * TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations.
    */
-  public WorksheetHeap() {
+  public Heap() {
     _handleToObj = new ConcurrentHashMap<>();
     _objToHandle = new ConcurrentHashMap<>();
     // we try and create the handle counter by combining the local MAC, the time and the sheet id.
@@ -39,9 +41,9 @@ public class WorksheetHeap {
       if (networkInterfaces.hasMoreElements()) {
         final NetworkInterface networkInterface = networkInterfaces.nextElement();
         final byte[] hardwareAddress = networkInterface.getHardwareAddress();
-        final byte[] extendedTo64bits = new byte[8];
+        final byte[] extendedTo64bits = new byte[BYTES_IN_64BITS];
         // we assume the hardware address is going to be 6 bytes, but we handle if it isn't, but top out at 8 bytes
-        System.arraycopy(hardwareAddress, 0, extendedTo64bits, 0, Math.min(hardwareAddress.length, 8));
+        System.arraycopy(hardwareAddress, 0, extendedTo64bits, 0, Math.min(hardwareAddress.length, BYTES_IN_64BITS));
         final ByteBuffer byteBuffer = ByteBuffer.wrap(extendedTo64bits);
         baseHandle = byteBuffer.getLong();
       } else {
@@ -50,7 +52,7 @@ public class WorksheetHeap {
     } catch (final SocketException e) {
       baseHandle = new SecureRandom().nextLong();
     }
-    baseHandle += System.currentTimeMillis() / 1000; // we only need seconds.
+    baseHandle += System.currentTimeMillis() / MILLIS_PER_SECOND; // we only need seconds.
     _sequence = new AtomicLong(baseHandle);
   }
 

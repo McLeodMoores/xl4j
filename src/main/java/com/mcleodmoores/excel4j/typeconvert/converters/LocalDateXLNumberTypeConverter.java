@@ -14,6 +14,8 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter {
 
+  private static final int EXCEL_EPOCH_YEAR = 1900;
+
   /**
    * Default constructor.
    */
@@ -25,7 +27,8 @@ public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter 
    * Note this is does not work in 1904 mode (which is an odd Mac compatibility mode), but with 0-Jan-1900.
    * + 1 below is to correct for the extra leap day added by Lotus-123/Excel.
    */
-  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(1900, 1, 1), LocalDate.ofEpochDay(0)) + 1;
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), 
+                                                                            LocalDate.ofEpochDay(0)) + 1;
 
   @Override
   public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {

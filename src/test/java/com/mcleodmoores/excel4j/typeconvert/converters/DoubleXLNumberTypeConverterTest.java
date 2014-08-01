@@ -24,6 +24,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class DoubleXLNumberTypeConverterTest {
+  private static final int DEFAULT_PRIORITY = 10;
+  private static final int TEN_I = 10;
+  private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when there's an upcast to Double?
   /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
@@ -57,7 +60,7 @@ public class DoubleXLNumberTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 10);
+    assertEquals(CONVERTER.getPriority(), DEFAULT_PRIORITY);
   }
 
   /**
@@ -97,7 +100,7 @@ public class DoubleXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Double.class, XLInteger.of(10));
+    CONVERTER.toJavaObject(Double.class, XLInteger.of(TEN_I));
   }
 
   /**
@@ -105,7 +108,7 @@ public class DoubleXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(10.));
+    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D));
   }
 
   /**
@@ -113,7 +116,7 @@ public class DoubleXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, BigDecimal.valueOf(10.));
+    CONVERTER.toXLValue(XLNumber.class, BigDecimal.valueOf(TEN_D));
   }
 
   /**
@@ -132,7 +135,7 @@ public class DoubleXLNumberTypeConverterTest {
     final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), DOUBLE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
-    assertEquals(xlNumber.getValue(), 10., 0);
+    assertEquals(xlNumber.getValue(), TEN_D, 0);
   }
 
   /**

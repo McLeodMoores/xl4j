@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
  * Utility class for checking arguments.
  */
 public final class ArgumentChecker {
-  private static final Logger s_logger = LoggerFactory.getLogger(ArgumentChecker.class);
+  private static Logger s_logger = LoggerFactory.getLogger(ArgumentChecker.class);
 
   private ArgumentChecker() {
   }
