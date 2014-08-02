@@ -6,6 +6,8 @@ package com.mcleodmoores.excel4j;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -15,6 +17,12 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.MethodParameterScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
@@ -25,7 +33,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 public class FunctionRegistry {
 
   // REVIEW: is this the best structure to use?
-  private Set<FunctionDefinition> _functionDefinitions = new ConcurrentSkipListSet<FunctionDefinition>();
+  private Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
   private ConcurrentMap<Integer, AtomicInteger> _exportCounters = new ConcurrentHashMap<Integer, AtomicInteger>();
   private ConcurrentMap<Long, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<Long, FunctionDefinition>();
   private BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
@@ -70,7 +78,10 @@ public class FunctionRegistry {
   
   private void scanAndCreateFunctions() {
     // TODO: don't limit to our package.
-    Reflections reflections = new Reflections("com.mcleodmoores");
+    Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
+                                                                        .addScanners(new MethodAnnotationsScanner(), 
+                                                                                     new MethodParameterScanner(),
+                                                                                     new TypeAnnotationsScanner()));
     Set<Method> methodsAnnotatedWith = reflections.getMethodsAnnotatedWith(XLFunction.class);
     for (Method method : methodsAnnotatedWith) {
       XLFunction functionAnnotation = method.getAnnotation(XLFunction.class);
@@ -134,11 +145,8 @@ public class FunctionRegistry {
    */
   private int allocateExport(final MethodInvoker invoker, final XLFunction functionAnnotation) {
     int params = getNumParamPointers(invoker, functionAnnotation);
-    AtomicInteger exportCounter = null;
-    if (_exportCounters.containsKey(params)) {
-      exportCounter = new AtomicInteger();
-    }
-    AtomicInteger existingExportCounter = _exportCounters.putIfAbsent(params, exportCounter); // won't ever put null.
+    AtomicInteger exportCounter = new AtomicInteger();
+    AtomicInteger existingExportCounter = _exportCounters.putIfAbsent(params, exportCounter);
     if (existingExportCounter != null) {
       exportCounter = existingExportCounter;
     }

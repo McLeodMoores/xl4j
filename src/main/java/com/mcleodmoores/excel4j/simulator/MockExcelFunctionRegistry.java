@@ -13,6 +13,7 @@ import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLReference;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -104,10 +105,14 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   private String[] getArgumentsHelp(final XLValue[] argsHelp) {
     String[] results = new String[argsHelp.length];
     for (int i = 0; i < argsHelp.length; i++) {
-      XLString argHelp = (XLString) argsHelp[i];
-      results[i] = argHelp.getValue();
+      if (argsHelp[i] instanceof XLString) {
+        XLString argHelp = (XLString) argsHelp[i];
+        results[i] = argHelp.getValue();
+      } else if (argsHelp[i] instanceof XLNil) {
+        results[i] = ""; // REVIEW: should be null?
+      }
     }
-    return null;
+    return results;
   }
   private Class<?> getReturnType(final XLString functionSignature) {
     char returnCode = functionSignature.getValue().charAt(0);
@@ -165,7 +170,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
       parameterTypes[i] = XLValue.class;
     }
     try {
-      return this.getClass().getMethod(functionExportName.getValue(), parameterTypes);
+      return MockDLLExports.class.getMethod(functionExportName.getValue(), parameterTypes);
     } catch (NoSuchMethodException | SecurityException e) {
       throw new Excel4JRuntimeException("Cannot find method with name " + functionExportName, e);
     }
