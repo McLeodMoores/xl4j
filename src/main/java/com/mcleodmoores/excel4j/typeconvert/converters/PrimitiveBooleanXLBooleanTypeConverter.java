@@ -19,7 +19,7 @@ public final class PrimitiveBooleanXLBooleanTypeConverter extends AbstractTypeCo
   @Override
   public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return XLBoolean.from((Boolean) from);
+    return XLBoolean.from((boolean) from);
   }
 
   @Override

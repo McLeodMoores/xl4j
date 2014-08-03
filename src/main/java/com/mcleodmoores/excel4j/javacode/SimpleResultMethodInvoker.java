@@ -22,6 +22,6 @@ public class SimpleResultMethodInvoker extends AbstractMethodInvoker {
 
   @Override
   protected XLValue convertResult(final Object object, final TypeConverter returnConverter) {
-    return returnConverter.toXLValue(null, returnConverter);
+    return returnConverter.toXLValue(null, object);
   }
 }
