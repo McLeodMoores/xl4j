@@ -14,18 +14,11 @@ public final class FunctionDefinition {
   private FunctionMetadata _functionMetadata;
   private MethodInvoker _methodInvoker;
   private int _exportNumber;
-  private int _exportParams;
 
   private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {
     _functionMetadata = functionMetadata;
     _methodInvoker = methodInvoker;
-    int exportParams = methodInvoker.getExcelParameterTypes().length;
-    if (functionMetadata.getFunctionSpec() != null) {
-      if (functionMetadata.getFunctionSpec().isAsynchronous()) {
-        exportParams++; // account for async callback handle that's hidden from Java. 
-      }
-    }
-    _exportParams = exportParams;
+    _exportNumber = exportNumber;
   }
   
   /**
@@ -60,6 +53,6 @@ public final class FunctionDefinition {
    * @return the export name, not null
    */
   public String getExportName() {
-    return ExportUtils.buildExportName(_exportParams, _exportNumber);
+    return ExportUtils.buildExportName(_exportNumber);
   }
 }

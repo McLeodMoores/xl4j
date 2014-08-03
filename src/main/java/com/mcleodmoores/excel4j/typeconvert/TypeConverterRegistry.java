@@ -42,7 +42,7 @@ public class TypeConverterRegistry {
     final Reflections reflections = new Reflections("com.mcleodmoores");
     final Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
     for (final Class<? extends TypeConverter> typeConverterClass : typeConverterClasses) {
-      if (Modifier.isAbstract(typeConverterClass.getModifiers())) {
+      if (Modifier.isAbstract(typeConverterClass.getModifiers()) || !Modifier.isPublic(typeConverterClass.getModifiers())) {
         continue; // skip over abstract type converters.
       }
       Constructor constructor;

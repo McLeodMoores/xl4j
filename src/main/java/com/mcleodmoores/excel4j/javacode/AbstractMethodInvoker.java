@@ -31,12 +31,15 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
   
   @Override
   public XLValue invoke(final Object object, final XLValue[] arguments) {
+    // note that the seemingly obvious invariant of arguments.length == _argumentConverters.length is not
+    // always true because of a VarArgs might have no arguments to it's converter may be surplus to 
+    // requirements.  For this reason we base the conversion on the length of arguments.
     Object[] args = new Object[arguments.length];
-    for (int i = 0; i < _argumentConverters.length; i++) {
+    for (int i = 0; i < arguments.length; i++) { 
       args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
     }
     try {
-      Object result = _method.invoke(object, args);
+      Object result = _method.invoke(object, new  Object[] { args });
       return convertResult(result, _returnConverter);
     } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException e) {
@@ -71,6 +74,11 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
   @Override
   public boolean isStatic() {
     return Modifier.isStatic(_method.getModifiers());
+  }
+  
+  @Override
+  public boolean isVarArgs() {
+    return _method.isVarArgs();
   }
   
   @Override

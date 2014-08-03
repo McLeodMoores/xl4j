@@ -39,6 +39,11 @@ public class DefaultExcelCallback implements ExcelCallback {
   }
   
   @Override
+  public LowLevelExcelCallback getLowLevelExcelCallback() {
+    return _rawCallback;
+  }
+  
+  @Override
   public byte[] getBinaryName(final long handle, final long length) {
     return new byte[0];
   }

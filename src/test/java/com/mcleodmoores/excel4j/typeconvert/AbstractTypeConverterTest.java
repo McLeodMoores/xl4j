@@ -20,8 +20,17 @@ public class AbstractTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullJavaType() {
-    new AbstractTypeConverter(null, XLNumber.class) {
-
+    /**
+     * Test converter.
+     */
+    class NullTypeConverterTest extends AbstractTypeConverter {
+      /**
+       * No-arg constructor.
+       */
+      public NullTypeConverterTest() {
+        super((Class<?>) null, XLNumber.class);
+      }
+      
       @Override
       public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
         return null;
@@ -31,7 +40,8 @@ public class AbstractTypeConverterTest {
       public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
         return null;
       }
-    };
+    }
+    new NullTypeConverterTest();
   }
 
   /**
@@ -39,7 +49,16 @@ public class AbstractTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLType() {
-    new AbstractTypeConverter(Double.class, null) {
+    /**
+     * Test converter.
+     */
+    class NullTypeConverterTest extends AbstractTypeConverter {
+      /**
+       * No-args constructor.
+       */
+      public NullTypeConverterTest() {
+        super(Double.class, (Class<? extends XLValue>) null);
+      }
 
       @Override
       public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
@@ -50,6 +69,7 @@ public class AbstractTypeConverterTest {
       public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
         return null;
       }
-    };
+    }
+    new NullTypeConverterTest();
   }
 }

@@ -4,6 +4,7 @@
 package com.mcleodmoores.excel4j.callback;
 
 import com.mcleodmoores.excel4j.FunctionDefinition;
+import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 
 
 /**
@@ -25,4 +26,9 @@ public interface ExcelCallback {
    * @return the binary blob
    */
   byte[] getBinaryName(final long handle, final long length);
+
+  /**
+   * @return the underlying low-level callback interface
+   */
+  LowLevelExcelCallback getLowLevelExcelCallback();
 }

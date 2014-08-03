@@ -12,11 +12,10 @@ public final class ExportUtils {
   
   /**
    * Builds the name of the DLL native function export.
-   * @param params  the number of machine words (sizeof(void *)) for the parameters.
    * @param exportNumber  the number of the export within this number of parameters.
    * @return a string of the export name
    */
-  public static String buildExportName(final int params, final int exportNumber) {
-    return "UDF_" + params + "_" + exportNumber;
+  public static String buildExportName(final int exportNumber) {
+    return "UDF_" + exportNumber;
   }
 }

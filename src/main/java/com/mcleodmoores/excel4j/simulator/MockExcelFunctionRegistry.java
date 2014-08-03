@@ -170,7 +170,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
       parameterTypes[i] = XLValue.class;
     }
     try {
-      return MockDLLExports.class.getMethod(functionExportName.getValue(), parameterTypes);
+      return MockDLLExports.class.getMethod(functionExportName.getValue(), XLValue[].class);
     } catch (NoSuchMethodException | SecurityException e) {
       throw new Excel4JRuntimeException("Cannot find method with name " + functionExportName, e);
     }

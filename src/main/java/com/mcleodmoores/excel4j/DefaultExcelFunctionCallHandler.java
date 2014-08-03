@@ -27,8 +27,7 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
   
   @Override
   public XLValue invoke(final int exportNumber, final XLValue... args) {
-    final int numParams = args.length; 
-    final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(numParams, exportNumber);
+    final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
     final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
     if (methodInvoker.isStatic()) {
       return methodInvoker.invoke(null, args);  

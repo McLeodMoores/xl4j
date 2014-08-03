@@ -21,6 +21,7 @@ public class SimluatedExcel implements Excel {
   private final FunctionRegistry _functionRegistry;
   private final ExcelCallback _excelCallback;
   private final ExcelFunctionCallHandler _excelCallHandler;
+  private ReflectiveInvokerFactory _invokerFactory;
   
   /**
    * Create an instance of the Excel interface suitable for testing.
@@ -31,6 +32,7 @@ public class SimluatedExcel implements Excel {
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
     _excelCallback = new DefaultExcelCallback(getDLLPath(), rawCallback);
+    _invokerFactory = new ReflectiveInvokerFactory();
   }
   
   /**
@@ -42,7 +44,7 @@ public class SimluatedExcel implements Excel {
 
   @Override
   public InvokerFactory getInvokerFactory() {
-    return new ReflectiveInvokerFactory();
+    return _invokerFactory;
   }
   
   @Override

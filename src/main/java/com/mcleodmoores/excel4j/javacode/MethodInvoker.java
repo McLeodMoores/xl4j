@@ -32,6 +32,11 @@ public interface MethodInvoker {
    * @return true, if the underlying method is static
    */
   boolean isStatic();
+  
+  /**
+   * @return true, if the underlying method is VarArgs
+   */
+  boolean isVarArgs();
 
   /**
    * @return the method name

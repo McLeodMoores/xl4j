@@ -13,7 +13,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reflections.Reflections;
@@ -22,20 +21,21 @@ import org.reflections.scanners.MethodParameterScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 /**
- * 
+ * Class to scan for @XLFunction annotations and register each function with Excel.
  */
 public class FunctionRegistry {
-
+  private static Logger s_logger = LoggerFactory.getLogger(FunctionRegistry.class);
   // REVIEW: is this the best structure to use?
   private Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
-  private ConcurrentMap<Integer, AtomicInteger> _exportCounters = new ConcurrentHashMap<Integer, AtomicInteger>();
-  private ConcurrentMap<Long, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<Long, FunctionDefinition>();
+  private AtomicInteger _exportCounter = new AtomicInteger();
+  private ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<Integer, FunctionDefinition>();
   private BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
   /**
    * Default no-arg constructor.
@@ -104,9 +104,9 @@ public class FunctionRegistry {
       FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, xlArgumentAnnotations);
       int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);
       FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
-      long key = makeKey(getNumParamPointers(methodInvoker, functionAnnotation), allocatedExportNumber);
       // put the definition in some look-up tables.
-      _functionDefinitionLookup.put(key, functionDefinition);
+      s_logger.info("Allocating export number {} function {}", allocatedExportNumber, methodInvoker.getMethodName());
+      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
       _functionDefinitions.add(functionDefinition);
     }
   }
@@ -128,15 +128,6 @@ public class FunctionRegistry {
     return xlArgumentAnnotations;
   }
   
-  private int getNumParamPointers(final MethodInvoker invoker, final XLFunction functionAnnotation) {
-    final int params = invoker.getExcelParameterTypes().length;
-    if (functionAnnotation.isAsynchronous()) {
-      return params + 1; // asynchronous functions require a handle to be passed, which is hidden from Java
-    } else {
-      return params;
-    }
-  }
-  
   /**
    * This allocates an export number for the number of parameters required. 
    * @param invoker  the method invoker, not null
@@ -144,42 +135,26 @@ public class FunctionRegistry {
    * @return the allocated export number
    */
   private int allocateExport(final MethodInvoker invoker, final XLFunction functionAnnotation) {
-    int params = getNumParamPointers(invoker, functionAnnotation);
-    AtomicInteger exportCounter = new AtomicInteger();
-    AtomicInteger existingExportCounter = _exportCounters.putIfAbsent(params, exportCounter);
-    if (existingExportCounter != null) {
-      exportCounter = existingExportCounter;
-    }
-    int exportNumber = exportCounter.incrementAndGet();
+    int exportNumber = _exportCounter.getAndIncrement();
     return exportNumber;
   }
   
   /**
    * Look up the function definition, from the allocated.
-   * @param numberOfParameterPointers  the number of parameters (all machine word width) to pass on the stack
    * @param exportNumber  the number of the export in the parameter size block
    * @return the function definition, not null
    * throws Excel4JRuntimeException if function definition could not be found
    */
-  public FunctionDefinition getFunctionDefinition(final int numberOfParameterPointers, final int exportNumber) {
-    FunctionDefinition functionDefinition = _functionDefinitionLookup.get(makeKey(numberOfParameterPointers, exportNumber));
+  public FunctionDefinition getFunctionDefinition(final int exportNumber) {
+    FunctionDefinition functionDefinition = _functionDefinitionLookup.get(exportNumber);
     if (functionDefinition != null) {
       return functionDefinition;
     } else {
-      throw new Excel4JRuntimeException("Cannot find function definition with "
-                                        + numberOfParameterPointers + " function params, and {} export number"
+      throw new Excel4JRuntimeException("Cannot find function definition with export number"
                                         + exportNumber);
     }
   }
   
-  /**
-   * Build key for lookup of function.  Should be no collisions.
-   * @param numberOfParameterPointers
-   * @param exportNumber
-   * @return a hash of the number of parameter pointer and export number
-   */
-  private long makeKey(final int numberOfParameterPointers, final int exportNumber) {
-    return ((long) numberOfParameterPointers) + (((long) exportNumber) * (long) Integer.MAX_VALUE);
-  }
+
 
 }

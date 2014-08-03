@@ -18,6 +18,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
 public class MockFunctionProcessor {
   private final Excel _excel = ExcelFactory.getInstance();
   
+  /**
+   * Create a function processor.
+   */
   public MockFunctionProcessor() {
     _excel.getFunctionRegistry().registerFunctions(_excel.getExcelCallback());
   }
@@ -28,14 +31,17 @@ public class MockFunctionProcessor {
    * @return the result
    */
   public XLValue invoke(final String functionName, final XLValue... args) {
-    MockExcelFunctionRegistry excelFunctionRegistry = new MockExcelFunctionRegistry();
+    MockExcelFunctionRegistry excelFunctionRegistry = (MockExcelFunctionRegistry) _excel.getExcelCallback().getLowLevelExcelCallback();
     FunctionEntry functionEntry = excelFunctionRegistry.getFunctionEntry(functionName);
-    Object dllTable = new MockDLLExports(_excel.getExcelCallHandler());
+    MockDLLExports dllTable = new MockDLLExports(_excel.getExcelCallHandler());
     Method entryPointMethod = functionEntry.getEntryPointMethod();
+    Object[] newArgs = new Object[args.length];
+    System.arraycopy(args, 0, newArgs, 0, args.length);
     try {
-      return (XLValue) entryPointMethod.invoke(dllTable, (Object[]) args);
+      System.err.println("invoking method " + entryPointMethod.getName() + " with args " + Arrays.toString(args));
+      return (XLValue) entryPointMethod.invoke(dllTable, new Object[] { args });
     } catch (IllegalAccessException | IllegalArgumentException | ClassCastException | InvocationTargetException e) {
-      throw new Excel4JRuntimeException("Problem invoking function " + functionName + " with args " + Arrays.toString(args), e);
+      throw new Excel4JRuntimeException("Problem invoking function " + functionName + " with args " + Arrays.toString(newArgs), e);
     }
   }
 }
