@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
+import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -25,7 +26,13 @@ public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
 
   @Override
   protected XLValue convertResult(final Object object, final TypeConverter returnConverter) {
-    return OBJECT_XLOBJECT_CONVERTER.toXLValue(null, object);
+    if (object instanceof XLObject) { 
+      // if multiple layers of method invoker, don't put already encoded XLObjects on heap.
+      // this happens in case of JMethod/JConstruct etc.
+      return (XLValue) object;
+    } else {
+      return OBJECT_XLOBJECT_CONVERTER.toXLValue(null, object);
+    }
   }
 
 }
