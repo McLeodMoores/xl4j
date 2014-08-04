@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -36,7 +36,7 @@ public class BigDecimalXLNumberTypeConverterTest {
   /** BigDecimal. */
   private static final BigDecimal BIG_DECIMAL = BigDecimal.valueOf(10d);
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new BigDecimalXLNumberTypeConverter();
+  private static final AbstractScalarTypeConverter CONVERTER = new BigDecimalXLNumberTypeConverter();
 
   /**
    * Tests that the java type is {@link BigDecimal}.
@@ -51,7 +51,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(BigDecimal.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(BigDecimal.class, XLNumber.class));
   }
 
   /**

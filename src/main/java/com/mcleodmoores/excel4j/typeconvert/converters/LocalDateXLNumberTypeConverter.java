@@ -3,7 +3,7 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -12,7 +12,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Type converter to convert from Excel Numbers and back again.
  * TODO: refactor out into lots of more specialized converters for better performance.
  */
-public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter {
+public final class LocalDateXLNumberTypeConverter extends AbstractScalarTypeConverter {
 
   private static final int EXCEL_EPOCH_YEAR = 1900;
 

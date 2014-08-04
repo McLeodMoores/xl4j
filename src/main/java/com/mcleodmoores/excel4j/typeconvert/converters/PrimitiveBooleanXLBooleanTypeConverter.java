@@ -1,6 +1,6 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -8,7 +8,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * Type converter to convert from Excel Booleans and back again.
  */
-public final class PrimitiveBooleanXLBooleanTypeConverter extends AbstractTypeConverter {
+public final class PrimitiveBooleanXLBooleanTypeConverter extends AbstractScalarTypeConverter {
   /**
    * Default constructor.
    */

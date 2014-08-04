@@ -2,7 +2,7 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.heap.Heap;
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -10,7 +10,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Type converter for general objects into XLObject handles.  Note the lower priority,
  * which means all the other converters get a crack at doing something nicer first.
  */
-public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
+public class ObjectXLObjectTypeConverter extends AbstractScalarTypeConverter {
 
   private static final int OBJECT_CONVERTER_PRIORITY = 5;
 

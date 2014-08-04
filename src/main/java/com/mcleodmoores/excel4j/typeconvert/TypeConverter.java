@@ -10,7 +10,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Java Generics system not powerful enough to be of any use here as most types are
  * determined only at run-time.
  */
-public interface TypeConverter {
+public interface TypeConverter<EXCEL_TYPE, JAVA_TYPE> {
   /**
    * Get the Excel->Java mapping provided by this converter.
    * @return the supported mapping
@@ -20,7 +20,7 @@ public interface TypeConverter {
    * Get the Java->Excel mapping provided by this converter.
    * @return the supported mapping
    */
-  JavaToExcelTypeMapping getJavaToExcelTypeMapping();
+  JavaToExcelTypeMappingI getJavaToExcelTypeMapping();
   
   /**
    * Convert from the supported Java type to the supported Excel type.
@@ -28,7 +28,7 @@ public interface TypeConverter {
    * @param from  the Java object to convert to an Excel type
    * @return an Excel conversion of a Java type
    */
-  XLValue toXLValue(Class<? extends XLValue> expectedClass, Object from);
+  EXCEL_TYPE toXLValue(Class<? extends EXCEL_TYPE> expectedClass, Object from);
   
   /**
    * Convert from the supported Excel type to the supported Java type.
@@ -36,11 +36,12 @@ public interface TypeConverter {
    * @param from  the Excel object to convert into a Java type
    * @return a Java object converted from an Excel object
    */
-  Object toJavaObject(Class<?> expectedClass, XLValue from);
+  JAVA_TYPE toJavaObject(Class<?> expectedClass, EXCEL_TYPE from);
   
   /**
    * Get the priority level of this converter, higher values have higher priority.
    * @return the priority level, higher values being higher priority
    */
   int getPriority();
+  
 }

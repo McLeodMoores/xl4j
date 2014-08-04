@@ -1,6 +1,6 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.values.XLBigData;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLError;
@@ -24,7 +24,7 @@ public class XLValueIdentityConverters {
   /**
    * Abstract base class to minimize boilerplate for Identity converters (that do a no-op conversion for XLValue types).
    */
-  private abstract static class AbstractXLValueIdentityConverter extends AbstractTypeConverter {
+  private abstract static class AbstractXLValueIdentityConverter extends AbstractScalarTypeConverter {
     public AbstractXLValueIdentityConverter(final Class<? extends XLValue> xlType) {
       super(xlType, xlType, IDENTITY_CONVERTER_PRIORITY);
     }

@@ -1,6 +1,6 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -9,7 +9,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Type converter for general objects into XLObject handles.  Note the lower priority,
  * which means all the other converters get a crack at doing something nicer first.
  */
-public class EnumXLStringTypeConverter extends AbstractTypeConverter {
+public class EnumXLStringTypeConverter extends AbstractScalarTypeConverter {
 
   private static final int ENUM_CONVERTER_PRIORITY = 7;
 

@@ -8,9 +8,9 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -29,7 +29,7 @@ public class StringXLStringTypeConverterTest {
   private static final String STRING = "TEST";
 
   /** The converter */
-  private static final AbstractTypeConverter CONVERTER = new StringXLStringTypeConverter();
+  private static final AbstractScalarTypeConverter CONVERTER = new StringXLStringTypeConverter();
 
   /**
    * Tests that the java type is {@link String}.
@@ -44,7 +44,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(String.class, XLString.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(String.class, XLString.class));
   }
 
   /**

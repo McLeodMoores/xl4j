@@ -6,11 +6,11 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * Base class for type converters, removes need for some boilerplate.
  */
-public abstract class AbstractTypeConverter implements TypeConverter {
+public abstract class AbstractScalarTypeConverter implements TypeConverter<XLValue, Object> {
   private static final int DEFAULT_PRIORITY = 10;
 
   private final ExcelToJavaTypeMapping _excelToJavaTypeMapping;
-  private final JavaToExcelTypeMapping _javaToExcelTypeMapping;
+  private final JavaToExcelTypeMappingI _javaToExcelTypeMapping;
   private final int _priority;
 
   /**
@@ -19,11 +19,11 @@ public abstract class AbstractTypeConverter implements TypeConverter {
    * @param excelType the Excel type, subclass of XLValue
    * @param priority the priority level, with larger values indicating higher priority
    */
-  protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType, final int priority) {
+  protected AbstractScalarTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType, final int priority) {
     ArgumentChecker.notNull(javaType, "javaType");
     ArgumentChecker.notNull(excelType, "excelType");
     _excelToJavaTypeMapping = ExcelToJavaTypeMapping.of(excelType, javaType);
-    _javaToExcelTypeMapping = JavaToExcelTypeMapping.of(javaType, excelType);
+    _javaToExcelTypeMapping = ScalarJavaToExcelTypeMapping.of(javaType, excelType);
     _priority = priority;
   }
 
@@ -32,7 +32,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
    * @param javaType the Java type, any object type
    * @param excelType the Excel type, subclass of XLValue
    */
-  protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType) {
+  protected AbstractScalarTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType) {
     this(javaType, excelType, DEFAULT_PRIORITY);
   }
 
@@ -42,7 +42,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
   }
 
   @Override
-  public JavaToExcelTypeMapping getJavaToExcelTypeMapping() {
+  public JavaToExcelTypeMappingI getJavaToExcelTypeMapping() {
     return _javaToExcelTypeMapping;
   }
 

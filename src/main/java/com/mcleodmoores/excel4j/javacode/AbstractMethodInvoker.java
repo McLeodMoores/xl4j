@@ -44,7 +44,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
     Object[] args = new Object[_argumentConverters.length];
     if (isVarArgs()) {
       if (arguments.length < _argumentConverters.length) { // var args is empty
-        for (int i = 0; i < arguments.length; i++) { 
+        for (int i = 0; i < arguments.length; i++) {
           args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
         }
         args[_argumentConverters.length - 1] = createVarArgsArray(_method, 0); // empty varargs to pass on

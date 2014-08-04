@@ -10,7 +10,7 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests a dummy {@link AbstractTypeConverter} implementation.
+ * Tests a dummy {@link AbstractScalarTypeConverter} implementation.
  */
 @Test
 public class AbstractTypeConverterTest {
@@ -23,7 +23,7 @@ public class AbstractTypeConverterTest {
     /**
      * Test converter.
      */
-    class NullTypeConverterTest extends AbstractTypeConverter {
+    class NullTypeConverterTest extends AbstractScalarTypeConverter {
       /**
        * No-arg constructor.
        */
@@ -52,7 +52,7 @@ public class AbstractTypeConverterTest {
     /**
      * Test converter.
      */
-    class NullTypeConverterTest extends AbstractTypeConverter {
+    class NullTypeConverterTest extends AbstractScalarTypeConverter {
       /**
        * No-args constructor.
        */

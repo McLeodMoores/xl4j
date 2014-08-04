@@ -8,9 +8,9 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -36,7 +36,7 @@ public class ShortXLNumberTypeConverterTest {
   /** Short. */
   private static final Short SHORT = Short.valueOf((short) 10);
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new ShortXLNumberTypeConverter();
+  private static final AbstractScalarTypeConverter CONVERTER = new ShortXLNumberTypeConverter();
 
   /**
    * Tests that the java type is {@link Short}.
@@ -51,7 +51,7 @@ public class ShortXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Short.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Short.class, XLNumber.class));
   }
 
   /**
