@@ -13,7 +13,6 @@ import java.lang.reflect.WildcardType;
 
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Some common utility methods for reflection-based operations.
@@ -47,17 +46,15 @@ public final class Excel4JReflectionUtils {
   }
 
   @SuppressWarnings("unused")
-  private Class<? extends XLValue>[] getExpectedExcelTypes(final Method method) {
+  private Class<?>[] getExpectedExcelTypes(final Method method) {
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
-    @SuppressWarnings("unchecked")
-    final
-    Class<? extends XLValue>[] excelTypes = new Class[genericParameterTypes.length];
+    final Class<?>[] excelTypes = new Class[genericParameterTypes.length];
     final TypeConverterRegistry typeConverterRegistry = new TypeConverterRegistry();
     int i = 0;
     for (final Type parameterType : genericParameterTypes) {
-      final TypeConverter converter = typeConverterRegistry.findConverter(parameterType);
+      final TypeConverter<?, ?, ?> converter = typeConverterRegistry.findConverter(parameterType);
       if (converter != null) {
-        final Class<? extends XLValue> excelClass = converter.getJavaToExcelTypeMapping().getExcelClass();
+        final Class<?> excelClass = converter.getJavaToExcelTypeMapping().getExcelClass();
         excelTypes[i] = excelClass;
       } else {
         throw new Excel4JRuntimeException("Can't find Java->Excel converter for parameter type " + parameterType + " (arg " + i + ") of method " + method);

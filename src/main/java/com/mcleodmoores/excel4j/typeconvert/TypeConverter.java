@@ -3,24 +3,26 @@
  */
 package com.mcleodmoores.excel4j.typeconvert;
 
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Interface for converting to and from XLValue types to Java types.
  * Java Generics system not powerful enough to be of any use here as most types are
  * determined only at run-time.
+ * @param <EXCEL_TYPE>  the Excel class
+ * @param <JAVA_TYPE>  the Java class
+ * @param <JAVA_TYPE_TYPE>  the type used to store the Java type (e.g. java.lang.relect.Type)
  */
-public interface TypeConverter<EXCEL_TYPE, JAVA_TYPE> {
+public interface TypeConverter<EXCEL_TYPE, JAVA_TYPE, JAVA_TYPE_TYPE> {
   /**
    * Get the Excel->Java mapping provided by this converter.
    * @return the supported mapping
    */
-  ExcelToJavaTypeMapping getExcelToJavaTypeMapping();
+  ExcelToJavaTypeMapping<EXCEL_TYPE, JAVA_TYPE_TYPE> getExcelToJavaTypeMapping();
   /**
    * Get the Java->Excel mapping provided by this converter.
    * @return the supported mapping
    */
-  JavaToExcelTypeMappingI getJavaToExcelTypeMapping();
+  JavaToExcelTypeMapping<JAVA_TYPE_TYPE, EXCEL_TYPE> getJavaToExcelTypeMapping();
   
   /**
    * Convert from the supported Java type to the supported Excel type.

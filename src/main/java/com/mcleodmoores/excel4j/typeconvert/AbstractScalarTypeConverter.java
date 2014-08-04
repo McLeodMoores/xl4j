@@ -1,16 +1,18 @@
 package com.mcleodmoores.excel4j.typeconvert;
 
+import java.lang.reflect.Type;
+
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Base class for type converters, removes need for some boilerplate.
  */
-public abstract class AbstractScalarTypeConverter implements TypeConverter<XLValue, Object> {
+public abstract class AbstractScalarTypeConverter implements TypeConverter<XLValue, Object, Type> {
   private static final int DEFAULT_PRIORITY = 10;
 
-  private final ExcelToJavaTypeMapping _excelToJavaTypeMapping;
-  private final JavaToExcelTypeMappingI _javaToExcelTypeMapping;
+  private final ScalarExcelToJavaTypeMapping _excelToJavaTypeMapping;
+  private final ScalarJavaToExcelTypeMapping _javaToExcelTypeMapping;
   private final int _priority;
 
   /**
@@ -22,7 +24,7 @@ public abstract class AbstractScalarTypeConverter implements TypeConverter<XLVal
   protected AbstractScalarTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType, final int priority) {
     ArgumentChecker.notNull(javaType, "javaType");
     ArgumentChecker.notNull(excelType, "excelType");
-    _excelToJavaTypeMapping = ExcelToJavaTypeMapping.of(excelType, javaType);
+    _excelToJavaTypeMapping = ScalarExcelToJavaTypeMapping.of(excelType, javaType);
     _javaToExcelTypeMapping = ScalarJavaToExcelTypeMapping.of(javaType, excelType);
     _priority = priority;
   }
@@ -37,12 +39,12 @@ public abstract class AbstractScalarTypeConverter implements TypeConverter<XLVal
   }
 
   @Override
-  public ExcelToJavaTypeMapping getExcelToJavaTypeMapping() {
+  public ExcelToJavaTypeMapping<XLValue, Type> getExcelToJavaTypeMapping() {
     return _excelToJavaTypeMapping;
   }
 
   @Override
-  public JavaToExcelTypeMappingI getJavaToExcelTypeMapping() {
+  public JavaToExcelTypeMapping<Type, XLValue> getJavaToExcelTypeMapping() {
     return _javaToExcelTypeMapping;
   }
 

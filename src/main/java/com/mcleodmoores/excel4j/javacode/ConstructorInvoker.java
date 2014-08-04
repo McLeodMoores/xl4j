@@ -3,6 +3,7 @@ package com.mcleodmoores.excel4j.javacode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -12,8 +13,8 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class ConstructorInvoker {
   private Constructor<?> _constructor;
-  private TypeConverter[] _argumentConverters;
-  private TypeConverter _returnConverter;
+  private TypeConverter<?, ?, ?>[] _argumentConverters;
+  private TypeConverter<?, ?, ?> _returnConverter;
   
   /**
    * Constructor.
@@ -21,8 +22,8 @@ public class ConstructorInvoker {
    * @param argumentConverters the converters required to call the method
    * @param returnConverter the converter required to convert he result back to an Excel type
    */
-  public ConstructorInvoker(final Constructor<?> constructor, final TypeConverter[] argumentConverters, 
-                            final TypeConverter returnConverter) {
+  public ConstructorInvoker(final Constructor<?> constructor, final TypeConverter<?, ?, ?>[] argumentConverters, 
+                            final TypeConverter<?, ?, ?> returnConverter) {
     _constructor = constructor;
     _argumentConverters = argumentConverters;
     _returnConverter = returnConverter;
@@ -36,11 +37,21 @@ public class ConstructorInvoker {
   public XLValue invoke(final XLValue[] arguments) {
     Object[] args = new Object[arguments.length];
     for (int i = 0; i < _argumentConverters.length; i++) {
-      args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
+      if (arguments[i].getClass().isArray()) {
+        args[i] = arguments[i];
+      } else {
+        AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) _argumentConverters[i];
+        args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
+      }
     }
     try {
       Object result = _constructor.newInstance(args);
-      return _returnConverter.toXLValue(null, result);
+      if (result.getClass().isArray()) {
+        throw new Excel4JRuntimeException("Return of array types not supported");
+      } else {
+        AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) _returnConverter;
+        return scalarTypeConverter.toXLValue(null, result);
+      }
      } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor", e);
@@ -50,11 +61,10 @@ public class ConstructorInvoker {
   /**
    * @return an array containing the Excel class of each parameter to this constructor
    */
-  public Class<? extends XLValue>[] getExcelParameterTypes() {
-    @SuppressWarnings("unchecked")
-    Class<? extends XLValue>[] parameterTypes = new Class[_argumentConverters.length];
+  public Class<?>[] getExcelParameterTypes() {
+    Class<?>[] parameterTypes = new Class[_argumentConverters.length];
     int i = 0;
-    for (TypeConverter typeConverter : _argumentConverters) {
+    for (TypeConverter<?, ?, ?> typeConverter : _argumentConverters) {
       parameterTypes[i] = typeConverter.getJavaToExcelTypeMapping().getExcelClass(); 
     }
     return parameterTypes;
@@ -63,7 +73,7 @@ public class ConstructorInvoker {
   /**
    * @return the Excel class returned by this constructor (should be XLObject)
    */
-  public Class<? extends XLValue> getExcelReturnType() {
+  public Class<?> getExcelReturnType() {
     return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
   }
   

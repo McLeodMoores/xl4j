@@ -21,12 +21,12 @@ public interface MethodInvoker {
   /**
    * @return an array containing the Excel class of each parameter to this method
    */
-  Class<? extends XLValue>[] getExcelParameterTypes();
+  Class<?>[] getExcelParameterTypes();
 
   /**
    * @return the Excel class returned by this method
    */
-  Class<? extends XLValue> getExcelReturnType();
+  Class<?> getExcelReturnType();
 
   /**
    * @return true, if the underlying method is static

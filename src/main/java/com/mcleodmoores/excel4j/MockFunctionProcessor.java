@@ -6,9 +6,9 @@ package com.mcleodmoores.excel4j;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
-import com.mcleodmoores.excel4j.mock.FunctionEntry;
-import com.mcleodmoores.excel4j.mock.MockDLLExports;
-import com.mcleodmoores.excel4j.mock.MockExcelFunctionRegistry;
+import com.mcleodmoores.excel4j.simulator.FunctionEntry;
+import com.mcleodmoores.excel4j.simulator.MockDLLExports;
+import com.mcleodmoores.excel4j.simulator.MockExcelFunctionRegistry;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -19,9 +19,12 @@ public class MockFunctionProcessor {
   private MockExcelFunctionRegistry _mockExcelFunctionRegistry;
   private MockDLLExports _mockDLLExports;
   
+  /**
+   * Public constructor.
+   */
   public MockFunctionProcessor() {
     Excel excel = ExcelFactory.getInstance();
-    ExcelCallHandler excelCallHandler = excel.getExcelCallHandler();
+    ExcelFunctionCallHandler excelCallHandler = excel.getExcelCallHandler();
     _mockExcelFunctionRegistry = new MockExcelFunctionRegistry();
     _mockDLLExports = new MockDLLExports(excelCallHandler);
   }

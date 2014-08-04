@@ -9,6 +9,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -19,8 +20,8 @@ import com.mcleodmoores.excel4j.values.XLValue;
 public abstract class AbstractMethodInvoker implements MethodInvoker {
   private static Logger s_logger = LoggerFactory.getLogger(AbstractMethodInvoker.class);
   private Method _method;
-  private TypeConverter[] _argumentConverters;
-  private TypeConverter _returnConverter;
+  private TypeConverter<?, ?, ?>[] _argumentConverters;
+  private TypeConverter<?, ?, ?> _returnConverter;
 
   /**
    * Constructor.
@@ -28,8 +29,8 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
    * @param argumentConverters  the converters required to call the method
    * @param returnConverter  the converter required to convert he result back to an Excel type
    */
-  public AbstractMethodInvoker(final Method method, final TypeConverter[] argumentConverters, 
-                       final TypeConverter returnConverter) {
+  public AbstractMethodInvoker(final Method method, final TypeConverter<?, ?, ?>[] argumentConverters, 
+                       final TypeConverter<?, ?, ?> returnConverter) {
     _method = method;
     _argumentConverters = argumentConverters;
     _returnConverter = returnConverter;
@@ -45,22 +46,45 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
     if (isVarArgs()) {
       if (arguments.length < _argumentConverters.length) { // var args is empty
         for (int i = 0; i < arguments.length; i++) {
-          args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
+          if (arguments[i].getClass().isArray()) {
+            //AbstractArrayTypeConverter arrayTypeConverter = (AbstractArrayTypeConverter) _argumentConverters[i];
+            //Object[] subArray = arrayTypeConverter.getExcelToJavaTypeMapping().getExcelClass().newInstance();
+            args[i] = arguments[i];
+          } else {
+            AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) _argumentConverters[i];
+            args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
+          }
+            
         }
         args[_argumentConverters.length - 1] = createVarArgsArray(_method, 0); // empty varargs to pass on
       } else { // args args non-empty
         for (int i = 0; i < _argumentConverters.length - 1; i++) {  // last arg converter used for var args.
-          args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
+          if (arguments[i].getClass().isArray()) {
+            args[i] = arguments[i];
+          } else {
+            AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) _argumentConverters[i];
+            args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
+          }
         }
         Object[] varArgs = createVarArgsArray(_method, args.length - (_argumentConverters.length - 1)); // so if converters == args, we have 1.
         for (int i = 0; i < varArgs.length; i++) {
-          varArgs[i] = _argumentConverters[_argumentConverters.length - 1].toJavaObject(null, arguments[i + (_argumentConverters.length - 1)]);
+          if (arguments[i].getClass().isArray()) {
+            varArgs[i] = args[i];
+          } else {
+            AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) _argumentConverters[_argumentConverters.length - 1];
+            varArgs[i] = scalarTypeConverter.toJavaObject(null, arguments[i + (_argumentConverters.length - 1)]);
+          }
         }
         args[_argumentConverters.length - 1] = varArgs; // non-empty varargs to pass on
       }
     } else {
-      for (int i = 0; i < arguments.length; i++) { 
-        args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
+      for (int i = 0; i < arguments.length; i++) {
+        if (arguments[i].getClass().isArray()) {
+          args[i] = arguments[i];
+        } else {
+          AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) _argumentConverters[i];
+          args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
+        }
       }
     }
     try {
@@ -84,21 +108,20 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
    * @param returnConverter  the simplifying return converter
    * @return an XLValue type
    */
-  protected abstract XLValue convertResult(final Object object, final TypeConverter returnConverter);
+  protected abstract XLValue convertResult(final Object object, final TypeConverter<?, ?, ?> returnConverter);
   
   @Override
-  public Class<? extends XLValue>[] getExcelParameterTypes() {
-    @SuppressWarnings("unchecked")
-    Class<? extends XLValue>[] parameterTypes = new Class[_argumentConverters.length];
+  public Class<?>[] getExcelParameterTypes() {
+    Class<?>[] parameterTypes = new Class[_argumentConverters.length];
     int i = 0;
-    for (TypeConverter typeConverter : _argumentConverters) {
-      parameterTypes[i] = typeConverter.getJavaToExcelTypeMapping().getExcelClass(); 
+    for (TypeConverter<?, ?, ?> typeConverter : _argumentConverters) {
+      parameterTypes[i] = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
     }
     return parameterTypes;
   }
   
   @Override
-  public Class<? extends XLValue> getExcelReturnType() {
+  public Class<?> getExcelReturnType() {
     return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
   }
   

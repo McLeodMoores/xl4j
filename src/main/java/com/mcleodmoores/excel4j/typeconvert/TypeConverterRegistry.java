@@ -28,7 +28,7 @@ public class TypeConverterRegistry {
   private static Logger s_logger = LoggerFactory.getLogger(TypeConverterRegistry.class);
 
   // we want highest priority keys first, so we use a reversing comparator.
-  private final ConcurrentSkipListMap<Integer, List<TypeConverter>> _converters = new ConcurrentSkipListMap<>(Collections.reverseOrder());
+  private final ConcurrentSkipListMap<Integer, List<TypeConverter<?, ?, ?>>> _converters = new ConcurrentSkipListMap<>(Collections.reverseOrder());
 
   /**
    * Construct a TypeResolver.
@@ -52,7 +52,7 @@ public class TypeConverterRegistry {
         final TypeConverter typeConverter = (TypeConverter) constructor.newInstance((Object[]) null);
         final int priority = typeConverter.getPriority();
         if (!_converters.containsKey(priority)) {
-          _converters.putIfAbsent(priority, new ArrayList<TypeConverter>());
+          _converters.putIfAbsent(priority, new ArrayList<TypeConverter<?, ?, ?>>());
         }
         _converters.get(typeConverter.getPriority()).add(typeConverter);
       } catch (final InstantiationException e) {
@@ -76,10 +76,10 @@ public class TypeConverterRegistry {
    * @param requiredMapping the required conversion
    * @return a type converter to perform the conversion
    */
-  public TypeConverter findConverter(final ExcelToJavaTypeMapping requiredMapping) {
+  public TypeConverter<?, ?, ?> findConverter(final ExcelToJavaTypeMapping<?, ?> requiredMapping) {
     for (final int priority : _converters.keySet()) {
-      final List<TypeConverter> converters = _converters.get(priority);
-      for (final TypeConverter typeConverter : converters) {
+      final List<TypeConverter<?, ?, ?>> converters = _converters.get(priority);
+      for (final TypeConverter<?, ?, ?> typeConverter : converters) {
         System.err.print("Comparing " + requiredMapping + " to " + typeConverter.getExcelToJavaTypeMapping());
         //if (requiredMapping.isAssignableFrom(typeConverter.getExcelToJavaTypeMapping())) {
         if (typeConverter.getExcelToJavaTypeMapping().isAssignableFrom(requiredMapping)) {
@@ -100,10 +100,10 @@ public class TypeConverterRegistry {
    * @param requiredJava the Java type required to convert from.
    * @return a type converter to perform the conversion
    */
-  public TypeConverter findConverter(final Type requiredJava) {
+  public TypeConverter<?, ?, ?> findConverter(final Type requiredJava) {
     for (final int priority : _converters.keySet()) {
-      final List<TypeConverter> converters = _converters.get(priority);
-      for (final TypeConverter typeConverter : converters) {
+      final List<TypeConverter<?, ?, ?>> converters = _converters.get(priority);
+      for (final TypeConverter<?, ?, ?> typeConverter : converters) {
         if (typeConverter.getJavaToExcelTypeMapping().getJavaClass().isAssignableFrom(Excel4JReflectionUtils.reduceToClass(requiredJava))) {
           return typeConverter;
         }

@@ -106,8 +106,8 @@ public class DefaultExcelCallback implements ExcelCallback {
   
   private XLString buildFunctionSignature(final XLFunction functionAnnotation, final XLArgument[] argumentAnnotations, final MethodInvoker methodInvoker) {
     StringBuilder signature = new StringBuilder();
-    Class<? extends XLValue> excelReturnType = methodInvoker.getExcelReturnType();
-    Class<? extends XLValue>[] parameterTypes = methodInvoker.getExcelParameterTypes();
+    Class<?> excelReturnType = methodInvoker.getExcelReturnType();
+    Class<?>[] parameterTypes = methodInvoker.getExcelParameterTypes();
     boolean isVolatile = (functionAnnotation != null) ? functionAnnotation.isVolatile() : false; // default
     boolean isMTSafe = (functionAnnotation != null) ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
     boolean isMacroEquivalent = (functionAnnotation != null) ? functionAnnotation.isMacroEquivalent() : false; // default
