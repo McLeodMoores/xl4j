@@ -22,9 +22,13 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class ShortXLNumberTypeConverterTest {
+  /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
+  /** Integer */
   private static final int TEN_I = 10;
+  /** Long */
   private static final long TEN_L = 10L;
+  /** Double */
   private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Short?
   /** XLNumber holding a double. */
