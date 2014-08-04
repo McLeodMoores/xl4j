@@ -4,7 +4,9 @@ import org.testng.annotations.Test;
 import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
 import org.testng.AssertJUnit;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
@@ -12,6 +14,7 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.heap.Heap;
+import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -38,5 +41,15 @@ public class FunctionSimulatorTests {
     XLObject arrayListObj = (XLObject) result;
     Object arrayList = _heap.getObject(arrayListObj.getHandle());
     Assert.assertEquals(arrayList.getClass(), ArrayList.class);
+  }
+  
+  @SuppressWarnings("unchecked")
+  @Test
+  public void testSequence() {
+    XLValue list = _processor.invoke("JConstruct", XLString.of(CLASSNAME));
+    XLValue integer = _processor.invoke("JConstruct", XLString.of(CLASSNAME_INTEGER), XLNumber.of(6));
+    _processor.invoke("JMethod", list, XLString.of("add"), integer);
+    List<Integer> listObj = (List<Integer>) ExcelFactory.getInstance().getHeap().getObject(((XLObject) list).getHandle());
+    System.err.println(listObj);
   }
 }
