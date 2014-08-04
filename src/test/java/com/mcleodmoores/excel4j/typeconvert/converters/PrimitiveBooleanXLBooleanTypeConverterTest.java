@@ -23,10 +23,12 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class PrimitiveBooleanXLBooleanTypeConverterTest {
+  /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
+  /** Integer */
   private static final int TEN_I = 10;
+  /** Double */
   private static final double TEN_D = 10d;
-  
   /** The converter. */
   private static final AbstractScalarTypeConverter CONVERTER = new PrimitiveBooleanXLBooleanTypeConverter();
 

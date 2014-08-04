@@ -24,8 +24,11 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class DoubleXLNumberTypeConverterTest {
+  /** The expected priority */
   private static final int DEFAULT_PRIORITY = 10;
+  /** Integer */
   private static final int TEN_I = 10;
+  /** Double */
   private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when there's an upcast to Double?
   /** XLNumber holding a double. */

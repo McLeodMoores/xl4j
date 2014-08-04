@@ -8,9 +8,9 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -18,17 +18,17 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link IntegerXLNumberTypeConverter}.
+ * Unit tests for {@link PrimitiveIntegerXLNumberTypeConverter}.
  */
 @Test
-public class IntegerXLNumberTypeConverterTest {
+public class PrimitiveIntegerXLNumberTypeConverterTest {
   /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
-  /** Ten as an integer */
+  /** Integer */
   private static final int TEN_I = 10;
-  /** Ten as a long */
+  /** Long */
   private static final long TEN_L = 10L;
-  /** Ten as a double */
+  /** Double */
   private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Integer?
   /** XLNumber holding a double. */
@@ -40,14 +40,14 @@ public class IntegerXLNumberTypeConverterTest {
   /** Integer. */
   private static final Integer INTEGER = 10;
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new PrimitiveIntegerXLNumberTypeConverter();
 
   /**
    * Tests that the java class is {@link Integer#TYPE}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.TYPE));
   }
 
   /**
@@ -55,7 +55,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Integer.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Integer.TYPE, XLNumber.class));
   }
 
   /**
@@ -95,7 +95,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(Integer.class, null);
+    CONVERTER.toJavaObject(Integer.TYPE, null);
   }
 
   /**

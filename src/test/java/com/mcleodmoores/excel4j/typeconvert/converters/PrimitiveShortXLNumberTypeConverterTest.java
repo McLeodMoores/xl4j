@@ -8,9 +8,9 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -18,36 +18,36 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link IntegerXLNumberTypeConverter}.
+ * Unit tests for {@link PrimitiveShortXLNumberTypeConverter}.
  */
 @Test
-public class IntegerXLNumberTypeConverterTest {
+public class PrimitiveShortXLNumberTypeConverterTest {
   /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
-  /** Ten as an integer */
+  /** Integer */
   private static final int TEN_I = 10;
-  /** Ten as a long */
+  /** Long */
   private static final long TEN_L = 10L;
-  /** Ten as a double */
+  /** Double */
   private static final double TEN_D = 10d;
-  // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Integer?
+  // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Short?
   /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
-  /** XLNumber holding a long. */
-  private static final XLNumber XL_NUMBER_LONG = XLNumber.of(10L);
+  /** XLNumber holding a short. */
+  private static final XLNumber XL_NUMBER_SHORT = XLNumber.of((short) 10);
   /** XLNumber holding an int. */
   private static final XLNumber XL_NUMBER_INT = XLNumber.of(10);
-  /** Integer. */
-  private static final Integer INTEGER = 10;
+  /** Short. */
+  private static final Short SHORT = Short.valueOf((short) 10);
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new PrimitiveShortXLNumberTypeConverter();
 
   /**
-   * Tests that the java class is {@link Integer#TYPE}.
+   * Tests that the java type is {@link Short}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Short.TYPE));
   }
 
   /**
@@ -55,7 +55,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Integer.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Short.TYPE, XLNumber.class));
   }
 
   /**
@@ -71,7 +71,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, INTEGER);
+    CONVERTER.toXLValue(null, SHORT);
   }
 
   /**
@@ -95,7 +95,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(Integer.class, null);
+    CONVERTER.toJavaObject(Short.TYPE, null);
   }
 
   /**
@@ -103,7 +103,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.TYPE, XLInteger.of(TEN_I));
+    CONVERTER.toJavaObject(Short.TYPE, XLInteger.of(TEN_I));
   }
 
   /**
@@ -127,15 +127,15 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1);
+    CONVERTER.toXLValue(XLBoolean.class, (short) 1);
   }
 
   /**
-   * Tests the conversion from a {@link Integer}.
+   * Tests the conversion from a {@link Short}.
    */
   @Test
-  public void testConversionFromInteger() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_INT.getClass(), INTEGER);
+  public void testConversionFromShort() {
+    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_SHORT.getClass(), SHORT);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_I, 0);
@@ -146,17 +146,17 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromXLNumber() {
-    Object converted = CONVERTER.toJavaObject(Integer.class, XL_NUMBER_INT);
-    assertTrue(converted instanceof Integer);
-    Integer integ = (Integer) converted;
-    assertEquals(integ, INTEGER);
-    converted = CONVERTER.toJavaObject(Integer.class, XL_NUMBER_LONG);
-    assertTrue(converted instanceof Integer);
-    integ = (Integer) converted;
-    assertEquals(integ, INTEGER);
-    converted = CONVERTER.toJavaObject(Integer.class, XL_NUMBER_DOUBLE);
-    assertTrue(converted instanceof Integer);
-    integ = (Integer) converted;
-    assertEquals(integ, INTEGER);
+    Object converted = CONVERTER.toJavaObject(Short.TYPE, XL_NUMBER_INT);
+    assertTrue(converted instanceof Short);
+    Short shor = (Short) converted;
+    assertEquals(shor, SHORT);
+    converted = CONVERTER.toJavaObject(Short.TYPE, XL_NUMBER_SHORT);
+    assertTrue(converted instanceof Short);
+    shor = (Short) converted;
+    assertEquals(shor, SHORT);
+    converted = CONVERTER.toJavaObject(Short.TYPE, XL_NUMBER_DOUBLE);
+    assertTrue(converted instanceof Short);
+    shor = (Short) converted;
+    assertEquals(shor, SHORT);
   }
 }
