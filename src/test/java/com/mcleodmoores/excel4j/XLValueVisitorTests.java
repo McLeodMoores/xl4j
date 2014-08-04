@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLBigData;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLError;
@@ -22,7 +23,6 @@ import com.mcleodmoores.excel4j.values.XLRange;
 import com.mcleodmoores.excel4j.values.XLSheetId;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLValueVisitor;
 import com.mcleodmoores.excel4j.values.XLValueVisitorAdapter;
 
@@ -32,20 +32,20 @@ import com.mcleodmoores.excel4j.values.XLValueVisitorAdapter;
 public class XLValueVisitorTests {
   // CHECKSTYLE:OFF
   private static final List<XLValue> VALUES = Lists.newArrayList(
-    XLBigData.of("Hello"), XLBoolean.from(true), XLError.Name, XLInteger.of(25),
-    XLLocalReference.of(XLRange.ofCell(0, 0)), XLMissing.INSTANCE, 
-    XLMultiReference.of(XLSheetId.of(1234), XLRange.ofCell(0, 0)), XLNil.INSTANCE,
-    XLNumber.of(987.654321), XLString.of("Hello World"), XLArray.of(new XLValue[][] { { XLError.NA } })
-  );
-  
+      XLBigData.of("Hello"), XLBoolean.from(true), XLError.Name, XLInteger.of(25),
+      XLLocalReference.of(XLRange.ofCell(0, 0)), XLMissing.INSTANCE,
+      XLMultiReference.of(XLSheetId.of(1234), XLRange.ofCell(0, 0)), XLNil.INSTANCE,
+      XLNumber.of(987.654321), XLString.of("Hello World"), XLArray.of(new XLValue[][] { { XLError.NA } })
+      );
+
   private static final List<String> EXPECTED = Lists.newArrayList(
-    "XLBigData", "XLBoolean", "XLError", "XLInteger", "XLLocalReference", "XLMissing", 
-    "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLValueRange", "XLObject"
-  );
-  
+      "XLBigData", "XLBoolean", "XLError", "XLInteger", "XLLocalReference", "XLMissing",
+      "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLValueRange", "XLObject"
+      );
+
   @Test
   public void testVisitor() {
-    XLValueVisitor<String> visitor = new XLValueVisitor<String>() {
+    final XLValueVisitor<String> visitor = new XLValueVisitor<String>() {
       @Override
       public String visitXLString(final XLString value) {
         return "XLString";
@@ -102,33 +102,33 @@ public class XLValueVisitorTests {
       }
 
       @Override
-      public String visitXLObject(XLObject value) {
+      public String visitXLObject(final XLObject value) {
         return "XLObject";
-      }     
+      }
     };
-    
-    Iterator<String> iter = EXPECTED.iterator();
-    for (XLValue value : VALUES) {
-      String expected = iter.next();
-      String actual = value.accept(visitor);
+
+    final Iterator<String> iter = EXPECTED.iterator();
+    for (final XLValue value : VALUES) {
+      final String expected = iter.next();
+      final String actual = value.accept(visitor);
       Assert.assertEquals(actual, expected);
     }
   }
-  
+
   @Test
   public void testAdapter() {
-    XLValueVisitorAdapter<Void> adapter = new XLValueVisitorAdapter<Void>();
-    Iterator<String> iter = EXPECTED.iterator();
-    for (XLValue value : VALUES) {
-      String expected = iter.next();
+    final XLValueVisitorAdapter<Void> adapter = new XLValueVisitorAdapter<Void>();
+    final Iterator<String> iter = EXPECTED.iterator();
+    for (final XLValue value : VALUES) {
+      final String expected = iter.next();
       try {
         value.accept(adapter);
-      } catch (Excel4JRuntimeException e4jre) {
+      } catch (final Excel4JRuntimeException e4jre) {
         System.out.println("expected: " + expected + ", was: " + e4jre.getMessage());
         Assert.assertTrue(e4jre.getMessage().contains(expected));
       }
     }
   }
-      
-                   
+
+
 }

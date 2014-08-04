@@ -21,7 +21,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Unit tests for {@link IntegerXLNumberTypeConverter}.
  */
 @Test
-public class IntegerXLNumberTypeConverterTest {
+public class PrimitiveIntegerXLNumberTypeConverterTest {
   /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
   /** Ten as an integer */
@@ -40,14 +40,14 @@ public class IntegerXLNumberTypeConverterTest {
   /** Integer. */
   private static final Integer INTEGER = 10;
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new PrimitiveIntegerXLNumberTypeConverter();
 
   /**
    * Tests that the java class is {@link Integer#TYPE}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLNumber.class, Integer.TYPE));
   }
 
   /**
@@ -55,7 +55,7 @@ public class IntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Integer.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Integer.TYPE, XLNumber.class));
   }
 
   /**
