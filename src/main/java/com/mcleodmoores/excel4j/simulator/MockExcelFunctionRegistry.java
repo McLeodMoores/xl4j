@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import com.mcleodmoores.excel4j.FunctionType;
-import com.mcleodmoores.excel4j.ResultType;
+import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLError;
@@ -53,7 +53,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     boolean isMultiThreadSafe = functionSignature.getValue().endsWith("$");
     //XLResultType resultType = functionSignature.getValue().startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
     FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, 
-        isMacroEquivalent, isMultiThreadSafe, ResultType.SIMPLEST);
+        isMacroEquivalent, isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
     FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName.getValue(), argNames, argumentTypes, returnType, 
         argumentsHelp, description.toString(), functionAttributes, method);
     FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName.getValue(), functionEntry);

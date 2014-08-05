@@ -92,11 +92,11 @@ public class FunctionRegistry {
       XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(method);
       // scan the result type if there is one to determine whether function should return simplest type or always
       // an object type
-      ResultType resultType;
+      TypeConversionMode resultType;
       if (functionAnnotation != null) {
-        resultType = functionAnnotation.resultType();
+        resultType = functionAnnotation.typeConversionMode();
       } else {
-        resultType = ResultType.SIMPLEST;
+        resultType = TypeConversionMode.SIMPLEST_RESULT;
       }
       // build a method invoker
       MethodInvoker methodInvoker = ExcelFactory.getInstance().getInvokerFactory().getMethodTypeConverter(method, resultType);

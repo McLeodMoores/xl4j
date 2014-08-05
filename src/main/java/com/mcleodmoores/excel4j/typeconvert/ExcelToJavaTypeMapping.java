@@ -56,7 +56,7 @@ public final class ExcelToJavaTypeMapping {
   }
 
   /**
-   * @return the java type in this key
+   * @return the java class in this key
    */
   public Class<?> getJavaClass() {
     return _javaClass;

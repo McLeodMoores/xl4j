@@ -6,7 +6,7 @@ package com.mcleodmoores.excel4j.javacode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.ResultType;
+import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
@@ -24,26 +24,44 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   private static final AbstractTypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
   
   @Override
-  public ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, 
+  public ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
                                                         @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                                         throws ClassNotFoundException {
     outer:
     for (Constructor<?> constructor : clazz.getConstructors()) {
-      Class<?>[] genericParameterTypes = constructor.getParameterTypes();
-      if (argTypes.length != genericParameterTypes.length) {
+      Class<?>[] parameterTypes = constructor.getParameterTypes();
+      if (argTypes.length != parameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
-      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
-      if (argumentConverters == null) {
-        continue outer;
+      if (typeConversionMode == TypeConversionMode.OBJECT_RESULT) {
+        TypeConverter[] argumentConverters = buildArgumentConverters(parameterTypes, argTypes);
+        if (argumentConverters == null) {
+          continue outer;
+        }
+        return new ObjectConstructorInvoker(constructor, argumentConverters, OBJECT_XLOBJECT_CONVERTER);
+      } else if (typeConversionMode == TypeConversionMode.PASSTHROUGH) {
+        if (isAssignableFrom(parameterTypes, argTypes)) {
+          return new PassthroughConstructorInvoker(constructor);
+        }
       }
-      return new ConstructorInvoker(constructor, argumentConverters, OBJECT_XLOBJECT_CONVERTER);
     }
     throw new Excel4JRuntimeException("Could not find matching constructor");
   }
   
+  private boolean isAssignableFrom(final Class<?>[] parameterTypes, final Class<? extends XLValue>[] argumentTypes) {
+    if (parameterTypes.length != argumentTypes.length) {
+      return false;
+    }
+    for (int i = 0; i < parameterTypes.length; i++) {
+      if (!argumentTypes[i].isAssignableFrom(parameterTypes[i])) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   @Override
-  public MethodInvoker getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final ResultType resultType,
+  public MethodInvoker getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final TypeConversionMode typeConversionMode,
                                                @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
                                                throws ClassNotFoundException {
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
@@ -62,10 +80,15 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       }
       // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
-      if (resultType == ResultType.SIMPLEST) {
-        return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
-      } else {
-        return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
+      switch (typeConversionMode) {
+        case SIMPLEST_RESULT:
+          return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+        case OBJECT_RESULT:
+          return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
+        case PASSTHROUGH:
+          return new PassthroughMethodInvoker(method);
+        default:
+          throw new Excel4JRuntimeException("Unrecognised or null TypeConversionMode:" + typeConversionMode);
       }
     }
     throw new Excel4JRuntimeException("Could not find matching method");
@@ -96,12 +119,12 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   
 
   @Override
-  public MethodInvoker getMethodTypeConverter(final Method method, final ResultType resultType) {
+  public MethodInvoker getMethodTypeConverter(final Method method, final TypeConversionMode resultType) {
     Class<?>[] genericParameterTypes = method.getParameterTypes();
     try {
       TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
-      if (resultType == ResultType.SIMPLEST) {
+      if (resultType == TypeConversionMode.SIMPLEST_RESULT) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
         return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);

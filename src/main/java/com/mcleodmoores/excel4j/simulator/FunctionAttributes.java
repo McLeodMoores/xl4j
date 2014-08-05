@@ -4,7 +4,7 @@
 package com.mcleodmoores.excel4j.simulator;
 
 import com.mcleodmoores.excel4j.FunctionType;
-import com.mcleodmoores.excel4j.ResultType;
+import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
@@ -16,7 +16,7 @@ public final class FunctionAttributes {
   private boolean _volatile;
   private boolean _macroEquivalent;
   private boolean _multiThreadSafe;
-  private ResultType _resultType;
+  private TypeConversionMode _resultType;
   
   /**
    * Private constructor.
@@ -28,7 +28,7 @@ public final class FunctionAttributes {
    * @param resultType  whether this function should simplify it's results to a base Excel type if possible
    */
   private FunctionAttributes(final FunctionType functionType, final boolean asynchronous, final boolean volatile1, 
-      final boolean macroEquivalent, final boolean multiThreadSafe, final ResultType resultType) {
+      final boolean macroEquivalent, final boolean multiThreadSafe, final TypeConversionMode resultType) {
     super();
     _functionType = functionType;
     _asynchronous = asynchronous;
@@ -49,7 +49,7 @@ public final class FunctionAttributes {
    * @return an instance
    */
   public static FunctionAttributes of(final FunctionType functionType, final boolean asynchronous, final boolean volatile1, 
-      final boolean macroEquivalent, final boolean multiThreadSafe, final ResultType resultType) {
+      final boolean macroEquivalent, final boolean multiThreadSafe, final TypeConversionMode resultType) {
     ArgumentChecker.notNull(functionType, "functionType");
     ArgumentChecker.notNull(resultType, "resultType");
     return new FunctionAttributes(functionType, asynchronous, volatile1, macroEquivalent, multiThreadSafe, resultType);
@@ -87,7 +87,7 @@ public final class FunctionAttributes {
   /**
    * @return the resultType
    */
-  public ResultType getResultType() {
+  public TypeConversionMode getResultType() {
     return _resultType;
   }
 }

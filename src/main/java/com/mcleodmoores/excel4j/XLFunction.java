@@ -69,7 +69,7 @@ public @interface XLFunction {
   /**
    * @return the way to handle results
    */
-  ResultType resultType() default ResultType.SIMPLEST;
+  TypeConversionMode typeConversionMode() default TypeConversionMode.SIMPLEST_RESULT;
   /**
    * The type of function
    * @return the function type, defaults to FUNCTION

@@ -5,10 +5,10 @@ package com.mcleodmoores.excel4j.javacode;
 
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.ExcelFactory;
+import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.XLArgument;
 import com.mcleodmoores.excel4j.XLFunction;
 import com.mcleodmoores.excel4j.XLNamespace;
-import com.mcleodmoores.excel4j.ResultType;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -30,7 +30,7 @@ public final class JConstruct {
   @XLFunction(name = "Construct",
               description = "Construct a named Java class instance",
               category = "Java",
-              resultType = ResultType.OBJECT)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static XLValue jconstruct(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
                            final XLString className, 
                            @XLArgument(name = "args", description = "") 
@@ -38,7 +38,8 @@ public final class JConstruct {
     try {
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      ConstructorInvoker constructorTypeConverter = invokerFactory.getConstructorTypeConverter(resolveClass(className), getArgTypes(args));
+      ConstructorInvoker constructorTypeConverter = 
+          invokerFactory.getConstructorTypeConverter(resolveClass(className), TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;

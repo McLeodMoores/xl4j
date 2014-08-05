@@ -8,7 +8,7 @@ import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.XLArgument;
 import com.mcleodmoores.excel4j.XLFunction;
 import com.mcleodmoores.excel4j.XLNamespace;
-import com.mcleodmoores.excel4j.ResultType;
+import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLObject;
@@ -34,7 +34,7 @@ public final class JMethod {
   @XLFunction(name = "Method",
               description = "Call a named Java method",
               category = "Java",
-              resultType = ResultType.SIMPLEST)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethod(@XLArgument(name = "object reference", description = "The object reference") 
                         final XLObject objectReference,
                         @XLArgument(name = "method name", description = "The method name without parentheses")
@@ -47,7 +47,7 @@ public final class JMethod {
       Heap heap = excel.getHeap();
       Object object = heap.getObject(objectReference.getHandle());
       Class<?> clazz = object.getClass();
-      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(clazz, methodName, ResultType.SIMPLEST, getArgTypes(args));
+      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(clazz, methodName, TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
       return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
@@ -64,7 +64,7 @@ public final class JMethod {
   @XLFunction(name = "MethodX",
               description = "Call a named Java method",
               category = "Java",
-              resultType = ResultType.OBJECT)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethodX(@XLArgument(name = "object reference", description = "The object reference") 
                                final XLObject objectReference,
                                @XLArgument(name = "method name", description = "The method name without parentheses")
@@ -77,7 +77,7 @@ public final class JMethod {
       Heap heap = excel.getHeap();
       Object object = heap.getObject(objectReference.getHandle());
       Class<?> clazz = object.getClass();
-      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(clazz, methodName, ResultType.OBJECT, getArgTypes(args));
+      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(clazz, methodName, TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
@@ -94,7 +94,7 @@ public final class JMethod {
   @XLFunction(name = "StaticMethod",
               description = "Call a named Java method",
               category = "Java",
-              resultType = ResultType.SIMPLEST)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticMethod(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
                            final XLString className,
                            @XLArgument(name = "method name", description = "The method name without parentheses")
@@ -104,7 +104,8 @@ public final class JMethod {
     try {
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, ResultType.SIMPLEST, getArgTypes(args));
+      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, 
+                                                                                TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
       return methodTypeConverter.invoke(null, args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
@@ -121,7 +122,7 @@ public final class JMethod {
   @XLFunction(name = "StaticMethodX",
               description = "Call a named Java method",
               category = "Java",
-              resultType = ResultType.OBJECT)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticMethodX(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") 
                            final XLString className,
                            @XLArgument(name = "method name", description = "The method name without parentheses")
@@ -131,7 +132,8 @@ public final class JMethod {
     try {
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, ResultType.OBJECT, getArgTypes(args));
+      MethodInvoker methodTypeConverter = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, 
+                                                                                TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       return methodTypeConverter.invoke(null, args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
       return XLError.Null;
