@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLObject;
@@ -31,7 +31,7 @@ public class ObjectXLObjectTypeConverterTest {
   /** Empty Object. */
   private static final Object OBJECT = new Object();
   /** The converter */
-  private static final AbstractScalarTypeConverter CONVERTER = new ObjectXLObjectTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter();
 
   // TODO need to set system property test.mode - how to do this?
   /**
@@ -47,7 +47,7 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Object.class, XLObject.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Object.class, XLObject.class));
   }
 
   /**
@@ -127,7 +127,7 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test
   public void testConversionFromObject() {
-    final XLValue converted = CONVERTER.toXLValue(XL_OBJECT.getClass(), OBJECT);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_OBJECT.getClass(), OBJECT);
     assertTrue(converted instanceof XLObject);
     final XLObject xlObject = (XLObject) converted;
     assertEquals(xlObject, XL_OBJECT);

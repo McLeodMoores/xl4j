@@ -135,7 +135,7 @@ public class PrimitiveFloatXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromFloat() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_FLOAT.getClass(), FLOAT);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_FLOAT.getClass(), FLOAT);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_D, 0);

@@ -2,7 +2,7 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -17,18 +17,18 @@ public class SimpleResultMethodInvoker extends AbstractMethodInvoker {
    * @param argumentConverters  the converters required to call the method
    * @param returnConverter  the converter required to convert he result back to an Excel type
    */
-  public SimpleResultMethodInvoker(final Method method, final TypeConverter<?, ?, ?>[] argumentConverters, 
-                       final TypeConverter<?, ?, ?> returnConverter) {
+  public SimpleResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, 
+                       final TypeConverter returnConverter) {
     super(method, argumentConverters, returnConverter);
   }
 
   @Override
-  protected XLValue convertResult(final Object object, final TypeConverter<?, ?, ?> returnConverter) {
+  protected XLValue convertResult(final Object object, final TypeConverter returnConverter) {
     if (object.getClass().isArray()) {
       throw new Excel4JRuntimeException("Array types not supported for return types");
     } else {
-      AbstractScalarTypeConverter scalarTypeConverter = (AbstractScalarTypeConverter) returnConverter;
-      return scalarTypeConverter.toXLValue(null, object);
+      AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) returnConverter;
+      return (XLValue) scalarTypeConverter.toXLValue(null, object);
     }
     
   }

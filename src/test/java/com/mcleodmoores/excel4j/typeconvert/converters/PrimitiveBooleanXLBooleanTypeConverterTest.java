@@ -9,9 +9,9 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -30,7 +30,7 @@ public class PrimitiveBooleanXLBooleanTypeConverterTest {
   /** Double */
   private static final double TEN_D = 10d;
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new PrimitiveBooleanXLBooleanTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new PrimitiveBooleanXLBooleanTypeConverter();
 
   /**
    * Tests that the java type is {@link Boolean#TYPE}.
@@ -45,7 +45,7 @@ public class PrimitiveBooleanXLBooleanTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Boolean.TYPE, XLBoolean.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Boolean.TYPE, XLBoolean.class));
   }
 
   /**
@@ -125,7 +125,7 @@ public class PrimitiveBooleanXLBooleanTypeConverterTest {
    */
   @Test
   public void testConversionFromBoolean() {
-    final XLValue converted = CONVERTER.toXLValue(XLBoolean.class, false);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLBoolean.class, false);
     assertTrue(converted instanceof XLBoolean);
     final XLBoolean xlBoolean = (XLBoolean) converted;
     assertFalse(xlBoolean.getValue());

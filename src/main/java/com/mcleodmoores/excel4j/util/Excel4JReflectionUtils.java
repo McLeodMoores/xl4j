@@ -52,7 +52,7 @@ public final class Excel4JReflectionUtils {
     final TypeConverterRegistry typeConverterRegistry = new TypeConverterRegistry();
     int i = 0;
     for (final Type parameterType : genericParameterTypes) {
-      final TypeConverter<?, ?, ?> converter = typeConverterRegistry.findConverter(parameterType);
+      final TypeConverter converter = typeConverterRegistry.findConverter(parameterType);
       if (converter != null) {
         final Class<?> excelClass = converter.getJavaToExcelTypeMapping().getExcelClass();
         excelTypes[i] = excelClass;

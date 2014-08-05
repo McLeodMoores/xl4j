@@ -10,9 +10,9 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLNumber;
@@ -37,7 +37,7 @@ public class LocalDateXLNumberTypeConverterTest {
   /** Local date. */
   private static final LocalDate LOCAL_DATE = LocalDate.of(2000, 1, 1);
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new LocalDateXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new LocalDateXLNumberTypeConverter();
 
   /**
    * Tests that the java type is {@link LocalDate}.
@@ -52,7 +52,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(LocalDate.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(LocalDate.class, XLNumber.class));
   }
 
   /**
@@ -132,7 +132,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromLocalDate() {
-    final XLValue converted = CONVERTER.toXLValue(XL_DATE.getClass(), LOCAL_DATE);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_DATE.getClass(), LOCAL_DATE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), DAYS, 0);

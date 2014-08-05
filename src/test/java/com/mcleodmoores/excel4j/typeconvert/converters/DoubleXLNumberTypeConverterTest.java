@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -40,7 +40,7 @@ public class DoubleXLNumberTypeConverterTest {
   /** Double. */
   private static final Double DOUBLE = 10.;
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new DoubleXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new DoubleXLNumberTypeConverter();
 
   /**
    * Tests that the java type is {@link Double}.
@@ -55,7 +55,7 @@ public class DoubleXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Double.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Double.class, XLNumber.class));
   }
 
   /**
@@ -135,7 +135,7 @@ public class DoubleXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromDouble() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), DOUBLE);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), DOUBLE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_D, 0);

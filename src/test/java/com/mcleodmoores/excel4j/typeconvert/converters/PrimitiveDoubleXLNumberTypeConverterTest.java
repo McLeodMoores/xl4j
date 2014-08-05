@@ -135,7 +135,7 @@ public class PrimitiveDoubleXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromDouble() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), DOUBLE);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), DOUBLE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_D, 0);

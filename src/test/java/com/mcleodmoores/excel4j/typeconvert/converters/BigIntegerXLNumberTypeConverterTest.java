@@ -10,9 +10,9 @@ import java.math.BigInteger;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -37,7 +37,7 @@ public class BigIntegerXLNumberTypeConverterTest {
   /** BigInteger. */
   private static final BigInteger BIG_INTEGER = BigInteger.valueOf(10);
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new BigIntegerXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new BigIntegerXLNumberTypeConverter();
 
   /**
    * Tests that the java type is {@link BigInteger}.
@@ -52,7 +52,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(BigInteger.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(BigInteger.class, XLNumber.class));
   }
 
   /**
@@ -132,7 +132,7 @@ public class BigIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromBigInteger() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), BIG_INTEGER);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), BIG_INTEGER);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_D, 0);

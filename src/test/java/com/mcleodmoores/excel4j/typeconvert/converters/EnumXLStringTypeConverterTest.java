@@ -8,9 +8,9 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -33,7 +33,7 @@ public class EnumXLStringTypeConverterTest {
   };
 
   /** The converter */
-  private static final AbstractScalarTypeConverter CONVERTER = new EnumXLStringTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new EnumXLStringTypeConverter();
 
   /**
    * Tests that the java type is {@link TestEnum}.
@@ -48,7 +48,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Enum.class, XLString.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Enum.class, XLString.class));
   }
 
   /**
@@ -128,7 +128,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test
   public void testConversionFromString() {
-    final XLValue converted = CONVERTER.toXLValue(XL_STRING.getClass(), TestEnum.TEST);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_STRING.getClass(), TestEnum.TEST);
     assertTrue(converted instanceof XLString);
     final XLString xlString = (XLString) converted;
     assertEquals(xlString.getValue(), TestEnum.TEST.name());

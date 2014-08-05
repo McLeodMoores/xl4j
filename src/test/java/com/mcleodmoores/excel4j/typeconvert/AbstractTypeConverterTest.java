@@ -10,7 +10,7 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests a dummy {@link AbstractScalarTypeConverter} implementation.
+ * Tests a dummy {@link AbstractTypeConverter} implementation.
  */
 @Test
 public class AbstractTypeConverterTest {
@@ -23,7 +23,7 @@ public class AbstractTypeConverterTest {
     /**
      * Test converter.
      */
-    class NullTypeConverterTest extends AbstractScalarTypeConverter {
+    class NullTypeConverterTest extends AbstractTypeConverter {
       /**
        * No-arg constructor.
        */
@@ -32,12 +32,12 @@ public class AbstractTypeConverterTest {
       }
       
       @Override
-      public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
+      public Object toXLValue(final Class<?> expectedClass, final Object from) {
         return null;
       }
 
       @Override
-      public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
+      public Object toJavaObject(final Class<?> expectedClass, final Object from) {
         return null;
       }
     }
@@ -52,7 +52,7 @@ public class AbstractTypeConverterTest {
     /**
      * Test converter.
      */
-    class NullTypeConverterTest extends AbstractScalarTypeConverter {
+    class NullTypeConverterTest extends AbstractTypeConverter {
       /**
        * No-args constructor.
        */
@@ -61,12 +61,12 @@ public class AbstractTypeConverterTest {
       }
 
       @Override
-      public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
+      public Object toXLValue(final Class<?> expectedClass, final Object from) {
         return null;
       }
 
       @Override
-      public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
+      public Object toJavaObject(final Class<?> expectedClass, final Object from) {
         return null;
       }
     }

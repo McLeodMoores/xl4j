@@ -135,7 +135,7 @@ public class PrimitiveIntegerXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromInteger() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_INT.getClass(), INTEGER);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_INT.getClass(), INTEGER);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_I, 0);

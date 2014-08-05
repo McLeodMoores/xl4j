@@ -18,7 +18,7 @@ import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Unit tests for {@link ScalarJavaToExcelTypeMapping}.
+ * Unit tests for {@link JavaToExcelTypeMapping}.
  */
 @Test
 public class JavaToExcelTypeMappingTest {
@@ -28,14 +28,14 @@ public class JavaToExcelTypeMappingTest {
   /** The XL class */
   private static final Class<XLNumber> EXCEL_CLASS = XLNumber.class;
   /** The mapping */
-  private static final ScalarJavaToExcelTypeMapping MAPPING = ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
+  private static final JavaToExcelTypeMapping MAPPING = JavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
 
   /**
    * Tests the exception thrown if the Java class is null.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullJavaClass() {
-    ScalarJavaToExcelTypeMapping.of(null, EXCEL_CLASS);
+    JavaToExcelTypeMapping.of(null, EXCEL_CLASS);
   }
 
   /**
@@ -43,7 +43,7 @@ public class JavaToExcelTypeMappingTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullExcelClass() {
-    ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, null);
+    JavaToExcelTypeMapping.of(JAVA_CLASS, null);
   }
 
   /**
@@ -59,12 +59,12 @@ public class JavaToExcelTypeMappingTest {
     assertNotEquals(Double.valueOf(THREE), MAPPING);
     final String expectedString = "JavaToExcelTypeMapping[excelType=class com.mcleodmoores.excel4j.values.XLNumber, javaType=class java.lang.Number]";
     assertEquals(MAPPING.toString(), expectedString);
-    JavaToExcelTypeMappingI other = ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
+    JavaToExcelTypeMapping other = JavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
     assertEquals(MAPPING, other);
     assertEquals(MAPPING.hashCode(), other.hashCode());
-    other = ScalarJavaToExcelTypeMapping.of(EXCEL_CLASS, EXCEL_CLASS);
+    other = JavaToExcelTypeMapping.of(EXCEL_CLASS, EXCEL_CLASS);
     assertNotEquals(MAPPING, other);
-    other = ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, XLValue.class);
+    other = JavaToExcelTypeMapping.of(JAVA_CLASS, XLValue.class);
     assertNotEquals(MAPPING, other);
   }
 
@@ -75,24 +75,24 @@ public class JavaToExcelTypeMappingTest {
   public void testAssignableFrom() {
     assertTrue(MAPPING.isAssignableFrom(MAPPING));
     assertFalse(MAPPING.isAssignableFrom(null));
-    ScalarJavaToExcelTypeMapping other = ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
+    JavaToExcelTypeMapping other = JavaToExcelTypeMapping.of(JAVA_CLASS, EXCEL_CLASS);
     assertTrue(MAPPING.isAssignableFrom(other));
-    other = ScalarJavaToExcelTypeMapping.of(List.class, EXCEL_CLASS);
+    other = JavaToExcelTypeMapping.of(List.class, EXCEL_CLASS);
     assertFalse(MAPPING.isAssignableFrom(other));
     assertFalse(other.isAssignableFrom(MAPPING));
-    other = ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, XLBoolean.class);
+    other = JavaToExcelTypeMapping.of(JAVA_CLASS, XLBoolean.class);
     assertFalse(MAPPING.isAssignableFrom(other));
     assertFalse(other.isAssignableFrom(MAPPING));
-    other = ScalarJavaToExcelTypeMapping.of(Double.class, EXCEL_CLASS);
+    other = JavaToExcelTypeMapping.of(Double.class, EXCEL_CLASS);
     assertTrue(MAPPING.isAssignableFrom(other));
     assertFalse(other.isAssignableFrom(MAPPING));
-    other = ScalarJavaToExcelTypeMapping.of(Object.class, EXCEL_CLASS);
+    other = JavaToExcelTypeMapping.of(Object.class, EXCEL_CLASS);
     assertFalse(MAPPING.isAssignableFrom(other));
     assertTrue(other.isAssignableFrom(MAPPING));
-    other = ScalarJavaToExcelTypeMapping.of(JAVA_CLASS, XLValue.class);
+    other = JavaToExcelTypeMapping.of(JAVA_CLASS, XLValue.class);
     assertFalse(MAPPING.isAssignableFrom(other));
     assertTrue(other.isAssignableFrom(MAPPING));
-    other = ScalarJavaToExcelTypeMapping.of(Object.class, XLValue.class);
+    other = JavaToExcelTypeMapping.of(Object.class, XLValue.class);
     assertFalse(MAPPING.isAssignableFrom(other));
     assertTrue(other.isAssignableFrom(MAPPING));
   }

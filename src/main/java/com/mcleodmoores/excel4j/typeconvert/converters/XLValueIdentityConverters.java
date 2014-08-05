@@ -1,6 +1,7 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLBigData;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLError;
@@ -11,8 +12,6 @@ import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
-import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.values.XLArray;
 
 /**
  * Class containing set of static inner classes for identity converters at higher
@@ -22,20 +21,20 @@ public class XLValueIdentityConverters {
   
   private static final int IDENTITY_CONVERTER_PRIORITY = 100;
   /**
-   * Abstract base class to minimize boilerplate for Identity converters (that do a no-op conversion for XLValue types).
+   * Abstract base class to minimize boilerplate for Identity converters (that do a no-op conversion for Object types).
    */
-  private abstract static class AbstractXLValueIdentityConverter extends AbstractScalarTypeConverter {
-    public AbstractXLValueIdentityConverter(final Class<? extends XLValue> xlType) {
+  private abstract static class AbstractXLValueIdentityConverter extends AbstractTypeConverter {
+    public AbstractXLValueIdentityConverter(final Class<?> xlType) {
       super(xlType, xlType, IDENTITY_CONVERTER_PRIORITY);
     }
   
     @Override
-    public XLValue toXLValue(final Class<? extends XLValue> expectedClass, final Object from) {
-      return (XLValue) from;
+    public Object toXLValue(final Class<?> expectedClass, final Object from) {
+      return (Object) from;
     }
   
     @Override
-    public Object toJavaObject(final Class<?> expectedClass, final XLValue from) {
+    public Object toJavaObject(final Class<?> expectedClass, final Object from) {
       return from;
     }
   }
@@ -120,10 +119,10 @@ public class XLValueIdentityConverters {
     }
   }
   
-  /** Identity converter for XLValueRange. */
-  public static class XLValueRangeIdentityConverter extends AbstractXLValueIdentityConverter {
+  /** Identity converter for ObjectRange. */
+  public static class XLArrayIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
-    public XLValueRangeIdentityConverter() {
+    public XLArrayIdentityConverter() {
       super(XLArray.class);
     }
   }

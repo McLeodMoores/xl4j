@@ -1,10 +1,5 @@
 package com.mcleodmoores.excel4j.simulator;
 
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
-import org.testng.annotations.Test;
-import org.testng.AssertJUnit;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +19,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class FunctionSimulatorTests {
   private static final String CLASSNAME = "java.util.ArrayList";
-  private static final String CLASSNAME2 = "java.util.HashSet";
+  //private static final String CLASSNAME2 = "java.util.HashSet";
   private static final String CLASSNAME_INTEGER = "java.lang.Integer";
   private MockFunctionProcessor _processor;
   private Heap _heap;

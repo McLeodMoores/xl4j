@@ -135,7 +135,7 @@ public class PrimitiveLongXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromLong() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_LONG.getClass(), LONG);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_LONG.getClass(), LONG);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_I, 0);

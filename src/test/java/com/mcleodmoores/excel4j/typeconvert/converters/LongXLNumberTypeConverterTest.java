@@ -10,9 +10,9 @@ import java.math.BigDecimal;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarJavaToExcelTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
@@ -38,7 +38,7 @@ public class LongXLNumberTypeConverterTest {
   /** Long. */
   private static final Long LONG = 10L;
   /** The converter. */
-  private static final AbstractScalarTypeConverter CONVERTER = new LongXLNumberTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new LongXLNumberTypeConverter();
 
   /**
    * Tests that the java type is {@link Long}.
@@ -53,7 +53,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), ScalarJavaToExcelTypeMapping.of(Long.class, XLNumber.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Long.class, XLNumber.class));
   }
 
   /**
@@ -133,7 +133,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromLong() {
-    final XLValue converted = CONVERTER.toXLValue(XL_NUMBER_LONG.getClass(), LONG);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_LONG.getClass(), LONG);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_I, 0);

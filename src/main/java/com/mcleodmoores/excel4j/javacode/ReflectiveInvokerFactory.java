@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+Ø * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.excel4j.javacode;
 
@@ -7,9 +7,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import com.mcleodmoores.excel4j.ResultType;
-import com.mcleodmoores.excel4j.typeconvert.AbstractScalarTypeConverter;
-import com.mcleodmoores.excel4j.typeconvert.ArrayExcelToJavaTypeMapping;
-import com.mcleodmoores.excel4j.typeconvert.ScalarExcelToJavaTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
@@ -22,7 +21,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class ReflectiveInvokerFactory implements InvokerFactory {
   private TypeConverterRegistry _typeConverterRegistry = new TypeConverterRegistry();
-  private static final AbstractScalarTypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
+  private static final AbstractTypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
   
   @Override
   public ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, 
@@ -34,7 +33,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
-      TypeConverter<?, ?, ?>[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
+      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
       if (argumentConverters == null) {
         continue outer;
       }
@@ -57,12 +56,12 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (argTypes.length != genericParameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }
-      TypeConverter<?, ?, ?>[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
+      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
       if (argumentConverters == null) {
         continue outer;
       }
       // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
-      TypeConverter<?, ?, ?> resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
       if (resultType == ResultType.SIMPLEST) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
@@ -72,17 +71,11 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     throw new Excel4JRuntimeException("Could not find matching method");
   }
   
-  @SuppressWarnings("unchecked")
-  private TypeConverter<?, ?, ?>[] buildArgumentConverters(final Class<?>[] targetArgTypes, final Class<?>[] argTypes) {
-    TypeConverter<?, ?, ?>[] argumentConverters = new TypeConverter[targetArgTypes.length];
+  private TypeConverter[] buildArgumentConverters(final Class<?>[] targetArgTypes, final Class<?>[] argTypes) {
+    TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
     for (int i = 0; i < targetArgTypes.length; i++) {
-      if (argTypes[i].isArray()) {
-        ArrayExcelToJavaTypeMapping arrayExcelToJavaTypeMapping = ArrayExcelToJavaTypeMapping.of((Class<? extends XLValue[]>) argTypes[i], targetArgTypes[i]);
-        argumentConverters[i] = _typeConverterRegistry.findConverter(arrayExcelToJavaTypeMapping);
-      } else {
-        ScalarExcelToJavaTypeMapping scalarExcelToJavaTypeMapping = ScalarExcelToJavaTypeMapping.of((Class<? extends XLValue>) argTypes[i], targetArgTypes[i]);
-        argumentConverters[i] = _typeConverterRegistry.findConverter(scalarExcelToJavaTypeMapping);
-      }
+      ExcelToJavaTypeMapping arrayExcelToJavaTypeMapping = ExcelToJavaTypeMapping.of(argTypes[i], targetArgTypes[i]);
+      argumentConverters[i] = _typeConverterRegistry.findConverter(arrayExcelToJavaTypeMapping);
       if (argumentConverters[i] == null) {
         return null;
       }
@@ -90,8 +83,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     return argumentConverters;
   }
   
-  private TypeConverter<?, ?, ?>[] buildArgumentConverters(final Class<?>[] targetArgTypes) {
-    TypeConverter<?, ?, ?>[] argumentConverters = new TypeConverter[targetArgTypes.length];
+  private TypeConverter[] buildArgumentConverters(final Class<?>[] targetArgTypes) {
+    TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
     for (int i = 0; i < targetArgTypes.length; i++) {
       argumentConverters[i] = _typeConverterRegistry.findConverter(targetArgTypes[i]);
       if (argumentConverters[i] == null) {
@@ -106,8 +99,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   public MethodInvoker getMethodTypeConverter(final Method method, final ResultType resultType) {
     Class<?>[] genericParameterTypes = method.getParameterTypes();
     try {
-      TypeConverter<?, ?, ?>[] argumentConverters = buildArgumentConverters(genericParameterTypes);
-      TypeConverter<?, ?, ?> resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
+      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
       if (resultType == ResultType.SIMPLEST) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
