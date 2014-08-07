@@ -21,8 +21,12 @@ static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
 	if (RegGetValue (hkeyJRE, pszVersion, TEXT ("RuntimeLib"), RRF_RT_REG_SZ, NULL, szPath, &cbPath) != ERROR_SUCCESS) return FALSE;
 	g_hJRE = LoadLibrary (szPath);
 	if (g_hJRE == NULL) {
-		// TODO: Change "/client/" to "/server/"
-		return FALSE;
+		// Change "/client/" to "/server/"
+		TCHAR *client = wcsstr(szPath, TEXT("\\client\\"));
+		if (!client) return FALSE;
+		wcsncpy(client, TEXT("\\server\\"), 8);
+		g_hJRE = LoadLibrary(szPath);
+		if (!g_hJRE) return FALSE;
 	}
 	g_pfnCreateVM = (JNICreateJavaVMProc)GetProcAddress (g_hJRE, "JNI_CreateJavaVM");
 	if (!g_pfnCreateVM) {
@@ -75,7 +79,8 @@ static BOOL LoadJVMLibrary (PCTSTR pszVendor, PCTSTR pszVersion) {
 		HKEY hkeyVendor;
 		if (RegOpenKey (hkeySoftware, pszVendor, &hkeyVendor) == ERROR_SUCCESS) {
 			HKEY hkeyJRE;
-			if (RegOpenKey (hkeyVendor, TEXT ("Java Runtime Environment"), &hkeyJRE) == ERROR_SUCCESS) {
+			HRESULT result = RegOpenKey(hkeyVendor, TEXT("Java Runtime Environment"), &hkeyJRE);
+			if (result == ERROR_SUCCESS) {
 				bResult = LoadJVMLibrary (hkeyJRE, pszVersion);
 				RegCloseKey (hkeyJRE);
 			}
