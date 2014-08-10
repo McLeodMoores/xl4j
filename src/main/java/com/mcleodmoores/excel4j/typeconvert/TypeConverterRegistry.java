@@ -15,6 +15,9 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import javassist.Modifier;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,12 +37,27 @@ public class TypeConverterRegistry {
    * Construct a TypeResolver.
    */
   public TypeConverterRegistry() {
-    scanAndCreateTypeConverters();
+    Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
+        .addScanners(new SubTypesScanner(true)));
+    scanAndCreateTypeConverters(reflections);
+  }
+  
+  /**
+   * Construct a TypeResolver for a particular package.  Useful for testing.
+   * @param packageName  restrict scanning of implementations to a particular package
+   */
+  public TypeConverterRegistry(final String packageName) {
+    final Reflections reflections = new Reflections(
+        new ConfigurationBuilder()
+          .addUrls(ClasspathHelper.forPackage(packageName))
+          .addScanners(new SubTypesScanner(true)));
+    scanAndCreateTypeConverters(reflections);
   }
 
   @SuppressWarnings("rawtypes")
-  private void scanAndCreateTypeConverters() {
-    final Reflections reflections = new Reflections("com.mcleodmoores");
+  private void scanAndCreateTypeConverters(final Reflections reflections) {
+
+    
     final Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
     for (final Class<? extends TypeConverter> typeConverterClass : typeConverterClasses) {
       if (Modifier.isAbstract(typeConverterClass.getModifiers()) || !Modifier.isPublic(typeConverterClass.getModifiers())) {
