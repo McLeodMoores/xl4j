@@ -16,7 +16,7 @@ import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 /**
  * A mock implementation of the Excel interface for use in testing.
  */
-public class SimluatedExcel implements Excel {
+public class SimulatedExcel implements Excel {
   private final Heap _heap;
   private final FunctionRegistry _functionRegistry;
   private final ExcelCallback _excelCallback;
@@ -26,7 +26,7 @@ public class SimluatedExcel implements Excel {
   /**
    * Create an instance of the Excel interface suitable for testing.
    */
-  public SimluatedExcel() {
+  public SimulatedExcel() {
     _heap = new Heap();
     _functionRegistry = new FunctionRegistry();
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
