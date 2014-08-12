@@ -12,6 +12,7 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 
 import com.mcleodmoores.excel4j.heap.Heap;
+import com.mcleodmoores.excel4j.typeconvert.ScanningTypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 
@@ -50,7 +51,7 @@ public final class Excel4JReflectionUtils {
   private Class<?>[] getExpectedExcelTypes(final Heap heap, final Method method) {
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
     final Class<?>[] excelTypes = new Class[genericParameterTypes.length];
-    final TypeConverterRegistry typeConverterRegistry = new TypeConverterRegistry(heap);
+    final TypeConverterRegistry typeConverterRegistry = new ScanningTypeConverterRegistry(heap);
     int i = 0;
     for (final Type parameterType : genericParameterTypes) {
       final TypeConverter converter = typeConverterRegistry.findConverter(parameterType);

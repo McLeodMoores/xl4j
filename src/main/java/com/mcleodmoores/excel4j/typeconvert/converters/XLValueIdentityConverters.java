@@ -8,6 +8,7 @@ import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLLocalReference;
 import com.mcleodmoores.excel4j.values.XLMissing;
+import com.mcleodmoores.excel4j.values.XLMultiReference;
 import com.mcleodmoores.excel4j.values.XLNil;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
@@ -76,6 +77,14 @@ public class XLValueIdentityConverters {
     /** Default constructor. */
     public XLLocalReferenceIdentityConverter() {
       super(XLLocalReference.class);
+    }
+  }
+ 
+  /** Identity converter for XLMultiReference. */
+  public static class XLMultiReferenceIdentityConverter extends AbstractXLValueIdentityConverter {
+    /** Default constructor. */
+    public XLMultiReferenceIdentityConverter() {
+      super(XLMultiReference.class);
     }
   }
   

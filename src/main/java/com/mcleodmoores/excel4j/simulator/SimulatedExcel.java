@@ -12,6 +12,8 @@ import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 import com.mcleodmoores.excel4j.javacode.ReflectiveInvokerFactory;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
+import com.mcleodmoores.excel4j.typeconvert.CachingTypeConverterRegistry;
+import com.mcleodmoores.excel4j.typeconvert.ScanningTypeConverterRegistry;
 
 /**
  * A mock implementation of the Excel interface for use in testing.
@@ -28,12 +30,11 @@ public class SimulatedExcel implements Excel {
    */
   public SimulatedExcel() {
     _heap = new Heap();
-    _invokerFactory = new ReflectiveInvokerFactory(_heap);
+    _invokerFactory = new ReflectiveInvokerFactory(_heap, new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(_heap)));
     _functionRegistry = new FunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
     _excelCallback = new DefaultExcelCallback(getDLLPath(), rawCallback);
-    
   }
   
   /**

@@ -8,7 +8,9 @@ import java.lang.reflect.Method;
 
 import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.heap.Heap;
+import com.mcleodmoores.excel4j.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
+import com.mcleodmoores.excel4j.typeconvert.ScanningTypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
@@ -26,10 +28,11 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   /**
    * Default constructor.
    * @param heap  the excel heap
+   * @param typeConverterRegistry  a registry of type converters
    */
-  public ReflectiveInvokerFactory(final Heap heap) {
+  public ReflectiveInvokerFactory(final Heap heap, final TypeConverterRegistry typeConverterRegistry) {
     _objectXlObjectConverter = new ObjectXLObjectTypeConverter(heap);
-    _typeConverterRegistry = new TypeConverterRegistry(heap);
+    _typeConverterRegistry = typeConverterRegistry;
   }
   
   @Override
