@@ -21,6 +21,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
@@ -35,27 +36,29 @@ public class TypeConverterRegistry {
 
   /**
    * Construct a TypeResolver.
+   * @param heap  the excel heap
    */
-  public TypeConverterRegistry() {
+  public TypeConverterRegistry(final Heap heap) {
     Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
         .addScanners(new SubTypesScanner(true)));
-    scanAndCreateTypeConverters(reflections);
+    scanAndCreateTypeConverters(reflections, heap);
   }
   
   /**
    * Construct a TypeResolver for a particular package.  Useful for testing.
+   * @param heap  the excel heap
    * @param packageName  restrict scanning of implementations to a particular package
    */
-  public TypeConverterRegistry(final String packageName) {
+  public TypeConverterRegistry(final Heap heap, final String packageName) {
     final Reflections reflections = new Reflections(
         new ConfigurationBuilder()
           .addUrls(ClasspathHelper.forPackage(packageName))
           .addScanners(new SubTypesScanner(true)));
-    scanAndCreateTypeConverters(reflections);
+    scanAndCreateTypeConverters(reflections, heap);
   }
 
   @SuppressWarnings("rawtypes")
-  private void scanAndCreateTypeConverters(final Reflections reflections) {
+  private void scanAndCreateTypeConverters(final Reflections reflections, final Heap heap) {
 
     
     final Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
@@ -64,15 +67,24 @@ public class TypeConverterRegistry {
         continue; // skip over abstract type converters.
       }
       Constructor constructor;
+      TypeConverter typeConverter;
       try {
-        constructor = typeConverterClass.getConstructor((Class<?>[]) null);
+        try {
+          constructor = typeConverterClass.getConstructor((Class<?>[]) null);
+          typeConverter = (TypeConverter) constructor.newInstance((Object[]) null);
+        } catch (NoSuchMethodException nsme) { // some type converters need a heap reference in their constructors
+          constructor = typeConverterClass.getConstructor(Heap.class);
+          typeConverter = (TypeConverter) constructor.newInstance(heap);
+        }
         System.err.println("Registering type converter " + constructor);
-        final TypeConverter typeConverter = (TypeConverter) constructor.newInstance((Object[]) null);
+         
         final int priority = typeConverter.getPriority();
         if (!_converters.containsKey(priority)) {
           _converters.putIfAbsent(priority, new ArrayList<TypeConverter>());
         }
         _converters.get(typeConverter.getPriority()).add(typeConverter);
+      } catch (final NoSuchMethodException e) {
+        s_logger.error("Could not find constructor method on TypeConverter {}", typeConverterClass, e);
       } catch (final InstantiationException e) {
         s_logger.error("Could not find no args constructor on TypeConverter {}", typeConverterClass, e);
         throw new Excel4JRuntimeException("Could not find static getInstance() method on TypeConverter (see log)", e);
@@ -82,8 +94,6 @@ public class TypeConverterRegistry {
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
         s_logger.error("Unexpected Exception while trying to create instance of TypeConverter {}", typeConverterClass, e);
         throw new Excel4JRuntimeException("Unexpected Exception while trying to create instance of TypeConverter (see log)", e);
-      } catch (final NoSuchMethodException e) {
-        s_logger.error("Could not find constructor method on TypeConverter {}", typeConverterClass, e);
       }
     }
   }
