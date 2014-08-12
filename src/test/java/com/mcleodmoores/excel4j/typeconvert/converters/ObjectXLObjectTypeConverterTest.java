@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
@@ -31,7 +32,7 @@ public class ObjectXLObjectTypeConverterTest {
   /** Empty Object. */
   private static final Object OBJECT = new Object();
   /** The converter */
-  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter(new Heap());
 
   // TODO need to set system property test.mode - how to do this?
   /**

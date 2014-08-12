@@ -2,9 +2,7 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Method;
 
-import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
-import com.mcleodmoores.excel4j.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -12,17 +10,19 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * A class holding the converters required to convert arguments into the appropriate types and convert the result. 
  */
 public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
-  private static final AbstractTypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
-
+  private TypeConverter _objectXlObjectConverter;
+  
   /**
    * Constructor.
    * @param method  the method to call.
    * @param argumentConverters  the converters required to call the method
    * @param returnConverter  the converter required to convert he result back to an Excel type
+   * @param objectXlObjectConverter  a converter to convert the object into an object if necessary
    */
   public ObjectResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, 
-                       final TypeConverter returnConverter) {
+                       final TypeConverter returnConverter, final TypeConverter objectXlObjectConverter) {
     super(method, argumentConverters, returnConverter);
+    _objectXlObjectConverter = objectXlObjectConverter;
   }
 
   @Override
@@ -32,7 +32,7 @@ public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
       // this happens in case of JMethod/JConstruct etc.
       return (XLValue) object;
     } else {
-      return (XLValue) OBJECT_XLOBJECT_CONVERTER.toXLValue(null, object);
+      return (XLValue) _objectXlObjectConverter.toXLValue(null, object);
     }
   }
 

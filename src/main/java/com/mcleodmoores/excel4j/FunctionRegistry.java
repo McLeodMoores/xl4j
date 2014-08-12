@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
+import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 /**
@@ -35,13 +36,14 @@ public class FunctionRegistry {
   // REVIEW: is this the best structure to use?
   private Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
   private AtomicInteger _exportCounter = new AtomicInteger();
-  private ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<Integer, FunctionDefinition>();
+  private ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
   private BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
   /**
-   * Default no-arg constructor.
+   * Default constructor.
+   * @param invokerFactory  invoker factory used to create method and constructor invokers to perform type conversions
    */
-  public FunctionRegistry() {
-    Thread scanningThread = new Thread(new ReflectionScanner());
+  public FunctionRegistry(final InvokerFactory invokerFactory) {
+    Thread scanningThread = new Thread(new ReflectionScanner(invokerFactory));
     scanningThread.start();
   }
   
@@ -50,9 +52,15 @@ public class FunctionRegistry {
    * which will block until the results arrive.  We could make it streaming fairly easily.
    */
   private class ReflectionScanner implements Runnable {
+    private final InvokerFactory _invokerFactory;
+    
+    public ReflectionScanner(final InvokerFactory invokerFactory) {
+      _invokerFactory = invokerFactory;
+    }
+    
     @Override
     public void run() {
-      scanAndCreateFunctions();
+      scanAndCreateFunctions(_invokerFactory);
       try {
         _finishedScan.put(_functionDefinitions);
       } catch (InterruptedException e) {
@@ -76,7 +84,7 @@ public class FunctionRegistry {
     }
   }
   
-  private void scanAndCreateFunctions() {
+  private void scanAndCreateFunctions(final InvokerFactory invokerFactory) {
     // TODO: don't limit to our package.
     Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
                                                                         .addScanners(new MethodAnnotationsScanner(), 
@@ -99,7 +107,7 @@ public class FunctionRegistry {
         resultType = TypeConversionMode.SIMPLEST_RESULT;
       }
       // build a method invoker
-      MethodInvoker methodInvoker = ExcelFactory.getInstance().getInvokerFactory().getMethodTypeConverter(method, resultType);
+      MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
       // build the meta-data data structure and store it all in a FunctionDefinition
       FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, xlArgumentAnnotations);
       int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);

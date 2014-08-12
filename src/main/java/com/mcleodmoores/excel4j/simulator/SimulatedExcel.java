@@ -28,11 +28,12 @@ public class SimulatedExcel implements Excel {
    */
   public SimulatedExcel() {
     _heap = new Heap();
-    _functionRegistry = new FunctionRegistry();
+    _invokerFactory = new ReflectiveInvokerFactory(_heap);
+    _functionRegistry = new FunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
     _excelCallback = new DefaultExcelCallback(getDLLPath(), rawCallback);
-    _invokerFactory = new ReflectiveInvokerFactory();
+    
   }
   
   /**

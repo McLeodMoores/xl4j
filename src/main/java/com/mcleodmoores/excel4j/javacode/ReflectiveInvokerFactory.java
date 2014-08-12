@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import com.mcleodmoores.excel4j.TypeConversionMode;
+import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
@@ -21,7 +22,15 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class ReflectiveInvokerFactory implements InvokerFactory {
   private TypeConverterRegistry _typeConverterRegistry = new TypeConverterRegistry();
-  private static final AbstractTypeConverter OBJECT_XLOBJECT_CONVERTER = new ObjectXLObjectTypeConverter();
+  private ObjectXLObjectTypeConverter _objectXlObjectConverter;
+  
+  /**
+   * Default constructor.
+   * @param heap  the excel heap
+   */
+  public ReflectiveInvokerFactory(final Heap heap) {
+    _objectXlObjectConverter = new ObjectXLObjectTypeConverter(heap);
+  }
   
   @Override
   public ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
@@ -38,7 +47,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
         if (argumentConverters == null) {
           continue outer;
         }
-        return new ObjectConstructorInvoker(constructor, argumentConverters, OBJECT_XLOBJECT_CONVERTER);
+        return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
       } else if (typeConversionMode == TypeConversionMode.PASSTHROUGH) {
         if (isAssignableFrom(parameterTypes, argTypes)) {
           return new PassthroughConstructorInvoker(constructor);
@@ -84,7 +93,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
         case SIMPLEST_RESULT:
           return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
         case OBJECT_RESULT:
-          return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
+          return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
         case PASSTHROUGH:
           return new PassthroughMethodInvoker(method);
         default:
@@ -127,7 +136,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (resultType == TypeConversionMode.SIMPLEST_RESULT) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
-        return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter);
+        return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
       }
     } catch (Excel4JRuntimeException e) {
       // here we chain on the exception that details the parameter name that doesn't match.
