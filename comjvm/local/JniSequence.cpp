@@ -22,6 +22,30 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 	case VT_I4 :
 		put_jint (pvValue->intVal);
 		break;
+	case VT_BOOL:
+		put_jboolean (pvValue->boolVal);
+		break;
+	case VT_BSTR:
+		put_BSTR(pvValue->bstrVal); // I'm assuming the caller thinks it's up to us to free it?
+		break;
+	case VT_I1:
+		put_jbyte(pvValue->bVal);
+		break;
+	case VT_I2:
+		put_jshort(pvValue->iVal);
+		break;
+	case VT_I8:
+		put_jlong(pvValue->llVal);
+		break;
+	case VT_R4:
+		put_jfloat(pvValue->fltVal);
+		break;
+	case VT_R8:
+		put_jdouble(pvValue->dblVal);
+		break;
+	case VT_UI8:
+		put_HANDLE(pvValue->ullVal);
+		break;
 	default :
 		assert (0);
 		break;
@@ -37,6 +61,62 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 	case t_jsize :
 		pvValue->vt = VT_I4;
 		pvValue->intVal = v._jsize;
+		break;
+	case t_BSTR:
+		pvValue->vt = VT_BSTR;
+		pvValue->bstrVal = v._BSTR;
+		break;
+	case t_jstring:  // TODO
+		pvValue->vt = VT_BSTR;
+		pvValue->bstrVal = SysAllocString ((OLECHAR *) v._jstring);
+		assert(0);
+		break;
+	case t_jboolean:
+		pvValue->vt = VT_BOOL;
+		pvValue->boolVal = v._jboolean;
+		break;
+	case t_jbyte:
+		pvValue->vt = VT_I1;
+		pvValue->bVal = v._jbyte;
+		break;
+	case t_jchar:
+		pvValue->vt = VT_UI2; // jchar as unsigned short, effectively.
+		pvValue->uiVal = v._jchar;
+		break;
+	case t_jshort:
+		pvValue->vt = VT_I2; // signed short.
+		pvValue->iVal = v._jshort;
+		break;
+	case t_jlong:
+		pvValue->vt = VT_I8;
+		pvValue->llVal = v._jlong;
+		break;
+	case t_jfloat:
+		pvValue->vt = VT_R4;
+		pvValue->fltVal = v._jfloat;
+		break;
+	case t_jdouble:
+		pvValue->vt = VT_R8;
+		pvValue->dblVal = v._jdouble;
+		break;
+	case t_jclass:
+	case t_jobject:
+	case t_jmethodID:
+	case t_jfieldID:
+	case t_jobjectRefType:
+	case t_jthrowable:
+	case t_jobjectArray:
+	case t_jbooleanArray:
+	case t_jbyteArray:
+	case t_jcharArray:
+	case t_jshortArray:
+	case t_jintArray:
+	case t_jlongArray:
+	case t_jfloatArray:
+	case t_jdoubleArray:
+	case t_jweak:
+		pvValue->vt = VT_UI8;
+		pvValue->ullVal = (ULONGLONG)v._jclass; // ick
 		break;
 	default :
 		assert (0);
@@ -56,17 +136,6 @@ void CJniValue::copy_into (CJniValue &value) const {
 	}
 }
 
-jint CJniValue::get_jint () const {
-	switch (type) {
-	case t_jint :
-		return v._jint;
-	case t_jsize :
-		return v._jsize;
-	}
-	assert (0);
-	return 0;
-}
-
 CJniValue::CJniValue (BSTR bstr)
 : type (t_BSTR) {
 	v._BSTR = SysAllocStringLen (bstr, SysStringLen (bstr));
@@ -83,6 +152,15 @@ void CJniValue::put_BSTR (BSTR bstr) {
 	}
 }
 
+void CJniValue::put_HANDLE (ULONGLONG handle) {
+	if (handle) {
+		reset (t_HANDLE);
+		v._HANDLE = handle;
+    } else {
+		reset (t_nothing);
+	}
+}
+
 const jchar *CJniValue::get_pjchar () const {
 	switch (type) {
 	case t_BSTR :
@@ -92,25 +170,17 @@ const jchar *CJniValue::get_pjchar () const {
 	return 0;
 }
 
-jsize CJniValue::get_jsize () const {
+/// Caller must free char * returned when finished with SysFreeString
+const char *CJniValue::get_alloc_pchar() const { 
 	switch (type) {
-	case t_jint :
-		return v._jint;
-	case t_jsize :
-		return v._jsize;
+	case t_BSTR:
+		return _com_util::ConvertBSTRToString(v._BSTR); 
 	}
-	assert (0);
+	assert(0);
 	return 0;
 }
 
-jstring CJniValue::get_jstring () const {
-	switch (type) {
-	case t_jstring :
-		return v._jstring;
-	}
-	assert (0);
-	return 0;
-}
+
 
 HRESULT CJniValue::load (std::vector<CJniValue> &aValue) {
 	try {
@@ -316,10 +386,15 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 		std::vector<CJniValue> aValues (m_pOwner->Values ());
 		for (std::vector<JniOperation>::const_iterator itr = m_pOwner->Operations ()->begin (), end = m_pOwner->Operations ()->end (); itr != end; itr++) {
 			switch (*itr) {
-			case JniOperation::io_LoadArgument :
-				// TODO
-				assert (0);
-				break;
+			case JniOperation::io_LoadArgument 
+				: {
+					long lValueRef = *(params++);
+					if (m_cArgs > 0) {
+						m_cArgs--;
+						aValues[lValueRef].put_variant(m_pArgs++);
+					}
+					break;
+				}
 			case JniOperation::io_LoadConstant :
 				(constants++)->copy_into (aValues[cValue++]);
 				break;
@@ -346,6 +421,15 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				: {
 					jstring str = aValues[*(params++)].get_jstring ();
 					aValues[cValue++].put_jsize (pEnv->GetStringLength (str));
+					break;
+				}
+			case JniOperation::jni_FindClass
+				: {
+					const char *name = aValues[*(params++)].get_alloc_pchar ();
+					jclass clazz = pEnv->FindClass(name);
+					
+
+					aValues[cValue++].put_jclass(clazz);
 					break;
 				}
 			default :
@@ -415,8 +499,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 HRESULT STDMETHODCALLTYPE CJniSequence::Argument ( 
     /* [retval][out] */ long *plValueRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	HRESULT hr;
+	EnterCriticalSection(&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	} else {
+		hr = AddOperation(JniOperation::io_LoadArgument);
+		if (SUCCEEDED(hr)) {
+			*plValueRef = m_cArgument++;
+		}
+		//hr = S_OK;
+	}
+	LeaveCriticalSection(&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::Result ( 
@@ -431,7 +526,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Result (
 	} else {
 		hr = AddOperation (JniOperation::io_StoreResult, lValueRef);
 		if (SUCCEEDED (hr)) {
-			m_cResult++;
+			m_cResult++;  // isn't this already done inside the operation?
 		}
 	}
 	LeaveCriticalSection (&m_cs);
@@ -543,8 +638,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_FindClass (
     /* [in] */ long lNameRef,
     /* [retval][out] */ long *plClassRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!plClassRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	} else {
+		hr = AddOperation (JniOperation::jni_FindClass);
+		if (SUCCEEDED (hr)) {
+			*plClassRef = m_cValue++;
+		}
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_FromReflectedMethod ( 

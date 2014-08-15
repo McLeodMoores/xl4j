@@ -16,7 +16,8 @@ enum JniOperation {
 	io_StoreResult,
 	jni_GetVersion,
 	jni_NewString,
-	jni_GetStringLength
+	jni_GetStringLength,
+	jni_FindClass
 };
 
 class CJniValue {
@@ -25,14 +26,67 @@ private:
 		t_nothing = 0,
 		t_jint = 1,
 		t_BSTR,
+		t_HANDLE,
 		t_jsize,
-		t_jstring
+		t_jstring,
+		t_jboolean,
+		t_jbyte,
+		t_jchar,
+		t_jshort,
+		t_jlong,
+		t_jfloat,
+		t_jdouble,
+		t_jobject,
+		t_jclass,
+		t_jmethodID,
+		t_jfieldID,
+		t_jobjectRefType,
+		t_jthrowable,
+		t_jobjectArray,
+		t_jbooleanArray,
+		t_jbyteArray,
+		t_jcharArray,
+		t_jshortArray,
+		t_jintArray,
+		t_jlongArray,
+		t_jfloatArray,
+		t_jdoubleArray,
+		t_jweak
 	} type;
 	union {
-		jint _jint;
 		BSTR _BSTR;
+		// _HANDLE stores all the reference types when going via VARIANT
+		// which is simple, but obviously loses type safety completely.
+		// we use a ULONGLONG because HANDLE will differ in length across
+		// 32-bit/64-bit client/server boundaries and could lead to very
+		// difficult to debug pointer truncations.
+		ULONGLONG _HANDLE;
+		jint _jint;
 		jsize _jsize;
 		jstring _jstring;
+		jboolean _jboolean;
+		jbyte _jbyte;
+		jchar _jchar;
+		jshort _jshort;
+		jlong _jlong;
+		jfloat _jfloat;
+		jdouble _jdouble;
+		jobject _jobject; // should this be here?
+		jclass _jclass;
+		jmethodID _jmethodID;
+		jfieldID _jfieldID;
+		jobjectRefType _jobjectRefType;
+		jthrowable _jthrowable;
+		jobjectArray _jobjectArray;
+		jbooleanArray _jbooleanArray;
+		jbyteArray _jbyteArray;
+		jcharArray _jcharArray;
+		jshortArray _jshortArray;
+		jintArray _jintArray;
+		jlongArray _jlongArray;
+		jfloatArray _jfloatArray;
+		jdoubleArray _jdoubleArray;
+		jweak _jweak;
 	} v;
 	void free ();
 	void reset (_type typeNew) { free (); type = typeNew; }
@@ -43,6 +97,38 @@ public:
 	void put_variant (const VARIANT *pvValue);
 	void get_variant (VARIANT *pvValue) const;
 	void copy_into (CJniValue &value) const;
+#define __GET(_t) \
+	_t get_##_t () const { \
+		switch (type) { \
+		case t_##_t: \
+			return v._##_t; \
+								} \
+		assert(0); \
+		return v._##_t; \
+			}
+#define __GET2(_t, _t_alt) \
+	_t get_##_t () const { \
+		switch (type) { \
+		case t_##_t: \
+			return v._##_t; \
+		case t_##_t_alt: \
+		    return (_t) v._##_t_alt; \
+				} \
+		assert(0); \
+		return v._##_t; \
+		}
+	// this is different because we can't call the field _ULONGLONG
+#define __GETHANDLE(_t) \
+	_t get_##_t () const { \
+		switch (type) { \
+		case t_##_t: \
+			return v._##_t; \
+		case t_HANDLE: \
+		    return (_t) v._HANDLE; \
+				} \
+		assert(0); \
+		return v._##_t; \
+		}
 #define __PUT(_t) \
 	void put_##_t (_t value) { reset (t_##_t); v._##_t = value; }
 #define __CONS(_t) \
@@ -51,12 +137,70 @@ public:
 	__CONS (jint);
 	jint get_jint () const;
 	void put_BSTR (BSTR bstr);
+	void put_HANDLE (ULONGLONG handle);
 	CJniValue (BSTR bstr);
 	const jchar *get_pjchar () const;
-	__PUT (jsize)
-	jsize get_jsize () const;
+	const char *get_alloc_pchar() const;
+	__PUT (jsize);
+	__GET2 (jsize, jint);
 	__PUT (jstring);
-	jstring get_jstring () const;
+	__GET2 (jstring, BSTR);
+	__PUT (jboolean);
+	__GET (jboolean);
+	__PUT (jbyte);
+	__GET (jbyte);
+	__PUT (jchar);
+	__GET (jchar); 
+	__PUT (jshort);
+	__GET (jshort);
+	__PUT (jlong);
+	__GET (jlong);
+	__PUT (jfloat);
+	__GET (jfloat);
+	__PUT (jdouble);
+	__GET (jdouble);
+	__PUT (jobject); 
+	__GETHANDLE (jobject);
+	__PUT (jclass);
+	__GETHANDLE (jclass);
+	__PUT (jmethodID);
+	__GETHANDLE (jmethodID);
+	__PUT (jfieldID);
+	__GETHANDLE (jfieldID);
+	__PUT (jobjectRefType);
+	jobjectRefType get_jobjectRefType_t () const {
+		
+		switch (type) { 
+		case t_jobjectRefType:
+			return v._jobjectRefType;
+		case t_HANDLE: 
+			return (jobjectRefType)v._HANDLE; 
+					} 
+		assert(0); 
+			}
+	__GETHANDLE (jobjectRefType); // this might not work...
+	__PUT (jthrowable);
+	__GETHANDLE (jthrowable);
+	__PUT (jobjectArray);
+	__GETHANDLE (jobjectArray);
+	__PUT (jbooleanArray);
+	__GETHANDLE (jbyteArray);
+	__PUT (jbyteArray);
+	__GETHANDLE (jcharArray); 
+	__PUT (jcharArray);
+	__GETHANDLE (jshortArray);
+	__PUT (jshortArray);
+	__GETHANDLE (jintArray);
+	__PUT (jintArray);
+	__GETHANDLE (jlongArray);
+	__PUT (jlongArray);
+	__GETHANDLE (jfloatArray);
+	__PUT (jfloatArray);
+	__GETHANDLE (jdoubleArray);
+	__PUT (jdoubleArray);
+	__GETHANDLE (jweak);
+	__PUT (jweak);
+	
 #undef __CONS
 #undef __PUT
 	HRESULT load (std::vector<CJniValue> &aValue);
@@ -86,15 +230,22 @@ class CJniSequence : public IJniSequence {
 private:
 	friend class CJniSequenceExecutor;
 	volatile ULONG m_lRefCount;
+	// Lock for this object
 	CRITICAL_SECTION m_cs;
 	CJvm *m_pJvm;
+	// Number of values currently loaded
 	long m_cValue;
+	// Non-zero if sequence is executing
 	long m_cExecuting;
 	std::vector<HANDLE> m_ahSemaphore;
 	std::vector<JniOperation> m_aOperation;
+	// vector of parameters loaded
 	std::vector<long> m_aParam;
+	// vector of constants that have been loaded
 	std::vector<CJniValue> m_aConstant;
+	// number of arguments loaded
 	long m_cArgument;
+	// number of results
 	long m_cResult;
 	~CJniSequence ();
 	HRESULT AddOperation (JniOperation operation);
