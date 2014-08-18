@@ -23,7 +23,7 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 		put_jint (pvValue->intVal);
 		break;
 	case VT_BOOL:
-		put_jboolean (pvValue->boolVal);
+		put_jboolean (pvValue->boolVal == VARIANT_FALSE ? false : true);
 		break;
 	case VT_BSTR:
 		put_BSTR(pvValue->bstrVal); // I'm assuming the caller thinks it's up to us to free it?
@@ -45,6 +45,13 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 		break;
 	case VT_UI8:
 		put_HANDLE(pvValue->ullVal);
+		break;
+	case VT_SAFEARRAY | VT_UI1:
+		SAFEARRAY *safeArray = pvValue->parray;
+		if (safeArray->cDims != 1) {
+			assert (0);
+		}
+		put_jbyteBuffer((jbyte *) safeArray->pvData, safeArray->cbElements);
 		break;
 	default :
 		assert (0);
@@ -73,7 +80,7 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		break;
 	case t_jboolean:
 		pvValue->vt = VT_BOOL;
-		pvValue->boolVal = v._jboolean;
+		pvValue->boolVal = v._jboolean ? VARIANT_TRUE : VARIANT_FALSE;
 		break;
 	case t_jbyte:
 		pvValue->vt = VT_I1;
@@ -98,6 +105,17 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 	case t_jdouble:
 		pvValue->vt = VT_R8;
 		pvValue->dblVal = v._jdouble;
+		break;
+	case t_jbyteBuffer:
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jsize;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_UI1;
+		pvValue->parray = SafeArrayCreate (VT_UI1, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jbyteBuffer._pjbyte, v._jbyteBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
 		break;
 	case t_jclass:
 	case t_jobject:
@@ -170,7 +188,7 @@ const jchar *CJniValue::get_pjchar () const {
 	return 0;
 }
 
-/// Caller must free char * returned when finished with SysFreeString
+/// Caller must free char * returned when finished with CoTaskMemFree - note there is a bug in ConvertBSTRToString in early VS.
 const char *CJniValue::get_alloc_pchar() const { 
 	switch (type) {
 	case t_BSTR:
@@ -427,11 +445,22 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				: {
 					const char *name = aValues[*(params++)].get_alloc_pchar ();
 					jclass clazz = pEnv->FindClass(name);
-					
-
 					aValues[cValue++].put_jclass(clazz);
+					CoTaskMemFree ((LPVOID) name);
 					break;
 				}
+			case JniOperation::jni_DefineClass
+				: {
+					const char *name = aValues[*(params++)].get_alloc_pchar ();
+					jobject loader = aValues[*(params++)].get_jobject ();
+					jbyte *buffer = aValues[*(params)].get_jbyteBuffer (); // note we don't ++ here because we use it twice
+					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize (); 
+					jclass clazz = pEnv->DefineClass (name, loader, buffer, szBuffer);
+					aValues[cValue++].put_jclass (clazz);
+					CoTaskMemFree ((LPVOID) name);
+					break;
+				}
+
 			default :
 				assert (0);
 				break;
@@ -560,16 +589,35 @@ HRESULT STDMETHODCALLTYPE CJniSequence::ByteConstant (
     /* [in] */ byte nValue,
     /* [retval][out] */ long *plValueRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	} else {
+		CJniValue contant (nValue);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::ShortConstant ( 
     /* [in] */ short nValue,
     /* [retval][out] */ long *plValueRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		CJniValue contant (nValue);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::IntConstant ( 
@@ -593,16 +641,54 @@ HRESULT STDMETHODCALLTYPE CJniSequence::LongConstant (
     /* [in] */ hyper nValue,
     /* [retval][out] */ long *plValueRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		CJniValue contant (nValue);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::BooleanConstant ( 
-    /* [in] */ BOOL fValue,
+    /* [in] */ BOOL bValue,
     /* [retval][out] */ long *plValueRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	} else {
+		CJniValue contant ((bValue == FALSE) ? (jboolean) JNI_FALSE : (jboolean) JNI_TRUE);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
+}
+
+
+HRESULT STDMETHODCALLTYPE CJniSequence::CharConstant (
+	/* [in] */ TCHAR cValue,
+	/* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		CJniValue contant ((jchar) cValue);  // hope this works correctly in ASCII mode...
+		hr = LoadConstant (contant, plValueRef);
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetVersion ( 
@@ -618,6 +704,42 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetVersion (
 		if (SUCCEEDED (hr)) {
 			*plValueRef = m_cValue++;
 		}
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
+}
+
+HRESULT STDMETHODCALLTYPE CJniSequence::FloatConstant (
+	/* [in] */ float fValue,
+	/* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		CJniValue contant (fValue);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
+}
+
+HRESULT STDMETHODCALLTYPE CJniSequence::DoubleConstant (
+	/* [in] */ double fValue,
+	/* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		CJniValue contant (fValue);
+		hr = LoadConstant (contant, plValueRef);
 	}
 	LeaveCriticalSection (&m_cs);
 	return hr;

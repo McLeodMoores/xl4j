@@ -17,7 +17,8 @@ enum JniOperation {
 	jni_GetVersion,
 	jni_NewString,
 	jni_GetStringLength,
-	jni_FindClass
+	jni_FindClass,
+	jni_DefineClass
 };
 
 class CJniValue {
@@ -51,7 +52,8 @@ private:
 		t_jlongArray,
 		t_jfloatArray,
 		t_jdoubleArray,
-		t_jweak
+		t_jweak,
+		t_jbyteBuffer,
 	} type;
 	union {
 		BSTR _BSTR;
@@ -87,6 +89,10 @@ private:
 		jfloatArray _jfloatArray;
 		jdoubleArray _jdoubleArray;
 		jweak _jweak;
+		struct __jbyteBuffer {
+			jbyte *_pjbyte;
+			jsize _jsize;
+		} _jbyteBuffer;
 	} v;
 	void free ();
 	void reset (_type typeNew) { free (); type = typeNew; }
@@ -102,10 +108,10 @@ public:
 		switch (type) { \
 		case t_##_t: \
 			return v._##_t; \
-								} \
+									} \
 		assert(0); \
 		return v._##_t; \
-			}
+				}
 #define __GET2(_t, _t_alt) \
 	_t get_##_t () const { \
 		switch (type) { \
@@ -113,10 +119,10 @@ public:
 			return v._##_t; \
 		case t_##_t_alt: \
 		    return (_t) v._##_t_alt; \
-				} \
+					} \
 		assert(0); \
 		return v._##_t; \
-		}
+			}
 	// this is different because we can't call the field _ULONGLONG
 #define __GETHANDLE(_t) \
 	_t get_##_t () const { \
@@ -125,10 +131,10 @@ public:
 			return v._##_t; \
 		case t_HANDLE: \
 		    return (_t) v._HANDLE; \
-				} \
+					} \
 		assert(0); \
 		return v._##_t; \
-		}
+			}
 #define __PUT(_t) \
 	void put_##_t (_t value) { reset (t_##_t); v._##_t = value; }
 #define __CONS(_t) \
@@ -140,24 +146,50 @@ public:
 	void put_HANDLE (ULONGLONG handle);
 	CJniValue (BSTR bstr);
 	const jchar *get_pjchar () const;
-	const char *get_alloc_pchar() const;
+	const char *get_alloc_pchar () const;
+	CJniValue (jbyte *buffer, jsize size) : type (t_jbyteBuffer) {
+		v._jbyteBuffer._pjbyte = buffer;
+		v._jbyteBuffer._jsize = size;
+	}
+	void put_jbyteBuffer (jbyte *buffer, jsize size) {
+		reset (t_jbyteBuffer);
+		v._jbyteBuffer._pjbyte = buffer;
+		v._jbyteBuffer._jsize = size;
+	}
+	jbyte *get_jbyteBuffer () const {
+		if (type == t_jbyteBuffer) {
+			return v._jbyteBuffer._pjbyte;
+		} else {
+			assert (0);
+			return NULL;
+		}
+	}
+	jsize get_jbyteBufferSize () const {
+		if (type == t_jbyteBuffer) {
+			return v._jbyteBuffer._jsize;
+		} else {
+			assert (0);
+			return 0;
+		}
+	}
+	
 	__PUT (jsize);
 	__GET2 (jsize, jint);
 	__PUT (jstring);
 	__GET2 (jstring, BSTR);
-	__PUT (jboolean);
+	__CONS (jboolean);
 	__GET (jboolean);
-	__PUT (jbyte);
+	__CONS (jbyte);
 	__GET (jbyte);
-	__PUT (jchar);
+	__CONS (jchar);
 	__GET (jchar); 
-	__PUT (jshort);
+	__CONS (jshort);
 	__GET (jshort);
-	__PUT (jlong);
+	__CONS (jlong);
 	__GET (jlong);
-	__PUT (jfloat);
+	__CONS (jfloat);
 	__GET (jfloat);
-	__PUT (jdouble);
+	__CONS (jdouble);
 	__GET (jdouble);
 	__PUT (jobject); 
 	__GETHANDLE (jobject);
@@ -298,6 +330,15 @@ public:
     HRESULT STDMETHODCALLTYPE BooleanConstant ( 
         /* [in] */ BOOL fValue,
         /* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE CharConstant (
+		/* [in] */ TCHAR fValue,
+		/* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE FloatConstant (
+		/* [in] */ float fValue,
+		/* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE DoubleConstant (
+		/* [in] */ double fValue,
+		/* [retval][out] */ long *plValueRef);
     HRESULT STDMETHODCALLTYPE jni_GetVersion ( 
         /* [out] */ long *plValueRef);
     HRESULT STDMETHODCALLTYPE jni_DefineClass ( 
