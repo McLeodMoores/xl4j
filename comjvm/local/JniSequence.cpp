@@ -46,13 +46,13 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 	case VT_UI8:
 		put_HANDLE(pvValue->ullVal);
 		break;
-	case VT_SAFEARRAY | VT_UI1:
-		SAFEARRAY *safeArray = pvValue->parray;
-		if (safeArray->cDims != 1) {
-			assert (0);
-		}
-		put_jbyteBuffer((jbyte *) safeArray->pvData, safeArray->cbElements);
-		break;
+	case VT_SAFEARRAY | VT_UI1: {
+			SAFEARRAY *safeArray = pvValue->parray;
+			if (safeArray->cDims != 1) {
+				assert (0);
+			}
+			put_jbyteBuffer ((jbyte *)safeArray->pvData, safeArray->cbElements);
+		} break;
 	default :
 		assert (0);
 		break;
@@ -63,11 +63,11 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 	switch (type) {
 	case t_jint :
 		pvValue->vt = VT_I4;
-		pvValue->intVal = v._jint;
+		pvValue->intVal = v._jvalue.i;
 		break;
 	case t_jsize :
 		pvValue->vt = VT_I4;
-		pvValue->intVal = v._jsize;
+		pvValue->intVal = v._jvalue.i;
 		break;
 	case t_BSTR:
 		pvValue->vt = VT_BSTR;
@@ -75,48 +75,48 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		break;
 	case t_jstring:  // TODO
 		pvValue->vt = VT_BSTR;
-		pvValue->bstrVal = SysAllocString ((OLECHAR *) v._jstring);
+		pvValue->bstrVal = SysAllocString ((OLECHAR *) v._jvalue.l);
 		assert(0);
 		break;
 	case t_jboolean:
 		pvValue->vt = VT_BOOL;
-		pvValue->boolVal = v._jboolean ? VARIANT_TRUE : VARIANT_FALSE;
+		pvValue->boolVal = v._jvalue.z ? VARIANT_TRUE : VARIANT_FALSE;
 		break;
 	case t_jbyte:
 		pvValue->vt = VT_I1;
-		pvValue->bVal = v._jbyte;
+		pvValue->bVal = v._jvalue.b;
 		break;
 	case t_jchar:
 		pvValue->vt = VT_UI2; // jchar as unsigned short, effectively.
-		pvValue->uiVal = v._jchar;
+		pvValue->uiVal = v._jvalue.c;
 		break;
 	case t_jshort:
 		pvValue->vt = VT_I2; // signed short.
-		pvValue->iVal = v._jshort;
+		pvValue->iVal = v._jvalue.s;
 		break;
 	case t_jlong:
 		pvValue->vt = VT_I8;
-		pvValue->llVal = v._jlong;
+		pvValue->llVal = v._jvalue.j;
 		break;
 	case t_jfloat:
 		pvValue->vt = VT_R4;
-		pvValue->fltVal = v._jfloat;
+		pvValue->fltVal = v._jvalue.f;
 		break;
 	case t_jdouble:
 		pvValue->vt = VT_R8;
-		pvValue->dblVal = v._jdouble;
+		pvValue->dblVal = v._jvalue.d;
 		break;
-	case t_jbyteBuffer:
-		SAFEARRAYBOUND bounds[1];
-		bounds[0].cElements = v._jsize;
-		bounds[0].lLbound = 0;
-		pvValue->vt = VT_SAFEARRAY | VT_UI1;
-		pvValue->parray = SafeArrayCreate (VT_UI1, 1, bounds);
-		void *pArrayData = NULL;
-		SafeArrayAccessData (pvValue->parray, &pArrayData);
-		memcpy (pArrayData, v._jbyteBuffer._pjbyte, v._jbyteBuffer._jsize);
-		SafeArrayUnaccessData (pvValue->parray);
-		break;
+	case t_jbyteBuffer: {
+			SAFEARRAYBOUND bounds[1];
+			bounds[0].cElements = v._jbyteBuffer._jsize;
+			bounds[0].lLbound = 0;
+			pvValue->vt = VT_SAFEARRAY | VT_UI1;
+			pvValue->parray = SafeArrayCreate (VT_UI1, 1, bounds);
+			void *pArrayData = NULL;
+			SafeArrayAccessData (pvValue->parray, &pArrayData);
+			memcpy (pArrayData, v._jbyteBuffer._pjbyte, v._jbyteBuffer._jsize);
+			SafeArrayUnaccessData (pvValue->parray);
+		} break;
 	case t_jclass:
 	case t_jobject:
 	case t_jmethodID:
@@ -134,13 +134,55 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 	case t_jdoubleArray:
 	case t_jweak:
 		pvValue->vt = VT_UI8;
-		pvValue->ullVal = (ULONGLONG)v._jclass; // ick
+		pvValue->ullVal = (ULONGLONG) v._jvalue.l; // ick
 		break;
 	default :
 		assert (0);
 		break;
 	}
 }
+
+void CJniValue::get_jvalue (jvalue *pValue) const {
+	switch (type) {
+	// these cases are not types you can pass to a Java method.
+	case t_jmethodID:
+	case t_jfieldID:
+	case t_jobjectRefType:
+	case t_jbyteBuffer:
+	case t_BSTR:
+		assert (0); // needs to have been allocated already on the java side
+		break;
+	// these are all types you can pass to a Java method. jsize is a bit marginal.
+	case t_jsize:
+	case t_jint:
+	case t_jstring:
+	case t_jboolean:
+	case t_jchar:
+	case t_jshort:
+	case t_jlong:
+	case t_jfloat:
+	case t_jdouble:
+	case t_jclass:
+	case t_jobject:
+	case t_jthrowable:
+	case t_jobjectArray:
+	case t_jbooleanArray:
+	case t_jbyteArray:
+	case t_jcharArray:
+	case t_jshortArray:
+	case t_jintArray:
+	case t_jlongArray:
+	case t_jfloatArray:
+	case t_jdoubleArray:
+	case t_jweak:
+		*pValue = v._jvalue;
+		break;
+	default:
+		assert (0);
+		break;
+	}
+}
+
 
 void CJniValue::copy_into (CJniValue &value) const {
 	switch (type) {
@@ -197,8 +239,6 @@ const char *CJniValue::get_alloc_pchar() const {
 	assert(0);
 	return 0;
 }
-
-
 
 HRESULT CJniValue::load (std::vector<CJniValue> &aValue) {
 	try {
@@ -284,6 +324,37 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long l
 	} catch (std::bad_alloc) {
 		if (bOperation) m_aOperation.pop_back ();
 		if (bParam) m_aParam.pop_back ();
+		return E_OUTOFMEMORY;
+	}
+}
+
+/// <summary>Add an operation to the run queue with an array of parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="size">Number of parameter incides in following array</param>
+/// <param name="plParam">array of parameter indices</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation (JniOperation operation, long size, long *lParam1) {
+	bool bOperation = false;
+	int iParam = 0;
+	try {
+		m_aOperation.push_back (operation);
+		bOperation = true;
+		for (int i = 0; i < size; i++) {
+			m_aParam.push_back (lParam1[i]);
+			iParam++;
+		}
+		return S_OK;
+	}
+	catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back ();
+		if (iParam) {
+			for (int i = 0; i < iParam; i++) {
+				m_aParam.pop_back ();
+			}
+		}
 		return E_OUTOFMEMORY;
 	}
 }
@@ -386,6 +457,9 @@ ULONG STDMETHODCALLTYPE CJniSequence::Release () {
 
 CJniSequenceExecutor::CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults)
 : m_lRefCount (1), m_pOwner (pOwner), m_cArgs (cArgs), m_pArgs (pArgs), m_cResults (cResults), m_pResults (pResults) {
+	if (!pOwner) {
+		throw std::logic_error ("JniSequenceExecutor called with null JniSequence");
+	}
 	m_hSemaphore = pOwner->BeginExecution ();
 	pOwner->AddRef ();
 }
@@ -403,16 +477,17 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 		std::vector<CJniValue>::const_iterator constants = m_pOwner->Constants ()->begin ();
 		std::vector<CJniValue> aValues (m_pOwner->Values ());
 		for (std::vector<JniOperation>::const_iterator itr = m_pOwner->Operations ()->begin (), end = m_pOwner->Operations ()->end (); itr != end; itr++) {
+			fprintf (stderr, "operation %x\n", *itr);
 			switch (*itr) {
 			case JniOperation::io_LoadArgument 
 				: {
-					long lValueRef = *(params++);
 					if (m_cArgs > 0) {
 						m_cArgs--;
-						aValues[lValueRef].put_variant(m_pArgs++);
+						aValues[cValue++].put_variant (m_pArgs++);
 					}
 					break;
 				}
+				
 			case JniOperation::io_LoadConstant :
 				(constants++)->copy_into (aValues[cValue++]);
 				break;
@@ -446,7 +521,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					const char *name = aValues[*(params++)].get_alloc_pchar ();
 					jclass clazz = pEnv->FindClass(name);
 					aValues[cValue++].put_jclass(clazz);
-					CoTaskMemFree ((LPVOID) name);
+					//CoTaskMemFree ((LPVOID) name);
 					break;
 				}
 			case JniOperation::jni_DefineClass
@@ -457,10 +532,29 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize (); 
 					jclass clazz = pEnv->DefineClass (name, loader, buffer, szBuffer);
 					aValues[cValue++].put_jclass (clazz);
-					CoTaskMemFree ((LPVOID) name);
+					//CoTaskMemFree ((LPVOID) name);
 					break;
 				}
-
+			case JniOperation::jni_AllocObject
+				: {
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					jobject object = pEnv->AllocObject (clazz);
+					aValues[cValue++].put_jobject (object);
+					break;
+				}
+			case JniOperation::jni_NewObjectA
+				: {
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					jmethodID methodId = aValues[*(params++)].get_jmethodID ();
+					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
+					jvalue *arguments = new jvalue[size];
+					for (int i = 0; i < size; i++) {
+						(aValues[*(params++)].get_jvalue (&arguments[i]));
+					}
+					jobject object = pEnv->NewObjectA (clazz, methodId, arguments);
+					delete arguments;
+					aValues[cValue++].put_jobject (object);
+				}
 			default :
 				assert (0);
 				break;
@@ -766,7 +860,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_FindClass (
 	if (m_cExecuting) {
 		hr = E_NOT_VALID_STATE;
 	} else {
-		hr = AddOperation (JniOperation::jni_FindClass);
+		hr = AddOperation (JniOperation::jni_FindClass, lNameRef);
 		if (SUCCEEDED (hr)) {
 			*plClassRef = m_cValue++;
 		}
@@ -936,8 +1030,20 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_AllocObject (
     /* [in] */ long lClassRef,
     /* [retval][out] */ long *plObjectRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!plObjectRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		hr = AddOperation (JniOperation::jni_AllocObject, lClassRef);
+		if (SUCCEEDED (hr)) {
+			*plObjectRef = m_cValue++;
+		}
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject ( 
@@ -947,6 +1053,34 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plObjectRef
 	) {
+	if (!alArgRefs) return E_POINTER;
+	if (!plObjectRef) return E_POINTER;
+	if (cArgs < 0) return E_INVALIDARG;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	} else {
+		try {
+			long *args = new long[cArgs + 3]; // classref, methodid, cargs in addition.
+			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
+			LoadConstant (CJniValue (cArgs), &cArgsRef);
+			args[0] = lClassRef;
+			args[1] = lMethodIDRef;
+			args[2] = cArgsRef;
+			memcpy (args + 3, alArgRefs, cArgs); // copy the parameters into the new block.
+			hr = AddOperation (JniOperation::jni_NewObjectA, cArgs + 3, args);
+			if (SUCCEEDED (hr)) {
+				*plObjectRef = m_cValue++;
+			}
+			delete args;
+		}
+		catch (std::bad_alloc) {
+			hr = E_OUTOFMEMORY;
+		}
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 	// TODO
 	return E_NOTIMPL;
 }
