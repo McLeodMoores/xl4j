@@ -328,6 +328,40 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long l
 	}
 }
 
+
+/// <summary>Add an operation to the run queue with a two parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="lParam1">First parameter index</param>
+/// <param name="lParam2">Second parameter index</param>
+/// <param name="lParam2">Third parameter index</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lParam2, long lParam3) {
+	bool bOperation = false;
+	bool iParam = 0;
+	try {
+		m_aOperation.push_back(operation);
+		bOperation = true;
+		m_aParam.push_back(lParam1);
+		iParam++;
+		m_aParam.push_back(lParam2);
+		iParam++;
+		m_aParam.push_back(lParam3);
+		return S_OK;
+	}
+	catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back();
+		if (iParam) { // pop off anything we did before the exception.
+			for (int i = 0; i < iParam; i++) {
+				m_aParam.pop_back();
+			}
+		}
+		return E_OUTOFMEMORY;
+	}
+}
+
 /// <summary>Add an operation to the run queue with an array of parameters.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
@@ -479,20 +513,19 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 		for (std::vector<JniOperation>::const_iterator itr = m_pOwner->Operations ()->begin (), end = m_pOwner->Operations ()->end (); itr != end; itr++) {
 			fprintf (stderr, "operation %x\n", *itr);
 			switch (*itr) {
-			case JniOperation::io_LoadArgument 
-				: {
+				case JniOperation::io_LoadArgument
+					: {
 					if (m_cArgs > 0) {
 						m_cArgs--;
 						aValues[cValue++].put_variant (m_pArgs++);
 					}
 					break;
 				}
-				
-			case JniOperation::io_LoadConstant :
-				(constants++)->copy_into (aValues[cValue++]);
-				break;
-			case JniOperation::io_StoreResult
-				: {
+				case JniOperation::io_LoadConstant:
+					(constants++)->copy_into (aValues[cValue++]);
+					break;
+				case JniOperation::io_StoreResult
+					: {
 					long lValueRef = *(params++);
 					if (m_cResults > 0) {
 						m_cResults--;
@@ -500,50 +533,50 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					}
 					break;
 				}
-			case JniOperation::jni_GetVersion :
-				aValues[cValue++].put_jint (pEnv->GetVersion ());
-				break;
-			case JniOperation::jni_NewString
-				: {
+				case JniOperation::jni_GetVersion:
+					aValues[cValue++].put_jint (pEnv->GetVersion ());
+					break;
+				case JniOperation::jni_NewString
+					: {
 					const jchar *unicode = aValues[*(params++)].get_pjchar ();
 					jsize len = aValues[*(params++)].get_jsize ();
 					aValues[cValue++].put_jstring (pEnv->NewString (unicode, len));
 					break;
 				}
-			case JniOperation::jni_GetStringLength
-				: {
+				case JniOperation::jni_GetStringLength
+					: {
 					jstring str = aValues[*(params++)].get_jstring ();
 					aValues[cValue++].put_jsize (pEnv->GetStringLength (str));
 					break;
 				}
-			case JniOperation::jni_FindClass
-				: {
+				case JniOperation::jni_FindClass
+					: {
 					const char *name = aValues[*(params++)].get_alloc_pchar ();
-					jclass clazz = pEnv->FindClass(name);
-					aValues[cValue++].put_jclass(clazz);
+					jclass clazz = pEnv->FindClass (name);
+					aValues[cValue++].put_jclass (clazz);
 					//CoTaskMemFree ((LPVOID) name);
 					break;
 				}
-			case JniOperation::jni_DefineClass
-				: {
+				case JniOperation::jni_DefineClass
+					: {
 					const char *name = aValues[*(params++)].get_alloc_pchar ();
 					jobject loader = aValues[*(params++)].get_jobject ();
 					jbyte *buffer = aValues[*(params)].get_jbyteBuffer (); // note we don't ++ here because we use it twice
-					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize (); 
+					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize ();
 					jclass clazz = pEnv->DefineClass (name, loader, buffer, szBuffer);
 					aValues[cValue++].put_jclass (clazz);
 					//CoTaskMemFree ((LPVOID) name);
 					break;
 				}
-			case JniOperation::jni_AllocObject
-				: {
+				case JniOperation::jni_AllocObject
+					: {
 					jclass clazz = aValues[*(params++)].get_jclass ();
 					jobject object = pEnv->AllocObject (clazz);
 					aValues[cValue++].put_jobject (object);
 					break;
 				}
-			case JniOperation::jni_NewObjectA
-				: {
+				case JniOperation::jni_NewObjectA
+					: {
 					jclass clazz = aValues[*(params++)].get_jclass ();
 					jmethodID methodId = aValues[*(params++)].get_jmethodID ();
 					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
@@ -554,10 +587,95 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jobject object = pEnv->NewObjectA (clazz, methodId, arguments);
 					delete arguments;
 					aValues[cValue++].put_jobject (object);
+					break;
 				}
-			default :
-				assert (0);
-				break;
+				case JniOperation::jni_GetMethodID
+					: {
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					jstring methodName = aValues[*(params++)].get_jstring ();
+					jstring signature = aValues[*(params++)].get_jstring ();
+					jmethodID methodID = pEnv->GetMethodID (clazz, methodName, signature);
+					aValues[cValue++].put_jmethodID (methodID);
+					break;
+				}
+				case JniOperation::jni_CallMethod
+					: {
+					_type t = (_type) aValues[*(params++)].get_jint ();
+					jobject object = aValues[*(params++)].get_jobject ();
+					jmethodID methodId = aValues[*(params++)].get_jmethodID ();
+					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
+					jvalue *arguments = new jvalue[size];
+					for (int i = 0; i < size; i++) {
+						(aValues[*(params++)].get_jvalue (&arguments[i]));
+					}
+					jobject object;
+					switch (t) {
+					case t_jsize:
+						case t_jint
+							: {
+							jint result = pEnv->CallIntMethod (object, methodId, arguments);
+							aValues[cValue++].put_jint (result);
+							break;
+						}
+						case t_jboolean
+							: {
+							jboolean result = pEnv->CallBooleanMethod (object, methodId, arguments);
+							aValues[cValue++].put_jboolean (result);
+							break;
+						}
+						case t_jchar
+							: {
+							jchar result = pEnv->CallCharMethod (object, methodId, arguments);
+							aValues[cValue++].put_jchar (result);
+						}
+						case t_jshort
+							: {
+							jshort result = pEnv->CallShortMethod (object, methodId, arguments);
+							aValues[cValue++].put_jshort (result);
+						}
+						case t_jlong
+							: {
+							jlong result = pEnv->CallLongMethod (object, methodId, arguments);
+							aValues[cValue++].put_jlong (result);
+						}
+						case t_jfloat
+							: {
+							jfloat result = pEnv->CallFloatMethod (object, methodId, arguments);
+							aValues[cValue++].put_jfloat (result);
+						}
+						case t_jdouble
+							: {
+							jdouble result = pEnv->CallDoubleMethod (object, methodId, arguments);
+							aValues[cValue++].put_jdouble (result);
+						}
+						case t_jstring:
+						case t_jclass:
+						case t_jobject:
+						case t_jthrowable:
+						case t_jobjectArray:
+						case t_jbooleanArray:
+						case t_jbyteArray:
+						case t_jcharArray:
+						case t_jshortArray:
+						case t_jintArray:
+						case t_jlongArray:
+						case t_jfloatArray:
+						case t_jdoubleArray:
+						case t_jweak:
+						{
+							jobject result = pEnv->CallObjectMethod (object, methodId, arguments);
+							aValues[cValue++].put_jobject (result);
+						}
+
+
+						default:
+							delete arguments;
+							assert (0);
+							break;
+					}
+					delete arguments;
+					break;
+				}
 			}
 		}
 		hr = S_OK;
@@ -1098,8 +1216,6 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 	}
 	LeaveCriticalSection (&m_cs);
 	return hr;
-	// TODO
-	return E_NOTIMPL;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectClass ( 
@@ -1119,16 +1235,49 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsInstanceOf (
 	return E_NOTIMPL;
 }
 
+/// <summary>Get the method ID for a method</summary>
+///
+/// <para>The caller must not hold the critical section.</para>
+///
+/// <param name="lClassRef">The class reference index</param>
+/// <param name="lNameRef">The name of the method's index</param>
+/// <param name="lSigRef">The signature string of the method's index</param>
+/// <param name="plMethodIDRef">Pointer to long to hold index of the Method ID result</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetMethodID ( 
     /* [in] */ long lClassRef,
     /* [in] */ long lNameRef,
     /* [in] */ long lSigRef,
     /* [retval][out] */ long *plMethodIDRef
 	) {
-	// TODO
+	if (!plMethodIDRef) return E_POINTER;
+	HRESULT hr;
+	EnterCriticalSection(&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	}
+	else {
+		hr = AddOperation(JniOperation::jni_GetMethodID, lClassRef, lNameRef, lSigRef);
+		if (SUCCEEDED(hr)) {
+			*plMethodIDRef = m_cValue++;
+		}
+	}
+	LeaveCriticalSection(&m_cs);
+	return hr;
 	return E_NOTIMPL;
 }
 
+/// <summary>Call a method</summary>
+///
+/// <para>The caller must not hold the critical section.</para>
+///
+/// <param name="lType">The return type index</param>
+/// <param name="lObjRef">The object reference index</param>
+/// <param name="lMethodIDRef">The method id index</param>
+/// <param name = "cArgs">The number of arguments (not an index)< / param>
+/// <param name="alArgRefs">Array of indices to the arguments to pass</param>
+/// <param name="plResultRef">Pointer to long to hold index of the result</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod ( 
 	/* [in] */ long lType,
     /* [in] */ long lObjRef,
@@ -1137,8 +1286,34 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plResultRef
 	) {
-	// TODO
-	return E_NOTIMPL;
+	if (!alArgRefs) return E_POINTER;
+	if (!plResultRef) return E_POINTER;
+	if (cArgs < 0) return E_INVALIDARG;
+	HRESULT hr;
+	EnterCriticalSection (&m_cs);
+	if (m_cExecuting) {
+		hr = E_NOT_VALID_STATE;
+	} else {
+		try {
+			long *args = new long[cArgs + 4]; // classref, methodid, cargs in addition.
+			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
+			LoadConstant (CJniValue(cArgs), &cArgsRef);
+			args[0] = lType;
+			args[1] = lObjRef;
+			args[2] = lMethodIDRef;
+			args[3] = cArgsRef;
+			memcpy (args + 4, alArgRefs, cArgs); // copy the parameters into the new block.
+			hr = AddOperation (JniOperation::jni_CallMethod, cArgs + 4, args);
+			if (SUCCEEDED (hr)) {
+				*plResultRef = m_cValue++;
+			}
+			delete args;
+		} catch (std::bad_alloc) {
+			hr = E_OUTOFMEMORY;
+		}
+	}
+	LeaveCriticalSection (&m_cs);
+	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod ( 

@@ -20,47 +20,51 @@ enum JniOperation {
 	jni_FindClass,
 	jni_DefineClass,
 	jni_AllocObject,
-	jni_NewObjectA
+	jni_NewObjectA,
+	jni_GetMethodID,
+	jni_CallMethod
+};
+
+enum _type {
+	t_nothing = 0, // empty, nothing in the union is used.
+	// primitive(ish) java types (jsize == jint)
+	t_jint = 1,		// _jvalue.i
+	t_jsize,		// _jvalue.i
+	t_jstring,		// _jvalue.l	
+	t_jboolean,		// _jvalue.z
+	t_jbyte,		// _jvalue.b
+	t_jchar,		// _jvalue.c
+	t_jshort,		// _jvalue.s
+	t_jlong,		// _jvalue.j (!)
+	t_jfloat,		// _jvalue.f
+	t_jdouble,		// _jvalue.d
+	// these are all in _jvalue.l (object)
+	t_jobject,
+	t_jclass,
+	t_jobjectRefType,
+	t_jthrowable,
+	t_jobjectArray,
+	t_jbooleanArray,
+	t_jbyteArray,
+	t_jcharArray,
+	t_jshortArray,
+	t_jintArray,
+	t_jlongArray,
+	t_jfloatArray,
+	t_jdoubleArray,
+	t_jweak,
+	// these cannot be passed into a Java Method or Constructor
+	// but can be parameters to JNI calls
+	t_BSTR,
+	t_HANDLE,
+	t_jmethodID,
+	t_jfieldID,
+	t_jbyteBuffer,
 };
 
 class CJniValue {
 private:
-	enum _type {
-		t_nothing = 0, // empty, nothing in the union is used.
-		// primitive(ish) java types (jsize == jint)
-		t_jint = 1,		// _jvalue.i
-		t_jsize,		// _jvalue.i
-		t_jstring,		// _jvalue.l	
-		t_jboolean,		// _jvalue.z
-		t_jbyte,		// _jvalue.b
-		t_jchar,		// _jvalue.c
-		t_jshort,		// _jvalue.s
-		t_jlong,		// _jvalue.j (!)
-		t_jfloat,		// _jvalue.f
-		t_jdouble,		// _jvalue.d
-		// these are all in _jvalue.l (object)
-		t_jobject,
-		t_jclass,
-		t_jobjectRefType,
-		t_jthrowable,
-		t_jobjectArray,
-		t_jbooleanArray,
-		t_jbyteArray,
-		t_jcharArray,
-		t_jshortArray,
-		t_jintArray,
-		t_jlongArray,
-		t_jfloatArray,
-		t_jdoubleArray,
-		t_jweak,
-		// these cannot be passed into a Java Method or Constructor
-		// but can be parameters to JNI calls
-		t_BSTR,
-		t_HANDLE,
-		t_jmethodID,
-		t_jfieldID,
-		t_jbyteBuffer,
-	} type;
+	_type type;
 	union {
 		// a COM string, converted on demand into a jstring.
 		BSTR _BSTR;
@@ -319,6 +323,7 @@ private:
 	HRESULT AddOperation (JniOperation operation);
 	HRESULT AddOperation (JniOperation operation, long lParam);
 	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2);
+	HRESULT AddOperation(JniOperation operation, long lParam1, long lParam2, long lParam3);
 	HRESULT AddOperation (JniOperation operation, long size, long *lParam1);
 	HRESULT LoadConstant (CJniValue &value, long *plRef);
 	HANDLE BeginExecution ();
