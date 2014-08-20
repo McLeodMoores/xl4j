@@ -3,12 +3,12 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>uk.co.beerdragon</groupId>
-  <artifactId>comjvm-jstub</artifactId>
+  <artifactId>comjvm-jtool</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>comjvm</name>
-  <description>Helper stubs for the main comjvm wrapper</description>
+  <name>comjvm-tool</name>
+  <description>Tooling for creating COM wrappers for Java classes</description>
 
   <licenses>
     <license>
@@ -110,14 +110,11 @@
                     <limit implementation="org.jacoco.report.check.Limit">
                       <counter>COMPLEXITY</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.65</minimum>
+                      <minimum>0.90</minimum>
                     </limit>
                   </limits>
                 </rule>
               </rules>
-              <excludes>
-                <exclude>uk/co/beerdragon/misc/*</exclude>
-              </excludes>
             </configuration>
           </execution>
         </executions>

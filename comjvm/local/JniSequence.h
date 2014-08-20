@@ -16,7 +16,9 @@ enum JniOperation {
 	io_StoreResult,
 	jni_GetVersion,
 	jni_NewString,
-	jni_GetStringLength
+	jni_GetStringLength,
+	jni_GetStringChars,
+	jni_ReleaseStringChars
 };
 
 class CJniValue {
@@ -26,13 +28,17 @@ private:
 		t_jint = 1,
 		t_BSTR,
 		t_jsize,
-		t_jstring
+		t_jstring,
+		t_pjchar,
+		t_jboolean
 	} type;
 	union {
 		jint _jint;
 		BSTR _BSTR;
 		jsize _jsize;
 		jstring _jstring;
+		const jchar *_pjchar;
+		jboolean _jboolean;
 	} v;
 	void free ();
 	void reset (_type typeNew) { free (); type = typeNew; }
@@ -43,22 +49,23 @@ public:
 	void put_variant (const VARIANT *pvValue);
 	void get_variant (VARIANT *pvValue) const;
 	void copy_into (CJniValue &value) const;
-#define __PUT(_t) \
-	void put_##_t (_t value) { reset (t_##_t); v._##_t = value; }
+#define __MTD2(_tFormal, _tImpl) \
+	void put_##_tImpl (_tFormal value) { reset (t_##_tImpl); v._##_tImpl = value; } \
+	_tFormal get_##_tImpl () const;
+#define __MTD(_t) __MTD2(_t, _t)
 #define __CONS(_t) \
-	__PUT(_t) \
+	__MTD(_t) \
 	CJniValue (_t value) : type (t_##_t) { v._##_t = value; }
 	__CONS (jint);
-	jint get_jint () const;
 	void put_BSTR (BSTR bstr);
 	CJniValue (BSTR bstr);
-	const jchar *get_pjchar () const;
-	__PUT (jsize)
-	jsize get_jsize () const;
-	__PUT (jstring);
-	jstring get_jstring () const;
+	__MTD2 (const jchar *, pjchar);
+	__MTD (jsize)
+	__MTD (jstring);
+	__MTD (jboolean)
 #undef __CONS
-#undef __PUT
+#undef __MTD
+#undef __MTD2
 	HRESULT load (std::vector<CJniValue> &aValue);
 };
 
@@ -73,11 +80,12 @@ private:
 	long m_cResults;
 	VARIANT *m_pResults;
 	HANDLE m_hSemaphore;
+	HRESULT m_hRunResult;
 	~CJniSequenceExecutor ();
 public:
 	CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults);
 	HRESULT Run (JNIEnv *pEnv);
-	void Wait ();
+	HRESULT Wait ();
 	void AddRef ();
 	void Release ();
 };

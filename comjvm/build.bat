@@ -1,4 +1,11 @@
 @echo off
+	rem Build Java components
+	
+	echo Building Java components
+	cd jstub
+	mvn verify
+	cd ..
+
 	rem Build all configurations
 
 	echo Building Debug-Ascii-Win32 ...

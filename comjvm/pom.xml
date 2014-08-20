@@ -18,7 +18,7 @@
   </licenses>
 
   <properties>
-    <maven-native-packing.version>0.2.1-SNAPSHOT</maven-native-packing.version>
+    <maven-native-packing.version>0.2.0</maven-native-packing.version>
     <java.version>1.7.0</java.version>
   </properties>
 
@@ -40,7 +40,7 @@
                 <executable>
                   <arch>i386</arch>
                   <path>target/Release-Win32</path>
-                  <libraries>
+                  <dynamicLibs>
                     <dynamicLib>
                       <path>target/Release-Win32</path>
                       <headers>
@@ -50,7 +50,7 @@
                           <dest>comjvm</dest>
                         </header>
                       </headers>
-                      <implibs>
+                      <libraries>
                         <staticLib>
                           <path>target/Release-Win32</path>
                           <headers>
@@ -59,20 +59,25 @@
                               <pattern>core.h</pattern>
                               <dest>comjvm</dest>
                             </header>
+                            <header>
+                              <path>core</path>
+                              <pattern>*.idl</pattern>
+                              <dest>comjvm</dest>
+                            </header>
                           </headers>
                         </staticLib>
-                      </implibs>
+                      </libraries>
                     </dynamicLib>
-                  </libraries>
+                  </dynamicLibs>
                 </executable>
                 <executable>
                   <arch>x64</arch>
                   <path>target/Release-x64</path>
-                  <libraries>
+                  <dynamicLibs>
                     <dynamicLib>
                       <path>target/Release-x64</path>
                       <headers/>
-                      <implibs>
+                      <libraries>
                         <staticLib>
                           <path>target/Release-x64</path>
                           <headers>
@@ -81,11 +86,16 @@
                               <pattern>core.h</pattern>
                               <dest>comjvm</dest>
                             </header>
+                            <header>
+                              <path>core</path>
+                              <pattern>*.idl</pattern>
+                              <dest>comjvm</dest>
+                            </header>
                           </headers>
                         </staticLib>
-                      </implibs>
+                      </libraries>
                     </dynamicLib>
-                  </libraries>
+                  </dynamicLibs>
                 </executable>
               </executables>
             </configuration>

@@ -15,7 +15,9 @@ interface IClasspathEntry;
 interface IDirectoryWriter;
 interface IFileWriter;
 interface IJarFile;
+interface IJDispatch;
 interface IJniSequence;
+interface IJObject;
 interface IJvm;
 interface IJvmConnector;
 interface IJvmContainer;
@@ -273,6 +275,49 @@ interface IJvmTemplate;
 	HRESULT Write ([in] IFileWriter *pWriter);
 };
 
+/// <summary>Callback instance exposed to the JVM.</summary>
+///
+/// <para>A COM implementation of a Java class or interface may be exposed to the JVM via
+/// this dispatch interface. The dispatcher is responsible for stating which Java class it
+/// is supporting and the methods available on the target COM instance.</para>
+[
+	object,
+	uuid (c94232d5-085a-4741-a971-25c525af5a1f)
+] interface IJDispatch : IUnknown {
+	/// <summary>Java class or interface name.</summary>
+	///
+	/// <para>The class name must be specified as a Java class literal, for example
+	/// `java.util.Set`. It is only possible to expose classes which are not final
+	/// and have a visible default constructor.</para>
+	///
+	/// <para>Refer to the `jtool` documentation for more details, or generation of
+	/// IJDispatch instances for existing Java classes.</para>
+	///
+	/// <param name="pbstrClass">Receives the Java class or interface name</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Class ([out, retval] BSTR *pbstrClass);
+	/// <summary>Supported methods.</summary>
+	///
+	/// <para>The supported methods are returned in `dispid` order. The tooling at
+	/// the Java side will pair these method signatures with those in the Java class
+	/// definition and translate all calls to use the appropriate `dispid` value.</para>
+	///
+	/// <param name="paMethods">Receives the method signatures</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Methods ([out, retval] SAFEARRAY(BSTR) *paMethods);
+	/// <summary>Invokes a method.</summary>
+	///
+	/// <para>The dispatch identifier is the zero-based index into the original method
+	/// array corresponding to the method to be invoked.</para>
+	///
+	/// <param name="lDispId">Dispatch identifier</param>
+	/// <param name="cArgs">Number of parameters</param>
+	/// <param name="pvArgs">Parameters</param>
+	/// <param name="pvResult">Receives the result</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Invoke ([in] long lDispId, [in] long cArgs, [in, size_is (cArgs)] VARIANT *pvArgs, [out, retval] VARIANT *pvResult);
+};
+
 const long JTYPE_OBJECT = 'L';
 const long JTYPE_BOOLEAN = 'Z';
 const long JTYPE_BYTE = 'B';
@@ -473,6 +518,52 @@ midl_pragma warning (disable: 2362)
 	HRESULT jni_GetDirectBufferAddress ([in] long lBufRef, [out, retval] long *plVoidRef);
 	HRESULT jni_GetDirectBufferCapacity ([in] long lBufRef, [out, retval] long *plLongRef);
 	HRESULT jni_GetObjectRefType ([in] long lObjRef, [out, retval] long *plObjectRefTypeRef);
+};
+
+/// <summary>Wrapper around a `jobject` global reference.</summary>
+///
+/// <para>When a Java object is returned from a JNI sequence it will be wrapped by IJObject
+/// which will manage the lifecycle of the underlying reference.</para>
+[
+	object,
+	uuid (73eea66c-0194-4db0-a157-41dca0fc167a)
+] interface IJObject : IUnknown {
+	/// <summary>JVM containing the underlying Java object.</summary>
+	///
+	/// <para>Returns the parent JVM; this is the IJvm instance which ran the IJniSequence
+	/// that created this instance.</para>
+	///
+	/// <para>It is normally only correct to use a IJObject with its parent JVM; attempting
+	/// to pass it to a sequence created for another JVM will normally result in an error.
+	/// The exception to this rule is if the object also implements IJDispatch.</para>
+	///
+	/// <para>It is possible for a IJObject to not have a parent JVM. This occurs when the
+	/// object is defined in COM and only a stub is present in one or more JVMs that calls
+	/// back to the real object using IJDispatch. The parent property will be NULL in this
+	/// case, but the object identifier will be defined for any JVMs which have an
+	/// appropriate stub.</para>
+	///
+	/// <param name="pJvm">Receives the parent JVM, or NULL if there is none</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Parent ([out, retval] IJvm *pJvm);
+	/// <summary>JVM object reference index.</summary>
+	///
+	/// <para>Returns the index of the underlying JNI `jobject` for use at execution time.</para>
+	///
+	/// <para>If there is no index defined for the JVM this will return E_INVALIDARG.</para>
+	///
+	/// <param name="pguidJVM">JVM identifier</param>
+	/// <param name="plIndex">JVM specific index</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Index ([in] GUID *pguidJVM, [out, retval] long *plIndex);
+	/// <summary>JVM object reference index.</summary>
+	///
+	/// <para>Sets the index of the underlying JNI `jobject` for use at execution time.</para>
+	///
+	/// <param name="pguidJVM">JVM identifier</param>
+	/// <param name="lIndex">JVM specific index</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Index ([in] GUID *pguidJVM, [in] long lIndex);
 };
 
 /// <summary>JVM abstraction.</summary>
@@ -785,7 +876,9 @@ midl_pragma warning (disable: 2362)
 	interface IDirectoryWriter;
 	interface IFileWriter;
 	interface IJarFile;
+	interface IJDispatch;
 	interface IJniSequence;
+	interface IJObject;
 	interface IJvm;
 	interface IJvmConnector;
 	interface IJvmContainer;

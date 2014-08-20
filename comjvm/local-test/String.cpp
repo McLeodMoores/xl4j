@@ -50,16 +50,22 @@ namespace localtest {
 			// Result #1
 			Assert::AreEqual (S_OK, pJni->jni_GetStringLength (lStringRef, &lResult));
 			Assert::AreEqual (S_OK, pJni->Result (lResult));
-			// TODO: GetStringChars
-			// TODO: ReleaseStringChars
+			// Result #2
+			Assert::AreEqual (S_OK, pJni->jni_GetStringChars (lStringRef, NULL, &lResult));
+			Assert::AreEqual (S_OK, pJni->Result (lResult));
+			Assert::AreEqual (S_OK, pJni->jni_ReleaseStringChars (lStringRef, lResult));
 			// TODO: GetStringRegion
 			// TODO: GetStringCritical
 			// TODO: ReleaseStringCritical
-			VARIANT aResult[1];
+			VARIANT aResult[2];
 			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, sizeof (aResult) / sizeof (VARIANT), aResult));
 			// #1 - GetStringLength
 			Assert::AreEqual ((short)VT_I4, (short)aResult[0].vt);
 			Assert::AreEqual (11, aResult[0].intVal);
+			// #2 - GetStringChars
+			Assert::AreEqual ((short)VT_BSTR, (short)aResult[1].vt);
+			_bstr_t bstrResult (aResult[1].bstrVal, FALSE);
+			Assert::AreEqual ((PCTSTR)bstrHelloWorld, (PCTSTR)bstrResult);
 			pJni->Release ();
 		}
 
