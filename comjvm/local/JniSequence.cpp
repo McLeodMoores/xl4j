@@ -340,7 +340,7 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long l
 /// <returns>S_OK if successful, an error code otherwise.</returns>
 HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lParam2, long lParam3) {
 	bool bOperation = false;
-	bool iParam = 0;
+	int iParam = 0;
 	try {
 		m_aOperation.push_back(operation);
 		bOperation = true;
@@ -592,10 +592,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_GetMethodID
 					: {
 					jclass clazz = aValues[*(params++)].get_jclass ();
-					jstring methodName = aValues[*(params++)].get_jstring ();
-					jstring signature = aValues[*(params++)].get_jstring ();
+					const char *methodName = aValues[*(params++)].get_alloc_pchar ();
+					const char *signature = aValues[*(params++)].get_alloc_pchar ();
 					jmethodID methodID = pEnv->GetMethodID (clazz, methodName, signature);
 					aValues[cValue++].put_jmethodID (methodID);
+					CoTaskMemFree ((LPVOID) methodName);
+					CoTaskMemFree ((LPVOID) signature);
 					break;
 				}
 				case JniOperation::jni_CallMethod
@@ -608,7 +610,6 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					for (int i = 0; i < size; i++) {
 						(aValues[*(params++)].get_jvalue (&arguments[i]));
 					}
-					jobject object;
 					switch (t) {
 					case t_jsize:
 						case t_jint
@@ -1274,7 +1275,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetMethodID (
 /// <param name="lType">The return type index</param>
 /// <param name="lObjRef">The object reference index</param>
 /// <param name="lMethodIDRef">The method id index</param>
-/// <param name = "cArgs">The number of arguments (not an index)< / param>
+/// <param name = "cArgs">The number of arguments (not an index)</param>
 /// <param name="alArgRefs">Array of indices to the arguments to pass</param>
 /// <param name="plResultRef">Pointer to long to hold index of the result</param>
 /// <returns>S_OK if successful, an error code otherwise</returns>
