@@ -1026,6 +1026,13 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_EnsureLocalCapacity (
 	return E_NOTIMPL;
 }
 
+/// <summary>Create a new object, calling it's classes no-arg constructor.</summary>
+///
+/// <para>The caller must not hold the critical section.</para>
+///
+/// <param name="lClassRef">The class reference index</param>
+/// <param name="plObjectRef">Pointer to long to hold index of object result</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_AllocObject ( 
     /* [in] */ long lClassRef,
     /* [retval][out] */ long *plObjectRef
@@ -1046,6 +1053,16 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_AllocObject (
 	return hr;
 }
 
+/// <summary>Create a new object, calling it's classes constructor.</summary>
+///
+/// <para>The caller must not hold the critical section.</para>
+///
+/// <param name="lClassRef">The class reference index</param>
+/// <param name="lMethodIDRef">The method id index</param>
+/// <param name="cArgs">The number of arguments (not an index to an integer constant)</param>
+/// <param name="alArgRefs">Array of indices to the arguments to pass to the constructor</param>
+/// <param name="plObjectRef">Pointer to long to hold index of object result</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject ( 
     /* [in] */ long lClassRef,
     /* [in] */ long lMethodIDRef,
