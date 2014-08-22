@@ -12,7 +12,8 @@
 void CJniValue::free () {
 	switch (type) {
 	case t_BSTR :
-		SysFreeString (v._BSTR);
+		/******** THIS REALLY NEEDS FIXING! ********/
+		//SysFreeString (v._BSTR);
 		break;
 	}
 }
@@ -362,6 +363,17 @@ HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lP
 	}
 }
 
+void odprintf (const TCHAR *format, ...)
+{
+	TCHAR    buf[4096];
+	va_list args;
+	va_start (args, format);
+	n = _stprintf_s (buf, 4096, format, args); 
+	va_end (args);
+
+	OutputDebugString (buf);
+}
+
 /// <summary>Add an operation to the run queue with an array of parameters.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
@@ -373,10 +385,12 @@ HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lP
 HRESULT CJniSequence::AddOperation (JniOperation operation, long size, long *lParam1) {
 	bool bOperation = false;
 	int iParam = 0;
+	odprintf (TEXT ("AddOperation %d args\n"), size);
 	try {
 		m_aOperation.push_back (operation);
 		bOperation = true;
 		for (int i = 0; i < size; i++) {
+			odprintf (TEXT ("  pushing %d\n"), lParam1[i]);
 			m_aParam.push_back (lParam1[i]);
 			iParam++;
 		}
@@ -507,6 +521,10 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 	HRESULT hr;
 	try {
 		long cValue = 0;
+		TCHAR buf[4096];
+		_stprintf (buf, TEXT ("this = %x\n"), this);
+		OutputDebugString (buf);
+		odprintf (TEXT ("od this = %x\n"), this);
 		std::vector<long>::const_iterator params = m_pOwner->Params ()->begin ();
 		std::vector<CJniValue>::const_iterator constants = m_pOwner->Constants ()->begin ();
 		std::vector<CJniValue> aValues (m_pOwner->Values ());
@@ -582,10 +600,14 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
 					jvalue *arguments = new jvalue[size];
 					for (int i = 0; i < size; i++) {
-						(aValues[*(params++)].get_jvalue (&arguments[i]));
+						long index = *(params++);
+						TCHAR buf[4096];
+						_stprintf (buf, TEXT ("index = %d"), index);
+						OutputDebugString (buf);
+						aValues[index].get_jvalue (&arguments[i]);
 					}
 					jobject object = pEnv->NewObjectA (clazz, methodId, arguments);
-					delete arguments;
+					delete [] arguments;
 					aValues[cValue++].put_jobject (object);
 					break;
 				}
@@ -596,8 +618,8 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					const char *signature = aValues[*(params++)].get_alloc_pchar ();
 					jmethodID methodID = pEnv->GetMethodID (clazz, methodName, signature);
 					aValues[cValue++].put_jmethodID (methodID);
-					CoTaskMemFree ((LPVOID) methodName);
-					CoTaskMemFree ((LPVOID) signature);
+					//CoTaskMemFree ((LPVOID) methodName);
+					//CoTaskMemFree ((LPVOID) signature);
 					break;
 				}
 				case JniOperation::jni_CallMethod
@@ -723,6 +745,9 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 			VariantClear (aResults + l);
 		}
 		CJniSequenceExecutor *pExecutor = new CJniSequenceExecutor (this, cArgs, aArgs, cResults, aResults);
+		TCHAR buf[4096];
+		_stprintf (buf, TEXT("CJniSequenceExecutor = %x\n"), pExecutor);
+		OutputDebugString (buf);
 		pExecutor->AddRef ();
 		hr = m_pJvm->Execute (_Execute, pExecutor);
 		if (SUCCEEDED (hr)) {
@@ -1198,18 +1223,20 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 		hr = E_NOT_VALID_STATE;
 	} else {
 		try {
-			long *args = new long[cArgs + 3]; // classref, methodid, cargs in addition.
+			long *args = new long[cArgs + 3]; // classref, methodid, cargs in addition.  Use alloca()?
 			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
 			LoadConstant (CJniValue (cArgs), &cArgsRef);
 			args[0] = lClassRef;
 			args[1] = lMethodIDRef;
 			args[2] = cArgsRef;
-			memcpy (args + 3, alArgRefs, cArgs); // copy the parameters into the new block.
+			for (int i = 0; i < cArgs; i++) {
+				args[i + 3] = alArgRefs[i];
+			}
 			hr = AddOperation (JniOperation::jni_NewObjectA, cArgs + 3, args);
 			if (SUCCEEDED (hr)) {
 				*plObjectRef = m_cValue++;
 			}
-			delete args;
+			delete [] args; // should this be outside the try/catch?
 		}
 		catch (std::bad_alloc) {
 			hr = E_OUTOFMEMORY;

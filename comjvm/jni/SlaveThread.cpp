@@ -54,6 +54,7 @@ public:
 			return TRUE;
 		} else {
 			m_apfnCallback.push_back (NULL);
+			//m_apData.push_back (NULL); // just a guess here?  JIM
 			LeaveCriticalSection (&m_cs);
 			return FALSE;
 		}
