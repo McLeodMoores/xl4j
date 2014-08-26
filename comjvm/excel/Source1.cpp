@@ -54,13 +54,13 @@ int main2() {
 		cerr << "Could not call jni_GetVersion" << endl;
 		return 1;
 	}
-	BSTR xlNumberClsStr = SysAllocString(TEXT("com.mcleodmoores.excel4j.values.XLNumber"));
+	BSTR xlNumberClsStr = SysAllocString(L"com.mcleodmoores.excel4j.values.XLNumber");
 	long lXlNumberClsStrRef;
 	pJni->StringConstant(xlNumberClsStr, &lXlNumberClsStrRef);
 	long lXlNumberClassRef;
 	pJni->jni_FindClass(lXlNumberClsStrRef, &lXlNumberClassRef);
 	long lOfRef;
-	BSTR ofRefStr = SysAllocString(TEXT("of"));
+	BSTR ofRefStr = SysAllocString(L"of");
 	pJni->StringConstant(ofRefStr, &lOfRef);
 	if (FAILED(pJni->Result(lVersionRef))) {
 		cerr << "Could not get result reference" << endl;
@@ -77,6 +77,7 @@ int main2() {
 	pJvm->Release();
 	pConnector->Release();
 	std::cerr << "Released all memory" << std::endl;
+	return 0;
 }
 /*
 int paramSize(VARIANT params...) {

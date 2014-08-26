@@ -368,7 +368,7 @@ void odprintf (const TCHAR *format, ...)
 	TCHAR    buf[4096];
 	va_list args;
 	va_start (args, format);
-	n = _stprintf_s (buf, 4096, format, args); 
+	_stprintf_s (buf, 4096, format, args); 
 	va_end (args);
 
 	OutputDebugString (buf);
@@ -754,7 +754,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 			pExecutor->Wait ();
 			hr = S_OK;
 		} else {
-			pExecutor->Release ();
+			//pExecutor->Release (); JIM DOUBLE RELEASE?
 		}
 		pExecutor->Release ();
 	} catch (std::bad_alloc) {
