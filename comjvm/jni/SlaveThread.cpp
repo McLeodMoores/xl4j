@@ -10,6 +10,8 @@
 #include "stdafx.h"
 #include "internal.h"
 
+DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM);
+
 class CCallbackRequests {
 private:
 	CRITICAL_SECTION m_cs;
@@ -54,7 +56,7 @@ public:
 			return TRUE;
 		} else {
 			m_apfnCallback.push_back (NULL);
-			//m_apData.push_back (NULL); // just a guess here?  JIM
+			m_apData.push_back (NULL); // just a guess here - Should this be hereJIM
 			LeaveCriticalSection (&m_cs);
 			return FALSE;
 		}
@@ -75,7 +77,10 @@ public:
 				hr = S_OK;
 			} else {
 				// TODO: No spare threads; spawn one and attach to the JVM
-				hr = E_NOTIMPL;
+				CreateThread (NULL, 0, JNISlaveThreadProc, pJVM, 0, NULL);
+				ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
+				hr = S_OK;
+				//hr = E_NOTIMPL;
 			}
 		} catch (std::bad_alloc) {
 			if (bCallback) m_apfnCallback.pop_back ();
@@ -103,6 +108,16 @@ public:
 
 static CCallbackRequests g_oRequests;
 
+/// My go at a slave thread proc.  Takes pointer to a JVM, attaches current thread and calls the main SlaveThread loop.
+/// doesn't do any of the clearing up the main thread does.
+DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM) {
+	JavaVM *pJVM = (JavaVM *)lpJVM;
+	JNIEnv *pJNIEnv;
+	pJVM->AttachCurrentThread ((void **) &pJNIEnv, NULL);
+	JNISlaveThread ((JNIEnv *) pJNIEnv, INFINITE);
+	return S_OK;
+}
+
 void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	JNICallbackProc pfnCallback;
 	PVOID pData;
@@ -112,7 +127,7 @@ void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 }
 
 HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
-	// TODO: If this is already a slave thread, don't post to the queue, callback directory
+	// TODO: If this is already a slave thread, don't post to the queue, callback directory (JIM: should this read 'directly'?)
 	return g_oRequests.Add (pJVM, pfnCallback, pData);
 }
 

@@ -173,8 +173,6 @@ HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryW (/* [in] */ PCWSTR pszLocalP
 		}
 		DWORD dwAttributes = GetFileAttributesW (pszLocalPath);
 		if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
-			_bstr_t currentDir[4096];
-			GetCurrentDirectoryW (4096, (wchar_t *) currentDir);
 			DWORD err = GetLastError ();
 			return HRESULT_FROM_WIN32 (err);
 		}

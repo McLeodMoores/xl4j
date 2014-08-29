@@ -363,15 +363,26 @@ HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lP
 	}
 }
 
-void odprintf (const TCHAR *format, ...)
+/**void odprintf (const wchar_t *format, ...)
 {
-	TCHAR    buf[4096];
+	wchar_t buf[4096];
 	va_list args;
 	va_start (args, format);
-	_stprintf_s (buf, 4096, format, args); 
-	va_end (args);
-
+	swprintf_s (buf, 4096, format, args); 
 	OutputDebugString (buf);
+	va_end (args);
+}*/
+
+void odprintf (LPCTSTR sFormat, ...)
+{
+	va_list argptr;
+	va_start (argptr, sFormat);
+	TCHAR buffer[2000];
+	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
+	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr)
+		OutputDebugString (buffer);
+	else
+		OutputDebugString (_T ("StringCbVPrintf error."));
 }
 
 /// <summary>Add an operation to the run queue with an array of parameters.</summary>
@@ -385,7 +396,7 @@ void odprintf (const TCHAR *format, ...)
 HRESULT CJniSequence::AddOperation (JniOperation operation, long size, long *lParam1) {
 	bool bOperation = false;
 	int iParam = 0;
-	odprintf (TEXT ("AddOperation %d args\n"), size);
+	odprintf (L"AddOperation %d args\n", size);
 	try {
 		m_aOperation.push_back (operation);
 		bOperation = true;
@@ -617,6 +628,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					const char *methodName = aValues[*(params++)].get_alloc_pchar ();
 					const char *signature = aValues[*(params++)].get_alloc_pchar ();
 					jmethodID methodID = pEnv->GetMethodID (clazz, methodName, signature);
+					odprintf (L"GetMethodID: putting value %p in slot %d", methodID, cValue);
 					aValues[cValue++].put_jmethodID (methodID);
 					//CoTaskMemFree ((LPVOID) methodName);
 					//CoTaskMemFree ((LPVOID) signature);
@@ -773,9 +785,8 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Argument (
 	} else {
 		hr = AddOperation(JniOperation::io_LoadArgument);
 		if (SUCCEEDED(hr)) {
-			*plValueRef = m_cArgument++;
+			*plValueRef = m_cValue++; // m_cArgument++; this was wrong!
 		}
-		//hr = S_OK;
 	}
 	LeaveCriticalSection(&m_cs);
 	return hr;
@@ -1223,6 +1234,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 		hr = E_NOT_VALID_STATE;
 	} else {
 		try {
+			odprintf (L"lClassRef = %d, lMethodIdRef = %d, cArgs = %d\n", lClassRef, lMethodIDRef, cArgs);
+			for (int i = 0; i < cArgs; i++) {
+				odprintf (L"alArgRefs[%d] = %d", i, alArgRefs[i]);
+			}
 			long *args = new long[cArgs + 3]; // classref, methodid, cargs in addition.  Use alloca()?
 			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
 			LoadConstant (CJniValue (cArgs), &cArgsRef);
@@ -1231,6 +1246,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 			args[2] = cArgsRef;
 			for (int i = 0; i < cArgs; i++) {
 				args[i + 3] = alArgRefs[i];
+			}
+			odprintf (L"args array:\n");
+			for (int i = 0; i < cArgs + 3; i++) {
+				odprintf (L"args[%d] = %d", i, args[i]);
 			}
 			hr = AddOperation (JniOperation::jni_NewObjectA, cArgs + 3, args);
 			if (SUCCEEDED (hr)) {
@@ -1292,7 +1311,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetMethodID (
 	}
 	LeaveCriticalSection(&m_cs);
 	return hr;
-	return E_NOTIMPL;
+	//return E_NOTIMPL;
 }
 
 /// <summary>Call a method</summary>
