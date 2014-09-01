@@ -370,16 +370,6 @@ HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lP
 	}
 }
 
-/**void odprintf (const wchar_t *format, ...)
-{
-	wchar_t buf[4096];
-	va_list args;
-	va_start (args, format);
-	swprintf_s (buf, 4096, format, args); 
-	OutputDebugString (buf);
-	va_end (args);
-}*/
-
 void odprintf (LPCTSTR sFormat, ...)
 {
 	va_list argptr;
