@@ -81,7 +81,7 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		break;
 	case t_jboolean:
 		pvValue->vt = VT_BOOL;
-		pvValue->boolVal = v._jvalue.z ? VARIANT_TRUE : VARIANT_FALSE;
+		pvValue->boolVal = (v._jvalue.z == JNI_TRUE) ? VARIANT_TRUE : VARIANT_FALSE;
 		break;
 	case t_jbyte:
 		pvValue->vt = VT_I1;
@@ -636,7 +636,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				}
 				case JniOperation::jni_CallMethod
 					: {
-					_type t = (_type) aValues[*(params++)].get_jint ();
+					long jtype = (long) aValues[*(params++)].get_jint ();
 					jobject object = aValues[*(params++)].get_jobject ();
 					jmethodID methodId = aValues[*(params++)].get_jmethodID ();
 					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
@@ -644,65 +644,41 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					for (int i = 0; i < size; i++) {
 						(aValues[*(params++)].get_jvalue (&arguments[i]));
 					}
-					switch (t) {
-					case t_jsize:
-						case t_jint
-							: {
+					switch (jtype) {
+						case JTYPE_INT: {
 							jint result = pEnv->CallIntMethod (object, methodId, arguments);
 							aValues[cValue++].put_jint (result);
 							break;
 						}
-						case t_jboolean
-							: {
+						case JTYPE_BOOLEAN: {
 							jboolean result = pEnv->CallBooleanMethod (object, methodId, arguments);
 							aValues[cValue++].put_jboolean (result);
 							break;
 						}
-						case t_jchar
-							: {
+						case JTYPE_CHAR: {
 							jchar result = pEnv->CallCharMethod (object, methodId, arguments);
 							aValues[cValue++].put_jchar (result);
 						}
-						case t_jshort
-							: {
+						case JTYPE_SHORT: {
 							jshort result = pEnv->CallShortMethod (object, methodId, arguments);
 							aValues[cValue++].put_jshort (result);
 						}
-						case t_jlong
-							: {
+						case JTYPE_LONG: {
 							jlong result = pEnv->CallLongMethod (object, methodId, arguments);
 							aValues[cValue++].put_jlong (result);
 						}
-						case t_jfloat
-							: {
+						case JTYPE_FLOAT: {
 							jfloat result = pEnv->CallFloatMethod (object, methodId, arguments);
 							aValues[cValue++].put_jfloat (result);
 						}
-						case t_jdouble
-							: {
+						case JTYPE_DOUBLE: {
 							jdouble result = pEnv->CallDoubleMethod (object, methodId, arguments);
 							aValues[cValue++].put_jdouble (result);
 						}
-						case t_jstring:
-						case t_jclass:
-						case t_jobject:
-						case t_jthrowable:
-						case t_jobjectArray:
-						case t_jbooleanArray:
-						case t_jbyteArray:
-						case t_jcharArray:
-						case t_jshortArray:
-						case t_jintArray:
-						case t_jlongArray:
-						case t_jfloatArray:
-						case t_jdoubleArray:
-						case t_jweak:
-						{
+						case JTYPE_OBJECT:	{
 							jobject result = pEnv->CallObjectMethod (object, methodId, arguments);
 							aValues[cValue++].put_jobject (result);
 						}
-
-
 						default:
 							delete arguments;
 							assert (0);
@@ -1215,7 +1191,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_AllocObject (
 /// <param name="lClassRef">The class reference index</param>
 /// <param name="lMethodIDRef">The method id index</param>
 /// <param name="cArgs">The number of arguments (not an index to an integer constant)</param>
-/// <param name="alArgRefs">Array of indices to the arguments to pass to the constructor</param>
+/// <param name="alArgRefs">Array of indices to the arguments to pass to the constructor.  NULL allowed iff cArgs == 0.</param>
 /// <param name="plObjectRef">Pointer to long to hold index of object result</param>
 /// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject ( 
@@ -1225,7 +1201,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plObjectRef
 	) {
-	if (!alArgRefs) return E_POINTER;
+	if (!alArgRefs && cArgs > 0) return E_POINTER;
 	if (!plObjectRef) return E_POINTER;
 	if (cArgs < 0) return E_INVALIDARG;
 	HRESULT hr;
@@ -1234,10 +1210,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 		hr = E_NOT_VALID_STATE;
 	} else {
 		try {
-			odprintf (L"lClassRef = %d, lMethodIdRef = %d, cArgs = %d\n", lClassRef, lMethodIDRef, cArgs);
-			for (int i = 0; i < cArgs; i++) {
-				odprintf (L"alArgRefs[%d] = %d", i, alArgRefs[i]);
-			}
+			//odprintf (L"lClassRef = %d, lMethodIdRef = %d, cArgs = %d\n", lClassRef, lMethodIDRef, cArgs);
+			//for (int i = 0; i < cArgs; i++) {
+			//	odprintf (L"alArgRefs[%d] = %d", i, alArgRefs[i]);
+			//}
 			long *args = new long[cArgs + 3]; // classref, methodid, cargs in addition.  Use alloca()?
 			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
 			LoadConstant (CJniValue (cArgs), &cArgsRef);
@@ -1247,10 +1223,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 			for (int i = 0; i < cArgs; i++) {
 				args[i + 3] = alArgRefs[i];
 			}
-			odprintf (L"args array:\n");
-			for (int i = 0; i < cArgs + 3; i++) {
-				odprintf (L"args[%d] = %d", i, args[i]);
-			}
+			//odprintf (L"args array:\n");
+			//for (int i = 0; i < cArgs + 3; i++) {
+			//	odprintf (L"args[%d] = %d", i, args[i]);
+			//}
 			hr = AddOperation (JniOperation::jni_NewObjectA, cArgs + 3, args);
 			if (SUCCEEDED (hr)) {
 				*plObjectRef = m_cValue++;
@@ -1333,7 +1309,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plResultRef
 	) {
-	if (!alArgRefs) return E_POINTER;
+	if (!alArgRefs && cArgs > 0) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	if (cArgs < 0) return E_INVALIDARG;
 	HRESULT hr;
@@ -1349,12 +1325,14 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
 			args[1] = lObjRef;
 			args[2] = lMethodIDRef;
 			args[3] = cArgsRef;
-			memcpy (args + 4, alArgRefs, cArgs); // copy the parameters into the new block.
+			for (int i = 0; i < cArgs; i++) {
+				args[i + 4] = alArgRefs[i];
+			}
 			hr = AddOperation (JniOperation::jni_CallMethod, cArgs + 4, args);
 			if (SUCCEEDED (hr)) {
 				*plResultRef = m_cValue++;
 			}
-			delete args;
+			delete [] args;
 		} catch (std::bad_alloc) {
 			hr = E_OUTOFMEMORY;
 		}

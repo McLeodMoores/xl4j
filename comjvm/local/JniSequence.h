@@ -25,7 +25,7 @@ enum JniOperation {
 	jni_CallMethod
 };
 
-enum _type {
+enum vtype {
 	t_nothing = 0, // empty, nothing in the union is used.
 	// primitive(ish) java types (jsize == jint)
 	t_jint = 1,		// _jvalue.i
@@ -64,7 +64,7 @@ enum _type {
 
 class CJniValue {
 private:
-	_type type;
+	vtype type;
 	union {
 		// a COM string, converted on demand into a jstring.
 		BSTR _BSTR;
@@ -85,7 +85,7 @@ private:
 		} _jbyteBuffer;
 	} v;
 	void free ();
-	void reset (_type typeNew) { free (); type = typeNew; }
+	void reset (vtype typeNew) { free (); type = typeNew; }
 public:
 	CJniValue () : type (t_nothing) { }
 	~CJniValue () { free (); }
