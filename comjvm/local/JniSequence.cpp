@@ -9,123 +9,6 @@
 #include "JniSequence.h"
 #include "Internal.h"
 
-void CJniValue::free () {
-	switch (type) {
-	case t_BSTR :
-		SysFreeString (v._BSTR);
-		break;
-	}
-}
-
-void CJniValue::put_variant (const VARIANT *pvValue) {
-	switch (pvValue->vt) {
-	case VT_I4 :
-		put_jint (pvValue->intVal);
-		break;
-	default :
-		_com_raise_error (E_NOTIMPL);
-	}
-}
-
-void CJniValue::get_variant (VARIANT *pvValue) const {
-	switch (type) {
-	case t_jint :
-		pvValue->vt = VT_I4;
-		pvValue->intVal = v._jint;
-		break;
-	case t_jsize :
-		pvValue->vt = VT_I4;
-		pvValue->intVal = v._jsize;
-		break;
-	case t_pjchar :
-		pvValue->vt = VT_BSTR;
-		pvValue->bstrVal = SysAllocString ((const OLECHAR*)v._pjchar);
-		if (!pvValue->bstrVal) {
-			pvValue->vt = VT_NULL;
-			_com_raise_error (E_OUTOFMEMORY);
-		}
-		break;
-	default :
-		_com_raise_error (E_NOTIMPL);
-	}
-}
-
-void CJniValue::copy_into (CJniValue &value) const {
-	switch (type) {
-	case t_BSTR :
-		value.put_BSTR (v._BSTR);
-		break;
-	default :
-		value.reset (type);
-		value.v = v;
-		break;
-	}
-}
-
-jint CJniValue::get_jint () const {
-	switch (type) {
-	case t_jint :
-		return v._jint;
-	case t_jsize :
-		return v._jsize;
-	}
-	_com_raise_error (E_INVALIDARG);
-}
-
-CJniValue::CJniValue (BSTR bstr)
-: type (t_BSTR) {
-	v._BSTR = SysAllocStringLen (bstr, SysStringLen (bstr));
-	if (!v._BSTR) throw std::bad_alloc ();
-}
-
-void CJniValue::put_BSTR (BSTR bstr) {
-	BSTR bstrCopy = SysAllocStringLen (bstr, SysStringLen (bstr));
-	if (bstrCopy) {
-		reset (t_BSTR);
-		v._BSTR = bstrCopy;
-	} else {
-		reset (t_nothing);
-	}
-}
-
-const jchar *CJniValue::get_pjchar () const {
-	switch (type) {
-	case t_BSTR :
-		return (unsigned short*)v._BSTR;
-	case t_pjchar :
-		return v._pjchar;
-	}
-	_com_raise_error (E_INVALIDARG);
-}
-
-jsize CJniValue::get_jsize () const {
-	switch (type) {
-	case t_jint :
-		return v._jint;
-	case t_jsize :
-		return v._jsize;
-	}
-	_com_raise_error (E_INVALIDARG);
-}
-
-jstring CJniValue::get_jstring () const {
-	switch (type) {
-	case t_jstring :
-		return v._jstring;
-	}
-	_com_raise_error (E_INVALIDARG);
-}
-
-HRESULT CJniValue::load (std::vector<CJniValue> &aValue) {
-	try {
-		aValue.push_back (*this);
-		type = t_nothing;
-		return S_OK;
-	} catch (std::bad_alloc) {
-		return E_OUTOFMEMORY;
-	}
-}
-
 CJniSequence::CJniSequence (CJvm *pJvm)
 	: m_lRefCount (1), m_pJvm (pJvm), m_cValue (0), m_cExecuting (0), m_cArgument (0), m_cResult (0) {
 	IncrementActiveObjectCount ();
@@ -159,7 +42,7 @@ HRESULT CJniSequence::AddOperation (JniOperation operation) {
 	}
 }
 
-/// <summary>Add an operation to the run queue with a single parameter.</summary>
+/// <summary>Adds an operation to the run queue with a single parameter.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
 ///
@@ -179,7 +62,7 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam) {
 	}
 }
 
-/// <summary>Add an operation to the run queue with a two parameters.</summary>
+/// <summary>Adds an operation to the run queue with two parameters.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
 ///
@@ -200,6 +83,99 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long l
 	} catch (std::bad_alloc) {
 		if (bOperation) m_aOperation.pop_back ();
 		if (bParam) m_aParam.pop_back ();
+		return E_OUTOFMEMORY;
+	}
+}
+
+/// <summary>Adds an operation to the run queue with three parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="lParam1">First parameter index</param>
+/// <param name="lParam2">Second parameter index</param>
+/// <param name="lParam3">Third parameter index</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3) {
+	bool bOperation = false;
+	int cParam = 0;
+	try {
+		m_aOperation.push_back (operation);
+		bOperation = true;
+		m_aParam.push_back (lParam1);
+		cParam++;
+		m_aParam.push_back (lParam2);
+		cParam++;
+		m_aParam.push_back (lParam3);
+		return S_OK;
+	} catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back ();
+		while (cParam-- > 0) m_aParam.pop_back ();
+		return E_OUTOFMEMORY;
+	}
+}
+
+/// <summary>Adds an operation to the run queue with four parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="lParam1">First parameter index</param>
+/// <param name="lParam2">Second parameter index</param>
+/// <param name="lParam3">Third parameter index</param>
+/// <param name="lParam4">Fourth parameter index</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4) {
+	bool bOperation = false;
+	int cParam = 0;
+	try {
+		m_aOperation.push_back (operation);
+		bOperation = true;
+		m_aParam.push_back (lParam1);
+		cParam++;
+		m_aParam.push_back (lParam2);
+		cParam++;
+		m_aParam.push_back (lParam3);
+		cParam++;
+		m_aParam.push_back (lParam4);
+		return S_OK;
+	} catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back ();
+		while (cParam-- > 0) m_aParam.pop_back ();
+		return E_OUTOFMEMORY;
+	}
+}
+
+/// <summary>Adds an operation to the run queue with five parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="lParam1">First parameter index</param>
+/// <param name="lParam2">Second parameter index</param>
+/// <param name="lParam3">Third parameter index</param>
+/// <param name="lParam4">Fourth parameter index</param>
+/// <param name="lParam5">Fifth parameter index</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4, long lParam5) {
+	bool bOperation = false;
+	int cParam = 0;
+	try {
+		m_aOperation.push_back (operation);
+		bOperation = true;
+		m_aParam.push_back (lParam1);
+		cParam++;
+		m_aParam.push_back (lParam2);
+		cParam++;
+		m_aParam.push_back (lParam3);
+		cParam++;
+		m_aParam.push_back (lParam4);
+		cParam++;
+		m_aParam.push_back (lParam5);
+		return S_OK;
+	} catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back ();
+		while (cParam-- > 0) m_aParam.pop_back ();
 		return E_OUTOFMEMORY;
 	}
 }
@@ -285,7 +261,7 @@ ULONG STDMETHODCALLTYPE CJniSequence::Release () {
 	) {
 	if (!pcArgs) return E_POINTER;
 	EnterCriticalSection (&m_cs);
-	*pcArgs = (long)m_cArgument;
+	*pcArgs = m_cArgument;
 	LeaveCriticalSection (&m_cs);
 	return S_OK;
 }
@@ -298,110 +274,6 @@ ULONG STDMETHODCALLTYPE CJniSequence::Release () {
 	*pcResults = (long)m_cResult;
 	LeaveCriticalSection (&m_cs);
 	return S_OK;
-}
-
-CJniSequenceExecutor::CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults)
-: m_lRefCount (1), m_pOwner (pOwner), m_cArgs (cArgs), m_pArgs (pArgs), m_cResults (cResults), m_pResults (pResults) {
-	m_hSemaphore = pOwner->BeginExecution ();
-	pOwner->AddRef ();
-}
-
-CJniSequenceExecutor::~CJniSequenceExecutor () {
-	m_pOwner->EndExecution (m_hSemaphore);
-	m_pOwner->Release ();
-}
-
-HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
-	try {
-		long cValue = 0;
-		std::vector<long>::const_iterator params = m_pOwner->Params ()->begin ();
-		std::vector<CJniValue>::const_iterator constants = m_pOwner->Constants ()->begin ();
-		std::vector<CJniValue> aValues (m_pOwner->Values ());
-		for (std::vector<JniOperation>::const_iterator itr = m_pOwner->Operations ()->begin (), end = m_pOwner->Operations ()->end (); itr != end; itr++) {
-			switch (*itr) {
-			case JniOperation::io_LoadArgument :
-				// TODO
-				_com_raise_error (E_NOTIMPL);
-				break;
-			case JniOperation::io_LoadConstant :
-				(constants++)->copy_into (aValues[cValue++]);
-				break;
-			case JniOperation::io_StoreResult
-				: {
-					long lValueRef = *(params++);
-					if (m_cResults > 0) {
-						m_cResults--;
-						aValues[lValueRef].get_variant (m_pResults++);
-					}
-					break;
-				}
-			case JniOperation::jni_GetVersion :
-				aValues[cValue++].put_jint (pEnv->GetVersion ());
-				break;
-			case JniOperation::jni_NewString
-				: {
-					const jchar *unicode = aValues[*(params++)].get_pjchar ();
-					jsize len = aValues[*(params++)].get_jsize ();
-					aValues[cValue++].put_jstring (pEnv->NewString (unicode, len));
-					break;
-				}
-			case JniOperation::jni_GetStringLength
-				: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					aValues[cValue++].put_jsize (pEnv->GetStringLength (str));
-					break;
-				}
-			case JniOperation::jni_GetStringChars
-				: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					jboolean isCopy;
-					long lIsCopyRef = *(params++);
-					if (lIsCopyRef == cValue) {
-						cValue++;
-					}
-					aValues[cValue++].put_pjchar (pEnv->GetStringChars (str, &isCopy));
-					if (lIsCopyRef >= 0) {
-						aValues[lIsCopyRef].put_jboolean (isCopy);
-					}
-					break;
-				}
-			case JniOperation::jni_ReleaseStringChars
-				: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					const jchar *chars = aValues[*(params++)].get_pjchar ();
-					pEnv->ReleaseStringChars (str, chars);
-					break;
-				}
-			default :
-				_com_raise_error (E_NOTIMPL);
-			}
-		}
-		m_hRunResult = S_OK;
-	} catch (std::bad_alloc) {
-		m_hRunResult = E_OUTOFMEMORY;
-	} catch (_com_error &e) {
-		m_hRunResult = e.Error ();
-	}
-	ReleaseSemaphore (m_hSemaphore, 1, NULL);
-	return m_hRunResult;
-}
-
-HRESULT CJniSequenceExecutor::Wait () {
-	DWORD dwStatus = WaitForSingleObject (m_hSemaphore, INFINITE);
-	if (dwStatus == WAIT_OBJECT_0) {
-		return m_hRunResult;
-	} else {
-		return E_FAIL;
-	}
-}
-
-void CJniSequenceExecutor::AddRef () {
-	InterlockedIncrement (&m_lRefCount);
-}
-
-void CJniSequenceExecutor::Release () {
-	long lCount = InterlockedDecrement (&m_lRefCount);
-	if (!lCount) delete this;
 }
 
 static HRESULT APIENTRY _Execute (LPVOID lpData, JNIEnv *pEnv) {
@@ -425,14 +297,17 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 		for (l = 0; l < cResults; l++) {
 			VariantClear (aResults + l);
 		}
-		CJniSequenceExecutor *pExecutor = new CJniSequenceExecutor (this, cArgs, aArgs, cResults, aResults);
-		pExecutor->AddRef ();
+		CJniSequenceExecutor *pExecutor = new CJniSequenceExecutor (this, cArgs, aArgs, cResults, aResults); // RC1
+		pExecutor->AddRef (); // RC2
 		hr = m_pJvm->Execute (_Execute, pExecutor);
 		if (SUCCEEDED (hr)) {
+			// The executor will release RC2
 			hr = pExecutor->Wait ();
 		} else {
+			// Release RC2
 			pExecutor->Release ();
 		}
+		// Release RC1
 		pExecutor->Release ();
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
@@ -450,12 +325,159 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 	LeaveCriticalSection (&m_cs); \
 	return hr
 
+#define JNI_METHOD_IMPL_V(_name_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ () { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_0(_name_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+		} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V1(_name_, _arg1_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_1(_name_, _arg1_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+		} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V2(_name_, _arg1_, _arg2_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_2(_name_, _arg1_, _arg2_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+		} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V3(_name_, _arg1_, _arg2_, _arg3_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_3(_name_, _arg1_, _arg2_, _arg3_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+		} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V4(_name_, _arg1_, _arg2_, _arg3_, _arg4_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+	/* [in] */ long _arg4_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_, _arg4_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_4(_name_, _arg1_, _arg2_, _arg3_, _arg4_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+	/* [in] */ long _arg4_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_, _arg4_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+		} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V5(_name_, _arg1_, _arg2_, _arg3_, _arg4_, _arg5_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+	/* [in] */ long _arg4_, \
+	/* [in] */ long _arg5_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_, _arg4_, _arg5_); \
+	} \
+	__RETURN_HR; \
+}
+
 HRESULT STDMETHODCALLTYPE CJniSequence::Argument ( 
     /* [retval][out] */ long *plValueRef
 	) {
+	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::io_LoadArgument);
+		if (SUCCEEDED (hr)) {
+			m_cArgument++;
+			*plValueRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
@@ -498,9 +520,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::ByteConstant (
     /* [in] */ byte nValue,
     /* [retval][out] */ long *plValueRef
 	) {
+	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		CJniValue constant ((jbyte)nValue);
+		hr = LoadConstant (constant, plValueRef);
 	}
 	__RETURN_HR;
 }
@@ -509,9 +532,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::ShortConstant (
     /* [in] */ short nValue,
     /* [retval][out] */ long *plValueRef
 	) {
+	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		CJniValue constant ((jshort)nValue);
+		hr = LoadConstant (constant, plValueRef);
 	}
 	__RETURN_HR;
 }
@@ -528,13 +552,38 @@ HRESULT STDMETHODCALLTYPE CJniSequence::IntConstant (
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::LongConstant ( 
+HRESULT STDMETHODCALLTYPE CJniSequence::LongConstant (
     /* [in] */ hyper nValue,
     /* [retval][out] */ long *plValueRef
 	) {
+	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		CJniValue constant (nValue);
+		hr = LoadConstant (constant, plValueRef);
+	}
+	__RETURN_HR;
+}
+
+HRESULT STDMETHODCALLTYPE CJniSequence::FloatConstant (
+    /* [in] */ float fValue,
+    /* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	__JNI_OPERATION {
+		CJniValue constant (fValue);
+		hr = LoadConstant (constant, plValueRef);
+	}
+	__RETURN_HR;
+}
+
+HRESULT STDMETHODCALLTYPE CJniSequence::DoubleConstant (
+    /* [in] */ double dValue,
+    /* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	__JNI_OPERATION {
+		CJniValue constant (dValue);
+		hr = LoadConstant (constant, plValueRef);
 	}
 	__RETURN_HR;
 }
@@ -543,278 +592,39 @@ HRESULT STDMETHODCALLTYPE CJniSequence::BooleanConstant (
     /* [in] */ BOOL fValue,
     /* [retval][out] */ long *plValueRef
 	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetVersion ( 
-    /* [out] */ long *plValueRef
-	) {
 	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_GetVersion);
-		if (SUCCEEDED (hr)) {
-			*plValueRef = m_cValue++;
-		}
+		CJniValue constant;
+		constant.put_jboolean (fValue ? JNI_TRUE : JNI_FALSE);
+		hr = LoadConstant (constant, plValueRef);
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DefineClass ( 
-    /* [in] */ long lNameRef,
-    /* [in] */ long lLoaderRef,
-    /* [in] */ long lBufRef,
-    /* [in] */ long lLenRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FindClass ( 
-    /* [in] */ long lNameRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FromReflectedMethod ( 
-    /* [in] */ long lMethodRef,
-    /* [retval][out] */ long *plMethodIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FromReflectedField ( 
-    /* [in] */ long lFieldRef,
-    /* [retval][out] */ long *plFieldIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ToReflectedMethod ( 
-    /* [in] */ long lClsRef,
-    /* [in] */ long lMethodIDRef,
-    /* [in] */ long lIsStaticRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetSuperclass ( 
-    /* [in] */ long lSubRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsAssignableFrom ( 
-    /* [in] */ long lSubRef,
-    /* [in] */ long lSupRef,
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ToReflectedField ( 
-    /* [in] */ long lClsRef,
-    /* [in] */ long lFieldIDRef,
-    /* [in] */ long lIsStaticRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_Throw ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ThrowNew ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lMsgRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionOccurred ( 
-    /* [retval][out] */ long *plThrowableRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionDescribe () {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionClear () {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FatalError ( 
-    /* [in] */ long lMsgRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_PushLocalFrame ( 
-    /* [in] */ long lCapacityRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_PopLocalFrame ( 
-    /* [in] */ long lResultRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewGlobalRef ( 
-    /* [in] */ long lLobjRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteGlobalRef ( 
-    /* [in] */ long lGrefRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteLocalRef ( 
-    /* [in] */ long lObjRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsSameObject ( 
-    /* [in] */ long lObj1Ref,
-    /* [in] */ long lObj2Ref,
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewLocalRef ( 
-    /* [in] */ long lRefRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_EnsureLocalCapacity ( 
-    /* [in] */ long lCapacityRet,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_AllocObject ( 
-    /* [in] */ long lClassRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_0 (jni_GetVersion, plValueRef)
+JNI_METHOD_IMPL_4 (jni_DefineClass, lNameRef, lLoaderRef, lBufRef, lLenRef, plClassRef)
+JNI_METHOD_IMPL_1 (jni_FindClass, lNameRef, plClassRef)
+JNI_METHOD_IMPL_1 (jni_FromReflectedMethod, lMethodRef, plMethodIDRef)
+JNI_METHOD_IMPL_1 (jni_FromReflectedField, lFieldRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_ToReflectedMethod, lClsRef, lMethodIDRef, lIsStaticRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_GetSuperclass, lSubRef, plClassRef)
+JNI_METHOD_IMPL_2 (jni_IsAssignableFrom, lSubRef, lSupRef, plBooleanRef)
+JNI_METHOD_IMPL_3 (jni_ToReflectedField, lClsRef, lFieldIDRef, lIsStaticRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_Throw, lObjRef, plIntRef)
+JNI_METHOD_IMPL_2 (jni_ThrowNew, lClassRef, lMsgRef, plIntRef)
+JNI_METHOD_IMPL_0 (jni_ExceptionOccurred, plThrowableRef)
+JNI_METHOD_IMPL_V (jni_ExceptionDescribe)
+JNI_METHOD_IMPL_V (jni_ExceptionClear)
+JNI_METHOD_IMPL_V1 (jni_FatalError, lMsgRef)
+JNI_METHOD_IMPL_1 (jni_PushLocalFrame, lCapacityRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_PopLocalFrame, lResultRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_NewGlobalRef, lObjRef, plObjectRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteGlobalRef, lGrefRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteLocalRef, lObjRef)
+JNI_METHOD_IMPL_2 (jni_IsSameObject, lObj1Ref, lObj2Ref, plBooleanRef)
+JNI_METHOD_IMPL_1 (jni_NewLocalRef, lRefRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_EnsureLocalCapacity, lCapacityRet, plIntRef)
+JNI_METHOD_IMPL_1 (jni_AllocObject, lClassRef, plObjectRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject ( 
     /* [in] */ long lClassRef,
@@ -823,48 +633,30 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plObjectRef
 	) {
+	if (cArgs && !alArgRefs) return E_POINTER;
+	if (!plObjectRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_NewObject, lClassRef, lMethodIDRef, cArgs);
+		if (SUCCEEDED (hr)) {
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgRefs[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
+				*plObjectRef = m_cValue++;
+			} catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
+			}
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectClass ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsInstanceOf ( 
-    /* [in] */ long lObjRef,
-    /* [in] */ long lClassRef,
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetMethodID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plMethodIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_1 (jni_GetObjectClass, lObjRef, plClassRef)
+JNI_METHOD_IMPL_2 (jni_IsInstanceOf, lObjRef, lClassRef, plBooleanRef)
+JNI_METHOD_IMPL_3 (jni_GetMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod ( 
 	/* [in] */ long lType,
@@ -874,9 +666,23 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plResultRef
 	) {
+	if (cArgs && !alArgRefs) return E_POINTER;
+	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_CallMethod, lType, lObjRef, lMethodIDRef);
+		if (SUCCEEDED (hr)) {
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgRefs[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
+				*plResultRef = m_cValue++;
+			} catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
+			}
+		}
 	}
 	__RETURN_HR;
 }
@@ -890,64 +696,31 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plResultRef
 	) {
+	if (cArgs && !alArgRefs) return E_POINTER;
+	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_CallNonVirtualMethod, lType, lObjRef, lClassRef, lMethodIDRef);
+		if (SUCCEEDED (hr)) {
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgRefs[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
+				*plResultRef = m_cValue++;
+			} catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
+			}
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetFieldID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plFieldIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lObjRef,
-    /* [in] */ long lFieldIDRef,
-    /* [retval][out] */ long *plResultRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lObjRef,
-    /* [in] */ long lFieldIDRef,
-    /* [in] */ long lValueRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStaticMethodID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plMethodIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_3 (jni_GetFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_GetField, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_V4 (jni_SetField, lType, lObjRef, lFieldIDRef, lValueRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod ( 
 	/* [in] */ long lType,
@@ -957,80 +730,32 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod (
     /* [size_is][in] */ long *alArgsRef,
     /* [retval][out] */ long *plResultRef
 	) {
+	if (cArgs && !alArgsRef) return E_POINTER;
+	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStaticFieldID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plFieldIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStaticField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lClassRef,
-    /* [in] */ long lFieldIDRef,
-    /* [retval][out] */ long *plValueRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetStaticField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lClassRef,
-    /* [in] */ long lFieldIDRef,
-    /* [in] */ long lValueRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewString ( 
-    /* [in] */ long lUnicodeRef,
-    /* [in] */ long lSizeRef,
-    /* [retval][out] */ long *plStringRef
-	) {
-	if (!plStringRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_NewString, lUnicodeRef, lSizeRef);
+		hr = AddOperation (JniOperation::jni_CallStaticMethod, lType, lClassRef, lMethodIDRef);
 		if (SUCCEEDED (hr)) {
-			*plStringRef = m_cValue++;
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgsRef[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
+				*plResultRef = m_cValue++;
+			} catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
+			}
 		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringLength ( 
-    /* [in] */ long lStrRef,
-    /* [retval][out] */ long *plSizeRef
-	) {
-	if (!plSizeRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_GetStringLength, lStrRef);
-		if (SUCCEEDED (hr)) {
-			*plSizeRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_3 (jni_GetStaticFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticField, lType, lClassRef, lFieldIDRef, plValueRef)
+JNI_METHOD_IMPL_V4 (jni_SetStaticField, lType, lClassRef, lFieldIDRef, lValueRef)
+JNI_METHOD_IMPL_2 (jni_NewString, lUnicodeRef, lSizeRef, plStringRef)
+JNI_METHOD_IMPL_1 (jni_GetStringLength, lStrRef, plSizeRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringChars ( 
     /* [in] */ long lStrRef,
@@ -1048,366 +773,99 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringChars (
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseStringChars ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lCharsRef
-	) {
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_ReleaseStringChars, lStrRef, lCharsRef);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewStringUTF ( 
-    /* [in] */ long lUtfRef,
-    /* [retval][out] */ long *plStringRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFLength ( 
-    /* [in] */ long lStrRef,
-    /* [retval][out] */ long *plSizeRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringChars, lStrRef, lCharsRef)
+JNI_METHOD_IMPL_1 (jni_NewStringUTF, lUtfRef, plStringRef)
+JNI_METHOD_IMPL_1 (jni_GetStringUTFLength, lStrRef, plSizeRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFChars ( 
     /* [in] */ long lStrRef,
-    /* [out] */ long *plIsCopyRef,
+    /* [optional][out] */ long *plIsCopyRef,
     /* [retval][out] */ long *plCharRef
 	) {
+	if (!plCharRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_GetStringUTFChars, lStrRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plCharRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseStringUTFChars ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lCharsRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayLength ( 
-    /* [in] */ long lArrayRef,
-    /* [retval][out] */ long *plSizeRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObjectArray ( 
-    /* [in] */ long lLenRef,
-    /* [in] */ long lClassRef,
-    /* [in] */ long lInitRef,
-    /* [retval][out] */ long *plObjectArrayRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectArrayElement ( 
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lIndexRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetObjectArrayElement ( 
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lIndexRef,
-    /* [in] */ long lValRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewArray ( 
-	/* [in] */ long lType,
-    /* [in] */ long lLenRef,
-    /* [retval][out] */ long *plArrayRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringUTFChars, lStrRef, lCharsRef)
+JNI_METHOD_IMPL_1 (jni_GetArrayLength, lArrayRef, plSizeRef)
+JNI_METHOD_IMPL_3 (jni_NewObjectArray, lLenRef, lClassRef, lInitRef, plObjectArrayRef)
+JNI_METHOD_IMPL_2 (jni_GetObjectArrayElement, lArrayRef, lIndexRef, plObjectRef)
+JNI_METHOD_IMPL_V3 (jni_SetObjectArrayElement, lArrayRef, lIndexRef, lValRef)
+JNI_METHOD_IMPL_2 (jni_NewArray, lType, lLenRef, plArrayRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayElements ( 
 	/* [in] */ long lType,
     /* [in] */ long lArrayRef,
-    /* [out] */ long *plIsCopyRef,
+    /* [optional][out] */ long *plIsCopyRef,
     /* [retval][out] */ long *plValueRef
 	) {
+	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_GetArrayElements, lType, lArrayRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plValueRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseArrayElements ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lElemsRef,
-    /* [in] */ long lModeRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayRegion ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetArrayRegion ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_RegisterNatives ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lMethodsRef,
-    /* [in] */ long lNMethodsef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_UnregisterNatives ( 
-    /* [in] */ long lClassRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_MonitorEntry ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_MonitorExit ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringRegion ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLenRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFRegion ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLenRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_V4 (jni_ReleaseArrayElements, lType, lArrayRef, lElemsRef, lModeRef)
+JNI_METHOD_IMPL_V5 (jni_GetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
+JNI_METHOD_IMPL_V5 (jni_SetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
+JNI_METHOD_IMPL_3 (jni_RegisterNatives, lClassRef, lMethodsRef, lNMethodsRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_UnregisterNatives, lClassRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_MonitorEntry, lObjRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_MonitorExit, lObjRef, plIntRef)
+JNI_METHOD_IMPL_V4 (jni_GetStringRegion, lStrRef, lStartRef, lLenRef, lBufRef)
+JNI_METHOD_IMPL_V4 (jni_GetStringUTFRegion, lStrRef, lStartRef, lLenRef, lBufRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetPrimitiveArrayCritical ( 
     /* [in] */ long lArrayRef,
-    /* [out] */ long *plIsCopyRef,
+    /* [optional][out] */ long *plIsCopyRef,
     /* [retval][out] */ long *plVoidRef
 	) {
+	if (!plVoidRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_GetPrimitiveArrayCritical, lArrayRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plVoidRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleasePrimitiveArrayCritical ( 
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lCArrayRef,
-    /* [in] */ long lModeRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_V3 (jni_ReleasePrimitiveArrayCritical, lArrayRef, lCArrayRef, lModeRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringCritical ( 
     /* [in] */ long lStringRef,
-    /* [out] */ long *plIsCopyRef,
+    /* [optional][out] */ long *plIsCopyRef,
     /* [retval][out] */ long *plCharRef
 	) {
+	if (!plCharRef) return E_POINTER;
 	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_GetStringCritical, lStringRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plCharRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseStringCritical ( 
-    /* [in] */ long lStringRef,
-    /* [in] */ long lCStringRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewWeakGlobalRef ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plWeakRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteWeakGlobalRef ( 
-    /* [in] */ long lRefRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionCheck ( 
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewDirectByteBuffer ( 
-    /* [in] */ long lAddressRef,
-    /* [in] */ long lCapacityRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetDirectBufferAddress ( 
-    /* [in] */ long lBufRef,
-    /* [retval][out] */ long *plVoidRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetDirectBufferCapacity ( 
-    /* [in] */ long lBufRef,
-    /* [retval][out] */ long *plLongRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectRefType ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plObjectRefTypeRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringCritical, lStringRef, lCStringRef)
+JNI_METHOD_IMPL_1 (jni_NewWeakGlobalRef, lObjRef, plWeakRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteWeakGlobalRef, lRefRef)
+JNI_METHOD_IMPL_0 (jni_ExceptionCheck, plBooleanRef)
+JNI_METHOD_IMPL_2 (jni_NewDirectByteBuffer, lAddressRef, lCapacityRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_GetDirectBufferAddress, lBufRef, plVoidRef)
+JNI_METHOD_IMPL_1 (jni_GetDirectBufferCapacity, lBufRef, plLongRef)
+JNI_METHOD_IMPL_1 (jni_GetObjectRefType, lObjRef, plObjectRefTypeRef)

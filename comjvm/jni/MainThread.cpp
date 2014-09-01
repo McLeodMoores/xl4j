@@ -22,9 +22,9 @@ static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
 	g_hJRE = LoadLibrary (szPath);
 	if (g_hJRE == NULL) {
 		// Change "/client/" to "/server/"
-		TCHAR *client = wcsstr(szPath, TEXT("\\client\\"));
+		TCHAR *client = _tcsstr(szPath, TEXT("\\client\\"));
 		if (!client) return FALSE;
-		wcsncpy(client, TEXT("\\server\\"), 8);
+		memcpy (client, TEXT ("\\server\\"), 8 * sizeof (TCHAR));
 		g_hJRE = LoadLibrary(szPath);
 		if (!g_hJRE) return FALSE;
 	}

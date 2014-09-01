@@ -430,6 +430,24 @@ midl_pragma warning (disable: 2362)
 	/// <param name="plValueRef">Receives the handle referencing this constant</param>
 	/// <returns>S_OK if successful, an error code otherwise</returns>
 	HRESULT LongConstant ([in] hyper nValue, [out, retval] long *plValueRef);
+	/// <summary>Stores a 32-bit floating point constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass a float constant it must first be
+	/// loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="fValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT FloatConstant ([in] float fValue, [out, retval] long *plValueRef);
+	/// <summary>Stores a 64-bit floating point constant for use by JNI operations.</summary>
+	///
+	/// <para>All operations take a value reference. To pass a double constant it must first be
+	/// loaded using this method to obtain a reference.</para>
+	///
+	/// <param name="dValue">Value to load</param>
+	/// <param name="plValueRef">Receives the handle referencing this constant</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT DoubleConstant ([in] double dValue, [out, retval] long *plValueRef);
 	/// <summary>Stores a boolean constant for use by JNI operations.</summary>
 	///
 	/// <para>All operations take a value reference. To pass an integer constant it must first
@@ -440,7 +458,7 @@ midl_pragma warning (disable: 2362)
 	/// <returns>S_OK if successful, an error code otherwise</returns>
 	HRESULT BooleanConstant ([in] BOOL fValue, [out, retval] long *plValueRef);
 
-	// TODO: Float, Double, Char, NULL constants
+	// TODO: NULL constants
 	// TODO: Label/Goto-If for conditional stuff
 	// TODO: Callback - passes values into the callback and receives the result back into one or more local variables
 	// TODO: Allocate/Release arbitrary buffers
@@ -490,14 +508,14 @@ midl_pragma warning (disable: 2362)
 	HRESULT jni_ReleaseStringChars ([in] long lStrRef, [in] long lCharsRef);
 	HRESULT jni_NewStringUTF ([in] long lUtfRef, [out, retval] long *plStringRef);
 	HRESULT jni_GetStringUTFLength ([in] long lStrRef, [out, retval] long *plSizeRef);
-	HRESULT jni_GetStringUTFChars ([in] long lStrRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
+	HRESULT jni_GetStringUTFChars ([in] long lStrRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
 	HRESULT jni_ReleaseStringUTFChars ([in] long lStrRef, [in] long lCharsRef);
 	HRESULT jni_GetArrayLength ([in] long lArrayRef, [out, retval] long *plSizeRef);
 	HRESULT jni_NewObjectArray ([in] long lLenRef, [in] long lClassRef, [in] long lInitRef, [out, retval] long *plArrayRef);
 	HRESULT jni_GetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [out, retval] long *plObjectRef);
 	HRESULT jni_SetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [in] long lValRef);
 	HRESULT jni_NewArray ([in] long lType, [in] long lLenRef, [out, retval] long *plArrayRef);
-	HRESULT jni_GetArrayElements ([in] long lType, [in] long lArrayRef, [out] long *plIsCopyRef, [out, retval] long *plPointerRef);
+	HRESULT jni_GetArrayElements ([in] long lType, [in] long lArrayRef, [out, optional] long *plIsCopyRef, [out, retval] long *plPointerRef);
 	HRESULT jni_ReleaseArrayElements ([in] long lType, [in] long lArrayRef, [in] long lElemsRef, [in] long lModeRef);
 	HRESULT jni_GetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
 	HRESULT jni_SetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
@@ -507,9 +525,9 @@ midl_pragma warning (disable: 2362)
 	HRESULT jni_MonitorExit ([in] long lObjRef, [out, retval] long *plIntRef);
 	HRESULT jni_GetStringRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
 	HRESULT jni_GetStringUTFRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
-	HRESULT jni_GetPrimitiveArrayCritical ([in] long lArrayRef, [out] long *plIsCopyRef, [out, retval] long *plVoidRef);
+	HRESULT jni_GetPrimitiveArrayCritical ([in] long lArrayRef, [out, optional] long *plIsCopyRef, [out, retval] long *plVoidRef);
 	HRESULT jni_ReleasePrimitiveArrayCritical ([in] long lArrayRef, [in] long lCArrayRef, [in] long lModeRef);
-	HRESULT jni_GetStringCritical ([in] long lStringRef, [out] long *plIsCopyRef, [out, retval] long *plCharRef);
+	HRESULT jni_GetStringCritical ([in] long lStringRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
 	HRESULT jni_ReleaseStringCritical ([in] long lStringRef, [in] long lCStringRef);
 	HRESULT jni_NewWeakGlobalRef ([in] long lObjRef, [out, retval] long *plWeakRef);
 	HRESULT jni_DeleteWeakGlobalRef ([in] long lRefRef);

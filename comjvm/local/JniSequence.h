@@ -9,105 +9,140 @@
 
 #include "core_h.h"
 #include "Jvm.h"
+#include "JniValue.h"
 
+class CJniSequence;
+
+#include "JniSequenceExecutor.h"
+
+/// <summary>Operations that make up a JNI sequence.</summary>
 enum JniOperation {
 	io_LoadArgument,
 	io_LoadConstant,
 	io_StoreResult,
 	jni_GetVersion,
+	jni_DefineClass,
+	jni_FindClass,
+	jni_FromReflectedMethod,
+	jni_FromReflectedField,
+	jni_ToReflectedMethod,
+	jni_GetSuperclass,
+	jni_IsAssignableFrom,
+	jni_ToReflectedField,
+	jni_Throw,
+	jni_ThrowNew,
+	jni_ExceptionOccurred,
+	jni_ExceptionDescribe,
+	jni_ExceptionClear,
+	jni_FatalError,
+	jni_PushLocalFrame,
+	jni_PopLocalFrame,
+	jni_NewGlobalRef,
+	jni_DeleteGlobalRef,
+	jni_DeleteLocalRef,
+	jni_IsSameObject,
+	jni_NewLocalRef,
+	jni_EnsureLocalCapacity,
+	jni_AllocObject,
+	jni_NewObject,
+	jni_GetObjectClass,
+	jni_IsInstanceOf,
+	jni_GetMethodID,
+	jni_CallMethod,
+	jni_CallNonVirtualMethod,
+	jni_GetFieldID,
+	jni_GetField,
+	jni_SetField,
+	jni_GetStaticMethodID,
+	jni_CallStaticMethod,
+	jni_GetStaticFieldID,
+	jni_GetStaticField,
+	jni_SetStaticField,
 	jni_NewString,
 	jni_GetStringLength,
 	jni_GetStringChars,
-	jni_ReleaseStringChars
-};
-
-class CJniValue {
-private:
-	enum _type {
-		t_nothing = 0,
-		t_jint = 1,
-		t_BSTR,
-		t_jsize,
-		t_jstring,
-		t_pjchar,
-		t_jboolean
-	} type;
-	union {
-		jint _jint;
-		BSTR _BSTR;
-		jsize _jsize;
-		jstring _jstring;
-		const jchar *_pjchar;
-		jboolean _jboolean;
-	} v;
-	void free ();
-	void reset (_type typeNew) { free (); type = typeNew; }
-public:
-	CJniValue () : type (t_nothing) { }
-	~CJniValue () { free (); }
-	void put_nothing () { reset (t_nothing); }
-	void put_variant (const VARIANT *pvValue);
-	void get_variant (VARIANT *pvValue) const;
-	void copy_into (CJniValue &value) const;
-#define __MTD2(_tFormal, _tImpl) \
-	void put_##_tImpl (_tFormal value) { reset (t_##_tImpl); v._##_tImpl = value; } \
-	_tFormal get_##_tImpl () const;
-#define __MTD(_t) __MTD2(_t, _t)
-#define __CONS(_t) \
-	__MTD(_t) \
-	CJniValue (_t value) : type (t_##_t) { v._##_t = value; }
-	__CONS (jint);
-	void put_BSTR (BSTR bstr);
-	CJniValue (BSTR bstr);
-	__MTD2 (const jchar *, pjchar);
-	__MTD (jsize)
-	__MTD (jstring);
-	__MTD (jboolean)
-#undef __CONS
-#undef __MTD
-#undef __MTD2
-	HRESULT load (std::vector<CJniValue> &aValue);
-};
-
-class CJniSequence;
-
-class CJniSequenceExecutor {
-private:
-	volatile long m_lRefCount;
-	CJniSequence *m_pOwner;
-	long m_cArgs;
-	VARIANT *m_pArgs;
-	long m_cResults;
-	VARIANT *m_pResults;
-	HANDLE m_hSemaphore;
-	HRESULT m_hRunResult;
-	~CJniSequenceExecutor ();
-public:
-	CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults);
-	HRESULT Run (JNIEnv *pEnv);
-	HRESULT Wait ();
-	void AddRef ();
-	void Release ();
+	jni_ReleaseStringChars,
+	jni_NewStringUTF,
+	jni_GetStringUTFLength,
+	jni_GetStringUTFChars,
+	jni_ReleaseStringUTFChars,
+	jni_GetArrayLength,
+	jni_NewObjectArray,
+	jni_GetObjectArrayElement,
+	jni_SetObjectArrayElement,
+	jni_NewArray,
+	jni_GetArrayElements,
+	jni_ReleaseArrayElements,
+	jni_GetArrayRegion,
+	jni_SetArrayRegion,
+	jni_RegisterNatives,
+	jni_UnregisterNatives,
+	jni_MonitorEntry,
+	jni_MonitorExit,
+	jni_GetStringRegion,
+	jni_GetStringUTFRegion,
+	jni_GetPrimitiveArrayCritical,
+	jni_ReleasePrimitiveArrayCritical,
+	jni_GetStringCritical,
+	jni_ReleaseStringCritical,
+	jni_NewWeakGlobalRef,
+	jni_DeleteWeakGlobalRef,
+	jni_ExceptionCheck,
+	jni_NewDirectByteBuffer,
+	jni_GetDirectBufferAddress,
+	jni_GetDirectBufferCapacity,
+	jni_GetObjectRefType
 };
 
 class CJniSequence : public IJniSequence {
 private:
 	friend class CJniSequenceExecutor;
 	volatile ULONG m_lRefCount;
+	
+	/// <summary>Lock for this object.</summary>
 	CRITICAL_SECTION m_cs;
+
 	CJvm *m_pJvm;
+
+	/// <summary>Number of intermediate values needed for execution.</summary>
 	long m_cValue;
+
+	/// <summary>Number of active executions.</summary>
+	///
+	/// <para>A sequence will support parallel executions, but can only be
+	/// modified when there are no active executions.</para>
 	long m_cExecuting;
+
 	std::vector<HANDLE> m_ahSemaphore;
+
+	/// <summary>Sequence operations.</summary>
 	std::vector<JniOperation> m_aOperation;
+
+	/// <summary>Operation parameters.</summary>
+	///
+	/// <para>Each operation may consume zero or more parameter values identifying
+	/// the slots containing the parameters to be passed.</para>
 	std::vector<long> m_aParam;
+
+	/// <summary>Constant pool.</summary>
+	///
+	/// <para>During execution, if a constant is needed in an intermediate value
+	/// slot then the next value is taken from this pool.</para>
 	std::vector<CJniValue> m_aConstant;
+
+	/// <summary>Number of declared argument values.</summary>
 	long m_cArgument;
+
+	/// <summary>Number of declared result values.</summary>
 	long m_cResult;
+
 	~CJniSequence ();
 	HRESULT AddOperation (JniOperation operation);
 	HRESULT AddOperation (JniOperation operation, long lParam);
 	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2);
+	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3);
+	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4);
+	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4, long lParam5);
 	HRESULT LoadConstant (CJniValue &value, long *plRef);
 	HANDLE BeginExecution ();
 	void EndExecution (HANDLE hSemaphore);
@@ -152,6 +187,12 @@ public:
     HRESULT STDMETHODCALLTYPE LongConstant ( 
         /* [in] */ hyper nValue,
         /* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE FloatConstant (
+		/* [in] */ float fValue,
+		/* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE DoubleConstant (
+		/* [in] */ double dValue,
+		/* [retval][out] */ long *plValueRef);
     HRESULT STDMETHODCALLTYPE BooleanConstant ( 
         /* [in] */ BOOL fValue,
         /* [retval][out] */ long *plValueRef);
@@ -312,7 +353,7 @@ public:
         /* [retval][out] */ long *plSizeRef);
     HRESULT STDMETHODCALLTYPE jni_GetStringChars ( 
         /* [in] */ long lStrRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plCharRef);
     HRESULT STDMETHODCALLTYPE jni_ReleaseStringChars ( 
         /* [in] */ long lStrRef,
@@ -325,7 +366,7 @@ public:
         /* [retval][out] */ long *plSizeRef);
     HRESULT STDMETHODCALLTYPE jni_GetStringUTFChars ( 
         /* [in] */ long lStrRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plCharRef);
     HRESULT STDMETHODCALLTYPE jni_ReleaseStringUTFChars ( 
         /* [in] */ long lStrRef,
@@ -398,7 +439,7 @@ public:
         /* [in] */ long lBufRef);
     HRESULT STDMETHODCALLTYPE jni_GetPrimitiveArrayCritical ( 
         /* [in] */ long lArrayRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plVoidRef);
     HRESULT STDMETHODCALLTYPE jni_ReleasePrimitiveArrayCritical ( 
         /* [in] */ long lArrayRef,
@@ -406,7 +447,7 @@ public:
         /* [in] */ long lModeRef);
     HRESULT STDMETHODCALLTYPE jni_GetStringCritical ( 
         /* [in] */ long lStringRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plCharRef);
     HRESULT STDMETHODCALLTYPE jni_ReleaseStringCritical ( 
         /* [in] */ long lStringRef,

@@ -256,6 +256,8 @@
     <ClInclude Include="FileWriter.h" />
     <ClInclude Include="Internal.h" />
     <ClInclude Include="JniSequence.h" />
+    <ClInclude Include="JniSequenceExecutor.h" />
+    <ClInclude Include="JniValue.h" />
     <ClInclude Include="Jvm.h" />
     <ClInclude Include="JvmConnector.h" />
     <ClInclude Include="local.h" />
@@ -280,6 +282,8 @@
     <ClCompile Include="DirectoryWriter.cpp" />
     <ClCompile Include="FileWriter.cpp" />
     <ClCompile Include="JniSequence.cpp" />
+    <ClCompile Include="JniSequenceExecutor.cpp" />
+    <ClCompile Include="JniValue.cpp" />
     <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="JvmConnector.cpp" />
     <ClCompile Include="local.cpp" />
