@@ -24,7 +24,17 @@ enum JniOperation {
 	jni_AllocObject,
 	jni_NewObjectA,
 	jni_GetMethodID,
-	jni_CallMethod
+	jni_CallMethod,
+	jni_NewLocalRef,
+	jni_DeleteLocalRef,
+	jni_EnsureLocalCapacity,
+	jni_NewGlobalRef,
+	jni_DeleteGlobalRef,
+	jni_PushLocalFrame,
+	jni_PopLocalFrame,
+	jni_ExceptionOcurred,
+	jni_ExceptionDescribe,
+	jni_ExceptionClear
 };
 
 enum vtype {

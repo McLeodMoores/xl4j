@@ -639,6 +639,68 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					aValues[cValue++].put_jobject (object);
 					break;
 				}
+				case JniOperation::jni_NewLocalRef
+					: {
+					jobject obj = aValues[*(params++)].get_jobject ();
+					jobject localRef = pEnv->NewLocalRef (obj);
+					aValues[cValue++].put_jobject (localRef);
+					break;
+				}
+				case JniOperation::jni_DeleteLocalRef
+					: {
+					jobject localRef = aValues[*(params++)].get_jobject ();
+					pEnv->DeleteLocalRef (localRef);
+					break;
+				}
+				case JniOperation::jni_NewGlobalRef
+					: {
+					jobject localRef = aValues[*(params++)].get_jobject ();
+					jobject globalRef = pEnv->NewGlobalRef (localRef);
+					aValues[cValue++].put_jobject (globalRef);
+					break;
+				}
+				case JniOperation::jni_DeleteGlobalRef
+					: {
+					jobject globalRef = aValues[*(params++)].get_jobject ();
+					pEnv->DeleteGlobalRef (globalRef);
+					break;
+				}
+				case JniOperation::jni_PushLocalFrame
+					: {
+					jint capacity = aValues[*(params++)].get_jint ();
+					jint result = pEnv->PushLocalFrame (capacity);
+					aValues[cValue++].put_jint (result);
+					break;
+				}
+				case JniOperation::jni_PopLocalFrame
+					: {
+					jobject frame = aValues[*(params++)].get_jobject ();
+					jobject previousFrame = pEnv->PopLocalFrame (frame);
+					aValues[cValue++].put_jobject (frame);
+				}
+				case JniOperation::jni_EnsureLocalCapacity
+					: {
+					jint capacity = aValues[*(params++)].get_jint ();
+					jint result = pEnv->EnsureLocalCapacity (capacity);
+					aValues[cValue++].put_jint (result);
+					break;
+				}
+				case JniOperation::jni_ExceptionOcurred
+					: {
+					jthrowable throwable = pEnv->ExceptionOccurred ();
+					aValues[cValue++].put_jthrowable (throwable);
+					break;
+				}
+				case JniOperation::jni_ExceptionDescribe
+					: {
+					pEnv->ExceptionDescribe();
+					break;
+				}
+				case JniOperation::jni_ExceptionClear
+					: {
+					pEnv->ExceptionClear ();
+					break;
+				}
 				case JniOperation::jni_GetMethodID
 					: {
 					jclass clazz = aValues[*(params++)].get_jclass ();
@@ -1066,24 +1128,24 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionOccurred (
     /* [retval][out] */ long *plThrowableRef
 	) {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_ExceptionOcurred);
+		if (SUCCEEDED (hr)) {
+			*plThrowableRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionDescribe () {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_ExceptionDescribe);
 	}
 	__RETURN_HR;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionClear () {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_ExceptionClear);
 	}
 	__RETURN_HR;
 }
@@ -1103,8 +1165,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_PushLocalFrame (
     /* [retval][out] */ long *plIntRef
 	) {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_PushLocalFrame, lCapacityRef);
+		if (SUCCEEDED (hr)) {
+			*plIntRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
@@ -1114,8 +1178,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_PopLocalFrame (
     /* [retval][out] */ long *plObjectRef
 	) {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_PopLocalFrame, lResultRef);
+		if (SUCCEEDED (hr)) {
+			*plObjectRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
@@ -1125,8 +1191,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewGlobalRef (
     /* [retval][out] */ long *plObjectRef
 	) {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_NewGlobalRef, lLobjRef);
+		if (SUCCEEDED (hr)) {
+			*plObjectRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
@@ -1134,9 +1202,8 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewGlobalRef (
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteGlobalRef ( 
     /* [in] */ long lGrefRef
 	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+	__JNI_OPERATION {
+		hr = AddOperation (JniOperation::jni_DeleteGlobalRef, lGrefRef);
 	}
 	__RETURN_HR;
 }
@@ -1144,7 +1211,9 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteGlobalRef (
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteLocalRef ( 
     /* [in] */ long lObjRef
 	) {
-	// TODO
+	__JNI_OPERATION{
+		hr = AddOperation (JniOperation::jni_DeleteLocalRef, lObjRef);
+	}
 	return E_NOTIMPL;
 }
 
@@ -1165,19 +1234,23 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewLocalRef (
     /* [retval][out] */ long *plObjectRef
 	) {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_NewLocalRef, lRefRef);
+		if (SUCCEEDED (hr)) {
+			*plObjectRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_EnsureLocalCapacity ( 
-    /* [in] */ long lCapacityRet,
+    /* [in] */ long lCapacityRef,
     /* [retval][out] */ long *plIntRef
 	) {
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_EnsureLocalCapacity, lCapacityRef);
+		if (SUCCEEDED (hr)) {
+			*plIntRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
