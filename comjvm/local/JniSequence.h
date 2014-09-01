@@ -17,6 +17,8 @@ enum JniOperation {
 	jni_GetVersion,
 	jni_NewString,
 	jni_GetStringLength,
+	jni_GetStringChars,
+	jni_ReleaseStringChars,
 	jni_FindClass,
 	jni_DefineClass,
 	jni_AllocObject,
@@ -55,6 +57,7 @@ enum vtype {
 	t_jweak,
 	// these cannot be passed into a Java Method or Constructor
 	// but can be parameters to JNI calls
+	t_pjchar,
 	t_BSTR,
 	t_HANDLE,
 	t_jmethodID,
@@ -79,6 +82,7 @@ private:
 		jmethodID _jmethodID;
 		jfieldID _jfieldID;
 		jobjectRefType _jobjectRefType;
+		const jchar *_pjchar;
 		struct __jbyteBuffer {
 			jbyte *_pjbyte;
 			jsize _jsize;
@@ -151,6 +155,7 @@ public:
 #define __CONS(_t) \
 	__PUT(_t) \
 	CJniValue (_t value) : type (t_##_t) { v._##_t = value; }
+
 
 	__CONSPRIMITIVE (jint,i);
 	jint get_jint () const {
@@ -228,6 +233,9 @@ public:
 	__GET (jmethodID);
 	__PUT (jfieldID);
 	__GET (jfieldID);
+	// Expansion of MTD2, which for some bizarre reason I couldn't get working.
+	void put_pjchar (const jchar *value) { reset (t_pjchar); v._pjchar = value; }
+	const jchar *get_pjchar () const;
 	__PUTHANDLE (jstring);
 	jstring get_jstring () const {
 		switch (type) {
@@ -242,7 +250,6 @@ public:
 	void put_BSTR (BSTR bstr);
 	void put_HANDLE (ULONGLONG handle);
 	CJniValue (BSTR bstr);
-	const jchar *get_pjchar () const;
 	const char *get_alloc_pchar () const;
 
 	CJniValue (jbyte *buffer, jsize size) : type (t_jbyteBuffer) {
@@ -289,11 +296,12 @@ private:
 	long m_cResults;
 	VARIANT *m_pResults;
 	HANDLE m_hSemaphore;
+	HRESULT m_hRunResult;
 	~CJniSequenceExecutor ();
 public:
 	CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults);
 	HRESULT Run (JNIEnv *pEnv);
-	void Wait ();
+	HRESULT Wait ();
 	void AddRef ();
 	void Release ();
 };
