@@ -67,6 +67,35 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 	}
 }
 
+// TODO: Set up IJObject properly with a local implementation backed by global refs etc.
+// TODO: Might mean taking ref handling out of the sequence as it might have little purpose
+class CJObject_ReallyNeededSoon : public IUnknown {
+private:
+	volatile long m_lRefCount;
+	~CJObject_ReallyNeededSoon () {
+		assert (m_lRefCount == 0);
+	}
+public:
+	CJObject_ReallyNeededSoon ()
+		: m_lRefCount (1) {
+	}
+	// IUnknown
+	HRESULT STDMETHODCALLTYPE QueryInterface (
+		/* [in] */ REFIID riid,
+		/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject) {
+		*ppvObject = NULL;
+		return E_NOINTERFACE;
+	}
+    ULONG STDMETHODCALLTYPE AddRef () {
+		return InterlockedIncrement (&m_lRefCount);
+	}
+    ULONG STDMETHODCALLTYPE Release () {
+		long lResult = InterlockedDecrement (&m_lRefCount);
+		if (!lResult) delete this;
+		return lResult;
+	}
+};
+
 void CJniValue::get_variant (VARIANT *pvValue) const {
 	switch (type) {
 	case t_jbyte :
@@ -101,6 +130,10 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		pvValue->vt = VT_I2;
 		pvValue->iVal = v._jchar;
 		break;
+	case t_jobject :
+		pvValue->punkVal = new CJObject_ReallyNeededSoon ();
+		pvValue->vt = VT_UNKNOWN;
+		break;
 	case t_jsize :
 		pvValue->vt = VT_I4;
 		pvValue->intVal = v._jsize;
@@ -124,6 +157,10 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 
 jint CJniValue::get_jint () const {
 	switch (type) {
+	case t_jbyte :
+		return v._jbyte;
+	case t_jshort :
+		return v._jshort;
 	case t_jint :
 		return v._jint;
 	case t_jsize :
@@ -132,9 +169,34 @@ jint CJniValue::get_jint () const {
 	_com_raise_error (E_INVALIDARG);
 }
 
+jobject CJniValue::get_jobject () const {
+	switch (type) {
+	case t_jobject :
+		return v._jobject;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
 CJniValue::CJniValue (BSTR bstr)
 : type (t_BSTR) {
 	v._bstr = new CBSTRRef (bstr);
+}
+
+void CJniValue::get_jvalue (jvalue *pjValue) const {
+	switch (type) {
+	case t_jbyte :
+	case t_jshort :
+	case t_jint :
+	case t_jlong :
+	case t_jfloat :
+	case t_jdouble :
+	case t_jchar :
+	case t_jboolean :
+	case t_jobject :
+		*pjValue = v._jvalue;
+		break;
+	}
+	_com_raise_error (E_INVALIDARG);
 }
 
 void CJniValue::put_BSTR (BSTR bstr) {
@@ -155,8 +217,30 @@ char *CJniValue::get_pchar () const {
 
 jsize CJniValue::get_jsize () const {
 	switch (type) {
+	case t_jbyte :
+		if (v._jbyte >= 0) {
+			return v._jbyte;
+		} else {
+			_com_raise_error (E_INVALIDARG);
+		}
+	case t_jshort :
+		if (v._jshort >= 0) {
+			return v._jshort;
+		} else {
+			_com_raise_error (E_INVALIDARG);
+		}
 	case t_jint :
-		return v._jint;
+		if (v._jint >= 0) {
+			return v._jint;
+		} else {
+			_com_raise_error (E_INVALIDARG);
+		}
+	case t_jlong :
+		if ((v._jlong >= 0) && (v._jlong < 0x100000000)) {
+			return (jsize)v._jlong;
+		} else {
+			_com_raise_error (E_INVALIDARG);
+		}
 	case t_jsize :
 		return v._jsize;
 	}
@@ -177,6 +261,30 @@ jchar *CJniValue::get_pjchar () const {
 		return (jchar*)v._bstr->pcwstr ();
 	case t_pjchar :
 		return v._pjchar;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
+jclass CJniValue::get_jclass () const {
+	switch (type) {
+	case t_jclass :
+		return v._jclass;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
+jfieldID CJniValue::get_jfieldID () const {
+	switch (type) {
+	case t_jfieldID :
+		return v._jfieldID;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
+jmethodID CJniValue::get_jmethodID () const {
+	switch (type) {
+	case t_jmethodID :
+		return v._jmethodID;
 	}
 	_com_raise_error (E_INVALIDARG);
 }

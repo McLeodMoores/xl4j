@@ -15,22 +15,24 @@ private:
 	enum _type {
 		/// <summary>No value.</summary>
 		t_nothing = 0,
-		/// <summary>Value held in v._jbyte.</summary>
+		/// <summary>Value held in v._jvalue.b.</summary>
 		t_jbyte = 1,
-		/// <summary>Value held in v._jshort.</summary>
+		/// <summary>Value held in v._jvalue.s.</summary>
 		t_jshort,
-		/// <summary>Value held in v._jint.</summary>
+		/// <summary>Value held in v._jvalue.i.</summary>
 		t_jint,
-		/// <summary>Value held in v._jlong.</summary>
+		/// <summary>Value held in v._jvalue.j.</summary>
 		t_jlong,
-		/// <summary>Value held in v._jfloat.</summary>
+		/// <summary>Value held in v._jvalue.f.</summary>
 		t_jfloat,
-		/// <summary>Value held in v._jdouble.</summary>
+		/// <summary>Value held in v._jvalue.d.</summary>
 		t_jdouble,
-		/// <summary>Value held in v._jchar.</summary>
+		/// <summary>Value held in v._jvalue.c.</summary>
 		t_jchar,
-		/// <summary>Value held in v._jboolean.</summary>
+		/// <summary>Value held in v._jvalue.z.</summary>
 		t_jboolean,
+		/// <summary>Value held in v._jvalue.l.</summary>
+		t_jobject,
 		/// <summary>Value held in v._BSTR.</summary>
 		t_BSTR,
 		/// <summary>Value held in v._pchar.</summary>
@@ -42,7 +44,11 @@ private:
 		/// <summary>Value held in v._pjchar.</summary>
 		t_pjchar,
 		/// <summary>Value held in v._jclass.</summary>
-		t_jclass
+		t_jclass,
+		/// <summary>Value held in v._jfieldID.</summary>
+		t_jfieldID,
+		/// <summary>Value held in v._jmethodID.</summary>
+		t_jmethodID
 	} type;
 
 	class CBSTRRef {
@@ -78,22 +84,17 @@ private:
 	/// leaks. Where this is not the case, it is noted in the documentation for each
 	/// element.</para>
 	union {
-		/// <summary>Java primitive byte.</summary>
-		jbyte _jbyte;
-		/// <summary>Java primitive short.</summary>
-		jshort _jshort;
-		/// <summary>Java primitive integer.</summary>
-		jint _jint;
-		/// <summary>Java primitive long.</summary>
-		jlong _jlong;
-		/// <summary>Java primitive float.</summary>
-		jfloat _jfloat;
-		/// <summary>Java primitive double.</summary>
-		jdouble _jdouble;
-		/// <summary>Java primitive boolean.</summary>
-		jboolean _jboolean;
-		/// <summary>Java primitive char.</summary>
-		jchar _jchar;
+		/// <summary>Java primitive types and object references.</summary>
+		jvalue _jvalue;
+#define _jbyte		_jvalue.b
+#define _jshort		_jvalue.s
+#define _jint		_jvalue.i
+#define _jlong		_jvalue.j
+#define _jfloat		_jvalue.f
+#define _jdouble	_jvalue.d
+#define _jboolean	_jvalue.z
+#define _jchar		_jvalue.c
+#define _jobject	_jvalue.l
 		/// <summary>Platform string.</summary>
 		///
 		/// <para>The instance here is reference counted and shared by multiple
@@ -109,6 +110,10 @@ private:
 		jchar *_pjchar;
 		/// <summary>Java class reference.</summary>
 		jclass _jclass;
+		/// <summary>Java field id.</summary>
+		jfieldID _jfieldID;
+		/// <summary>Java method id.</summary>
+		jmethodID _jmethodID;
 	} v;
 
 	void free ();
@@ -134,8 +139,10 @@ public:
 	__CONS (jlong)
 	__CONS (jfloat)
 	__CONS (jdouble)
-	__MTD (jchar)
 	__MTD (jboolean)
+	__MTD (jchar)
+	__MTD (jobject)
+	void get_jvalue (jvalue *pjValue) const;
 	void put_BSTR (BSTR bstr);
 	CJniValue (BSTR bstr);
 	__MTD2 (char *, pchar)
@@ -143,6 +150,8 @@ public:
 	__MTD (jstring)
 	__MTD2 (jchar *, pjchar)
 	__MTD (jclass)
+	__MTD (jfieldID)
+	__MTD (jmethodID)
 #undef __CONS
 #undef __MTD
 #undef __MTD2

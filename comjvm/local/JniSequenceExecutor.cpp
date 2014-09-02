@@ -27,15 +27,14 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 		std::vector<CJniValue> aValues (m_pOwner->Values ());
 		for (std::vector<JniOperation>::const_iterator itr = m_pOwner->Operations ()->begin (), end = m_pOwner->Operations ()->end (); itr != end; itr++) {
 			switch (*itr) {
-			case JniOperation::io_LoadArgument
-				: {
-					long lValueRef = *(params++);
-					if (m_cArgs > 0) {
-						m_cArgs--;
-						aValues[lValueRef].put_variant (m_pArgs++);
-					}
-					break;
+			case JniOperation::io_LoadArgument :
+				if (m_cArgs > 0) {
+					m_cArgs--;
+					aValues[cValue++].put_variant (m_pArgs++);
+				} else {
+					aValues[cValue++].put_nothing ();
 				}
+				break;
 			case JniOperation::io_LoadConstant :
 				aValues[cValue++] = *(constants++);
 				break;
@@ -141,14 +140,24 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				// TODO
 				_com_raise_error (E_NOTIMPL);
 				break;
-			case JniOperation::jni_AllocObject :
-				// TODO
-				_com_raise_error (E_NOTIMPL);
-				break;
-			case JniOperation::jni_NewObject :
-				// TODO
-				_com_raise_error (E_NOTIMPL);
-				break;
+			case JniOperation::jni_AllocObject
+				: {
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					aValues[cValue++].put_jobject (pEnv->AllocObject (clazz));
+					break;
+				}
+			case JniOperation::jni_NewObject
+				: {
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					jmethodID methodID = aValues[*(params++)].get_jmethodID ();
+					long cArgs = *(params++), l;
+					std::vector<jvalue> args (cArgs);
+					for (l = 0; l < cArgs; l++) {
+						aValues[*(params++)].get_jvalue (&args[l]);
+					}
+					aValues[cValue++].put_jobject (pEnv->NewObjectA (clazz, methodID, args.data ()));
+					break;
+				}
 			case JniOperation::jni_GetObjectClass :
 				// TODO
 				_com_raise_error (E_NOTIMPL);
@@ -157,18 +166,65 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				// TODO
 				_com_raise_error (E_NOTIMPL);
 				break;
-			case JniOperation::jni_GetMethodID :
-				// TODO
-				_com_raise_error (E_NOTIMPL);
-				break;
+			case JniOperation::jni_GetMethodID
+				: {
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					const char *pszName = aValues[*(params++)].get_pchar ();
+					const char *pszSig = aValues[*(params++)].get_pchar ();
+					aValues[cValue++].put_jmethodID (pEnv->GetMethodID (clazz, pszName, pszSig));
+					break;
+				}
 			case JniOperation::jni_CallMethod :
 				// TODO
 				_com_raise_error (E_NOTIMPL);
 				break;
-			case JniOperation::jni_CallNonVirtualMethod :
-				// TODO
-				_com_raise_error (E_NOTIMPL);
-				break;
+			case JniOperation::jni_CallNonVirtualMethod
+				: {
+					long lType = *(params++);
+					jobject obj = aValues[*(params++)].get_jobject ();
+					jclass clazz = aValues[*(params++)].get_jclass ();
+					jmethodID methodID = aValues[*(params++)].get_jmethodID ();
+					long cArgs = *(params++), l;
+					std::vector<jvalue> args(cArgs);
+					for (l = 0; l < cArgs; l++) {
+						aValues[*(params++)].get_jvalue (&args[l]);
+					}
+					switch (lType) {
+					case JTYPE_BOOLEAN :
+						aValues[*(params++)].put_jboolean (pEnv->CallNonvirtualBooleanMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_BYTE :
+						aValues[*(params++)].put_jbyte (pEnv->CallNonvirtualByteMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_CHAR :
+						aValues[*(params++)].put_jchar (pEnv->CallNonvirtualCharMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_DOUBLE :
+						aValues[*(params++)].put_jdouble (pEnv->CallNonvirtualDoubleMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_FLOAT :
+						aValues[*(params++)].put_jfloat (pEnv->CallNonvirtualFloatMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_INT :
+						aValues[*(params++)].put_jint (pEnv->CallNonvirtualIntMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_LONG :
+						aValues[*(params++)].put_jlong (pEnv->CallNonvirtualLongMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_OBJECT :
+						aValues[*(params++)].put_jobject (pEnv->CallNonvirtualObjectMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_SHORT :
+						aValues[*(params++)].put_jshort (pEnv->CallNonvirtualShortMethodA (obj, clazz, methodID, args.data ()));
+						break;
+					case JTYPE_VOID :
+						pEnv->CallNonvirtualVoidMethodA (obj, clazz, methodID, args.data ());
+						break;
+					default :
+						_com_raise_error (E_INVALIDARG);
+					}
+					break;
+				}
 			case JniOperation::jni_GetFieldID :
 				// TODO
 				_com_raise_error (E_NOTIMPL);

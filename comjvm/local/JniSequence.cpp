@@ -640,10 +640,10 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgRefs[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				}
 				*plObjectRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
@@ -669,14 +669,14 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
 	if (cArgs && !alArgRefs) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_CallMethod, lType, lObjRef, lMethodIDRef);
+		hr = AddOperation (JniOperation::jni_CallMethod, lType, lObjRef, lMethodIDRef, cArgs);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgRefs[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				}
 				*plResultRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
@@ -699,15 +699,15 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod (
 	if (cArgs && !alArgRefs) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_CallNonVirtualMethod, lType, lObjRef, lClassRef, lMethodIDRef);
+		hr = AddOperation (JniOperation::jni_CallNonVirtualMethod, lType, lObjRef, lClassRef, lMethodIDRef, cArgs);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgRefs[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
-				*plResultRef = m_cValue++;
+				}
+				*plResultRef = (lType != JTYPE_VOID) ? m_cValue++ : -1;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
 				hr = E_OUTOFMEMORY;
@@ -733,14 +733,14 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod (
 	if (cArgs && !alArgsRef) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_CallStaticMethod, lType, lClassRef, lMethodIDRef);
+		hr = AddOperation (JniOperation::jni_CallStaticMethod, lType, lClassRef, lMethodIDRef, cArgs);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgsRef[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				}
 				*plResultRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
