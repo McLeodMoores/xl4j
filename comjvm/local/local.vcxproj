@@ -285,6 +285,8 @@
     <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="JvmConnector.cpp" />
     <ClCompile Include="local.cpp" />
+    <ClCompile Include="JniSequenceExecutor.cpp" />
+    <ClCompile Include="JniValue.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

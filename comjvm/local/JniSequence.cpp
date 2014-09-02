@@ -9,255 +9,6 @@
 #include "JniSequence.h"
 #include "Internal.h"
 
-void CJniValue::free () {
-	switch (type) {
-	case t_BSTR :
-		/******** THIS REALLY NEEDS FIXING! ********/
-		//SysFreeString (v._BSTR);
-		break;
-	}
-}
-
-void CJniValue::put_variant (const VARIANT *pvValue) {
-	switch (pvValue->vt) {
-	case VT_I4 :
-		put_jint (pvValue->intVal);
-		break;
-	case VT_BOOL:
-		put_jboolean (pvValue->boolVal == VARIANT_FALSE ? false : true);
-		break;
-	case VT_BSTR:
-		put_BSTR(pvValue->bstrVal); // I'm assuming the caller thinks it's up to us to free it?
-		break;
-	case VT_I1:
-		put_jbyte(pvValue->bVal);
-		break;
-	case VT_I2:
-		put_jshort(pvValue->iVal);
-		break;
-	case VT_I8:
-		put_jlong(pvValue->llVal);
-		break;
-	case VT_R4:
-		put_jfloat(pvValue->fltVal);
-		break;
-	case VT_R8:
-		put_jdouble(pvValue->dblVal);
-		break;
-	case VT_UI8:
-		put_HANDLE(pvValue->ullVal);
-		break;
-	case VT_SAFEARRAY | VT_UI1: {
-			SAFEARRAY *safeArray = pvValue->parray;
-			if (safeArray->cDims != 1) {
-				assert (0);
-			}
-			put_jbyteBuffer ((jbyte *)safeArray->pvData, safeArray->cbElements);
-		} break;
-	default :
-		assert (0);
-		break;
-	}
-}
-
-void CJniValue::get_variant (VARIANT *pvValue) const {
-	switch (type) {
-	case t_jint :
-		pvValue->vt = VT_I4;
-		pvValue->intVal = v._jvalue.i;
-		break;
-	case t_jsize :
-		pvValue->vt = VT_I4;
-		pvValue->intVal = v._jvalue.i;
-		break;
-	case t_jstring:  // TODO
-		pvValue->vt = VT_BSTR;
-		pvValue->bstrVal = SysAllocString ((OLECHAR *) v._jvalue.l);
-		_com_raise_error (E_NOTIMPL);
-		break;
-	case t_jboolean:
-		pvValue->vt = VT_BOOL;
-		pvValue->boolVal = (v._jvalue.z == JNI_TRUE) ? VARIANT_TRUE : VARIANT_FALSE;
-		break;
-	case t_jbyte:
-		pvValue->vt = VT_I1;
-		pvValue->bVal = v._jvalue.b;
-		break;
-	case t_jchar:
-		pvValue->vt = VT_UI2; // jchar as unsigned short, effectively.
-		pvValue->uiVal = v._jvalue.c;
-		break;
-	case t_jshort:
-		pvValue->vt = VT_I2; // signed short.
-		pvValue->iVal = v._jvalue.s;
-		break;
-	case t_jlong:
-		pvValue->vt = VT_I8;
-		pvValue->llVal = v._jvalue.j;
-		break;
-	case t_jfloat:
-		pvValue->vt = VT_R4;
-		pvValue->fltVal = v._jvalue.f;
-		break;
-	case t_jdouble:
-		pvValue->vt = VT_R8;
-		pvValue->dblVal = v._jvalue.d;
-		break;
-	case t_jbyteBuffer: {
-			SAFEARRAYBOUND bounds[1];
-			bounds[0].cElements = v._jbyteBuffer._jsize;
-			bounds[0].lLbound = 0;
-			pvValue->vt = VT_SAFEARRAY | VT_UI1;
-			pvValue->parray = SafeArrayCreate (VT_UI1, 1, bounds);
-			void *pArrayData = NULL;
-			SafeArrayAccessData (pvValue->parray, &pArrayData);
-			memcpy (pArrayData, v._jbyteBuffer._pjbyte, v._jbyteBuffer._jsize);
-			SafeArrayUnaccessData (pvValue->parray);
-		} break;
-	case t_jclass:
-	case t_jobject:
-	case t_jmethodID:
-	case t_jfieldID:
-	case t_jobjectRefType:
-	case t_jthrowable:
-	case t_jobjectArray:
-	case t_jbooleanArray:
-	case t_jbyteArray:
-	case t_jcharArray:
-	case t_jshortArray:
-	case t_jintArray:
-	case t_jlongArray:
-	case t_jfloatArray:
-	case t_jdoubleArray:
-	case t_jweak:
-		pvValue->vt = VT_UI8;
-		pvValue->ullVal = (ULONGLONG) v._jvalue.l; // ick
-		break;
-	case t_pjchar: 
-		pvValue->vt = VT_BSTR;
-		pvValue->bstrVal = SysAllocString ((const OLECHAR*)v._pjchar);
-		if (!pvValue->bstrVal) {
-			pvValue->vt = VT_NULL;
-			_com_raise_error (E_OUTOFMEMORY);
-		}
-		break;
-	default :
-		_com_raise_error (E_INVALIDARG);
-		break;
-	}
-}
-
-void CJniValue::get_jvalue (jvalue *pValue) const {
-	switch (type) {
-	// these cases are not types you can pass to a Java method.
-	case t_jmethodID:
-	case t_jfieldID:
-	case t_jobjectRefType:
-	case t_jbyteBuffer:
-	case t_BSTR:
-	case t_pjchar:
-		_com_raise_error (E_INVALIDARG); // needs to have been allocated already on the java side
-		break;
-	// these are all types you can pass to a Java method. jsize is a bit marginal.
-	case t_jsize:
-	case t_jint:
-	case t_jstring:
-	case t_jboolean:
-	case t_jchar:
-	case t_jshort:
-	case t_jlong:
-	case t_jfloat:
-	case t_jdouble:
-	case t_jclass:
-	case t_jobject:
-	case t_jthrowable:
-	case t_jobjectArray:
-	case t_jbooleanArray:
-	case t_jbyteArray:
-	case t_jcharArray:
-	case t_jshortArray:
-	case t_jintArray:
-	case t_jlongArray:
-	case t_jfloatArray:
-	case t_jdoubleArray:
-	case t_jweak:
-		*pValue = v._jvalue;
-		break;
-	default:
-		assert (0);
-		break;
-	}
-}
-
-
-void CJniValue::copy_into (CJniValue &value) const {
-	switch (type) {
-	case t_BSTR :
-		value.put_BSTR (v._BSTR);
-		break;
-	default :
-		value.reset (type);
-		value.v = v;
-		break;
-	}
-}
-
-CJniValue::CJniValue (BSTR bstr)
-: type (t_BSTR) {
-	v._BSTR = SysAllocStringLen (bstr, SysStringLen (bstr));
-	if (!v._BSTR) throw std::bad_alloc ();
-}
-
-void CJniValue::put_BSTR (BSTR bstr) {
-	BSTR bstrCopy = SysAllocStringLen (bstr, SysStringLen (bstr));
-	if (bstrCopy) {
-		reset (t_BSTR);
-		v._BSTR = bstrCopy;
-	} else {
-		reset (t_nothing);
-	}
-}
-
-void CJniValue::put_HANDLE (ULONGLONG handle) {
-	if (handle) {
-		reset (t_HANDLE);
-		v._HANDLE = handle;
-    } else {
-		reset (t_nothing);
-	}
-}
-
-const jchar *CJniValue::get_pjchar () const {
-	switch (type) {
-	case t_BSTR :
-		return (unsigned short*)v._BSTR;
-	case t_pjchar :
-		return v._pjchar;
-	}
-	assert (0);
-	return 0;
-}
-
-/// Caller must free char * returned when finished with CoTaskMemFree - note there is a bug in ConvertBSTRToString in early VS.
-const char *CJniValue::get_alloc_pchar() const { 
-	switch (type) {
-	case t_BSTR:
-		return _com_util::ConvertBSTRToString(v._BSTR); 
-	}
-	assert(0);
-	return 0;
-}
-
-HRESULT CJniValue::load (std::vector<CJniValue> &aValue) {
-	try {
-		aValue.push_back (*this);
-		type = t_nothing;
-		return S_OK;
-	} catch (std::bad_alloc) {
-		return E_OUTOFMEMORY;
-	}
-}
-
 CJniSequence::CJniSequence (CJvm *pJvm)
 	: m_lRefCount (1), m_pJvm (pJvm), m_cValue (0), m_cExecuting (0), m_cArgument (0), m_cResult (0) {
 	IncrementActiveObjectCount ();
@@ -311,7 +62,7 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam) {
 	}
 }
 
-/// <summary>Add an operation to the run queue with a two parameters.</summary>
+/// <summary>Adds an operation to the run queue with two parameters.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
 ///
@@ -336,36 +87,98 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long l
 	}
 }
 
-
-/// <summary>Add an operation to the run queue with a two parameters.</summary>
+/// <summary>Adds an operation to the run queue with three parameters.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
 ///
 /// <param name="operation">Operation to add</param>
 /// <param name="lParam1">First parameter index</param>
 /// <param name="lParam2">Second parameter index</param>
-/// <param name="lParam2">Third parameter index</param>
+/// <param name="lParam3">Third parameter index</param>
 /// <returns>S_OK if successful, an error code otherwise.</returns>
-HRESULT CJniSequence::AddOperation(JniOperation operation, long lParam1, long lParam2, long lParam3) {
+HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3) {
 	bool bOperation = false;
-	int iParam = 0;
+	int cParam = 0;
 	try {
-		m_aOperation.push_back(operation);
+		m_aOperation.push_back (operation);
 		bOperation = true;
-		m_aParam.push_back(lParam1);
-		iParam++;
-		m_aParam.push_back(lParam2);
-		iParam++;
-		m_aParam.push_back(lParam3);
+		m_aParam.push_back (lParam1);
+		cParam++;
+		m_aParam.push_back (lParam2);
+		cParam++;
+		m_aParam.push_back (lParam3);
 		return S_OK;
 	}
 	catch (std::bad_alloc) {
-		if (bOperation) m_aOperation.pop_back();
-		if (iParam) { // pop off anything we did before the exception.
-			for (int i = 0; i < iParam; i++) {
-				m_aParam.pop_back();
-			}
-		}
+		if (bOperation) m_aOperation.pop_back ();
+		while (cParam-- > 0) m_aParam.pop_back ();
+		return E_OUTOFMEMORY;
+	}
+}
+
+/// <summary>Adds an operation to the run queue with four parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="lParam1">First parameter index</param>
+/// <param name="lParam2">Second parameter index</param>
+/// <param name="lParam3">Third parameter index</param>
+/// <param name="lParam4">Fourth parameter index</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4) {
+	bool bOperation = false;
+	int cParam = 0;
+	try {
+		m_aOperation.push_back (operation);
+		bOperation = true;
+		m_aParam.push_back (lParam1);
+		cParam++;
+		m_aParam.push_back (lParam2);
+		cParam++;
+		m_aParam.push_back (lParam3);
+		cParam++;
+		m_aParam.push_back (lParam4);
+		return S_OK;
+	}
+	catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back ();
+		while (cParam-- > 0) m_aParam.pop_back ();
+		return E_OUTOFMEMORY;
+	}
+}
+
+/// <summary>Adds an operation to the run queue with five parameters.</summary>
+///
+/// <para>The caller must hold the critical section.</para>
+///
+/// <param name="operation">Operation to add</param>
+/// <param name="lParam1">First parameter index</param>
+/// <param name="lParam2">Second parameter index</param>
+/// <param name="lParam3">Third parameter index</param>
+/// <param name="lParam4">Fourth parameter index</param>
+/// <param name="lParam5">Fifth parameter index</param>
+/// <returns>S_OK if successful, an error code otherwise.</returns>
+HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4, long lParam5) {
+	bool bOperation = false;
+	int cParam = 0;
+	try {
+		m_aOperation.push_back (operation);
+		bOperation = true;
+		m_aParam.push_back (lParam1);
+		cParam++;
+		m_aParam.push_back (lParam2);
+		cParam++;
+		m_aParam.push_back (lParam3);
+		cParam++;
+		m_aParam.push_back (lParam4);
+		cParam++;
+		m_aParam.push_back (lParam5);
+		return S_OK;
+	}
+	catch (std::bad_alloc) {
+		if (bOperation) m_aOperation.pop_back ();
+		while (cParam-- > 0) m_aParam.pop_back ();
 		return E_OUTOFMEMORY;
 	}
 }
@@ -380,39 +193,6 @@ void odprintf (LPCTSTR sFormat, ...)
 		OutputDebugString (buffer);
 	else
 		OutputDebugString (_T ("StringCbVPrintf error."));
-}
-
-/// <summary>Add an operation to the run queue with an array of parameters.</summary>
-///
-/// <para>The caller must hold the critical section.</para>
-///
-/// <param name="operation">Operation to add</param>
-/// <param name="size">Number of parameter incides in following array</param>
-/// <param name="plParam">array of parameter indices</param>
-/// <returns>S_OK if successful, an error code otherwise.</returns>
-HRESULT CJniSequence::AddOperation (JniOperation operation, long size, long *lParam1) {
-	bool bOperation = false;
-	int iParam = 0;
-	odprintf (L"AddOperation %d args\n", size);
-	try {
-		m_aOperation.push_back (operation);
-		bOperation = true;
-		for (int i = 0; i < size; i++) {
-			odprintf (TEXT ("  pushing %d\n"), lParam1[i]);
-			m_aParam.push_back (lParam1[i]);
-			iParam++;
-		}
-		return S_OK;
-	}
-	catch (std::bad_alloc) {
-		if (bOperation) m_aOperation.pop_back ();
-		if (iParam) {
-			for (int i = 0; i < iParam; i++) {
-				m_aParam.pop_back ();
-			}
-		}
-		return E_OUTOFMEMORY;
-	}
 }
 
 /// <summary>Loads a constant into the value buffer.</summary>
@@ -496,7 +276,7 @@ ULONG STDMETHODCALLTYPE CJniSequence::Release () {
 	) {
 	if (!pcArgs) return E_POINTER;
 	EnterCriticalSection (&m_cs);
-	*pcArgs = (long)m_cArgument;
+	*pcArgs = m_cArgument;
 	LeaveCriticalSection (&m_cs);
 	return S_OK;
 }
@@ -509,289 +289,6 @@ ULONG STDMETHODCALLTYPE CJniSequence::Release () {
 	*pcResults = (long)m_cResult;
 	LeaveCriticalSection (&m_cs);
 	return S_OK;
-}
-
-CJniSequenceExecutor::CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults)
-: m_lRefCount (1), m_pOwner (pOwner), m_cArgs (cArgs), m_pArgs (pArgs), m_cResults (cResults), m_pResults (pResults) {
-	if (!pOwner) {
-		throw std::logic_error ("JniSequenceExecutor called with null JniSequence");
-	}
-	m_hSemaphore = pOwner->BeginExecution ();
-	pOwner->AddRef ();
-}
-
-CJniSequenceExecutor::~CJniSequenceExecutor () {
-	m_pOwner->EndExecution (m_hSemaphore);
-	m_pOwner->Release ();
-}
-
-HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
-	try {
-		long cValue = 0;
-		TCHAR buf[4096];
-		_stprintf (buf, TEXT ("this = %x\n"), this);
-		OutputDebugString (buf);
-		odprintf (TEXT ("od this = %x\n"), this);
-		std::vector<long>::const_iterator params = m_pOwner->Params ()->begin ();
-		std::vector<CJniValue>::const_iterator constants = m_pOwner->Constants ()->begin ();
-		std::vector<CJniValue> aValues (m_pOwner->Values ());
-		for (std::vector<JniOperation>::const_iterator itr = m_pOwner->Operations ()->begin (), end = m_pOwner->Operations ()->end (); itr != end; itr++) {
-			fprintf (stderr, "operation %x\n", *itr);
-			switch (*itr) {
-				case JniOperation::io_LoadArgument
-					: {
-					if (m_cArgs > 0) {
-						m_cArgs--;
-						aValues[cValue++].put_variant (m_pArgs++);
-					}
-					break;
-				}
-				case JniOperation::io_LoadConstant:
-					(constants++)->copy_into (aValues[cValue++]);
-					break;
-				case JniOperation::jni_GetStringChars
-					: {
-						jstring str = aValues[*(params++)].get_jstring ();
-						jboolean isCopy;
-						long lIsCopyRef = *(params++);
-						if (lIsCopyRef == cValue) {
-							cValue++;
-						}
-						aValues[cValue++].put_pjchar (pEnv->GetStringChars (str, &isCopy));
-						if (lIsCopyRef >= 0) {
-							aValues[lIsCopyRef].put_jboolean (isCopy);
-						}
-						break;
-					}
-				case JniOperation::jni_ReleaseStringChars
-					: {
-						jstring str = aValues[*(params++)].get_jstring ();
-						const jchar *chars = aValues[*(params++)].get_pjchar ();
-						pEnv->ReleaseStringChars (str, chars);
-						break;
-					}
-				case JniOperation::io_StoreResult
-					: {
-					long lValueRef = *(params++);
-					if (m_cResults > 0) {
-						m_cResults--;
-						aValues[lValueRef].get_variant (m_pResults++);
-					}
-					break;
-				}
-				case JniOperation::jni_GetVersion:
-					aValues[cValue++].put_jint (pEnv->GetVersion ());
-					break;
-				case JniOperation::jni_NewString
-					: {
-					const jchar *unicode = aValues[*(params++)].get_pjchar ();
-					jsize len = aValues[*(params++)].get_jsize ();
-					aValues[cValue++].put_jstring (pEnv->NewString (unicode, len));
-					break;
-				}
-				case JniOperation::jni_GetStringLength
-					: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					aValues[cValue++].put_jsize (pEnv->GetStringLength (str));
-					break;
-				}
-				case JniOperation::jni_FindClass
-					: {
-					const char *name = aValues[*(params++)].get_alloc_pchar ();
-					jclass clazz = pEnv->FindClass (name);
-					aValues[cValue++].put_jclass (clazz);
-					//CoTaskMemFree ((LPVOID) name);
-					break;
-				}
-				case JniOperation::jni_DefineClass
-					: {
-					const char *name = aValues[*(params++)].get_alloc_pchar ();
-					jobject loader = aValues[*(params++)].get_jobject ();
-					jbyte *buffer = aValues[*(params)].get_jbyteBuffer (); // note we don't ++ here because we use it twice
-					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize ();
-					jclass clazz = pEnv->DefineClass (name, loader, buffer, szBuffer);
-					aValues[cValue++].put_jclass (clazz);
-					//CoTaskMemFree ((LPVOID) name);
-					break;
-				}
-				case JniOperation::jni_AllocObject
-					: {
-					jclass clazz = aValues[*(params++)].get_jclass ();
-					jobject object = pEnv->AllocObject (clazz);
-					aValues[cValue++].put_jobject (object);
-					break;
-				}
-				case JniOperation::jni_NewObjectA
-					: {
-					jclass clazz = aValues[*(params++)].get_jclass ();
-					jmethodID methodId = aValues[*(params++)].get_jmethodID ();
-					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
-					jvalue *arguments = new jvalue[size];
-					for (int i = 0; i < size; i++) {
-						long index = *(params++);
-						TCHAR buf[4096];
-						_stprintf (buf, TEXT ("index = %d"), index);
-						OutputDebugString (buf);
-						aValues[index].get_jvalue (&arguments[i]);
-					}
-					jobject object = pEnv->NewObjectA (clazz, methodId, arguments);
-					delete [] arguments;
-					aValues[cValue++].put_jobject (object);
-					break;
-				}
-				case JniOperation::jni_NewLocalRef
-					: {
-					jobject obj = aValues[*(params++)].get_jobject ();
-					jobject localRef = pEnv->NewLocalRef (obj);
-					aValues[cValue++].put_jobject (localRef);
-					break;
-				}
-				case JniOperation::jni_DeleteLocalRef
-					: {
-					jobject localRef = aValues[*(params++)].get_jobject ();
-					pEnv->DeleteLocalRef (localRef);
-					break;
-				}
-				case JniOperation::jni_NewGlobalRef
-					: {
-					jobject localRef = aValues[*(params++)].get_jobject ();
-					jobject globalRef = pEnv->NewGlobalRef (localRef);
-					aValues[cValue++].put_jobject (globalRef);
-					break;
-				}
-				case JniOperation::jni_DeleteGlobalRef
-					: {
-					jobject globalRef = aValues[*(params++)].get_jobject ();
-					pEnv->DeleteGlobalRef (globalRef);
-					break;
-				}
-				case JniOperation::jni_PushLocalFrame
-					: {
-					jint capacity = aValues[*(params++)].get_jint ();
-					jint result = pEnv->PushLocalFrame (capacity);
-					aValues[cValue++].put_jint (result);
-					break;
-				}
-				case JniOperation::jni_PopLocalFrame
-					: {
-					jobject frame = aValues[*(params++)].get_jobject ();
-					jobject previousFrame = pEnv->PopLocalFrame (frame);
-					aValues[cValue++].put_jobject (frame);
-				}
-				case JniOperation::jni_EnsureLocalCapacity
-					: {
-					jint capacity = aValues[*(params++)].get_jint ();
-					jint result = pEnv->EnsureLocalCapacity (capacity);
-					aValues[cValue++].put_jint (result);
-					break;
-				}
-				case JniOperation::jni_ExceptionOcurred
-					: {
-					jthrowable throwable = pEnv->ExceptionOccurred ();
-					aValues[cValue++].put_jthrowable (throwable);
-					break;
-				}
-				case JniOperation::jni_ExceptionDescribe
-					: {
-					pEnv->ExceptionDescribe();
-					break;
-				}
-				case JniOperation::jni_ExceptionClear
-					: {
-					pEnv->ExceptionClear ();
-					break;
-				}
-				case JniOperation::jni_GetMethodID
-					: {
-					jclass clazz = aValues[*(params++)].get_jclass ();
-					const char *methodName = aValues[*(params++)].get_alloc_pchar ();
-					const char *signature = aValues[*(params++)].get_alloc_pchar ();
-					jmethodID methodID = pEnv->GetMethodID (clazz, methodName, signature);
-					odprintf (L"GetMethodID: putting value %p in slot %d", methodID, cValue);
-					aValues[cValue++].put_jmethodID (methodID);
-					//CoTaskMemFree ((LPVOID) methodName);
-					//CoTaskMemFree ((LPVOID) signature);
-					break;
-				}
-				case JniOperation::jni_CallMethod
-					: {
-					long jtype = (long) aValues[*(params++)].get_jint ();
-					jobject object = aValues[*(params++)].get_jobject ();
-					jmethodID methodId = aValues[*(params++)].get_jmethodID ();
-					jsize size = aValues[*(params++)].get_jsize (); //m_pOwner->Params ()->size ();
-					jvalue *arguments = new jvalue[size];
-					for (int i = 0; i < size; i++) {
-						(aValues[*(params++)].get_jvalue (&arguments[i]));
-					}
-					switch (jtype) {
-						case JTYPE_INT: {
-							jint result = pEnv->CallIntMethod (object, methodId, arguments);
-							aValues[cValue++].put_jint (result);
-							break;
-						}
-						case JTYPE_BOOLEAN: {
-							jboolean result = pEnv->CallBooleanMethod (object, methodId, arguments);
-							aValues[cValue++].put_jboolean (result);
-							break;
-						}
-						case JTYPE_CHAR: {
-							jchar result = pEnv->CallCharMethod (object, methodId, arguments);
-							aValues[cValue++].put_jchar (result);
-						}
-						case JTYPE_SHORT: {
-							jshort result = pEnv->CallShortMethod (object, methodId, arguments);
-							aValues[cValue++].put_jshort (result);
-						}
-						case JTYPE_LONG: {
-							jlong result = pEnv->CallLongMethod (object, methodId, arguments);
-							aValues[cValue++].put_jlong (result);
-						}
-						case JTYPE_FLOAT: {
-							jfloat result = pEnv->CallFloatMethod (object, methodId, arguments);
-							aValues[cValue++].put_jfloat (result);
-						}
-						case JTYPE_DOUBLE: {
-							jdouble result = pEnv->CallDoubleMethod (object, methodId, arguments);
-							aValues[cValue++].put_jdouble (result);
-						}
-						case JTYPE_OBJECT:	{
-							jobject result = pEnv->CallObjectMethod (object, methodId, arguments);
-							aValues[cValue++].put_jobject (result);
-						}
-						default:
-							delete arguments;
-							_com_raise_error (E_INVALIDARG);
-							break;
-					}
-					delete arguments;
-					break;
-				}
-			}
-		}
-		m_hRunResult = S_OK;
-	} catch (std::bad_alloc) {
-		m_hRunResult = E_OUTOFMEMORY;
-	}
-	ReleaseSemaphore (m_hSemaphore, 1, NULL);
-	return m_hRunResult;
-}
-
-HRESULT CJniSequenceExecutor::Wait () {
-	DWORD dwStatus = WaitForSingleObject (m_hSemaphore, INFINITE);
-	if (dwStatus == WAIT_OBJECT_0) {
-		return m_hRunResult;
-	} else {
-		return E_FAIL;
-	}
-}
-
-void CJniSequenceExecutor::AddRef () {
-	InterlockedIncrement (&m_lRefCount);
-}
-
-void CJniSequenceExecutor::Release () {
-	long lCount = InterlockedDecrement (&m_lRefCount);
-	if (!lCount) delete this;
 }
 
 static HRESULT APIENTRY _Execute (LPVOID lpData, JNIEnv *pEnv) {
@@ -819,19 +316,17 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 		for (l = 0; l < cResults; l++) {
 			VariantClear (aResults + l);
 		}
-		CJniSequenceExecutor *pExecutor = new CJniSequenceExecutor (this, cArgs, aArgs, cResults, aResults);
-		TCHAR buf[4096];
-		_stprintf (buf, TEXT("CJniSequenceExecutor = %x\n"), pExecutor);
-		OutputDebugString (buf);
-		pExecutor->AddRef ();
+		CJniSequenceExecutor *pExecutor = new CJniSequenceExecutor (this, cArgs, aArgs, cResults, aResults); // RC1
+		pExecutor->AddRef (); // RC2
 		hr = m_pJvm->Execute (_Execute, pExecutor);
 		if (SUCCEEDED (hr)) {
+			// The executor will release RC2
 			pExecutor->Wait ();
 			hr = S_OK;
 		} else {
-			//pExecutor->Release (); JIM DOUBLE RELEASE?
+			pExecutor->Release (); // Release RC2
 		}
-		pExecutor->Release ();
+		pExecutor->Release (); // Release RC1
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
@@ -848,13 +343,158 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Execute (
 	LeaveCriticalSection (&m_cs); \
 	return hr
 
+#define JNI_METHOD_IMPL_V(_name_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ () { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_0(_name_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+				} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V1(_name_, _arg1_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_1(_name_, _arg1_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+				} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V2(_name_, _arg1_, _arg2_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_2(_name_, _arg1_, _arg2_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+				} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V3(_name_, _arg1_, _arg2_, _arg3_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_3(_name_, _arg1_, _arg2_, _arg3_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+				} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V4(_name_, _arg1_, _arg2_, _arg3_, _arg4_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+	/* [in] */ long _arg4_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_, _arg4_); \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_4(_name_, _arg1_, _arg2_, _arg3_, _arg4_, _result_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+	/* [in] */ long _arg4_, \
+    /* [out] */ long *_result_ \
+	) { \
+	if (!_result_) return E_POINTER; \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_, _arg4_); \
+		if (SUCCEEDED (hr)) { \
+			*_result_ = m_cValue++; \
+				} \
+	} \
+	__RETURN_HR; \
+}
+
+#define JNI_METHOD_IMPL_V5(_name_, _arg1_, _arg2_, _arg3_, _arg4_, _arg5_) \
+HRESULT STDMETHODCALLTYPE CJniSequence::_name_ ( \
+	/* [in] */ long _arg1_, \
+	/* [in] */ long _arg2_, \
+	/* [in] */ long _arg3_, \
+	/* [in] */ long _arg4_, \
+	/* [in] */ long _arg5_) { \
+	__JNI_OPERATION { \
+		hr = AddOperation (JniOperation::_name_, _arg1_, _arg2_, _arg3_, _arg4_, _arg5_); \
+	} \
+	__RETURN_HR; \
+}
+
+
 HRESULT STDMETHODCALLTYPE CJniSequence::Argument ( 
     /* [retval][out] */ long *plValueRef
 	) {
 	__JNI_OPERATION {
 		hr = AddOperation(JniOperation::io_LoadArgument);
 		if (SUCCEEDED(hr)) {
-			*plValueRef = m_cValue++; // m_cArgument++; this was wrong!
+			m_cArgument++;
+			*plValueRef = m_cValue++;
 		}
 	}
 	__RETURN_HR;
@@ -1005,255 +645,78 @@ HRESULT STDMETHODCALLTYPE CJniSequence::DoubleConstant (
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DefineClass ( 
-    /* [in] */ long lNameRef,
-    /* [in] */ long lLoaderRef,
-    /* [in] */ long lBufRef,
-    /* [in] */ long lLenRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	// TODO
-	__JNI_OPERATION{
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_0 (jni_GetVersion, plValueRef)
+JNI_METHOD_IMPL_4 (jni_DefineClass, lNameRef, lLoaderRef, lBufRef, lLenRef, plClassRef)
+JNI_METHOD_IMPL_1 (jni_FindClass, lNameRef, plClassRef)
+JNI_METHOD_IMPL_1 (jni_FromReflectedMethod, lMethodRef, plMethodIDRef)
+JNI_METHOD_IMPL_1 (jni_FromReflectedField, lFieldRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_ToReflectedMethod, lClsRef, lMethodIDRef, lIsStaticRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_GetSuperclass, lSubRef, plClassRef)
+JNI_METHOD_IMPL_2 (jni_IsAssignableFrom, lSubRef, lSupRef, plBooleanRef)
+JNI_METHOD_IMPL_3 (jni_ToReflectedField, lClsRef, lFieldIDRef, lIsStaticRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_Throw, lObjRef, plIntRef)
+JNI_METHOD_IMPL_2 (jni_ThrowNew, lClassRef, lMsgRef, plIntRef)
+JNI_METHOD_IMPL_0 (jni_ExceptionOccurred, plThrowableRef)
+JNI_METHOD_IMPL_V (jni_ExceptionDescribe)
+JNI_METHOD_IMPL_V (jni_ExceptionClear)
+JNI_METHOD_IMPL_V1 (jni_FatalError, lMsgRef)
+JNI_METHOD_IMPL_1 (jni_PushLocalFrame, lCapacityRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_PopLocalFrame, lResultRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_NewGlobalRef, lObjRef, plObjectRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteGlobalRef, lGrefRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteLocalRef, lObjRef)
+JNI_METHOD_IMPL_2 (jni_IsSameObject, lObj1Ref, lObj2Ref, plBooleanRef)
+JNI_METHOD_IMPL_1 (jni_NewLocalRef, lRefRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_EnsureLocalCapacity, lCapacityRet, plIntRef)
+JNI_METHOD_IMPL_1 (jni_GetObjectClass, lObjRef, plClassRef)
+JNI_METHOD_IMPL_2 (jni_IsInstanceOf, lObjRef, lClassRef, plBooleanRef)
+JNI_METHOD_IMPL_3 (jni_GetFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_GetField, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_V4 (jni_SetField, lType, lObjRef, lFieldIDRef, lValueRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticField, lType, lClassRef, lFieldIDRef, plValueRef)
+JNI_METHOD_IMPL_V4 (jni_SetStaticField, lType, lClassRef, lFieldIDRef, lValueRef)
+JNI_METHOD_IMPL_2 (jni_NewString, lUnicodeRef, lSizeRef, plStringRef)
+JNI_METHOD_IMPL_1 (jni_GetStringLength, lStrRef, plSizeRef)
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringChars, lStrRef, lCharsRef)
+JNI_METHOD_IMPL_1 (jni_NewStringUTF, lUtfRef, plStringRef)
+JNI_METHOD_IMPL_1 (jni_GetStringUTFLength, lStrRef, plSizeRef)
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringUTFChars, lStrRef, lCharsRef)
+JNI_METHOD_IMPL_1 (jni_GetArrayLength, lArrayRef, plSizeRef)
+JNI_METHOD_IMPL_3 (jni_NewObjectArray, lLenRef, lClassRef, lInitRef, plObjectArrayRef)
+JNI_METHOD_IMPL_2 (jni_GetObjectArrayElement, lArrayRef, lIndexRef, plObjectRef)
+JNI_METHOD_IMPL_V3 (jni_SetObjectArrayElement, lArrayRef, lIndexRef, lValRef)
+JNI_METHOD_IMPL_2 (jni_NewArray, lType, lLenRef, plArrayRef)
+JNI_METHOD_IMPL_V4 (jni_ReleaseArrayElements, lType, lArrayRef, lElemsRef, lModeRef)
+JNI_METHOD_IMPL_V5 (jni_GetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
+JNI_METHOD_IMPL_V5 (jni_SetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
+JNI_METHOD_IMPL_3 (jni_RegisterNatives, lClassRef, lMethodsRef, lNMethodsRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_UnregisterNatives, lClassRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_MonitorEntry, lObjRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_MonitorExit, lObjRef, plIntRef)
+JNI_METHOD_IMPL_V4 (jni_GetStringRegion, lStrRef, lStartRef, lLenRef, lBufRef)
+JNI_METHOD_IMPL_V4 (jni_GetStringUTFRegion, lStrRef, lStartRef, lLenRef, lBufRef)
+JNI_METHOD_IMPL_V3 (jni_ReleasePrimitiveArrayCritical, lArrayRef, lCArrayRef, lModeRef)
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringCritical, lStringRef, lCStringRef)
+JNI_METHOD_IMPL_1 (jni_NewWeakGlobalRef, lObjRef, plWeakRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteWeakGlobalRef, lRefRef)
+JNI_METHOD_IMPL_0 (jni_ExceptionCheck, plBooleanRef)
+JNI_METHOD_IMPL_2 (jni_NewDirectByteBuffer, lAddressRef, lCapacityRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_GetDirectBufferAddress, lBufRef, plVoidRef)
+JNI_METHOD_IMPL_1 (jni_GetDirectBufferCapacity, lBufRef, plLongRef)
+JNI_METHOD_IMPL_1 (jni_GetObjectRefType, lObjRef, plObjectRefTypeRef)
+/// <summary>Get the method ID for a method</summary>
+///
+/// <para>The caller must not hold the critical section.</para>
+///
+/// <param name="lClassRef">The class reference index</param>
+/// <param name="lNameRef">The name of the method's index</param>
+/// <param name="lSigRef">The signature string of the method's index</param>
+/// <param name="plMethodIDRef">Pointer to long to hold index of the Method ID result</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+JNI_METHOD_IMPL_3 (jni_GetMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FindClass ( 
-    /* [in] */ long lNameRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	if (!plClassRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_FindClass, lNameRef);
-		if (SUCCEEDED (hr)) {
-			*plClassRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FromReflectedMethod ( 
-    /* [in] */ long lMethodRef,
-    /* [retval][out] */ long *plMethodIDRef
-	) {
-	__JNI_OPERATION {
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FromReflectedField ( 
-    /* [in] */ long lFieldRef,
-    /* [retval][out] */ long *plFieldIDRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ToReflectedMethod ( 
-    /* [in] */ long lClsRef,
-    /* [in] */ long lMethodIDRef,
-    /* [in] */ long lIsStaticRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetSuperclass ( 
-    /* [in] */ long lSubRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	// TODO
-	return E_NOTIMPL;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsAssignableFrom ( 
-    /* [in] */ long lSubRef,
-    /* [in] */ long lSupRef,
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ToReflectedField ( 
-    /* [in] */ long lClsRef,
-    /* [in] */ long lFieldIDRef,
-    /* [in] */ long lIsStaticRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_Throw ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ThrowNew ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lMsgRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionOccurred ( 
-    /* [retval][out] */ long *plThrowableRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_ExceptionOcurred);
-		if (SUCCEEDED (hr)) {
-			*plThrowableRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionDescribe () {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_ExceptionDescribe);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionClear () {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_ExceptionClear);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_FatalError ( 
-    /* [in] */ long lMsgRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_PushLocalFrame ( 
-    /* [in] */ long lCapacityRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_PushLocalFrame, lCapacityRef);
-		if (SUCCEEDED (hr)) {
-			*plIntRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_PopLocalFrame ( 
-    /* [in] */ long lResultRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_PopLocalFrame, lResultRef);
-		if (SUCCEEDED (hr)) {
-			*plObjectRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewGlobalRef ( 
-    /* [in] */ long lLobjRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_NewGlobalRef, lLobjRef);
-		if (SUCCEEDED (hr)) {
-			*plObjectRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteGlobalRef ( 
-    /* [in] */ long lGrefRef
-	) {
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_DeleteGlobalRef, lGrefRef);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteLocalRef ( 
-    /* [in] */ long lObjRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_DeleteLocalRef, lObjRef);
-	}
-	return E_NOTIMPL;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsSameObject ( 
-    /* [in] */ long lObj1Ref,
-    /* [in] */ long lObj2Ref,
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewLocalRef ( 
-    /* [in] */ long lRefRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_NewLocalRef, lRefRef);
-		if (SUCCEEDED (hr)) {
-			*plObjectRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_EnsureLocalCapacity ( 
-    /* [in] */ long lCapacityRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_EnsureLocalCapacity, lCapacityRef);
-		if (SUCCEEDED (hr)) {
-			*plIntRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
 
 /// <summary>Create a new object, calling it's classes no-arg constructor.</summary>
 ///
@@ -1262,19 +725,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_EnsureLocalCapacity (
 /// <param name="lClassRef">The class reference index</param>
 /// <param name="plObjectRef">Pointer to long to hold index of object result</param>
 /// <returns>S_OK if successful, an error code otherwise</returns>
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_AllocObject ( 
-    /* [in] */ long lClassRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	if (!plObjectRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_AllocObject, lClassRef);
-		if (SUCCEEDED (hr)) {
-			*plObjectRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
+JNI_METHOD_IMPL_1 (jni_AllocObject, lClassRef, plObjectRef)
 
 /// <summary>Create a new object, calling it's classes constructor.</summary>
 ///
@@ -1304,77 +755,28 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 			//}
 			long *args = new long[cArgs + 3]; // classref, methodid, cargs in addition.  Use alloca()?
 			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
+			
 			LoadConstant (CJniValue (cArgs), &cArgsRef);
-			args[0] = lClassRef;
-			args[1] = lMethodIDRef;
-			args[2] = cArgsRef;
-			for (int i = 0; i < cArgs; i++) {
-				args[i + 3] = alArgRefs[i];
-			}
-			//odprintf (L"args array:\n");
-			//for (int i = 0; i < cArgs + 3; i++) {
-			//	odprintf (L"args[%d] = %d", i, args[i]);
-			//}
-			hr = AddOperation (JniOperation::jni_NewObjectA, cArgs + 3, args);
+			hr = AddOperation (JniOperation::jni_NewObjectA, lClassRef, lMethodIDRef, cArgsRef);
 			if (SUCCEEDED (hr)) {
-				*plObjectRef = m_cValue++;
+				long cParam = 0;
+				try {
+					do {
+						m_aParam.push_back (alArgRefs[cParam]);
+						cParam++;
+					} while (cParam < cArgs);
+					*plObjectRef = m_cValue++;
+				} catch (std::bad_alloc) {
+					while (cParam-- > 0) m_aParam.pop_back ();
+					hr = E_OUTOFMEMORY;
+				}
 			}
-			delete [] args; // should this be outside the try/catch?
 		}
 		catch (std::bad_alloc) {
 			hr = E_OUTOFMEMORY;
 		}
 	}
 	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectClass ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plClassRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_IsInstanceOf ( 
-    /* [in] */ long lObjRef,
-    /* [in] */ long lClassRef,
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-/// <summary>Get the method ID for a method</summary>
-///
-/// <para>The caller must not hold the critical section.</para>
-///
-/// <param name="lClassRef">The class reference index</param>
-/// <param name="lNameRef">The name of the method's index</param>
-/// <param name="lSigRef">The signature string of the method's index</param>
-/// <param name="plMethodIDRef">Pointer to long to hold index of the Method ID result</param>
-/// <returns>S_OK if successful, an error code otherwise</returns>
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetMethodID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plMethodIDRef
-	) {
-	if (!plMethodIDRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation(JniOperation::jni_GetMethodID, lClassRef, lNameRef, lSigRef);
-		if (SUCCEEDED(hr)) {
-			*plMethodIDRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-
 }
 
 /// <summary>Call a method</summary>
@@ -1399,28 +801,23 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
 	if (!alArgRefs && cArgs > 0) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	if (cArgs < 0) return E_INVALIDARG;
-	__JNI_OPERATION {
-		try {
-			long *args = new long[cArgs + 4]; // classref, methodid, cargs in addition.
-			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
-			LoadConstant (CJniValue(cArgs), &cArgsRef);
-			args[0] = lType;
-			args[1] = lObjRef;
-			args[2] = lMethodIDRef;
-			args[3] = cArgsRef;
-			for (int i = 0; i < cArgs; i++) {
-				args[i + 4] = alArgRefs[i];
-			}
-			hr = AddOperation (JniOperation::jni_CallMethod, cArgs + 4, args);
-			if (SUCCEEDED (hr)) {
+	__JNI_OPERATION{
+		hr = AddOperation (JniOperation::jni_CallMethod, lType, lObjRef, lMethodIDRef);
+		if (SUCCEEDED (hr)) {
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgRefs[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
 				*plResultRef = m_cValue++;
+			} catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
 			}
-			delete [] args;
-		} catch (std::bad_alloc) {
-			hr = E_OUTOFMEMORY;
+
 		}
 	}
-	__RETURN_HR;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod ( 
@@ -1432,63 +829,25 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod (
     /* [size_is][in] */ long *alArgRefs,
     /* [retval][out] */ long *plResultRef
 	) {
+	if (cArgs && !alArgRefs) return E_POINTER;
+	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_CallNonVirtualMethod, lType, lObjRef, lClassRef, lMethodIDRef);
+		if (SUCCEEDED (hr)) {
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgRefs[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
+				*plResultRef = m_cValue++;
+			}
+			catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
+			}
+		}
 	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetFieldID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plFieldIDRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lObjRef,
-    /* [in] */ long lFieldIDRef,
-    /* [retval][out] */ long *plResultRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lObjRef,
-    /* [in] */ long lFieldIDRef,
-    /* [in] */ long lValueRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStaticMethodID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plMethodIDRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
 }
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod ( 
@@ -1499,76 +858,23 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod (
     /* [size_is][in] */ long *alArgsRef,
     /* [retval][out] */ long *plResultRef
 	) {
+	if (cArgs && !alArgsRef) return E_POINTER;
+	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStaticFieldID ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lNameRef,
-    /* [in] */ long lSigRef,
-    /* [retval][out] */ long *plFieldIDRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStaticField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lClassRef,
-    /* [in] */ long lFieldIDRef,
-    /* [retval][out] */ long *plValueRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetStaticField ( 
-	/* [in] */ long lType,
-    /* [in] */ long lClassRef,
-    /* [in] */ long lFieldIDRef,
-    /* [in] */ long lValueRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewString ( 
-    /* [in] */ long lUnicodeRef,
-    /* [in] */ long lSizeRef,
-    /* [retval][out] */ long *plStringRef
-	) {
-	if (!plStringRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_NewString, lUnicodeRef, lSizeRef);
+		hr = AddOperation (JniOperation::jni_CallStaticMethod, lType, lClassRef, lMethodIDRef);
 		if (SUCCEEDED (hr)) {
-			*plStringRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringLength ( 
-    /* [in] */ long lStrRef,
-    /* [retval][out] */ long *plSizeRef
-	) {
-	if (!plSizeRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_GetStringLength, lStrRef);
-		if (SUCCEEDED (hr)) {
-			*plSizeRef = m_cValue++;
+			long cParam = 0;
+			try {
+				do {
+					m_aParam.push_back (alArgsRef[cParam]);
+					cParam++;
+				} while (cParam < cArgs);
+				*plResultRef = m_cValue++;
+			}
+			catch (std::bad_alloc) {
+				while (cParam-- > 0) m_aParam.pop_back ();
+				hr = E_OUTOFMEMORY;
+			}
 		}
 	}
 	__RETURN_HR;
@@ -1591,34 +897,6 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringChars (
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseStringChars ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lCharsRef
-	) {
-	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_ReleaseStringChars, lStrRef, lCharsRef);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewStringUTF ( 
-    /* [in] */ long lUtfRef,
-    /* [retval][out] */ long *plStringRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFLength ( 
-    /* [in] */ long lStrRef,
-    /* [retval][out] */ long *plSizeRef
-	) {
-	// TODO
-	return E_NOTIMPL;
-}
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFChars ( 
     /* [in] */ long lStrRef,
@@ -1632,322 +910,53 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFChars (
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseStringUTFChars ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lCharsRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayLength ( 
-    /* [in] */ long lArrayRef,
-    /* [retval][out] */ long *plSizeRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObjectArray ( 
-    /* [in] */ long lLenRef,
-    /* [in] */ long lClassRef,
-    /* [in] */ long lInitRef,
-    /* [retval][out] */ long *plObjectArrayRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectArrayElement ( 
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lIndexRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetObjectArrayElement ( 
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lIndexRef,
-    /* [in] */ long lValRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewArray ( 
+HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayElements (
 	/* [in] */ long lType,
-    /* [in] */ long lLenRef,
-    /* [retval][out] */ long *plArrayRef
+	/* [in] */ long lArrayRef,
+	/* [optional][out] */ long *plIsCopyRef,
+	/* [retval][out] */ long *plValueRef
 	) {
+	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+
+		hr = AddOperation (JniOperation::jni_GetArrayElements, lType, lArrayRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plValueRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayElements ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [out] */ long *plIsCopyRef,
-    /* [retval][out] */ long *plValueRef
+
+HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetPrimitiveArrayCritical (
+	/* [in] */ long lArrayRef,
+	/* [optional][out] */ long *plIsCopyRef,
+	/* [retval][out] */ long *plVoidRef
 	) {
+	if (!plVoidRef) return E_POINTER;
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_GetPrimitiveArrayCritical, lArrayRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plVoidRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }
 
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseArrayElements ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lElemsRef,
-    /* [in] */ long lModeRef
+HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringCritical (
+	    /* [in] */ long lStringRef,
+	    /* [optional][out] */ long *plIsCopyRef,
+	    /* [retval][out] */ long *plCharRef
 	) {
+	if (!plCharRef) return E_POINTER;
 	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayRegion ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_SetArrayRegion ( 
-	/* [in] */ long lType,
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_RegisterNatives ( 
-    /* [in] */ long lClassRef,
-    /* [in] */ long lMethodsRef,
-    /* [in] */ long lNMethodsef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_UnregisterNatives ( 
-    /* [in] */ long lClassRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_MonitorEntry ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_MonitorExit ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plIntRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringRegion ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLenRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFRegion ( 
-    /* [in] */ long lStrRef,
-    /* [in] */ long lStartRef,
-    /* [in] */ long lLenRef,
-    /* [in] */ long lBufRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetPrimitiveArrayCritical ( 
-    /* [in] */ long lArrayRef,
-    /* [out] */ long *plIsCopyRef,
-    /* [retval][out] */ long *plVoidRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleasePrimitiveArrayCritical ( 
-    /* [in] */ long lArrayRef,
-    /* [in] */ long lCArrayRef,
-    /* [in] */ long lModeRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringCritical ( 
-    /* [in] */ long lStringRef,
-    /* [out] */ long *plIsCopyRef,
-    /* [retval][out] */ long *plCharRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ReleaseStringCritical ( 
-    /* [in] */ long lStringRef,
-    /* [in] */ long lCStringRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewWeakGlobalRef ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plWeakRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_DeleteWeakGlobalRef ( 
-    /* [in] */ long lRefRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_ExceptionCheck ( 
-    /* [retval][out] */ long *plBooleanRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewDirectByteBuffer ( 
-    /* [in] */ long lAddressRef,
-    /* [in] */ long lCapacityRef,
-    /* [retval][out] */ long *plObjectRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetDirectBufferAddress ( 
-    /* [in] */ long lBufRef,
-    /* [retval][out] */ long *plVoidRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetDirectBufferCapacity ( 
-    /* [in] */ long lBufRef,
-    /* [retval][out] */ long *plLongRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetObjectRefType ( 
-    /* [in] */ long lObjRef,
-    /* [retval][out] */ long *plObjectRefTypeRef
-	) {
-	__JNI_OPERATION{
-		// TODO
-		hr = E_NOTIMPL;
+		hr = AddOperation (JniOperation::jni_GetStringCritical, lStringRef, plIsCopyRef ? m_cValue : -1);
+		if (SUCCEEDED (hr)) {
+			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
+			*plCharRef = m_cValue++;
+		}
 	}
 	__RETURN_HR;
 }

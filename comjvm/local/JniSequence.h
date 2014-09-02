@@ -15,72 +15,184 @@ enum JniOperation {
 	io_LoadConstant,
 	io_StoreResult,
 	jni_GetVersion,
+	jni_DefineClass,
+	jni_FindClass,
+	jni_FromReflectedMethod,
+	jni_FromReflectedField,
+	jni_ToReflectedMethod,
+	jni_GetSuperclass,
+	jni_IsAssignableFrom,
+	jni_ToReflectedField,
+	jni_Throw,
+	jni_ThrowNew,
+	jni_ExceptionOccurred,
+	jni_ExceptionDescribe,
+	jni_ExceptionClear,
+	jni_FatalError,
+	jni_PushLocalFrame,
+	jni_PopLocalFrame,
+	jni_NewGlobalRef,
+	jni_DeleteGlobalRef,
+	jni_DeleteLocalRef,
+	jni_IsSameObject,
+	jni_NewLocalRef,
+	jni_EnsureLocalCapacity,
+	jni_AllocObject,
+	jni_NewObject,
+	jni_GetObjectClass,
+	jni_IsInstanceOf,
+	jni_GetMethodID,
+	jni_CallMethod,
+	jni_CallNonVirtualMethod,
+	jni_GetFieldID,
+	jni_GetField,
+	jni_SetField,
+	jni_GetStaticMethodID,
+	jni_CallStaticMethod,
+	jni_GetStaticFieldID,
+	jni_GetStaticField,
+	jni_SetStaticField,
 	jni_NewString,
 	jni_GetStringLength,
 	jni_GetStringChars,
 	jni_ReleaseStringChars,
-	jni_FindClass,
-	jni_DefineClass,
-	jni_AllocObject,
-	jni_NewObjectA,
-	jni_GetMethodID,
-	jni_CallMethod,
-	jni_NewLocalRef,
-	jni_DeleteLocalRef,
-	jni_EnsureLocalCapacity,
-	jni_NewGlobalRef,
-	jni_DeleteGlobalRef,
-	jni_PushLocalFrame,
-	jni_PopLocalFrame,
-	jni_ExceptionOcurred,
-	jni_ExceptionDescribe,
-	jni_ExceptionClear
+	jni_NewStringUTF,
+	jni_GetStringUTFLength,
+	jni_GetStringUTFChars,
+	jni_ReleaseStringUTFChars,
+	jni_GetArrayLength,
+	jni_NewObjectArray,
+	jni_GetObjectArrayElement,
+	jni_SetObjectArrayElement,
+	jni_NewArray,
+	jni_GetArrayElements,
+	jni_ReleaseArrayElements,
+	jni_GetArrayRegion,
+	jni_SetArrayRegion,
+	jni_RegisterNatives,
+	jni_UnregisterNatives,
+	jni_MonitorEntry,
+	jni_MonitorExit,
+	jni_GetStringRegion,
+	jni_GetStringUTFRegion,
+	jni_GetPrimitiveArrayCritical,
+	jni_ReleasePrimitiveArrayCritical,
+	jni_GetStringCritical,
+	jni_ReleaseStringCritical,
+	jni_NewWeakGlobalRef,
+	jni_DeleteWeakGlobalRef,
+	jni_ExceptionCheck,
+	jni_NewDirectByteBuffer,
+	jni_GetDirectBufferAddress,
+	jni_GetDirectBufferCapacity,
+	jni_GetObjectRefType
 };
 
+/// <summary>Type of value held.</summary>
 enum vtype {
-	t_nothing = 0, // empty, nothing in the union is used.
-	// primitive(ish) java types (jsize == jint)
-	t_jint = 1,		// _jvalue.i
-	t_jsize,		// _jvalue.i
-	t_jstring,		// _jvalue.l	
-	t_jboolean,		// _jvalue.z
-	t_jbyte,		// _jvalue.b
-	t_jchar,		// _jvalue.c
-	t_jshort,		// _jvalue.s
-	t_jlong,		// _jvalue.j (!)
-	t_jfloat,		// _jvalue.f
-	t_jdouble,		// _jvalue.d
+	/// <summary>No value.</summary>
+	t_nothing = 0, 
+	/// <para>primitive(ish) java types (jsize == jint)</para>
+	/// <summary>Value held in v._jvalue.z</summary>
+	t_jbyte = 1,
+	/// <summary>Value held in v._jvalue.s</summary>
+	t_jshort,
+	/// <summary>Value held in v._jvalue.i</summary>
+	t_jint,
+	/// <summary>Value held in v._jvalue.j</summary>
+	t_jlong,
+	/// <summary>Value held in v._jvalue.z</summary>
+	t_jboolean,
+	/// <summary>Value held in v._jvalue.c</summary>
+	t_jchar,
+	/// <summary>Value held in v._jvalue.f</summary>
+	t_jfloat,
+	/// <summary>Value held in v._jvalue.d</summary>
+	t_jdouble,
 	// these are all in _jvalue.l (object)
+	/// <summary>Value held in v._jvalue.l</summary>
+	t_jstring,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jobject,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jclass,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jobjectRefType,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jthrowable,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jobjectArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jbooleanArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jbyteArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jcharArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jshortArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jintArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jlongArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jfloatArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jdoubleArray,
+	/// <summary>Value held in v._jvalue.l</summary>
 	t_jweak,
-	// these cannot be passed into a Java Method or Constructor
-	// but can be parameters to JNI calls
+	/// <summary>Value held in v._jvalue.l</summary>
+
+	/// <para>these cannot be passed into a Java Method or Constructor
+	/// but can be parameters to JNI calls</para>
+	/// <summary>Value held in v._pjchar</summary>
 	t_pjchar,
+	/// <summary>Value held in v._pchar</summary>
+	t_pchar,
+	/// <summary>Value held in v._bstr</summary>
 	t_BSTR,
+	/// <summary>Value held in v._HANDLE</summary>
 	t_HANDLE,
+	/// <summary>Value held in v._methodID</summary>
 	t_jmethodID,
+	/// <summary>Value held in v._fieldID</summary>
 	t_jfieldID,
+	/// <summary>Value held in v._jbyteBuffer</summary>
 	t_jbyteBuffer,
+	/// <summary>Value held in v._jsize</summary>
+	t_jsize,
 };
 
 class CJniValue {
 private:
 	vtype type;
+
+	class CBSTRRef {
+		private:
+			int m_cRefCount;
+			_bstr_t m_bstr;
+			~CBSTRRef () {
+				assert (m_cRefCount == 0);
+			}
+		public:
+			CBSTRRef (BSTR bstr) : m_cRefCount (1), m_bstr (bstr) {
+			}
+			void AddRef () {
+				m_cRefCount++;
+			}
+			void Release () {
+				if (--m_cRefCount == 0) {
+					delete this;
+				}
+			}
+			BSTR bstr () { return m_bstr.GetBSTR (); }
+			BSTR copy () { return m_bstr.copy (); }
+			PCSTR pcstr () { return (PCSTR)m_bstr; }
+			PCWSTR pcwstr () { return (PCWSTR)m_bstr; }
+			
+	};
 	union {
 		// a COM string, converted on demand into a jstring.
-		BSTR _BSTR;
+		CBSTRRef *_bstr;
 		// _HANDLE stores all the reference types when going via VARIANT
 		// which is simple, but obviously loses type safety completely.
 		// we use a ULONGLONG because HANDLE will differ in length across
@@ -89,10 +201,12 @@ private:
 		ULONGLONG _HANDLE;
 		// this is itself a union (see java's jni.h), holds most of the java types
 		jvalue _jvalue; // itself a union, see jni.h
+		jsize _jsize;
 		jmethodID _jmethodID;
 		jfieldID _jfieldID;
 		jobjectRefType _jobjectRefType;
 		const jchar *_pjchar;
+		const char *_pchar;
 		struct __jbyteBuffer {
 			jbyte *_pjbyte;
 			jsize _jsize;
@@ -109,6 +223,7 @@ public:
 	void get_jvalue (jvalue *pValue) const;
 	void copy_into (CJniValue &value) const;
 
+/// <summary>these are specialised so they access the jvalue embedded union</summary>
 #define __GETPRIMITIVE(_t, _field) \
 	_t get_##_t () const { \
 		switch (type) { \
@@ -130,6 +245,7 @@ public:
 		v._jvalue.##_field = value; \
 		}
 
+/// <summary>these are for anything bunged in the _HANDLE field.</summary>
 #define __GETHANDLE(_t) \
 	_t get_##_t () const { \
 		switch (type) { \
@@ -165,30 +281,10 @@ public:
 #define __CONS(_t) \
 	__PUT(_t) \
 	CJniValue (_t value) : type (t_##_t) { v._##_t = value; }
-
-
 	__CONSPRIMITIVE (jint,i);
-	jint get_jint () const {
-		switch (type) { 
-		case t_jint: 
-			return v._jvalue.i; 
-		case t_jsize:
-			return v._jvalue.i;
-		} 
-		assert(0); 
-		return v._jvalue.i; 
-	}
+	jint get_jint () const;
 	__PUTPRIMITIVE (jsize, i); // CONS clashes with jint because typedef
-	jint get_jsize () const {
-		switch (type) {
-		case t_jint:
-			return v._jvalue.i;
-		case t_jsize:
-			return v._jvalue.i;
-		}
-		assert (0);
-		return v._jvalue.i;
-	}
+	jint get_jsize () const;
 	__CONSPRIMITIVE (jboolean, z);
 	__GETPRIMITIVE (jboolean, z);
 	__CONSPRIMITIVE (jbyte, b);
@@ -203,6 +299,13 @@ public:
 	__GETPRIMITIVE (jfloat, f);
 	__CONSPRIMITIVE (jdouble, d);
 	__GETPRIMITIVE (jdouble, d);
+	CJniValue (BSTR bstr);
+	void put_BSTR (BSTR bstr);
+	void put_pjchar (const jchar *value) { reset (t_pjchar); v._pjchar = value; }
+	jchar *get_pjchar () const;
+	void put_pchar (const char *value) { reset (t_pchar); v._pchar = value; }
+	char *get_pchar () const;
+	CJniValue (jbyte *buffer, jsize size);
 	__PUTHANDLE (jobject); 
 	__GETHANDLE (jobject);
 	__PUTHANDLE (jclass);
@@ -229,69 +332,23 @@ public:
 	__GETHANDLE (jweak);
 	__PUTHANDLE (jweak);
 	__PUT (jobjectRefType);
-	jobjectRefType get_jobjectRefType_t () const {
-
-		switch (type) {
-		case t_jobjectRefType:
-			return v._jobjectRefType;
-		case t_HANDLE:
-			return (jobjectRefType)v._HANDLE;
-		}
-		assert (0);
-	}
+	jobjectRefType get_jobjectRefType_t () const;
 	__PUT (jmethodID);
 	__GET (jmethodID);
 	__PUT (jfieldID);
 	__GET (jfieldID);
-	// Expansion of MTD2, which for some bizarre reason I couldn't get working.
-	void put_pjchar (const jchar *value) { reset (t_pjchar); v._pjchar = value; }
-	const jchar *get_pjchar () const;
-	__PUTHANDLE (jstring);
-	jstring get_jstring () const {
-		switch (type) {
-		case t_jstring:
-			return (jstring)v._jvalue.l;
-		case t_BSTR:
-			return (jstring)v._BSTR;
-		}
-		assert (0);
-		return (jstring)NULL;
-	}
-	void put_BSTR (BSTR bstr);
-	void put_HANDLE (ULONGLONG handle);
-	CJniValue (BSTR bstr);
-	const char *get_alloc_pchar () const;
 
-	CJniValue (jbyte *buffer, jsize size) : type (t_jbyteBuffer) {
-		v._jbyteBuffer._pjbyte = buffer;
-		v._jbyteBuffer._jsize = size;
-	}
-	void put_jbyteBuffer (jbyte *buffer, jsize size) {
-		reset (t_jbyteBuffer);
-		v._jbyteBuffer._pjbyte = buffer;
-		v._jbyteBuffer._jsize = size;
-	}
-	jbyte *get_jbyteBuffer () const {
-		if (type == t_jbyteBuffer) {
-			return v._jbyteBuffer._pjbyte;
-		}
-		else {
-			assert (0);
-			return NULL;
-		}
-	}
-	jsize get_jbyteBufferSize () const {
-		if (type == t_jbyteBuffer) {
-			return v._jbyteBuffer._jsize;
-		}
-		else {
-			assert (0);
-			return 0;
-		}
-	}
+	__PUTHANDLE (jstring);
+	jstring get_jstring () const;
+	
+	void put_HANDLE (ULONGLONG handle);
+	void put_jbyteBuffer (jbyte *buffer, jsize size);
+	jbyte *get_jbyteBuffer () const;
+	jsize get_jbyteBufferSize () const;
 	
 #undef __CONS
 #undef __PUT
+	// TODO undef all the other crazy macros
 	HRESULT load (std::vector<CJniValue> &aValue);
 };
 
@@ -320,29 +377,50 @@ class CJniSequence : public IJniSequence {
 private:
 	friend class CJniSequenceExecutor;
 	volatile ULONG m_lRefCount;
-	// Lock for this object
+
+	/// <summary>Lock for this object.</summary>
 	CRITICAL_SECTION m_cs;
+
 	CJvm *m_pJvm;
-	// Number of values currently loaded
+
+	/// <summary>Number of intermediate values needed for execution.</summary>
 	long m_cValue;
-	// Non-zero if sequence is executing
+
+	/// <summary>Number of active executions.</summary>
+	///
+	/// <para>A sequence will support parallel executions, but can only be
+	/// modified when there are no active executions.</para>
 	long m_cExecuting;
+	
 	std::vector<HANDLE> m_ahSemaphore;
+
+	/// <summary>Sequence operations.</summary>
 	std::vector<JniOperation> m_aOperation;
-	// vector of parameters loaded
+
+	/// <summary>Operation parameters.</summary>
+	///
+	/// <para>Each operation may consume zero or more parameter values identifying
+	/// the slots containing the parameters to be passed.</para>
 	std::vector<long> m_aParam;
-	// vector of constants that have been loaded
+
+	/// <summary>Constant pool.</summary>
+	///
+	/// <para>During execution, if a constant is needed in an intermediate value
+	/// slot then the next value is taken from this pool.</para>
 	std::vector<CJniValue> m_aConstant;
-	// number of arguments loaded
+
+	/// <summary>Number of declared argument values.</summary>
 	long m_cArgument;
-	// number of results
+
+	/// <summary>Number of declared result values.</summary>
 	long m_cResult;
 	~CJniSequence ();
 	HRESULT AddOperation (JniOperation operation);
 	HRESULT AddOperation (JniOperation operation, long lParam);
 	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2);
 	HRESULT AddOperation(JniOperation operation, long lParam1, long lParam2, long lParam3);
-	HRESULT AddOperation (JniOperation operation, long size, long *lParam1);
+	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4);
+	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3, long lParam4, long lParam5);
 	HRESULT LoadConstant (CJniValue &value, long *plRef);
 	HANDLE BeginExecution ();
 	void EndExecution (HANDLE hSemaphore);
@@ -556,7 +634,7 @@ public:
         /* [retval][out] */ long *plSizeRef);
     HRESULT STDMETHODCALLTYPE jni_GetStringChars ( 
         /* [in] */ long lStrRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plCharRef);
     HRESULT STDMETHODCALLTYPE jni_ReleaseStringChars ( 
         /* [in] */ long lStrRef,
@@ -569,7 +647,7 @@ public:
         /* [retval][out] */ long *plSizeRef);
     HRESULT STDMETHODCALLTYPE jni_GetStringUTFChars ( 
         /* [in] */ long lStrRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plCharRef);
     HRESULT STDMETHODCALLTYPE jni_ReleaseStringUTFChars ( 
         /* [in] */ long lStrRef,
@@ -642,7 +720,7 @@ public:
         /* [in] */ long lBufRef);
     HRESULT STDMETHODCALLTYPE jni_GetPrimitiveArrayCritical ( 
         /* [in] */ long lArrayRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plVoidRef);
     HRESULT STDMETHODCALLTYPE jni_ReleasePrimitiveArrayCritical ( 
         /* [in] */ long lArrayRef,
@@ -650,7 +728,7 @@ public:
         /* [in] */ long lModeRef);
     HRESULT STDMETHODCALLTYPE jni_GetStringCritical ( 
         /* [in] */ long lStringRef,
-        /* [out] */ long *plIsCopyRef,
+        /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plCharRef);
     HRESULT STDMETHODCALLTYPE jni_ReleaseStringCritical ( 
         /* [in] */ long lStringRef,
