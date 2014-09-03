@@ -98,7 +98,7 @@ class CJniSequence : public IJniSequence {
 private:
 	friend class CJniSequenceExecutor;
 	volatile ULONG m_lRefCount;
-	
+
 	/// <summary>Lock for this object.</summary>
 	CRITICAL_SECTION m_cs;
 
@@ -196,6 +196,15 @@ public:
     HRESULT STDMETHODCALLTYPE BooleanConstant ( 
         /* [in] */ BOOL fValue,
         /* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE CharConstant (
+		/* [in] */ TCHAR fValue,
+		/* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE FloatConstant (
+		/* [in] */ float fValue,
+		/* [retval][out] */ long *plValueRef);
+	HRESULT STDMETHODCALLTYPE DoubleConstant (
+		/* [in] */ double fValue,
+		/* [retval][out] */ long *plValueRef);
     HRESULT STDMETHODCALLTYPE jni_GetVersion ( 
         /* [out] */ long *plValueRef);
     HRESULT STDMETHODCALLTYPE jni_DefineClass ( 

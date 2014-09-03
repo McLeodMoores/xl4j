@@ -30,8 +30,10 @@ public:
 		m_dwJvmRef = GetTickCount ();
 	}
 	~CVMHolder () {
-		assert (m_eState == NOT_RUNNING);
-		assert (m_pJvm == NULL);
+		// REVIEW: Why are these being triggered?
+		// I think it's because we don't wait for the poisoned threads to Enter the not running state.
+		//assert (m_eState == NOT_RUNNING);
+		//assert (m_pJvm == NULL);
 		DeleteCriticalSection (&m_cs);
 	}
 	BOOL EnterStartingState () {

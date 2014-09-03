@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "core\core.vcxproj", "{9E596700-1153-46A5-B3B8-CA386FFD9B16}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "local-test", "local-test\local-test.vcxproj", "{58EFA4DB-40CD-4BB7-A8A5-8515166C7E00}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jni", "jni\jni.vcxproj", "{7007C71A-7B07-489E-B1B8-5B760252A6F7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "excel", "excel\excel.vcxproj", "{5F107926-37EF-4A62-8B62-686A6D8F31D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -149,6 +151,30 @@ Global
 		{7007C71A-7B07-489E-B1B8-5B760252A6F7}.Release-Unicode|Win32.Build.0 = Release|Win32
 		{7007C71A-7B07-489E-B1B8-5B760252A6F7}.Release-Unicode|x64.ActiveCfg = Release|x64
 		{7007C71A-7B07-489E-B1B8-5B760252A6F7}.Release-Unicode|x64.Build.0 = Release|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug|Win32.ActiveCfg = Debug-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug|Win32.Build.0 = Debug-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug|x64.ActiveCfg = Debug-Unicode|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug|x64.Build.0 = Debug-Unicode|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Ascii|Win32.ActiveCfg = Debug-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Ascii|Win32.Build.0 = Debug-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Ascii|x64.ActiveCfg = Debug-Ascii|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Ascii|x64.Build.0 = Debug-Ascii|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Unicode|Win32.ActiveCfg = Debug-Unicode|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Unicode|Win32.Build.0 = Debug-Unicode|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Unicode|x64.ActiveCfg = Debug-Unicode|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Debug-Unicode|x64.Build.0 = Debug-Unicode|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release|Win32.ActiveCfg = Release-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release|Win32.Build.0 = Release-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release|x64.ActiveCfg = Release-Ascii|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release|x64.Build.0 = Release-Ascii|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Ascii|Win32.ActiveCfg = Release-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Ascii|Win32.Build.0 = Release-Ascii|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Ascii|x64.ActiveCfg = Release-Ascii|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Ascii|x64.Build.0 = Release-Ascii|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Unicode|Win32.ActiveCfg = Release-Unicode|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Unicode|Win32.Build.0 = Release-Unicode|Win32
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Unicode|x64.ActiveCfg = Release-Unicode|x64
+		{5F107926-37EF-4A62-8B62-686A6D8F31D2}.Release-Unicode|x64.Build.0 = Release-Unicode|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

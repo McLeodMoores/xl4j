@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -102,6 +102,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_LOCAL_API=__declspec(dllexport) __stdcall;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,6 +140,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_LOCAL_API=__declspec(dllexport) __stdcall;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;C:\Program Files (x86)\Java\jdk1.8.0_20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -251,6 +253,7 @@
   <ItemGroup>
     <ClInclude Include="Cache.h" />
     <ClInclude Include="Classpath.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="Delete.h" />
     <ClInclude Include="DirectoryWriter.h" />
     <ClInclude Include="FileWriter.h" />
@@ -267,6 +270,7 @@
   <ItemGroup>
     <ClCompile Include="Cache.cpp" />
     <ClCompile Include="Classpath.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="dlldata.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -282,11 +286,11 @@
     <ClCompile Include="DirectoryWriter.cpp" />
     <ClCompile Include="FileWriter.cpp" />
     <ClCompile Include="JniSequence.cpp" />
-    <ClCompile Include="JniSequenceExecutor.cpp" />
     <ClCompile Include="JniValue.cpp" />
     <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="JvmConnector.cpp" />
     <ClCompile Include="local.cpp" />
+    <ClCompile Include="JniSequenceExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

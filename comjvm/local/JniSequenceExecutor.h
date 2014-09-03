@@ -29,3 +29,4 @@ public:
 	void AddRef ();
 	void Release ();
 };
+

@@ -57,8 +57,13 @@ namespace localtest {
 			// TODO: GetStringRegion
 			// TODO: GetStringCritical
 			// TODO: ReleaseStringCritical
-			VARIANT aResult[2];
-			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, sizeof (aResult) / sizeof (VARIANT), aResult));
+			VARIANT aResult[1];
+			HRESULT result = pJni->Execute (0, NULL, sizeof (aResult) / sizeof (VARIANT), aResult);
+			if (result != S_OK) {
+				_com_error error (result);
+				const TCHAR *msg = error.ErrorMessage ();
+			}
+			Assert::AreEqual (S_OK, result);
 			// #1 - GetStringLength
 			Assert::AreEqual ((short)VT_I4, (short)aResult[0].vt);
 			Assert::AreEqual (11, aResult[0].intVal);

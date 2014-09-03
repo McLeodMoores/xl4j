@@ -219,7 +219,8 @@ namespace coretest {
 			Assert::AreEqual (S_OK, pTemplate->get_Classpath (&m_pInstance));
 			pTemplate->Release ();
 			m_pEntry1 = NULL;
-			Assert::AreEqual (S_OK, ComJvmCreateClasspathEntry (TEST_CLASSES, &m_pEntry1));
+			HRESULT result = ComJvmCreateClasspathEntry (TEST_CLASSES, &m_pEntry1);
+			Assert::AreEqual (S_OK, result);
 			m_pEntry2 = NULL;
 			Assert::AreEqual (S_OK, ComJvmCreateClasspathEntry (TEST_JAR_FILES, &m_pEntry2));
 		}

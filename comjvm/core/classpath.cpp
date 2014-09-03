@@ -91,7 +91,10 @@ HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryA (/* [in] */ PCSTR pszLocalPa
 			}
 		}
 		DWORD dwAttributes = GetFileAttributesA (pszLocalPath);
-		if (dwAttributes == INVALID_FILE_ATTRIBUTES) return HRESULT_FROM_WIN32 (GetLastError ());
+		if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
+			DWORD err = GetLastError ();
+			return HRESULT_FROM_WIN32 (err);
+		}
 		if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 			hr = CreateClassFolder (bstrLocalPath, ppEntry);
 		} else {
@@ -169,7 +172,10 @@ HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryW (/* [in] */ PCWSTR pszLocalP
 			}
 		}
 		DWORD dwAttributes = GetFileAttributesW (pszLocalPath);
-		if (dwAttributes == INVALID_FILE_ATTRIBUTES) return HRESULT_FROM_WIN32 (GetLastError ());
+		if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
+			DWORD err = GetLastError ();
+			return HRESULT_FROM_WIN32 (err);
+		}
 		if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 			hr = CreateClassFolder (bstrLocalPath, ppEntry);
 		} else {

@@ -361,6 +361,7 @@
     <ClCompile Include="Connect.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="filesystem.cpp" />
+    <ClCompile Include="JniSequenceTest.cpp" />
     <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug-Unicode|Win32'">Create</PrecompiledHeader>
