@@ -198,8 +198,10 @@ void CJniValue::get_jvalue (jvalue *pjValue) const {
 	case t_jobject :
 		*pjValue = v._jvalue;
 		break;
+	default :
+		_com_raise_error (E_INVALIDARG);
+		break;
 	}
-	_com_raise_error (E_INVALIDARG);
 }
 
 void CJniValue::put_BSTR (BSTR bstr) {

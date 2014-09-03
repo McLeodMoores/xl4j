@@ -49,19 +49,19 @@ namespace localtest {
 			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("()V")), &lConstructorSigRef));
 			long lClassNameRef;
 			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("java/lang/Object")), &lClassNameRef));
-			long lClassRef1;
-			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef1));
+			long lClassRef;
+			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
 			long lObjectRef;
-			Assert::AreEqual (S_OK, pJni->jni_AllocObject (lClassRef1, &lObjectRef));
+			Assert::AreEqual (S_OK, pJni->jni_AllocObject (lClassRef, &lObjectRef));
 			long lConstructorRef;
-			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef1, lConstructorNameRef, lConstructorSigRef, &lConstructorRef));
-			Assert::AreEqual (S_OK, pJni->jni_CallNonVirtualMethod (JTYPE_VOID, lObjectRef, lClassRef1, lConstructorRef, 0, NULL, &l));
+			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lConstructorRef));
+			Assert::AreEqual (S_OK, pJni->jni_CallNonVirtualMethod (JTYPE_VOID, lObjectRef, lClassRef, lConstructorRef, 0, NULL, &l));
 			Assert::AreEqual (S_OK, pJni->Result (lObjectRef));
-			VARIANT aResult[1];
-			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, sizeof (aResult) / sizeof (VARIANT), aResult));
-			Assert::AreEqual ((short)VT_UNKNOWN, (short)aResult[0].vt);
-			Assert::IsNotNull (aResult[0].punkVal);
-			aResult[0].punkVal->Release ();
+			VARIANT vResult;
+			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, 1, &vResult));
+			Assert::AreEqual ((short)VT_UNKNOWN, (short)vResult.vt);
+			Assert::IsNotNull (vResult.punkVal);
+			vResult.punkVal->Release ();
 			pJni->Release();
 		}
 
@@ -74,18 +74,66 @@ namespace localtest {
 			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("()V")), &lConstructorSigRef));
 			long lClassNameRef;
 			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("java/lang/Object")), &lClassNameRef));
-			long lClassRef1;
-			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef1));
+			long lClassRef;
+			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
 			long lConstructorRef;
-			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef1, lConstructorNameRef, lConstructorSigRef, &lConstructorRef));
+			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lConstructorRef));
 			long lObjectRef;
-			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef1, lConstructorRef, 0, NULL, &lObjectRef));
+			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lConstructorRef, 0, NULL, &lObjectRef));
 			Assert::AreEqual (S_OK, pJni->Result (lObjectRef));
-			VARIANT aResult[1];
-			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, sizeof (aResult) / sizeof (VARIANT), aResult));
-			Assert::AreEqual ((short)VT_UNKNOWN, (short)aResult[0].vt);
-			Assert::IsNotNull (aResult[0].punkVal);
-			aResult[0].punkVal->Release ();
+			VARIANT vResult;
+			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, 1, &vResult));
+			Assert::AreEqual ((short)VT_UNKNOWN, (short)vResult.vt);
+			Assert::IsNotNull (vResult.punkVal);
+			vResult.punkVal->Release ();
+			pJni->Release();
+		}
+
+		TEST_METHOD (CreateObjectWithArgument) {
+			// Arguments: (int x)
+			//
+			// v1 = new Integer (x);
+			// y = v1.intValue ();
+			//
+			// Results: (int y)
+			IJniSequence *pJni;
+			Assert::AreEqual (S_OK, m_pJvm->CreateJni (&pJni));
+			long lConstructorNameRef;
+			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("<init>")), &lConstructorNameRef));
+			long lConstructorSigRef;
+			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("(I)V")), &lConstructorSigRef));
+			long lClassNameRef;
+			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("java/lang/Integer")), &lClassNameRef));
+			long lClassRef;
+			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
+			long lConstructorRef;
+			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lConstructorRef));
+			long lConstructorArgRef;
+			Assert::AreEqual (S_OK, pJni->Argument (&lConstructorArgRef));
+			long lObjectRef;
+			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lConstructorRef, 1, &lConstructorArgRef, &lObjectRef));
+			long lIntValueMethodNameRef;
+			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("intValue")), &lIntValueMethodNameRef));
+			long lIntValueMethodSigRef;
+			Assert::AreEqual (S_OK, pJni->StringConstant (_bstr_t (TEXT ("()I")), &lIntValueMethodSigRef));
+			long lIntValueMethodRef;
+			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lIntValueMethodNameRef, lIntValueMethodSigRef, &lIntValueMethodRef));
+			long lIntValueResultRef;
+			Assert::AreEqual (S_OK, pJni->jni_CallMethod (JTYPE_INT, lObjectRef, lIntValueMethodRef, 0, NULL, &lIntValueResultRef));
+			Assert::AreEqual (S_OK, pJni->Result (lIntValueResultRef));
+			long l;
+			Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
+			Assert::AreEqual (1L, l);
+			Assert::AreEqual (S_OK, pJni->get_Results (&l));
+			Assert::AreEqual (1L, l);
+			VARIANT vArgument;
+			VariantInit (&vArgument);
+			vArgument.vt = VT_I4;
+			vArgument.lVal = 42;
+			VARIANT vResult;
+			Assert::AreEqual (S_OK, pJni->Execute (1, &vArgument, 1, &vResult));
+			Assert::AreEqual ((short)VT_I4, (short)vResult.vt);
+			Assert::AreEqual (42L, vResult.lVal);
 			pJni->Release();
 		}
 

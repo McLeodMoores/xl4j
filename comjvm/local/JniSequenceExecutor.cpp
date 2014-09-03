@@ -177,10 +177,52 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					aValues[cValue++].put_jmethodID (pEnv->GetMethodID (clazz, pszName, pszSig));
 					break;
 				}
-			case JniOperation::jni_CallMethod :
-				// TODO
-				_com_raise_error (E_NOTIMPL);
-				break;
+			case JniOperation::jni_CallMethod
+				: {
+					long lType = *(params++);
+					jobject obj = aValues[*(params++)].get_jobject ();
+					jmethodID methodID = aValues[*(params++)].get_jmethodID ();
+					long cArgs = *(params++), l;
+					std::vector<jvalue> args(cArgs);
+					for (l = 0; l < cArgs; l++) {
+						aValues[*(params++)].get_jvalue (&args[l]);
+					}
+					switch (lType) {
+					case JTYPE_BOOLEAN :
+						aValues[cValue++].put_jboolean (pEnv->CallBooleanMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_BYTE :
+						aValues[cValue++].put_jbyte (pEnv->CallByteMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_CHAR :
+						aValues[cValue++].put_jchar (pEnv->CallCharMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_DOUBLE :
+						aValues[cValue++].put_jdouble (pEnv->CallDoubleMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_FLOAT :
+						aValues[cValue++].put_jfloat (pEnv->CallFloatMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_INT :
+						aValues[cValue++].put_jint (pEnv->CallIntMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_LONG :
+						aValues[cValue++].put_jlong (pEnv->CallLongMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_OBJECT :
+						aValues[cValue++].put_jobject (pEnv->CallObjectMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_SHORT :
+						aValues[cValue++].put_jshort (pEnv->CallShortMethodA (obj, methodID, args.data ()));
+						break;
+					case JTYPE_VOID :
+						pEnv->CallVoidMethodA (obj, methodID, args.data ());
+						break;
+					default :
+						_com_raise_error (E_INVALIDARG);
+					}
+					break;
+				}
 			case JniOperation::jni_CallNonVirtualMethod
 				: {
 					long lType = *(params++);
@@ -194,31 +236,31 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					}
 					switch (lType) {
 					case JTYPE_BOOLEAN :
-						aValues[*(params++)].put_jboolean (pEnv->CallNonvirtualBooleanMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jboolean (pEnv->CallNonvirtualBooleanMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_BYTE :
-						aValues[*(params++)].put_jbyte (pEnv->CallNonvirtualByteMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jbyte (pEnv->CallNonvirtualByteMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_CHAR :
-						aValues[*(params++)].put_jchar (pEnv->CallNonvirtualCharMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jchar (pEnv->CallNonvirtualCharMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_DOUBLE :
-						aValues[*(params++)].put_jdouble (pEnv->CallNonvirtualDoubleMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jdouble (pEnv->CallNonvirtualDoubleMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_FLOAT :
-						aValues[*(params++)].put_jfloat (pEnv->CallNonvirtualFloatMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jfloat (pEnv->CallNonvirtualFloatMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_INT :
-						aValues[*(params++)].put_jint (pEnv->CallNonvirtualIntMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jint (pEnv->CallNonvirtualIntMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_LONG :
-						aValues[*(params++)].put_jlong (pEnv->CallNonvirtualLongMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jlong (pEnv->CallNonvirtualLongMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_OBJECT :
-						aValues[*(params++)].put_jobject (pEnv->CallNonvirtualObjectMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jobject (pEnv->CallNonvirtualObjectMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_SHORT :
-						aValues[*(params++)].put_jshort (pEnv->CallNonvirtualShortMethodA (obj, clazz, methodID, args.data ()));
+						aValues[cValue++].put_jshort (pEnv->CallNonvirtualShortMethodA (obj, clazz, methodID, args.data ()));
 						break;
 					case JTYPE_VOID :
 						pEnv->CallNonvirtualVoidMethodA (obj, clazz, methodID, args.data ());
