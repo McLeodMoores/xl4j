@@ -1,7 +1,10 @@
 /*
  * JVM as a COM object
  *
- * Copyright 2014 by Andrew Ian William Griffin <griffin@beerdragon.co.uk>
+ * Copyright 2014
+ *      Andrew Ian William Griffin <griffin@beerdragon.co.uk>
+ *      McLeodMoores Software Limited <jim@mcleodmoores.com>
+ *
  * Released under the GNU General Public License.
  */
 
