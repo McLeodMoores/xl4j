@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "JniSequence.h"
 #include "Internal.h"
+#include "Debug.h"
 
 CJniSequenceExecutor::CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults)
 	: m_lRefCount (1), m_pOwner (pOwner), m_cArgs (cArgs), m_pArgs (pArgs), m_cResults (cResults), m_pResults (pResults) {
@@ -27,6 +28,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 			switch (*itr) {
 				case JniOperation::io_LoadArgument
 					: {
+					//long lValueRef = *(params++);
+					//if (m_cArgs > 0) {
+					//	m_cArgs--;
+					//	aValues[lValueRef].put_variant (m_pArgs++);
+					//}
+					// arg is coming off arguments stack during execute, not from params iterator.
 					if (m_cArgs > 0) {
 						m_cArgs--;
 						aValues[cValue++].put_variant (m_pArgs++);
@@ -34,29 +41,8 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					break;
 				}
 				case JniOperation::io_LoadConstant:
-					(constants++)->copy_into (aValues[cValue++]);
+					aValues[cValue++] = *(constants++);
 					break;
-				case JniOperation::jni_GetStringChars
-					: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					jboolean isCopy;
-					long lIsCopyRef = *(params++);
-					if (lIsCopyRef == cValue) {
-						cValue++;
-					}
-					aValues[cValue++].put_pjchar (pEnv->GetStringChars (str, &isCopy));
-					if (lIsCopyRef >= 0) {
-						aValues[lIsCopyRef].put_jboolean (isCopy);
-					}
-					break;
-				}
-				case JniOperation::jni_ReleaseStringChars
-					: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					const jchar *chars = aValues[*(params++)].get_pjchar ();
-					pEnv->ReleaseStringChars (str, chars);
-					break;
-				}
 				case JniOperation::io_StoreResult
 					: {
 					long lValueRef = *(params++);
@@ -69,17 +55,14 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_GetVersion:
 					aValues[cValue++].put_jint (pEnv->GetVersion ());
 					break;
-				case JniOperation::jni_NewString
+				case JniOperation::jni_DefineClass
 					: {
-					const jchar *unicode = aValues[*(params++)].get_pjchar ();
-					jsize len = aValues[*(params++)].get_jsize ();
-					aValues[cValue++].put_jstring (pEnv->NewString (unicode, len));
-					break;
-				}
-				case JniOperation::jni_GetStringLength
-					: {
-					jstring str = aValues[*(params++)].get_jstring ();
-					aValues[cValue++].put_jsize (pEnv->GetStringLength (str));
+					const char *name = aValues[*(params++)].get_pchar ();
+					jobject loader = aValues[*(params++)].get_jobject ();
+					jbyte *buffer = aValues[*(params)].get_jbyteBuffer (); // note we don't ++ here because we use it twice
+					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize ();
+					jclass clazz = pEnv->DefineClass (name, loader, buffer, szBuffer);
+					aValues[cValue++].put_jclass (clazz);
 					break;
 				}
 				case JniOperation::jni_FindClass
@@ -89,14 +72,106 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					aValues[cValue++].put_jclass (clazz);
 					break;
 				}
-				case JniOperation::jni_DefineClass
+				case JniOperation::jni_FromReflectedMethod:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_FromReflectedField:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ToReflectedMethod:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetSuperclass:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_IsAssignableFrom:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ToReflectedField:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_Throw:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ThrowNew:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ExceptionOccurred
 					: {
-					const char *name = aValues[*(params++)].get_pchar ();
-					jobject loader = aValues[*(params++)].get_jobject ();
-					jbyte *buffer = aValues[*(params)].get_jbyteBuffer (); // note we don't ++ here because we use it twice
-					jsize szBuffer = aValues[*(params++)].get_jbyteBufferSize ();
-					jclass clazz = pEnv->DefineClass (name, loader, buffer, szBuffer);
-					aValues[cValue++].put_jclass (clazz);
+					jthrowable throwable = pEnv->ExceptionOccurred ();
+					aValues[cValue++].put_jthrowable (throwable);
+					break;
+				}
+				case JniOperation::jni_ExceptionDescribe
+					: {
+					pEnv->ExceptionDescribe ();
+					break;
+				}
+				case JniOperation::jni_FatalError:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ExceptionClear
+					: {
+					pEnv->ExceptionClear ();
+					break;
+				}
+				case JniOperation::jni_PushLocalFrame
+					: {
+					jint capacity = aValues[*(params++)].get_jint ();
+					jint result = pEnv->PushLocalFrame (capacity);
+					aValues[cValue++].put_jint (result);
+					break;
+				}
+				case JniOperation::jni_PopLocalFrame
+					: {
+					jobject frame = aValues[*(params++)].get_jobject ();
+					jobject previousFrame = pEnv->PopLocalFrame (frame);
+					aValues[cValue++].put_jobject (frame);
+				}
+				case JniOperation::jni_NewGlobalRef
+					: {
+					jobject localRef = aValues[*(params++)].get_jobject ();
+					jobject globalRef = pEnv->NewGlobalRef (localRef);
+					aValues[cValue++].put_jobject (globalRef);
+					break;
+				}
+				case JniOperation::jni_DeleteGlobalRef
+					: {
+					jobject globalRef = aValues[*(params++)].get_jobject ();
+					pEnv->DeleteGlobalRef (globalRef);
+					break;
+				}
+				case JniOperation::jni_DeleteLocalRef
+					: {
+					jobject localRef = aValues[*(params++)].get_jobject ();
+					pEnv->DeleteLocalRef (localRef);
+					break;
+				}
+				case JniOperation::jni_IsSameObject:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_NewLocalRef
+					: {
+					jobject obj = aValues[*(params++)].get_jobject ();
+					jobject localRef = pEnv->NewLocalRef (obj);
+					aValues[cValue++].put_jobject (localRef);
+					break;
+				}
+				case JniOperation::jni_EnsureLocalCapacity
+					: {
+					jint capacity = aValues[*(params++)].get_jint ();
+					jint result = pEnv->EnsureLocalCapacity (capacity);
+					aValues[cValue++].put_jint (result);
 					break;
 				}
 				case JniOperation::jni_AllocObject
@@ -114,9 +189,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jvalue *arguments = new jvalue[size];
 					for (int i = 0; i < size; i++) {
 						long index = *(params++);
-						TCHAR buf[4096];
-						_stprintf (buf, TEXT ("index = %d"), index);
-						OutputDebugString (buf);
+						Debug::odprintf (TEXT ("index = %d"), index);
 						aValues[index].get_jvalue (&arguments[i]);
 					}
 					jobject object = pEnv->NewObjectA (clazz, methodId, arguments);
@@ -124,78 +197,23 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					aValues[cValue++].put_jobject (object);
 					break;
 				}
-				case JniOperation::jni_NewLocalRef
-					: {
-					jobject obj = aValues[*(params++)].get_jobject ();
-					jobject localRef = pEnv->NewLocalRef (obj);
-					aValues[cValue++].put_jobject (localRef);
+				case JniOperation::jni_GetObjectClass:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
 					break;
-				}
-				case JniOperation::jni_DeleteLocalRef
-					: {
-					jobject localRef = aValues[*(params++)].get_jobject ();
-					pEnv->DeleteLocalRef (localRef);
+				case JniOperation::jni_IsInstanceOf:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
 					break;
-				}
-				case JniOperation::jni_NewGlobalRef
-					: {
-					jobject localRef = aValues[*(params++)].get_jobject ();
-					jobject globalRef = pEnv->NewGlobalRef (localRef);
-					aValues[cValue++].put_jobject (globalRef);
-					break;
-				}
-				case JniOperation::jni_DeleteGlobalRef
-					: {
-					jobject globalRef = aValues[*(params++)].get_jobject ();
-					pEnv->DeleteGlobalRef (globalRef);
-					break;
-				}
-				case JniOperation::jni_PushLocalFrame
-					: {
-					jint capacity = aValues[*(params++)].get_jint ();
-					jint result = pEnv->PushLocalFrame (capacity);
-					aValues[cValue++].put_jint (result);
-					break;
-				}
-				case JniOperation::jni_PopLocalFrame
-					: {
-					jobject frame = aValues[*(params++)].get_jobject ();
-					jobject previousFrame = pEnv->PopLocalFrame (frame);
-					aValues[cValue++].put_jobject (frame);
-				}
-				case JniOperation::jni_EnsureLocalCapacity
-					: {
-					jint capacity = aValues[*(params++)].get_jint ();
-					jint result = pEnv->EnsureLocalCapacity (capacity);
-					aValues[cValue++].put_jint (result);
-					break;
-				}
-				case JniOperation::jni_ExceptionOccurred
-					: {
-					jthrowable throwable = pEnv->ExceptionOccurred ();
-					aValues[cValue++].put_jthrowable (throwable);
-					break;
-				}
-				case JniOperation::jni_ExceptionDescribe
-					: {
-					pEnv->ExceptionDescribe ();
-					break;
-				}
-				case JniOperation::jni_ExceptionClear
-					: {
-					pEnv->ExceptionClear ();
-					break;
-				}
 				case JniOperation::jni_GetMethodID
 					: {
-					jclass clazz = aValues[*(params++)].get_jclass ();
-					const char *methodName = aValues[*(params++)].get_alloc_pchar ();
-					const char *signature = aValues[*(params++)].get_alloc_pchar ();
+					CJniValue aVal = aValues[*(params++)];
+					jclass clazz = aVal.get_jclass ();
+					const char *methodName = aValues[*(params++)].get_pchar ();
+					const char *signature = aValues[*(params++)].get_pchar ();
 					jmethodID methodID = pEnv->GetMethodID (clazz, methodName, signature);
-					odprintf (L"GetMethodID: putting value %p in slot %d", methodID, cValue);
+					Debug::odprintf (L"GetMethodID: putting value %p in slot %d", methodID, cValue);
 					aValues[cValue++].put_jmethodID (methodID);
-					//CoTaskMemFree ((LPVOID) methodName);
-					//CoTaskMemFree ((LPVOID) signature);
 					break;
 				}
 				case JniOperation::jni_CallMethod
@@ -251,12 +269,205 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					delete arguments;
 					break;
 				}
+				case JniOperation::jni_CallNonVirtualMethod:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetFieldID:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetField:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_SetField:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStaticMethodID:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_CallStaticMethod:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStaticFieldID:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStaticField:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_SetStaticField:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_NewString
+					: {
+					const jchar *unicode = aValues[*(params++)].get_pjchar ();
+					jsize len = aValues[*(params++)].get_jsize ();
+					aValues[cValue++].put_jstring (pEnv->NewString (unicode, len));
+					break;
+				}
+				case JniOperation::jni_GetStringLength
+					: {
+					jstring str = aValues[*(params++)].get_jstring ();
+					aValues[cValue++].put_jsize (pEnv->GetStringLength (str));
+					break;
+				}
+				case JniOperation::jni_GetStringChars
+					: {
+					jstring str = aValues[*(params++)].get_jstring ();
+					jboolean isCopy;
+					long lIsCopyRef = *(params++);
+					if (lIsCopyRef == cValue) {
+						cValue++;
+					}
+					aValues[cValue++].put_pjchar ((jchar*)pEnv->GetStringChars (str, &isCopy));
+					if (lIsCopyRef >= 0) {
+						aValues[lIsCopyRef].put_jboolean (isCopy);
+					}
+					break;
+				}
+				case JniOperation::jni_ReleaseStringChars
+					: {
+					jstring str = aValues[*(params++)].get_jstring ();
+					const jchar *chars = aValues[*(params++)].get_pjchar ();
+					pEnv->ReleaseStringChars (str, chars);
+					break;
+				}
+				case JniOperation::jni_NewStringUTF:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStringUTFLength:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStringUTFChars:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ReleaseStringUTFChars:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetArrayLength:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_NewObjectArray:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetObjectArrayElement:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_SetObjectArrayElement:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_NewArray:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetArrayElements:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ReleaseArrayElements:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetArrayRegion:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_SetArrayRegion:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_RegisterNatives:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_UnregisterNatives:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_MonitorEntry:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_MonitorExit:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStringRegion:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStringUTFRegion:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetPrimitiveArrayCritical:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ReleasePrimitiveArrayCritical:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetStringCritical:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ReleaseStringCritical:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_NewWeakGlobalRef:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_DeleteWeakGlobalRef:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_ExceptionCheck:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_NewDirectByteBuffer:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetDirectBufferAddress:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetDirectBufferCapacity:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				case JniOperation::jni_GetObjectRefType:
+					// TODO
+					_com_raise_error (E_NOTIMPL);
+					break;
+				default:
+					_com_raise_error (E_NOTIMPL);
 			}
 		}
 		m_hRunResult = S_OK;
-	}
-	catch (std::bad_alloc) {
+	} catch (std::bad_alloc) {
 		m_hRunResult = E_OUTOFMEMORY;
+	} catch (_com_error &e) {
+		m_hRunResult = e.Error ();
 	}
 	ReleaseSemaphore (m_hSemaphore, 1, NULL);
 	return m_hRunResult;

@@ -5,8 +5,27 @@
 void CJniValue::free () {
 	switch (type) {
 	case t_BSTR:
-		/******** THIS REALLY NEEDS FIXING! ********/
-		//SysFreeString (v._BSTR);
+		v._bstr->Release ();
+		break;
+	}
+}
+
+CJniValue &CJniValue::operator= (const CJniValue &rhs) {
+	reset (rhs.type);
+	v = rhs.v;
+	switch (rhs.type) {
+	case t_BSTR:
+		v._bstr->AddRef ();
+		break;
+	}
+	return *this;
+}
+
+CJniValue::CJniValue (const CJniValue &copy)
+	: type (copy.type), v (copy.v) {
+	switch (type) {
+	case t_BSTR:
+		v._bstr->AddRef ();
 		break;
 	}
 }
@@ -17,10 +36,10 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 		put_jint (pvValue->intVal);
 		break;
 	case VT_BOOL:
-		put_jboolean (pvValue->boolVal == VARIANT_FALSE ? false : true);
+		put_jboolean (pvValue->boolVal == VARIANT_FALSE ? JNI_FALSE : JNI_TRUE);
 		break;
 	case VT_BSTR:
-		put_BSTR (pvValue->bstrVal); // I'm assuming the caller thinks it's up to us to free it?
+		put_BSTR (pvValue->bstrVal);
 		break;
 	case VT_I1:
 		put_jbyte (pvValue->bVal);
@@ -48,8 +67,7 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 		put_jbyteBuffer ((jbyte *)safeArray->pvData, safeArray->cbElements);
 	} break;
 	default:
-		assert (0);
-		break;
+		_com_raise_error (E_NOTIMPL);
 	}
 }
 
@@ -63,10 +81,13 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		pvValue->vt = VT_I4;
 		pvValue->intVal = v._jvalue.i;
 		break;
-	case t_jstring:  // TODO
+	case t_jstring:  // REVIEW: I think this is okay...
 		pvValue->vt = VT_BSTR;
 		pvValue->bstrVal = SysAllocString ((OLECHAR *)v._jvalue.l);
-		_com_raise_error (E_NOTIMPL);
+		if (!pvValue->bstrVal) {
+			pvValue->vt = VT_NULL;
+			_com_raise_error (E_OUTOFMEMORY);
+		}
 		break;
 	case t_jboolean:
 		pvValue->vt = VT_BOOL;
@@ -134,8 +155,11 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 			_com_raise_error (E_OUTOFMEMORY);
 		}
 		break;
+	case t_BSTR:
+		pvValue->bstrVal = v._bstr->copy (); // copy() will raise COM error if no mem.
+		break;
 	default:
-		_com_raise_error (E_INVALIDARG);
+		_com_raise_error (E_NOTIMPL);
 		break;
 	}
 }
@@ -183,33 +207,16 @@ void CJniValue::get_jvalue (jvalue *pValue) const {
 }
 
 
-void CJniValue::copy_into (CJniValue &value) const {
-	switch (type) {
-	case t_BSTR:
-		value.put_BSTR (v._BSTR);
-		break;
-	default:
-		value.reset (type);
-		value.v = v;
-		break;
-	}
-}
-
 CJniValue::CJniValue (BSTR bstr)
 	: type (t_BSTR) {
-	v._BSTR = SysAllocStringLen (bstr, SysStringLen (bstr));
-	if (!v._BSTR) throw std::bad_alloc ();
+	v._bstr = new CBSTRRef (bstr);
+	
 }
 
 void CJniValue::put_BSTR (BSTR bstr) {
-	BSTR bstrCopy = SysAllocStringLen (bstr, SysStringLen (bstr));
-	if (bstrCopy) {
-		reset (t_BSTR);
-		v._BSTR = bstrCopy;
-	}
-	else {
-		reset (t_nothing);
-	}
+	CBSTRRef *pValue = new CBSTRRef (bstr);
+	reset (t_BSTR);
+	v._bstr = pValue;
 }
 
 void CJniValue::put_HANDLE (ULONGLONG handle) {
@@ -269,8 +276,7 @@ jint CJniValue::get_jint () const {
 	case t_jsize:
 		return v._jvalue.i;
 	}
-	assert (0);
-	return v._jvalue.i;
+	_com_raise_error (E_NOTIMPL);
 }
 
 jint CJniValue::get_jsize () const {
@@ -280,8 +286,7 @@ jint CJniValue::get_jsize () const {
 	case t_jsize:
 		return v._jvalue.i;
 	}
-	assert (0);
-	return v._jvalue.i;
+	_com_raise_error (E_NOTIMPL);
 }
 
 HRESULT CJniValue::load (std::vector<CJniValue> &aValue) {
@@ -289,8 +294,7 @@ HRESULT CJniValue::load (std::vector<CJniValue> &aValue) {
 		aValue.push_back (*this);
 		type = t_nothing;
 		return S_OK;
-	}
-	catch (std::bad_alloc) {
+	} catch (std::bad_alloc) {
 		return E_OUTOFMEMORY;
 	}
 }

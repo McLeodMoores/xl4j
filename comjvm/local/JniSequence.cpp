@@ -183,18 +183,6 @@ HRESULT CJniSequence::AddOperation (JniOperation operation, long lParam1, long l
 	}
 }
 
-void odprintf (LPCTSTR sFormat, ...)
-{
-	va_list argptr;
-	va_start (argptr, sFormat);
-	TCHAR buffer[2000];
-	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
-	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr)
-		OutputDebugString (buffer);
-	else
-		OutputDebugString (_T ("StringCbVPrintf error."));
-}
-
 /// <summary>Loads a constant into the value buffer.</summary>
 ///
 /// <para>The caller must hold the critical section.</para>
@@ -583,6 +571,30 @@ HRESULT STDMETHODCALLTYPE CJniSequence::LongConstant (
 	__RETURN_HR;
 }
 
+HRESULT STDMETHODCALLTYPE CJniSequence::FloatConstant (
+	/* [in] */ float fValue,
+	/* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	__JNI_OPERATION{
+		CJniValue contant (fValue);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	__RETURN_HR;
+}
+
+HRESULT STDMETHODCALLTYPE CJniSequence::DoubleConstant (
+	/* [in] */ double fValue,
+	/* [retval][out] */ long *plValueRef
+	) {
+	if (!plValueRef) return E_POINTER;
+	__JNI_OPERATION{
+		CJniValue contant (fValue);
+		hr = LoadConstant (contant, plValueRef);
+	}
+	__RETURN_HR;
+}
+
 HRESULT STDMETHODCALLTYPE CJniSequence::BooleanConstant ( 
     /* [in] */ BOOL bValue,
     /* [retval][out] */ long *plValueRef
@@ -603,43 +615,6 @@ HRESULT STDMETHODCALLTYPE CJniSequence::CharConstant (
 	if (!plValueRef) return E_POINTER;
 	__JNI_OPERATION {
 		CJniValue contant ((jchar) cValue);  // hope this works correctly in ASCII mode...
-		hr = LoadConstant (contant, plValueRef);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetVersion ( 
-    /* [out] */ long *plValueRef
-	) {
-	if (!plValueRef) return E_POINTER;
-	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_GetVersion);
-		if (SUCCEEDED (hr)) {
-			*plValueRef = m_cValue++;
-		}
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::FloatConstant (
-	/* [in] */ float fValue,
-	/* [retval][out] */ long *plValueRef
-	) {
-	if (!plValueRef) return E_POINTER;
-	__JNI_OPERATION {
-		CJniValue contant (fValue);
-		hr = LoadConstant (contant, plValueRef);
-	}
-	__RETURN_HR;
-}
-
-HRESULT STDMETHODCALLTYPE CJniSequence::DoubleConstant (
-	/* [in] */ double fValue,
-	/* [retval][out] */ long *plValueRef
-	) {
-	if (!plValueRef) return E_POINTER;
-	__JNI_OPERATION {
-		CJniValue contant (fValue);
 		hr = LoadConstant (contant, plValueRef);
 	}
 	__RETURN_HR;
@@ -668,56 +643,6 @@ JNI_METHOD_IMPL_V1 (jni_DeleteLocalRef, lObjRef)
 JNI_METHOD_IMPL_2 (jni_IsSameObject, lObj1Ref, lObj2Ref, plBooleanRef)
 JNI_METHOD_IMPL_1 (jni_NewLocalRef, lRefRef, plObjectRef)
 JNI_METHOD_IMPL_1 (jni_EnsureLocalCapacity, lCapacityRet, plIntRef)
-JNI_METHOD_IMPL_1 (jni_GetObjectClass, lObjRef, plClassRef)
-JNI_METHOD_IMPL_2 (jni_IsInstanceOf, lObjRef, lClassRef, plBooleanRef)
-JNI_METHOD_IMPL_3 (jni_GetFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
-JNI_METHOD_IMPL_3 (jni_GetField, lClassRef, lNameRef, lSigRef, plFieldIDRef)
-JNI_METHOD_IMPL_V4 (jni_SetField, lType, lObjRef, lFieldIDRef, lValueRef)
-JNI_METHOD_IMPL_3 (jni_GetStaticMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
-JNI_METHOD_IMPL_3 (jni_GetStaticFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
-JNI_METHOD_IMPL_3 (jni_GetStaticField, lType, lClassRef, lFieldIDRef, plValueRef)
-JNI_METHOD_IMPL_V4 (jni_SetStaticField, lType, lClassRef, lFieldIDRef, lValueRef)
-JNI_METHOD_IMPL_2 (jni_NewString, lUnicodeRef, lSizeRef, plStringRef)
-JNI_METHOD_IMPL_1 (jni_GetStringLength, lStrRef, plSizeRef)
-JNI_METHOD_IMPL_V2 (jni_ReleaseStringChars, lStrRef, lCharsRef)
-JNI_METHOD_IMPL_1 (jni_NewStringUTF, lUtfRef, plStringRef)
-JNI_METHOD_IMPL_1 (jni_GetStringUTFLength, lStrRef, plSizeRef)
-JNI_METHOD_IMPL_V2 (jni_ReleaseStringUTFChars, lStrRef, lCharsRef)
-JNI_METHOD_IMPL_1 (jni_GetArrayLength, lArrayRef, plSizeRef)
-JNI_METHOD_IMPL_3 (jni_NewObjectArray, lLenRef, lClassRef, lInitRef, plObjectArrayRef)
-JNI_METHOD_IMPL_2 (jni_GetObjectArrayElement, lArrayRef, lIndexRef, plObjectRef)
-JNI_METHOD_IMPL_V3 (jni_SetObjectArrayElement, lArrayRef, lIndexRef, lValRef)
-JNI_METHOD_IMPL_2 (jni_NewArray, lType, lLenRef, plArrayRef)
-JNI_METHOD_IMPL_V4 (jni_ReleaseArrayElements, lType, lArrayRef, lElemsRef, lModeRef)
-JNI_METHOD_IMPL_V5 (jni_GetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
-JNI_METHOD_IMPL_V5 (jni_SetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
-JNI_METHOD_IMPL_3 (jni_RegisterNatives, lClassRef, lMethodsRef, lNMethodsRef, plIntRef)
-JNI_METHOD_IMPL_1 (jni_UnregisterNatives, lClassRef, plIntRef)
-JNI_METHOD_IMPL_1 (jni_MonitorEntry, lObjRef, plIntRef)
-JNI_METHOD_IMPL_1 (jni_MonitorExit, lObjRef, plIntRef)
-JNI_METHOD_IMPL_V4 (jni_GetStringRegion, lStrRef, lStartRef, lLenRef, lBufRef)
-JNI_METHOD_IMPL_V4 (jni_GetStringUTFRegion, lStrRef, lStartRef, lLenRef, lBufRef)
-JNI_METHOD_IMPL_V3 (jni_ReleasePrimitiveArrayCritical, lArrayRef, lCArrayRef, lModeRef)
-JNI_METHOD_IMPL_V2 (jni_ReleaseStringCritical, lStringRef, lCStringRef)
-JNI_METHOD_IMPL_1 (jni_NewWeakGlobalRef, lObjRef, plWeakRef)
-JNI_METHOD_IMPL_V1 (jni_DeleteWeakGlobalRef, lRefRef)
-JNI_METHOD_IMPL_0 (jni_ExceptionCheck, plBooleanRef)
-JNI_METHOD_IMPL_2 (jni_NewDirectByteBuffer, lAddressRef, lCapacityRef, plObjectRef)
-JNI_METHOD_IMPL_1 (jni_GetDirectBufferAddress, lBufRef, plVoidRef)
-JNI_METHOD_IMPL_1 (jni_GetDirectBufferCapacity, lBufRef, plLongRef)
-JNI_METHOD_IMPL_1 (jni_GetObjectRefType, lObjRef, plObjectRefTypeRef)
-/// <summary>Get the method ID for a method</summary>
-///
-/// <para>The caller must not hold the critical section.</para>
-///
-/// <param name="lClassRef">The class reference index</param>
-/// <param name="lNameRef">The name of the method's index</param>
-/// <param name="lSigRef">The signature string of the method's index</param>
-/// <param name="plMethodIDRef">Pointer to long to hold index of the Method ID result</param>
-/// <returns>S_OK if successful, an error code otherwise</returns>
-JNI_METHOD_IMPL_3 (jni_GetMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
-
-
 /// <summary>Create a new object, calling it's classes no-arg constructor.</summary>
 ///
 /// <para>The caller must not hold the critical section.</para>
@@ -757,7 +682,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 			long cArgsRef; // load the cArgs number as a constant so we can get a ref to it.
 			
 			LoadConstant (CJniValue (cArgs), &cArgsRef);
-			hr = AddOperation (JniOperation::jni_NewObjectA, lClassRef, lMethodIDRef, cArgsRef);
+			hr = AddOperation (JniOperation::jni_NewObject, lClassRef, lMethodIDRef, cArgsRef);
 			if (SUCCEEDED (hr)) {
 				long cParam = 0;
 				try {
@@ -778,6 +703,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 	}
 	__RETURN_HR;
 }
+
+JNI_METHOD_IMPL_1 (jni_GetObjectClass, lObjRef, plClassRef)
+JNI_METHOD_IMPL_2 (jni_IsInstanceOf, lObjRef, lClassRef, plBooleanRef)
+/// <summary>Get the method ID for a method</summary>
+///
+/// <para>The caller must not hold the critical section.</para>
+///
+/// <param name="lClassRef">The class reference index</param>
+/// <param name="lNameRef">The name of the method's index</param>
+/// <param name="lSigRef">The signature string of the method's index</param>
+/// <param name="plMethodIDRef">Pointer to long to hold index of the Method ID result</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+JNI_METHOD_IMPL_3 (jni_GetMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
 
 /// <summary>Call a method</summary>
 ///
@@ -850,6 +788,12 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod (
 	}
 }
 
+
+JNI_METHOD_IMPL_3 (jni_GetFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_GetField, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_V4 (jni_SetField, lType, lObjRef, lFieldIDRef, lValueRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticMethodID, lClassRef, lNameRef, lSigRef, plMethodIDRef)
+
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod ( 
 	/* [in] */ long lType,
     /* [in] */ long lClassRef,
@@ -880,6 +824,12 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod (
 	__RETURN_HR;
 }
 
+JNI_METHOD_IMPL_3 (jni_GetStaticFieldID, lClassRef, lNameRef, lSigRef, plFieldIDRef)
+JNI_METHOD_IMPL_3 (jni_GetStaticField, lType, lClassRef, lFieldIDRef, plValueRef)
+JNI_METHOD_IMPL_V4 (jni_SetStaticField, lType, lClassRef, lFieldIDRef, lValueRef)
+JNI_METHOD_IMPL_2 (jni_NewString, lUnicodeRef, lSizeRef, plStringRef)
+JNI_METHOD_IMPL_1 (jni_GetStringLength, lStrRef, plSizeRef)
+
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringChars ( 
     /* [in] */ long lStrRef,
     /* [out] */ long *plIsCopyRef,
@@ -897,6 +847,9 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringChars (
 	__RETURN_HR;
 }
 
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringChars, lStrRef, lCharsRef)
+JNI_METHOD_IMPL_1 (jni_NewStringUTF, lUtfRef, plStringRef)
+JNI_METHOD_IMPL_1 (jni_GetStringUTFLength, lStrRef, plSizeRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFChars ( 
     /* [in] */ long lStrRef,
@@ -909,6 +862,13 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringUTFChars (
 	}
 	__RETURN_HR;
 }
+
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringUTFChars, lStrRef, lCharsRef)
+JNI_METHOD_IMPL_1 (jni_GetArrayLength, lArrayRef, plSizeRef)
+JNI_METHOD_IMPL_3 (jni_NewObjectArray, lLenRef, lClassRef, lInitRef, plObjectArrayRef)
+JNI_METHOD_IMPL_2 (jni_GetObjectArrayElement, lArrayRef, lIndexRef, plObjectRef)
+JNI_METHOD_IMPL_V3 (jni_SetObjectArrayElement, lArrayRef, lIndexRef, lValRef)
+JNI_METHOD_IMPL_2 (jni_NewArray, lType, lLenRef, plArrayRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayElements (
 	/* [in] */ long lType,
@@ -928,6 +888,15 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetArrayElements (
 	__RETURN_HR;
 }
 
+JNI_METHOD_IMPL_V4 (jni_ReleaseArrayElements, lType, lArrayRef, lElemsRef, lModeRef)
+JNI_METHOD_IMPL_V5 (jni_GetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
+JNI_METHOD_IMPL_V5 (jni_SetArrayRegion, lType, lArrayRef, lStartRef, lLRef, lBufRef)
+JNI_METHOD_IMPL_3 (jni_RegisterNatives, lClassRef, lMethodsRef, lNMethodsRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_UnregisterNatives, lClassRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_MonitorEntry, lObjRef, plIntRef)
+JNI_METHOD_IMPL_1 (jni_MonitorExit, lObjRef, plIntRef)
+JNI_METHOD_IMPL_V4 (jni_GetStringRegion, lStrRef, lStartRef, lLenRef, lBufRef)
+JNI_METHOD_IMPL_V4 (jni_GetStringUTFRegion, lStrRef, lStartRef, lLenRef, lBufRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetPrimitiveArrayCritical (
 	/* [in] */ long lArrayRef,
@@ -945,6 +914,8 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetPrimitiveArrayCritical (
 	__RETURN_HR;
 }
 
+JNI_METHOD_IMPL_V3 (jni_ReleasePrimitiveArrayCritical, lArrayRef, lCArrayRef, lModeRef)
+
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringCritical (
 	    /* [in] */ long lStringRef,
 	    /* [optional][out] */ long *plIsCopyRef,
@@ -960,3 +931,12 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetStringCritical (
 	}
 	__RETURN_HR;
 }
+
+JNI_METHOD_IMPL_V2 (jni_ReleaseStringCritical, lStringRef, lCStringRef)
+JNI_METHOD_IMPL_1 (jni_NewWeakGlobalRef, lObjRef, plWeakRef)
+JNI_METHOD_IMPL_V1 (jni_DeleteWeakGlobalRef, lRefRef)
+JNI_METHOD_IMPL_0 (jni_ExceptionCheck, plBooleanRef)
+JNI_METHOD_IMPL_2 (jni_NewDirectByteBuffer, lAddressRef, lCapacityRef, plObjectRef)
+JNI_METHOD_IMPL_1 (jni_GetDirectBufferAddress, lBufRef, plVoidRef)
+JNI_METHOD_IMPL_1 (jni_GetDirectBufferCapacity, lBufRef, plLongRef)
+JNI_METHOD_IMPL_1 (jni_GetObjectRefType, lObjRef, plObjectRefTypeRef)

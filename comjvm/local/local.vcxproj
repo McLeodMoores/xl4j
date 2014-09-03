@@ -253,11 +253,14 @@
   <ItemGroup>
     <ClInclude Include="Cache.h" />
     <ClInclude Include="Classpath.h" />
+    <ClInclude Include="Debug.h" />
     <ClInclude Include="Delete.h" />
     <ClInclude Include="DirectoryWriter.h" />
     <ClInclude Include="FileWriter.h" />
     <ClInclude Include="Internal.h" />
     <ClInclude Include="JniSequence.h" />
+    <ClInclude Include="JniSequenceExecutor.h" />
+    <ClInclude Include="JniValue.h" />
     <ClInclude Include="Jvm.h" />
     <ClInclude Include="JvmConnector.h" />
     <ClInclude Include="local.h" />
@@ -267,6 +270,7 @@
   <ItemGroup>
     <ClCompile Include="Cache.cpp" />
     <ClCompile Include="Classpath.cpp" />
+    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="dlldata.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>

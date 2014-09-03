@@ -116,7 +116,11 @@ namespace localtest {
 			pConnector->Release ();
 		}
 		
-		// new Integer(x) 
+		// NOTE: This is commented out because it needs to create a local reference for the Integer.
+		//  List l = new ArrayList<?>();
+		//  Integer i = new Integer(x);
+		//  return l.add(i);
+		//  x = 6;
 		//TEST_METHOD (NewArrayListAddX) {
 		//	IJvmConnector *pConnector;
 		//	Assert::AreEqual (S_OK, ComJvmCreateLocalConnector (&pConnector));
