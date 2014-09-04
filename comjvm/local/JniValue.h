@@ -61,10 +61,30 @@ enum vtype {
 
 	/// <para>these cannot be passed into a Java Method or Constructor
 	/// but can be parameters to JNI calls</para>
+
 	/// <summary>Value held in v._pjchar</summary>
 	t_pjchar,
 	/// <summary>Value held in v._pchar</summary>
 	t_pchar,
+	/// <para>these can be returned from JNI Calls</para>
+	/// <summary>Value held in v._jobjectBuffer</summary>
+	t_jobjectBuffer,
+	/// <summary>Value held in v._jintBuffer</summary>
+	t_jintBuffer,
+	/// <summary>Value held in v._jbooleanBuffer</summary>
+	t_jbooleanBuffer,
+	/// <summary>Value held in v._jcharBuffer</summary>
+	t_jcharBuffer,
+	/// <summary>Value held in v._jbyteBuffer</summary>
+	t_jbyteBuffer,
+	/// <summary>Value held in v._jshortBuffer</summary>
+	t_jshortBuffer,
+	/// <summary>Value held in v._jlongBuffer</summary>
+	t_jlongBuffer,
+	/// <summary>Value held in v._jfloatBuffer</summary>
+	t_jfloatBuffer,
+	/// <summary>Value held in v._jdoubleBuffer</summary>
+	t_jdoubleBuffer,
 	/// <summary>Value held in v._bstr</summary>
 	t_BSTR,
 	/// <summary>Value held in v._HANDLE</summary>
@@ -73,8 +93,6 @@ enum vtype {
 	t_jmethodID,
 	/// <summary>Value held in v._fieldID</summary>
 	t_jfieldID,
-	/// <summary>Value held in v._jbyteBuffer</summary>
-	t_jbyteBuffer,
 	/// <summary>Value held in v._jsize</summary>
 	t_jsize,
 };
@@ -124,6 +142,38 @@ private:
 		jobjectRefType _jobjectRefType;
 		jchar *_pjchar;
 		char *_pchar;
+		struct __jintBuffer {
+			jint *_pjint;
+			jsize _jsize;
+		} _jintBuffer;
+		struct __jbooleanBuffer {
+			jboolean *_pjboolean;
+			jsize _jsize;
+		} _jbooleanBuffer;
+		struct __jshortBuffer {
+			jshort *_pjshort;
+			jsize _jsize;
+		} _jshortBuffer;
+		struct __jlongBuffer {
+			jlong *_pjlong;
+			jsize _jsize;
+		} _jlongBuffer;
+		struct __jfloatBuffer {
+			jfloat *_pjfloat;
+			jsize _jsize;
+		} _jfloatBuffer;
+		struct __jdoubleBuffer {
+			jdouble *_pjdouble;
+			jsize _jsize;
+		} _jdoubleBuffer;
+		struct __jobjectBuffer {
+			jobject *_pjobject;
+			jsize _jsize;
+		} _jobjectBuffer;
+		struct __jcharBuffer { // the difference between this and _pjchar is we don't assume this is null terminated.
+			jchar *_pjchar;
+			jsize _jsize;
+		} _jcharBuffer;
 		struct __jbyteBuffer {
 			jbyte *_pjbyte;
 			jsize _jsize;
@@ -223,16 +273,18 @@ public:
 	jchar *get_pjchar () const;
 	void put_pchar (char *value) { reset (t_pchar); v._pchar = value; }
 	char *get_pchar () const;
-	CJniValue (jbyte *buffer, jsize size);
+	
 	__PUTHANDLE (jobject);
 	__GETHANDLE (jobject);
 	__PUTHANDLE (jclass);
 	__GETHANDLE (jclass);
 	__PUTHANDLE (jthrowable);
 	__GETHANDLE (jthrowable);
+	jarray get_jarray () const;
 	__PUTHANDLE (jobjectArray);
 	__GETHANDLE (jobjectArray);
 	__PUTHANDLE (jbooleanArray);
+	__GETHANDLE (jbooleanArray);
 	__GETHANDLE (jbyteArray);
 	__PUTHANDLE (jbyteArray);
 	__GETHANDLE (jcharArray);
@@ -260,9 +312,51 @@ public:
 	jstring get_jstring () const;
 
 	void put_HANDLE (ULONGLONG handle);
+
+	CJniValue (jboolean *buffer, jsize size);
+	void put_jbooleanBuffer (jboolean *buffer, jsize size);
+	jboolean *get_jbooleanBuffer () const;
+	jsize get_jbooleanBufferSize () const;
+
+	CJniValue (jbyte *buffer, jsize size);
 	void put_jbyteBuffer (jbyte *buffer, jsize size);
 	jbyte *get_jbyteBuffer () const;
 	jsize get_jbyteBufferSize () const;
+
+	CJniValue (jchar *buffer, jsize size);
+	void put_jcharBuffer (jchar *buffer, jsize size);
+	jchar *get_jcharBuffer () const;
+	jsize get_jcharBufferSize () const;
+
+	CJniValue (jshort *buffer, jsize size);
+	void put_jshortBuffer (jshort *buffer, jsize size);
+	jshort *get_jshortBuffer () const;
+	jsize get_jshortBufferSize () const;
+
+	CJniValue (jint *buffer, jsize size);
+	void put_jintBuffer (jint *buffer, jsize size);
+	jint *get_jintBuffer () const;
+	jsize get_jintBufferSize () const;
+
+	CJniValue (jlong *buffer, jsize size);
+	void put_jlongBuffer (jlong *buffer, jsize size);
+	jlong *get_jlongBuffer () const;
+	jsize get_jlongBufferSize () const;
+
+	CJniValue (jfloat *buffer, jsize size);
+	void put_jfloatBuffer (jfloat *buffer, jsize size);
+	jfloat *get_jfloatBuffer () const;
+	jsize get_jfloatBufferSize () const;
+
+	CJniValue (jdouble *buffer, jsize size);
+	void put_jdoubleBuffer (jdouble *buffer, jsize size);
+	jdouble *get_jdoubleBuffer () const;
+	jsize get_jdoubleBufferSize () const;
+
+	CJniValue (jobject *buffer, jsize size);
+	void put_jobjectBuffer (jobject *buffer, jsize size);
+	jobject *get_jobjectBuffer () const;
+	jsize get_jobjectBufferSize () const;
 
 #undef __CONS
 #undef __PUT
