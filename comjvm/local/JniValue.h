@@ -85,6 +85,8 @@ enum vtype {
 	t_jfloatBuffer,
 	/// <summary>Value held in v._jdoubleBuffer</summary>
 	t_jdoubleBuffer,
+	/// <summary>Valie held in v._pvoidBuffer</summary>
+	t_voidBuffer,
 	/// <summary>Value held in v._bstr</summary>
 	t_BSTR,
 	/// <summary>Value held in v._HANDLE</summary>
@@ -178,6 +180,10 @@ private:
 			jbyte *_pjbyte;
 			jsize _jsize;
 		} _jbyteBuffer;
+		struct __voidBuffer {
+			void *_pvoid;
+			jsize _jsize; // this is bytes.
+		} _voidBuffer;
 	} v;
 	void free ();
 	void reset (vtype typeNew) { free (); type = typeNew; }
@@ -357,6 +363,11 @@ public:
 	void put_jobjectBuffer (jobject *buffer, jsize size);
 	jobject *get_jobjectBuffer () const;
 	jsize get_jobjectBufferSize () const;
+
+	CJniValue (void *buffer, jsize size);
+	void put_voidBuffer (void *buffer, jsize size);
+	void *get_voidBuffer () const;
+	jsize get_voidBufferSize () const;
 
 #undef __CONS
 #undef __PUT

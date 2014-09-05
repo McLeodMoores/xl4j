@@ -276,50 +276,50 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						(__NEXT_PARAM.get_jvalue (&arguments[i]));
 					}
 					switch (jtype) {
-					case JTYPE_INT: {
-						jint result = pEnv->CallIntMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jint (result);
-						break;
-					}
-					case JTYPE_BOOLEAN: {
-						jboolean result = pEnv->CallBooleanMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jboolean (result);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jchar result = pEnv->CallCharMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jchar (result);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshort result = pEnv->CallShortMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jshort (result);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlong result = pEnv->CallLongMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jlong (result);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloat result = pEnv->CallFloatMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jfloat (result);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdouble result = pEnv->CallDoubleMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jdouble (result);
-						break;
-					}
-					case JTYPE_OBJECT:	{
-						jobject result = pEnv->CallObjectMethod (object, methodId, arguments);
-						__NEXT_RESULT.put_jobject (result);
-						break;
-					}
-					default:
-						delete arguments;
-						_com_raise_error (E_INVALIDARG);
-						break;
+						case JTYPE_INT: {
+							jint result = pEnv->CallIntMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jint (result);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jboolean result = pEnv->CallBooleanMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jboolean (result);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jchar result = pEnv->CallCharMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jchar (result);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshort result = pEnv->CallShortMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jshort (result);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlong result = pEnv->CallLongMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jlong (result);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloat result = pEnv->CallFloatMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jfloat (result);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdouble result = pEnv->CallDoubleMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jdouble (result);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							jobject result = pEnv->CallObjectMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						default:
+							delete arguments;
+							_com_raise_error (E_INVALIDARG);
+							break;
 					}
 					delete arguments;
 					break;
@@ -336,50 +336,50 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						(__NEXT_PARAM.get_jvalue (&arguments[i]));
 					}
 					switch (jtype) {
-					case JTYPE_INT: {
-						jint result = pEnv->CallNonvirtualIntMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jint (result);
-						break;
-					}
-					case JTYPE_BOOLEAN: {
-						jboolean result = pEnv->CallNonvirtualBooleanMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jboolean (result);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jchar result = pEnv->CallNonvirtualCharMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jchar (result);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshort result = pEnv->CallNonvirtualShortMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jshort (result);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlong result = pEnv->CallNonvirtualLongMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jlong (result);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloat result = pEnv->CallNonvirtualFloatMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jfloat (result);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdouble result = pEnv->CallNonvirtualDoubleMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jdouble (result);
-						break;
-					}
-					case JTYPE_OBJECT:	{
-						jobject result = pEnv->CallNonvirtualObjectMethod (object, sup, methodId, arguments);
-						__NEXT_RESULT.put_jobject (result);
-						break;
-					}
-					default:
-						delete arguments;
-						_com_raise_error (E_INVALIDARG);
-						break;
+						case JTYPE_INT: {
+							jint result = pEnv->CallNonvirtualIntMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jint (result);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jboolean result = pEnv->CallNonvirtualBooleanMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jboolean (result);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jchar result = pEnv->CallNonvirtualCharMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jchar (result);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshort result = pEnv->CallNonvirtualShortMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jshort (result);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlong result = pEnv->CallNonvirtualLongMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jlong (result);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloat result = pEnv->CallNonvirtualFloatMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jfloat (result);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdouble result = pEnv->CallNonvirtualDoubleMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jdouble (result);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							jobject result = pEnv->CallNonvirtualObjectMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						default:
+							delete arguments;
+							_com_raise_error (E_INVALIDARG);
+							break;
 					}
 					delete arguments;
 					break;
@@ -400,49 +400,49 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jfieldID fieldID = __NEXT_PARAM.get_jfieldID ();
 					
 					switch (jtype) {
-					case JTYPE_INT: {
-						jint result = pEnv->GetIntField (obj, fieldID);
-						__NEXT_RESULT.put_jint (result);
-						break;
-					}
-					case JTYPE_BOOLEAN: {
-						jboolean result = pEnv->GetBooleanField (obj, fieldID);
-						__NEXT_RESULT.put_jboolean (result);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jchar result = pEnv->GetCharField (obj, fieldID);
-						__NEXT_RESULT.put_jchar (result);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshort result = pEnv->GetShortField (obj, fieldID);
-						__NEXT_RESULT.put_jshort (result);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlong result = pEnv->GetLongField (obj, fieldID);
-						__NEXT_RESULT.put_jlong (result);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloat result = pEnv->GetFloatField (obj, fieldID);
-						__NEXT_RESULT.put_jfloat (result);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdouble result = pEnv->GetDoubleField (obj, fieldID);
-						__NEXT_RESULT.put_jdouble (result);
-						break;
-					}
-					case JTYPE_OBJECT:	{
-						jobject result = pEnv->GetObjectField (obj, fieldID);
-						__NEXT_RESULT.put_jobject (result);
-						break;
-					}
-					default:
-						_com_raise_error (E_INVALIDARG);
-						break;
+						case JTYPE_INT: {
+							jint result = pEnv->GetIntField (obj, fieldID);
+							__NEXT_RESULT.put_jint (result);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jboolean result = pEnv->GetBooleanField (obj, fieldID);
+							__NEXT_RESULT.put_jboolean (result);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jchar result = pEnv->GetCharField (obj, fieldID);
+							__NEXT_RESULT.put_jchar (result);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshort result = pEnv->GetShortField (obj, fieldID);
+							__NEXT_RESULT.put_jshort (result);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlong result = pEnv->GetLongField (obj, fieldID);
+							__NEXT_RESULT.put_jlong (result);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloat result = pEnv->GetFloatField (obj, fieldID);
+							__NEXT_RESULT.put_jfloat (result);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdouble result = pEnv->GetDoubleField (obj, fieldID);
+							__NEXT_RESULT.put_jdouble (result);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							jobject result = pEnv->GetObjectField (obj, fieldID);
+							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						default:
+							_com_raise_error (E_INVALIDARG);
+							break;
 					}
 					break;
 				}
@@ -453,49 +453,49 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jfieldID fieldID = __NEXT_PARAM.get_jfieldID ();
 
 					switch (jtype) {
-					case JTYPE_INT: {
-						jint val = __NEXT_PARAM.get_jint ();
-						pEnv->SetIntField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_BOOLEAN: {
-						jboolean val = __NEXT_PARAM.get_jboolean ();
-						pEnv->SetBooleanField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jchar val = __NEXT_PARAM.get_jchar ();
-						pEnv->SetCharField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshort val = __NEXT_PARAM.get_jshort ();
-						pEnv->SetShortField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlong val = __NEXT_PARAM.get_jlong ();
-						pEnv->SetLongField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloat val = __NEXT_PARAM.get_jfloat ();
-						pEnv->SetFloatField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdouble val = __NEXT_PARAM.get_jdouble ();
-						pEnv->SetDoubleField (obj, fieldID, val);
-						break;
-					}
-					case JTYPE_OBJECT:	{
-						jobject val = __NEXT_PARAM.get_jobject ();
-						pEnv->SetObjectField (obj, fieldID, val);
-						break;
-					}
-					default:
-						_com_raise_error (E_INVALIDARG);
-						break;
+						case JTYPE_INT: {
+							jint val = __NEXT_PARAM.get_jint ();
+							pEnv->SetIntField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jboolean val = __NEXT_PARAM.get_jboolean ();
+							pEnv->SetBooleanField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jchar val = __NEXT_PARAM.get_jchar ();
+							pEnv->SetCharField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshort val = __NEXT_PARAM.get_jshort ();
+							pEnv->SetShortField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlong val = __NEXT_PARAM.get_jlong ();
+							pEnv->SetLongField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloat val = __NEXT_PARAM.get_jfloat ();
+							pEnv->SetFloatField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdouble val = __NEXT_PARAM.get_jdouble ();
+							pEnv->SetDoubleField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							jobject val = __NEXT_PARAM.get_jobject ();
+							pEnv->SetObjectField (obj, fieldID, val);
+							break;
+						}
+						default:
+							_com_raise_error (E_INVALIDARG);
+							break;
 					}
 					break;
 				}
@@ -519,50 +519,50 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						(__NEXT_PARAM.get_jvalue (&arguments[i]));
 					}
 					switch (jtype) {
-					case JTYPE_INT: {
-						jint result = pEnv->CallStaticIntMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jint (result);
-						break;
-					}
-					case JTYPE_BOOLEAN: {
-						jboolean result = pEnv->CallStaticBooleanMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jboolean (result);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jchar result = pEnv->CallStaticCharMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jchar (result);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshort result = pEnv->CallStaticShortMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jshort (result);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlong result = pEnv->CallStaticLongMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jlong (result);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloat result = pEnv->CallStaticFloatMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jfloat (result);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdouble result = pEnv->CallStaticDoubleMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jdouble (result);
-						break;
-					}
-					case JTYPE_OBJECT:	{
-						jobject result = pEnv->CallStaticObjectMethod (cls, methodId, arguments);
-						__NEXT_RESULT.put_jobject (result);
-						break;
-					}
-					default:
-						delete arguments;
-						_com_raise_error (E_INVALIDARG);
-						break;
+						case JTYPE_INT: {
+							jint result = pEnv->CallStaticIntMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jint (result);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jboolean result = pEnv->CallStaticBooleanMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jboolean (result);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jchar result = pEnv->CallStaticCharMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jchar (result);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshort result = pEnv->CallStaticShortMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jshort (result);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlong result = pEnv->CallStaticLongMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jlong (result);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloat result = pEnv->CallStaticFloatMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jfloat (result);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdouble result = pEnv->CallStaticDoubleMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jdouble (result);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							jobject result = pEnv->CallStaticObjectMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						default:
+							delete arguments;
+							_com_raise_error (E_INVALIDARG);
+							break;
 					}
 					delete arguments;
 					break;
@@ -583,49 +583,49 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jfieldID fieldID = __NEXT_PARAM.get_jfieldID ();
 
 					switch (jtype) {
-					case JTYPE_INT: {
-						jint result = pEnv->GetStaticIntField (cls, fieldID);
-						__NEXT_RESULT.put_jint (result);
-						break;
-					}
-					case JTYPE_BOOLEAN: {
-						jboolean result = pEnv->GetStaticBooleanField (cls, fieldID);
-						__NEXT_RESULT.put_jboolean (result);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jchar result = pEnv->GetStaticCharField (cls, fieldID);
-						__NEXT_RESULT.put_jchar (result);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshort result = pEnv->GetStaticShortField (cls, fieldID);
-						__NEXT_RESULT.put_jshort (result);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlong result = pEnv->GetStaticLongField (cls, fieldID);
-						__NEXT_RESULT.put_jlong (result);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloat result = pEnv->GetStaticFloatField (cls, fieldID);
-						__NEXT_RESULT.put_jfloat (result);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdouble result = pEnv->GetStaticDoubleField (cls, fieldID);
-						__NEXT_RESULT.put_jdouble (result);
-						break;
-					}
-					case JTYPE_OBJECT:	{
-						jobject result = pEnv->GetStaticObjectField (cls, fieldID);
-						__NEXT_RESULT.put_jobject (result);
-						break;
-					}
-					default:
-						_com_raise_error (E_INVALIDARG);
-						break;
+						case JTYPE_INT: {
+							jint result = pEnv->GetStaticIntField (cls, fieldID);
+							__NEXT_RESULT.put_jint (result);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jboolean result = pEnv->GetStaticBooleanField (cls, fieldID);
+							__NEXT_RESULT.put_jboolean (result);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jchar result = pEnv->GetStaticCharField (cls, fieldID);
+							__NEXT_RESULT.put_jchar (result);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshort result = pEnv->GetStaticShortField (cls, fieldID);
+							__NEXT_RESULT.put_jshort (result);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlong result = pEnv->GetStaticLongField (cls, fieldID);
+							__NEXT_RESULT.put_jlong (result);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloat result = pEnv->GetStaticFloatField (cls, fieldID);
+							__NEXT_RESULT.put_jfloat (result);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdouble result = pEnv->GetStaticDoubleField (cls, fieldID);
+							__NEXT_RESULT.put_jdouble (result);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							jobject result = pEnv->GetStaticObjectField (cls, fieldID);
+							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						default:
+							_com_raise_error (E_INVALIDARG);
+							break;
 					}
 					break;
 				}
@@ -823,8 +823,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_OBJECT:	{
-							jobjectArray arr = pEnv->NewObjectArray (len);
-							__NEXT_RESULT.put_jobjectArray (arr);
+							_com_raise_error (E_NOTIMPL);
 							break;
 						}
 						default: {
@@ -839,146 +838,489 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					long jtype = (long)__NEXT_PARAM.get_jint ();
 					jsize len = __NEXT_PARAM.get_jsize ();
 					jboolean isCopy;
+					long lIsCopyRef = *(params++);
+					if (lIsCopyRef == cValue) {
+						cValue++;
+					}
 					switch (jtype) {
-					case JTYPE_INT: {
-						jintArray jArr = __NEXT_PARAM.get_jintArray ();
-						jint *pArr = pEnv->GetIntArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jintBuffer (pArr, size);
-						break;
+						case JTYPE_INT: {
+							jintArray jArr = __NEXT_PARAM.get_jintArray ();
+							jint *pArr = pEnv->GetIntArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jintBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jbooleanArray jArr = __NEXT_PARAM.get_jbooleanArray ();
+							jboolean *pArr = pEnv->GetBooleanArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jbooleanBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jcharArray jArr = __NEXT_PARAM.get_jcharArray ();
+							jchar *pArr = pEnv->GetCharArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jcharBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshortArray jArr = __NEXT_PARAM.get_jshortArray ();
+							jshort *pArr = pEnv->GetShortArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jshortBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlongArray jArr = __NEXT_PARAM.get_jlongArray ();
+							jlong *pArr = pEnv->GetLongArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jlongBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloatArray jArr = __NEXT_PARAM.get_jfloatArray ();
+							jfloat *pArr = pEnv->GetFloatArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jfloatBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdoubleArray jArr = __NEXT_PARAM.get_jdoubleArray ();
+							jdouble *pArr = pEnv->GetDoubleArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jdoubleBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							_com_raise_error (E_NOTIMPL);
+							break;
+						}
+						default: {
+							_com_raise_error (E_INVALIDARG);
+							break;
+						}
 					}
-					case JTYPE_BOOLEAN: {
-						jbooleanArray jArr = __NEXT_PARAM.get_jbooleanArray ();
-						jboolean *pArr = pEnv->GetBooleanArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jbooleanBuffer (pArr, size);
-						break;
-					}
-					case JTYPE_CHAR: {
-						jcharArray jArr = __NEXT_PARAM.get_jcharArray ();
-						jchar *pArr = pEnv->GetCharArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jcharBuffer (pArr, size);
-						break;
-					}
-					case JTYPE_SHORT: {
-						jshortArray jArr = __NEXT_PARAM.get_jshortArray ();
-						jshort *pArr = pEnv->GetShortArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jshortBuffer (pArr, size);
-						break;
-					}
-					case JTYPE_LONG: {
-						jlongArray jArr = __NEXT_PARAM.get_jlongArray ();
-						jlong *pArr = pEnv->GetLongArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jlongBuffer (pArr, size);
-						break;
-					}
-					case JTYPE_FLOAT: {
-						jfloatArray jArr = __NEXT_PARAM.get_jfloatArray ();
-						jfloat *pArr = pEnv->GetFloatArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jfloatBuffer (pArr, size);
-						break;
-					}
-					case JTYPE_DOUBLE: {
-						jdoubleArray jArr = __NEXT_PARAM.get_jdoubleArray ();
-						jdouble *pArr = pEnv->GetDoubleArrayElements (jArr, &isCopy);
-						jsize size = pEnv->GetArrayLength (jArr);
-						__NEXT_RESULT.put_jdoubleBuffer (pArr, size);
-					}
-					case JTYPE_OBJECT:	{
-						_com_raise_error (E_NOTIMPL);
-						break;
-					}
-					default: {
-						_com_raise_error (E_INVALIDARG);
-						break;
-					}
+					if (lIsCopyRef >= 0) {
+						aValues[lIsCopyRef].put_jboolean (isCopy);
 					}
 					break;
 				}
-				case JniOperation::jni_ReleaseArrayElements:
-					// TODO
+				case JniOperation::jni_ReleaseArrayElements
+					: {
+					long jtype = (long)__NEXT_PARAM.get_jint ();
+					switch (jtype) {
+						case JTYPE_INT: {
+							jintArray jArr = __NEXT_PARAM.get_jintArray ();
+							jint *elems = __NEXT_PARAM.get_jintBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseIntArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jbooleanArray jArr = __NEXT_PARAM.get_jbooleanArray ();
+							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseBooleanArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jcharArray jArr = __NEXT_PARAM.get_jcharArray ();
+							jchar *elems = __NEXT_PARAM.get_jcharBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseCharArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshortArray jArr = __NEXT_PARAM.get_jshortArray ();
+							jshort *elems = __NEXT_PARAM.get_jshortBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseShortArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlongArray jArr = __NEXT_PARAM.get_jlongArray ();
+							jlong *elems = __NEXT_PARAM.get_jlongBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseLongArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloatArray jArr = __NEXT_PARAM.get_jfloatArray ();
+							jfloat *elems = __NEXT_PARAM.get_jfloatBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseFloatArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdoubleArray jArr = __NEXT_PARAM.get_jdoubleArray ();
+							jdouble *elems = __NEXT_PARAM.get_jdoubleBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseDoubleArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							_com_raise_error (E_NOTIMPL);
+							break;
+						}
+						default: {
+							_com_raise_error (E_INVALIDARG);
+							break;
+						}
+					}
+					break;
+				}
+				case JniOperation::jni_GetArrayRegion
+					: {
+					long jtype = (long)__NEXT_PARAM.get_jint ();
+					switch (jtype) {
+						case JTYPE_INT: {
+							jintArray jArr = __NEXT_PARAM.get_jintArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jint *elems = buffer.get_jintBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetIntArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jbooleanArray jArr = __NEXT_PARAM.get_jbooleanArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetBooleanArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jcharArray jArr = __NEXT_PARAM.get_jcharArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jchar *elems = __NEXT_PARAM.get_jcharBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetCharArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshortArray jArr = __NEXT_PARAM.get_jshortArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jshort *elems = __NEXT_PARAM.get_jshortBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetShortArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlongArray jArr = __NEXT_PARAM.get_jlongArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jlong *elems = __NEXT_PARAM.get_jlongBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetLongArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloatArray jArr = __NEXT_PARAM.get_jfloatArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jfloat *elems = __NEXT_PARAM.get_jfloatBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetFloatArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdoubleArray jArr = __NEXT_PARAM.get_jdoubleArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jdouble *elems = __NEXT_PARAM.get_jdoubleBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->GetDoubleArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							_com_raise_error (E_NOTIMPL);
+							break;
+						}
+						default: {
+							_com_raise_error (E_INVALIDARG);
+							break;
+						}
+					}
+					break;
+				}
+				case JniOperation::jni_SetArrayRegion
+					: {
+					long jtype = (long)__NEXT_PARAM.get_jint ();
+					switch (jtype) {
+						case JTYPE_INT: {
+							jintArray jArr = __NEXT_PARAM.get_jintArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jint *elems = buffer.get_jintBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetIntArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							jbooleanArray jArr = __NEXT_PARAM.get_jbooleanArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetBooleanArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_CHAR: {
+							jcharArray jArr = __NEXT_PARAM.get_jcharArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jchar *elems = __NEXT_PARAM.get_jcharBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetCharArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_SHORT: {
+							jshortArray jArr = __NEXT_PARAM.get_jshortArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jshort *elems = __NEXT_PARAM.get_jshortBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetShortArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_LONG: {
+							jlongArray jArr = __NEXT_PARAM.get_jlongArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jlong *elems = __NEXT_PARAM.get_jlongBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetLongArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							jfloatArray jArr = __NEXT_PARAM.get_jfloatArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jfloat *elems = __NEXT_PARAM.get_jfloatBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetFloatArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							jdoubleArray jArr = __NEXT_PARAM.get_jdoubleArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jdouble *elems = __NEXT_PARAM.get_jdoubleBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize);
+							pEnv->SetDoubleArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_OBJECT:	{
+							_com_raise_error (E_NOTIMPL);
+							break;
+						}
+						default: {
+							_com_raise_error (E_INVALIDARG);
+							break;
+						}
+					}
+					break;
+				}
+				case JniOperation::jni_RegisterNatives
+					: {
+					// TODO: this doesn't really make sense to support?
 					_com_raise_error (E_NOTIMPL);
 					break;
-				case JniOperation::jni_GetArrayRegion:
-					// TODO
+				}
+				case JniOperation::jni_UnregisterNatives
+					: {
+					// TODO: this doesn't really make sense to support?
 					_com_raise_error (E_NOTIMPL);
 					break;
-				case JniOperation::jni_SetArrayRegion:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+
+				case JniOperation::jni_MonitorEntry
+					: {
+					jobject obj = __NEXT_PARAM.get_jobject ();
+					jint result = pEnv->MonitorEnter (obj);
+					__NEXT_RESULT.put_jint (result);
 					break;
-				case JniOperation::jni_RegisterNatives:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_MonitorExit
+					: {
+					jobject obj = __NEXT_PARAM.get_jobject ();
+					jint result = pEnv->MonitorExit (obj);
+					__NEXT_RESULT.put_jint (result);
 					break;
-				case JniOperation::jni_UnregisterNatives:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_GetStringRegion
+					: {
+					jstring str = __NEXT_PARAM.get_jstring ();
+					jsize start = __NEXT_PARAM.get_jsize ();
+					jsize len = __NEXT_PARAM.get_jsize ();
+					jchar *buf = __NEXT_PARAM.get_pjchar ();
+					pEnv->GetStringRegion (str, start, len, buf);
 					break;
-				case JniOperation::jni_MonitorEntry:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_GetStringUTFRegion
+					: {
+					// REVIEW: not sure if the char * buf can be the pchar getter.
+					jstring str = __NEXT_PARAM.get_jstring ();
+					jsize start = __NEXT_PARAM.get_jsize ();
+					jsize len = __NEXT_PARAM.get_jsize ();
+					char *buf = __NEXT_PARAM.get_pchar ();
+					pEnv->GetStringUTFRegion (str, start, len, buf);
 					break;
-				case JniOperation::jni_MonitorExit:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_GetPrimitiveArrayCritical
+					: {
+					long jtype = (long)__NEXT_PARAM.get_jint ();
+					jarray jArr = __NEXT_PARAM.get_jarray ();
+					jboolean isCopy;
+					long lIsCopyRef = *(params++);
+					if (lIsCopyRef == cValue) {
+						cValue++;
+					}
+					void *arr = pEnv->GetPrimitiveArrayCritical (jArr, &isCopy);
+					jsize size = pEnv->GetArrayLength (jArr);
+					if (lIsCopyRef >= 0) {
+						aValues[lIsCopyRef].put_jboolean (isCopy);
+					}
+					size_t sz;
+					switch (jtype) {
+						case JTYPE_INT: {
+							sz = sizeof (jint);
+							break;
+						}
+						case JTYPE_BOOLEAN: {
+							sz = sizeof (jboolean);
+							break;
+						}
+						case JTYPE_CHAR: {
+							sz = sizeof (jchar);
+							break;
+						}
+						case JTYPE_SHORT: {
+							sz = sizeof (jshort);
+							break;
+						}
+						case JTYPE_LONG: {
+							sz = sizeof (jlong);
+							break;
+						}
+						case JTYPE_FLOAT: {
+							sz = sizeof (jfloat);
+							break;
+						}
+						case JTYPE_DOUBLE: {
+							sz = sizeof (jdouble);
+							break;
+						}
+						case JTYPE_OBJECT: {
+							sz = sizeof (jobject);
+							break;
+						}
+						default: {
+							_com_raise_error (E_INVALIDARG);
+							break;
+						}
+					}
+					// I'm storing the size in _bytes_ here.
+					__NEXT_RESULT.put_voidBuffer (arr, size * sz);
 					break;
-				case JniOperation::jni_GetStringRegion:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_ReleasePrimitiveArrayCritical
+					: {
+					jarray array = __NEXT_PARAM.get_jarray ();
+					void *elem = __NEXT_PARAM.get_voidBuffer ();
+					jint mode = __NEXT_PARAM.get_jint ();
+					pEnv->ReleasePrimitiveArrayCritical (array, elem, mode);
+					break; 
+				}
+				case JniOperation::jni_GetStringCritical
+					: {
+					jstring string = __NEXT_PARAM.get_jstring ();
+					jboolean isCopy;
+					long lIsCopyRef = *(params++);
+					if (lIsCopyRef == cValue) {
+						cValue++;
+					}
+					const jchar *cstring = pEnv->GetStringCritical (string, &isCopy);
+					if (lIsCopyRef >= 0) {
+						aValues[lIsCopyRef].put_jboolean (isCopy);
+					}
+					__NEXT_RESULT.put_pjchar ((jchar *) cstring);
 					break;
-				case JniOperation::jni_GetStringUTFRegion:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_ReleaseStringCritical
+					: {
+					jstring string = __NEXT_PARAM.get_jstring ();
+					jchar *cstring = __NEXT_PARAM.get_pjchar ();
+					pEnv->ReleaseStringCritical (string, cstring);
 					break;
-				case JniOperation::jni_GetPrimitiveArrayCritical:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_NewWeakGlobalRef
+					: {
+					jobject obj = __NEXT_PARAM.get_jobject ();
+					jweak weak = pEnv->NewWeakGlobalRef (obj);
+					__NEXT_RESULT.put_jweak (weak);
 					break;
-				case JniOperation::jni_ReleasePrimitiveArrayCritical:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_DeleteWeakGlobalRef
+					: {
+					jweak weak = __NEXT_PARAM.get_jweak ();
+					pEnv->DeleteWeakGlobalRef (weak);
 					break;
-				case JniOperation::jni_GetStringCritical:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_ExceptionCheck
+					: {
+					jboolean check = pEnv->ExceptionCheck ();
+					__NEXT_RESULT.put_jboolean (check);
 					break;
-				case JniOperation::jni_ReleaseStringCritical:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_NewDirectByteBuffer
+					: {
+					CJniValue buffer = __NEXT_PARAM;
+					jobject obj = pEnv->NewDirectByteBuffer (buffer.get_voidBuffer, buffer.get_voidBufferSize);
+					__NEXT_RESULT.put_jobject (obj);
 					break;
-				case JniOperation::jni_NewWeakGlobalRef:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_GetDirectBufferAddress
+					: {
+					jobject directBuf = __NEXT_PARAM.get_jobject ();
+					void *bufferAddress = pEnv->GetDirectBufferAddress (directBuf);
+					jsize size = pEnv->GetDirectBufferCapacity (directBuf);
+					__NEXT_RESULT.put_voidBuffer (bufferAddress, size);
 					break;
-				case JniOperation::jni_DeleteWeakGlobalRef:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_GetDirectBufferCapacity
+					: {
+					jobject directBuf = __NEXT_PARAM.get_jobject ();
+					jsize size = pEnv->GetDirectBufferCapacity (directBuf);
+					__NEXT_RESULT.put_jsize (size);
 					break;
-				case JniOperation::jni_ExceptionCheck:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
+				}
+				case JniOperation::jni_GetObjectRefType
+					: {
+					jobject obj = __NEXT_PARAM.get_jobject ();
+					jobjectRefType refType = pEnv->GetObjectRefType (obj);
+					__NEXT_RESULT.put_jobjectRefType (refType);
 					break;
-				case JniOperation::jni_NewDirectByteBuffer:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
-					break;
-				case JniOperation::jni_GetDirectBufferAddress:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
-					break;
-				case JniOperation::jni_GetDirectBufferCapacity:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
-					break;
-				case JniOperation::jni_GetObjectRefType:
-					// TODO
-					_com_raise_error (E_NOTIMPL);
-					break;
+				}
 				default:
 					_com_raise_error (E_NOTIMPL);
 			}

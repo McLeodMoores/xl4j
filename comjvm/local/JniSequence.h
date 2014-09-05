@@ -440,7 +440,10 @@ public:
         /* [in] */ long lStartRef,
         /* [in] */ long lLenRef,
         /* [in] */ long lBufRef);
+	/// <para>REVIEW: ltype not in original API, but necessary so we can get and store size of block returned.  This allows us to send void *
+	/// buffers over the wire</para>
     HRESULT STDMETHODCALLTYPE jni_GetPrimitiveArrayCritical ( 
+		/* [in] */ long lType, 
         /* [in] */ long lArrayRef,
         /* [optional][out] */ long *plIsCopyRef,
         /* [retval][out] */ long *plVoidRef);

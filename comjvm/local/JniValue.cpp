@@ -540,6 +540,31 @@ jsize CJniValue::get_jobjectBufferSize () const {
 	_com_raise_error (E_INVALIDARG);
 }
 
+CJniValue::CJniValue (void *buffer, jsize size) : type (t_voidBuffer) {
+	v._voidBuffer._pvoid = buffer;
+	v._voidBuffer._jsize = size;
+}
+
+void CJniValue::put_voidBuffer (void *buffer, jsize size) {
+	reset (t_voidBuffer);
+	v._voidBuffer._pvoid = buffer;
+	v._voidBuffer._jsize = size;
+}
+
+void *CJniValue::get_voidBuffer () const {
+	if (type == t_voidBuffer) {
+		return v._voidBuffer._pvoid;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
+jsize CJniValue::get_voidBufferSize () const {
+	if (type == t_voidBuffer) {
+		return v._voidBuffer._jsize;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
 jarray CJniValue::get_jarray () const {
 	switch (type) {
 	case t_jobjectArray:
