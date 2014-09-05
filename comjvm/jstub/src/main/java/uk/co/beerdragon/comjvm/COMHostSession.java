@@ -41,6 +41,8 @@ public abstract class COMHostSession {
    * which will cause the stub to not attempt further invocations and use either the super-class
    * method or re-throw the exception.
    * 
+   * @param <T>  
+   *          the Java type that is implemented as a COM object
    * @param type
    *          the Java type that is implemented as a COM object
    * @param dispSignatures
@@ -469,6 +471,8 @@ public abstract class COMHostSession {
    *          the method dispatch identifier
    * @param t1
    *          an {@link ArgumentBuffer} member containing parameter values
+   * @param t2
+   *          an {@link ArgumentBuffer} member containing parameter values          
    * @return the result of the method call
    * @throws COMException
    *           if the COM object method returned an error code

@@ -51,7 +51,8 @@ public final class COMStubClass<T> {
   /**
    * Obtains a new instance. An internal cache is used so that only the first request for each class
    * type results in the overhead of a stub class being generated.
-   * 
+   * @param <T>
+   *          the class or interface to stub
    * @param clazz
    *          the class or interface to stub, not {@code null}
    * @return the stub wrapper, never {@code null}

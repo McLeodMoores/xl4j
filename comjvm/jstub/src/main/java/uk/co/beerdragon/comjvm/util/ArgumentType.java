@@ -129,9 +129,10 @@ public final class ArgumentType {
    * <li>A function with no arguments will give 0; and
    * <li>A function <code>([[IIZFB)</code> will give 3 - object reference, {@code int}/
    * {@code boolean}/{code byte}, and {@code float}.
+   * </ul>
    * 
-   * @param typeMask
-   *          the Java function arguments as returned by {@link #typeMask}
+   * @param mask
+   *          the Java function arguments as returned by {@link #mask}
    * @return the number of transport parameters needed
    */
   public static int count (final int mask) {

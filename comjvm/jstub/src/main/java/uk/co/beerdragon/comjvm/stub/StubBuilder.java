@@ -641,6 +641,8 @@ public abstract class StubBuilder<T> {
    * 
    * @param methods
    *          the methods to include in the stub, not {@code null}
+   * @return 
+   *          the resolved class, not {@code null}
    */
   @SuppressWarnings ("unchecked")
   public final Class<? extends T> build (final Iterable<ClassMethods.MethodInfo> methods) {
