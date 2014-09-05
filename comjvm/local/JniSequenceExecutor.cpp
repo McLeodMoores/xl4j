@@ -25,7 +25,9 @@ CJniSequenceExecutor::~CJniSequenceExecutor () {
 }
 
 #define __NEXT_PARAM aValues[*(params++)]
+#define __NEXT_REF_PARAM(type, name) long l##name = *(params++); if (l##name == cValue) { cValue ++; } type name; 
 #define __NEXT_RESULT aValues[cValue++]
+#define __STORE_REF_RESULT(type, name) if (name >= 0) { aValues[l##name].put_##type##(name); }
 
 HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 	try {
@@ -699,15 +701,9 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_GetStringChars
 					: {
 					jstring str = __NEXT_PARAM.get_jstring ();
-					jboolean isCopy;
-					long lIsCopyRef = *(params++);
-					if (lIsCopyRef == cValue) {
-						cValue++;
-					}
+					__NEXT_REF_PARAM (jboolean, isCopy);
 					__NEXT_RESULT.put_pjchar ((jchar*)pEnv->GetStringChars (str, &isCopy));
-					if (lIsCopyRef >= 0) {
-						aValues[lIsCopyRef].put_jboolean (isCopy);
-					}
+					__STORE_REF_RESULT (jboolean, isCopy);
 					break;
 				}
 				case JniOperation::jni_ReleaseStringChars
@@ -732,15 +728,9 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_GetStringUTFChars
 					: {
 						jstring str = __NEXT_PARAM.get_jstring ();
-						jboolean isCopy;
-						long lIsCopyRef = *(params++);
-						if (lIsCopyRef == cValue) {
-							cValue++;
-						}
+						__NEXT_REF_PARAM (jboolean, isCopy);
 						__NEXT_RESULT.put_pchar ((char*)pEnv->GetStringUTFChars (str, &isCopy));
-						if (lIsCopyRef >= 0) {
-							aValues[lIsCopyRef].put_jboolean (isCopy);
-						}
+						__STORE_REF_RESULT (jboolean, isCopy);
 						break;
 					}
 				case JniOperation::jni_ReleaseStringUTFChars
@@ -837,11 +827,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					: {
 					long jtype = (long)__NEXT_PARAM.get_jint ();
 					jsize len = __NEXT_PARAM.get_jsize ();
-					jboolean isCopy;
-					long lIsCopyRef = *(params++);
-					if (lIsCopyRef == cValue) {
-						cValue++;
-					}
+					__NEXT_REF_PARAM (jboolean, isCopy);
 					switch (jtype) {
 						case JTYPE_INT: {
 							jintArray jArr = __NEXT_PARAM.get_jintArray ();
@@ -901,9 +887,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 					}
-					if (lIsCopyRef >= 0) {
-						aValues[lIsCopyRef].put_jboolean (isCopy);
-					}
+					__STORE_REF_RESULT (jboolean, isCopy);
 					break;
 				}
 				case JniOperation::jni_ReleaseArrayElements
@@ -1190,16 +1174,10 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					: {
 					long jtype = (long)__NEXT_PARAM.get_jint ();
 					jarray jArr = __NEXT_PARAM.get_jarray ();
-					jboolean isCopy;
-					long lIsCopyRef = *(params++);
-					if (lIsCopyRef == cValue) {
-						cValue++;
-					}
+					__NEXT_REF_PARAM(jboolean, isCopy);
 					void *arr = pEnv->GetPrimitiveArrayCritical (jArr, &isCopy);
 					jsize size = pEnv->GetArrayLength (jArr);
-					if (lIsCopyRef >= 0) {
-						aValues[lIsCopyRef].put_jboolean (isCopy);
-					}
+					__STORE_REF_RESULT (jboolean, isCopy);
 					size_t sz;
 					switch (jtype) {
 						case JTYPE_INT: {
@@ -1254,15 +1232,9 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_GetStringCritical
 					: {
 					jstring string = __NEXT_PARAM.get_jstring ();
-					jboolean isCopy;
-					long lIsCopyRef = *(params++);
-					if (lIsCopyRef == cValue) {
-						cValue++;
-					}
+					__NEXT_REF_PARAM(jboolean, isCopy);
 					const jchar *cstring = pEnv->GetStringCritical (string, &isCopy);
-					if (lIsCopyRef >= 0) {
-						aValues[lIsCopyRef].put_jboolean (isCopy);
-					}
+					__STORE_REF_RESULT (jboolean, isCopy);
 					__NEXT_RESULT.put_pjchar ((jchar *) cstring);
 					break;
 				}
