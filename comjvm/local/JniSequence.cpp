@@ -886,13 +886,14 @@ JNI_METHOD_IMPL_V4 (jni_GetStringRegion, lStrRef, lStartRef, lLenRef, lBufRef)
 JNI_METHOD_IMPL_V4 (jni_GetStringUTFRegion, lStrRef, lStartRef, lLenRef, lBufRef)
 
 HRESULT STDMETHODCALLTYPE CJniSequence::jni_GetPrimitiveArrayCritical (
+    /* [in] */ long lType,
 	/* [in] */ long lArrayRef,
 	/* [optional][out] */ long *plIsCopyRef,
 	/* [retval][out] */ long *plVoidRef
 	) {
 	if (!plVoidRef) return E_POINTER;
 	__JNI_OPERATION{
-		hr = AddOperation (JniOperation::jni_GetPrimitiveArrayCritical, lArrayRef, plIsCopyRef ? m_cValue : -1);
+		hr = AddOperation (JniOperation::jni_GetPrimitiveArrayCritical, lType, lArrayRef, plIsCopyRef ? m_cValue : -1);
 		if (SUCCEEDED (hr)) {
 			if (plIsCopyRef) *plIsCopyRef = m_cValue++;
 			*plVoidRef = m_cValue++;

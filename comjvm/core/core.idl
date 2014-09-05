@@ -525,7 +525,7 @@ midl_pragma warning (disable: 2362)
 	HRESULT jni_MonitorExit ([in] long lObjRef, [out, retval] long *plIntRef);
 	HRESULT jni_GetStringRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
 	HRESULT jni_GetStringUTFRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
-	HRESULT jni_GetPrimitiveArrayCritical ([in] long lArrayRef, [out, optional] long *plIsCopyRef, [out, retval] long *plVoidRef);
+	HRESULT jni_GetPrimitiveArrayCritical ([in] long lType, [in] long lArrayRef, [out, optional] long *plIsCopyRef, [out, retval] long *plVoidRef);
 	HRESULT jni_ReleasePrimitiveArrayCritical ([in] long lArrayRef, [in] long lCArrayRef, [in] long lModeRef);
 	HRESULT jni_GetStringCritical ([in] long lStringRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
 	HRESULT jni_ReleaseStringCritical ([in] long lStringRef, [in] long lCStringRef);

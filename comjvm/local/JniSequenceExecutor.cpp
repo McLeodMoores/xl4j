@@ -662,7 +662,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_FLOAT: {
-							jlong val = __NEXT_PARAM.get_jfloat ();
+							jfloat val = __NEXT_PARAM.get_jfloat ();
 							pEnv->SetStaticFloatField (cls, fieldID, val);
 							break;
 						}
@@ -980,7 +980,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jint *elems = buffer.get_jintBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetIntArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -990,7 +990,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetBooleanArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1000,7 +1000,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jchar *elems = __NEXT_PARAM.get_jcharBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetCharArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1010,7 +1010,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jshort *elems = __NEXT_PARAM.get_jshortBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetShortArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1020,7 +1020,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jlong *elems = __NEXT_PARAM.get_jlongBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetLongArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1030,7 +1030,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jfloat *elems = __NEXT_PARAM.get_jfloatBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetFloatArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1040,7 +1040,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jdouble *elems = __NEXT_PARAM.get_jdoubleBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetDoubleArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1065,7 +1065,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jint *elems = buffer.get_jintBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetIntArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1075,7 +1075,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetBooleanArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1085,7 +1085,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jchar *elems = __NEXT_PARAM.get_jcharBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetCharArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1095,7 +1095,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jshort *elems = __NEXT_PARAM.get_jshortBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetShortArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1105,7 +1105,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jlong *elems = __NEXT_PARAM.get_jlongBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetLongArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1115,7 +1115,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jfloat *elems = __NEXT_PARAM.get_jfloatBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetFloatArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1125,7 +1125,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jsize len = __NEXT_PARAM.get_jsize ();
 							CJniValue buffer = __NEXT_PARAM;
 							jdouble *elems = __NEXT_PARAM.get_jdoubleBuffer ();
-							assert (start + len <= buffer.get_jintBufferSize);
+							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetDoubleArrayRegion (jArr, start, len, elems);
 							break;
 						}
@@ -1295,7 +1295,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_NewDirectByteBuffer
 					: {
 					CJniValue buffer = __NEXT_PARAM;
-					jobject obj = pEnv->NewDirectByteBuffer (buffer.get_voidBuffer, buffer.get_voidBufferSize);
+					jobject obj = pEnv->NewDirectByteBuffer (buffer.get_voidBuffer(), buffer.get_voidBufferSize());
 					__NEXT_RESULT.put_jobject (obj);
 					break;
 				}
@@ -1303,15 +1303,15 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					: {
 					jobject directBuf = __NEXT_PARAM.get_jobject ();
 					void *bufferAddress = pEnv->GetDirectBufferAddress (directBuf);
-					jsize size = pEnv->GetDirectBufferCapacity (directBuf);
+					jlong size = pEnv->GetDirectBufferCapacity (directBuf);
 					__NEXT_RESULT.put_voidBuffer (bufferAddress, size);
 					break;
 				}
 				case JniOperation::jni_GetDirectBufferCapacity
 					: {
 					jobject directBuf = __NEXT_PARAM.get_jobject ();
-					jsize size = pEnv->GetDirectBufferCapacity (directBuf);
-					__NEXT_RESULT.put_jsize (size);
+					jlong size = pEnv->GetDirectBufferCapacity (directBuf);
+					__NEXT_RESULT.put_jlong (size);
 					break;
 				}
 				case JniOperation::jni_GetObjectRefType

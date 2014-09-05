@@ -182,7 +182,7 @@ private:
 		} _jbyteBuffer;
 		struct __voidBuffer {
 			void *_pvoid;
-			jsize _jsize; // this is bytes.
+			jlong _size; // this is bytes.
 		} _voidBuffer;
 	} v;
 	void free ();
@@ -364,10 +364,11 @@ public:
 	jobject *get_jobjectBuffer () const;
 	jsize get_jobjectBufferSize () const;
 
-	CJniValue (void *buffer, jsize size);
-	void put_voidBuffer (void *buffer, jsize size);
+	/// <para>these use jlong as size because direct buffers can be > MAX_INT elements.</para>
+	CJniValue (void *buffer, jlong size);
+	void put_voidBuffer (void *buffer, jlong size);
 	void *get_voidBuffer () const;
-	jsize get_voidBufferSize () const;
+	jlong get_voidBufferSize () const;
 
 #undef __CONS
 #undef __PUT
