@@ -13,9 +13,14 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace localtest {
-
+	
 	TEST_CLASS (JniSequenceTest) {
 	public:
+		long stringConstant (TCHAR *str) {
+			_bstr_t bstrClassName (str);
+			long lClassNameRef;
+			Assert::AreEqual (S_OK, pJni->StringConstant (bstrClassName.Detach (), &lClassNameRef));
+		}
 		// new Integer(6) 
 		TEST_METHOD (NewInteger6) {
 			IJvmConnector *pConnector;
