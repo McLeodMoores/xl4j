@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"
+#include "Debug.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -42,10 +43,12 @@ namespace localtest {
 			Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorSig.Detach (), &lConstructorSigRef)); 
 			long lIntegerArgumentRef;
 			Assert::AreEqual (S_OK, pJni->IntConstant (6, &lIntegerArgumentRef));
+			long lNumArgsRef;
+			Assert::AreEqual (S_OK, pJni->IntConstant (1, &lNumArgsRef));
 			long lMethodIDRef;
 			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lMethodIDRef));
 			long lObjectRef;
-			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, 1, &lIntegerArgumentRef, &lObjectRef));
+			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, lNumArgsRef, &lIntegerArgumentRef, &lObjectRef));
 			long l;
 			Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
 			Assert::AreEqual (0L, l);
@@ -53,7 +56,7 @@ namespace localtest {
 			Assert::AreEqual (1L, l);
 			VARIANT aResults[1];
 
-			Assert::AreEqual (S_OK, pJni->Execute (0, NULL, 1, aResults));
+			Assert::AreEqual (S_OK, Debug::print_HRESULT(pJni->Execute (0, NULL, 1, aResults)));
 			Assert::AreEqual ((short)VT_UI8, (short)aResults[0].vt);
 
 			pJni->Release ();
@@ -89,11 +92,13 @@ namespace localtest {
 			Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorSig.Detach (), &lConstructorSigRef));
 			long lIntegerArgumentRef;
 			Assert::AreEqual (S_OK, pJni->Argument (&lIntegerArgumentRef));
+			long lNumArgsRef;
+			Assert::AreEqual (S_OK, pJni->IntConstant (1, &lNumArgsRef));
 			long lMethodIDRef;
 			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lMethodIDRef));
 			long lObjectRef;
 			long args[] = { lIntegerArgumentRef };
-			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, 1, args, &lObjectRef));
+			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, lNumArgsRef, args, &lObjectRef));
 			long l;
 			//Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
 			//Assert::AreEqual (1L, l);

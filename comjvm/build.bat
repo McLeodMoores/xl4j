@@ -1,4 +1,4 @@
-@echo off
+rem @echo off
 	rem Build Java components
 	
 	echo Building Java components

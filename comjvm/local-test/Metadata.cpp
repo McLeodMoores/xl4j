@@ -59,7 +59,7 @@ namespace localtest {
 			Assert::AreEqual (S_OK, pConnector->Unlock ());
 			IJniSequence *pJni;
 			Assert::AreEqual (S_OK, pJvm->CreateJni (&pJni));
-			BSTR bstrClassName = SysAllocString (TEXT ("java/lang/Integer"));
+			_bstr_t bstrClassName(TEXT ("java/lang/Integer"));
 			long lClassNameRef;
 			Assert::AreEqual (S_OK, pJni->StringConstant (bstrClassName, &lClassNameRef));
 			long lClassRef;
@@ -77,7 +77,6 @@ namespace localtest {
 
 			pJni->Release ();
 			Assert::AreNotEqual (0ull, aResults[0].ullVal);
-			SysFreeString (bstrClassName);
 			pJvm->Release ();
 			pConnector->Release ();
 		}

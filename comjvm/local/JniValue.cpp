@@ -577,5 +577,7 @@ jarray CJniValue::get_jarray () const {
 	case t_jfloatArray:
 	case t_jdoubleArray:
 		return (jarray) v._jvalue.l;
+	default:
+		_com_raise_error (E_INVALIDARG);
 	}
 }

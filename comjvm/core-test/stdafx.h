@@ -15,7 +15,6 @@
 // Windows Header Files:
 #include <windows.h>
 #include <comdef.h>
-
 // Standard header files:
 #include <assert.h>
 #include <tchar.h>

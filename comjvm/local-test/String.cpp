@@ -57,7 +57,7 @@ namespace localtest {
 			// TODO: GetStringRegion
 			// TODO: GetStringCritical
 			// TODO: ReleaseStringCritical
-			VARIANT aResult[1];
+			VARIANT aResult[2];
 			HRESULT result = pJni->Execute (0, NULL, sizeof (aResult) / sizeof (VARIANT), aResult);
 			if (result != S_OK) {
 				_com_error error (result);

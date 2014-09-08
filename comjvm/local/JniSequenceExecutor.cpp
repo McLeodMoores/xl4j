@@ -27,7 +27,7 @@ CJniSequenceExecutor::~CJniSequenceExecutor () {
 #define __NEXT_PARAM aValues[*(params++)]
 #define __NEXT_REF_PARAM(type, name) long l##name = *(params++); if (l##name == cValue) { cValue ++; } type name; 
 #define __NEXT_RESULT aValues[cValue++]
-#define __STORE_REF_RESULT(type, name) if (name >= 0) { aValues[l##name].put_##type##(name); }
+#define __STORE_REF_RESULT(type, name) if (l##name >= 0) { aValues[l##name].put_##type##(name); }
 
 HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 	try {
@@ -229,11 +229,10 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					: {
 					jclass clazz = __NEXT_PARAM.get_jclass ();
 					jmethodID methodId = __NEXT_PARAM.get_jmethodID ();
-					jsize size = __NEXT_PARAM.get_jsize (); //m_pOwner->Params ()->size ();
+					jsize size = __NEXT_PARAM.get_jsize (); 
 					jvalue *arguments = new jvalue[size];
 					for (int i = 0; i < size; i++) {
 						long index = *(params++);
-						//Debug::odprintf (TEXT ("index = %d"), index);
 						aValues[index].get_jvalue (&arguments[i]);
 					}
 					jobject object = pEnv->NewObjectA (clazz, methodId, arguments);

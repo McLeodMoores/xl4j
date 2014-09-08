@@ -251,6 +251,7 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\local\Debug.h" />
     <ClInclude Include="AbstractJvm.h" />
     <ClInclude Include="InstanceHolder.h" />
     <ClInclude Include="ClassFolder.h" />
@@ -268,6 +269,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\local\Debug.cpp" />
     <ClCompile Include="AbstractJvm.cpp" />
     <ClCompile Include="ClassFolder.cpp" />
     <ClCompile Include="ClasspathEntries.cpp" />
