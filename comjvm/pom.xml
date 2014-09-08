@@ -19,6 +19,7 @@
 
   <properties>
     <maven-native-packing.version>0.2.0</maven-native-packing.version>
+    <!--java.version>1.8.0</java.version-->
     <java.version>1.7.0</java.version>
   </properties>
 
@@ -40,7 +41,7 @@
                 <executable>
                   <arch>i386</arch>
                   <path>target/Release-Win32</path>
-                  <dynamicLibs>
+                  <libraries>
                     <dynamicLib>
                       <path>target/Release-Win32</path>
                       <headers>
@@ -50,7 +51,7 @@
                           <dest>comjvm</dest>
                         </header>
                       </headers>
-                      <libraries>
+                      <implibs>
                         <staticLib>
                           <path>target/Release-Win32</path>
                           <headers>
@@ -66,18 +67,18 @@
                             </header>
                           </headers>
                         </staticLib>
-                      </libraries>
+                      </implibs>
                     </dynamicLib>
-                  </dynamicLibs>
+                  </libraries>
                 </executable>
                 <executable>
                   <arch>x64</arch>
                   <path>target/Release-x64</path>
-                  <dynamicLibs>
+                  <libraries>
                     <dynamicLib>
                       <path>target/Release-x64</path>
                       <headers/>
-                      <libraries>
+                      <implibs>
                         <staticLib>
                           <path>target/Release-x64</path>
                           <headers>
@@ -93,9 +94,9 @@
                             </header>
                           </headers>
                         </staticLib>
-                      </libraries>
+                      </implibs>
                     </dynamicLib>
-                  </dynamicLibs>
+                  </libraries>
                 </executable>
               </executables>
             </configuration>
