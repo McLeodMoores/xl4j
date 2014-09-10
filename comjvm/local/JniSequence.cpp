@@ -670,14 +670,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_NewObject (
 	if (cArgs && !alArgRefs) return E_POINTER;
 	if (!plObjectRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_NewObject, lClassRef, lMethodIDRef, cArgs);
+		long lSizeRef;
+		hr = IntConstant (cArgs, &lSizeRef);
+		if (FAILED (hr)) {
+			__RETURN_HR;
+		}
+		hr = AddOperation (JniOperation::jni_NewObject, lClassRef, lMethodIDRef, lSizeRef);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgRefs[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				} 
 				*plObjectRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
@@ -725,14 +730,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
 	if (!plResultRef) return E_POINTER;
 	if (cArgs < 0) return E_INVALIDARG;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_CallMethod, lType, lObjRef, lMethodIDRef);
+		long lSizeRef;
+		hr = IntConstant (cArgs, &lSizeRef);
+		if (FAILED (hr)) {
+			__RETURN_HR;
+		}
+		hr = AddOperation (JniOperation::jni_CallMethod, lType, lObjRef, lMethodIDRef, lSizeRef);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgRefs[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				}
 				*plResultRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
@@ -755,14 +765,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallNonVirtualMethod (
 	if (cArgs && !alArgRefs) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_CallNonVirtualMethod, lType, lObjRef, lClassRef, lMethodIDRef);
+		long lSizeRef;
+		hr = IntConstant (cArgs, &lSizeRef);
+		if (FAILED (hr)) {
+			__RETURN_HR;
+		}
+		hr = AddOperation (JniOperation::jni_CallNonVirtualMethod, lType, lObjRef, lClassRef, lMethodIDRef, lSizeRef);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgRefs[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				}
 				*plResultRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
@@ -789,14 +804,19 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallStaticMethod (
 	if (cArgs && !alArgsRef) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
 	__JNI_OPERATION {
-		hr = AddOperation (JniOperation::jni_CallStaticMethod, lType, lClassRef, lMethodIDRef);
+		long lSizeRef;
+		hr = IntConstant (cArgs, &lSizeRef);
+		if (FAILED (hr)) {
+			__RETURN_HR;
+		}
+		hr = AddOperation (JniOperation::jni_CallStaticMethod, lType, lClassRef, lMethodIDRef, lSizeRef);
 		if (SUCCEEDED (hr)) {
 			long cParam = 0;
 			try {
-				do {
+				while (cParam < cArgs) {
 					m_aParam.push_back (alArgsRef[cParam]);
 					cParam++;
-				} while (cParam < cArgs);
+				}
 				*plResultRef = m_cValue++;
 			} catch (std::bad_alloc) {
 				while (cParam-- > 0) m_aParam.pop_back ();
