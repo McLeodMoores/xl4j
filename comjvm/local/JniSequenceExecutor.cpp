@@ -287,6 +287,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
+						case JTYPE_BYTE: {
+							jbyte result = pEnv->CallByteMethod (object, methodId, arguments);
+							__NEXT_RESULT.put_jbyte (result);
+							break;
+						}
 						case JTYPE_CHAR: {
 							jchar result = pEnv->CallCharMethod (object, methodId, arguments);
 							__NEXT_RESULT.put_jchar (result);
@@ -345,6 +350,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						case JTYPE_BOOLEAN: {
 							jboolean result = pEnv->CallNonvirtualBooleanMethod (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jboolean (result);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jchar result = pEnv->CallNonvirtualCharMethod (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_jchar (result);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -411,6 +421,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
+						case JTYPE_BYTE: {
+							jbyte result = pEnv->GetByteField (obj, fieldID);
+							__NEXT_RESULT.put_jbyte (result);
+							break;
+						}
 						case JTYPE_CHAR: {
 							jchar result = pEnv->GetCharField (obj, fieldID);
 							__NEXT_RESULT.put_jchar (result);
@@ -462,6 +477,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						case JTYPE_BOOLEAN: {
 							jboolean val = __NEXT_PARAM.get_jboolean ();
 							pEnv->SetBooleanField (obj, fieldID, val);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jbyte val = __NEXT_PARAM.get_jbyte ();
+							pEnv->SetByteField (obj, fieldID, val);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -530,6 +550,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
+						case JTYPE_BYTE: {
+							jbyte result = pEnv->CallStaticByteMethod (cls, methodId, arguments);
+							__NEXT_RESULT.put_jbyte (result);
+							break;
+						}
 						case JTYPE_CHAR: {
 							jchar result = pEnv->CallStaticCharMethod (cls, methodId, arguments);
 							__NEXT_RESULT.put_jchar (result);
@@ -594,6 +619,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
+						case JTYPE_BYTE: {
+							jbyte result = pEnv->GetStaticByteField (cls, fieldID);
+							__NEXT_RESULT.put_jbyte (result);
+							break;
+						}
 						case JTYPE_CHAR: {
 							jchar result = pEnv->GetStaticCharField (cls, fieldID);
 							__NEXT_RESULT.put_jchar (result);
@@ -645,6 +675,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						case JTYPE_BOOLEAN: {
 							jboolean val = __NEXT_PARAM.get_jboolean ();
 							pEnv->SetStaticBooleanField (cls, fieldID, val);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jbyte val = __NEXT_PARAM.get_jbyte ();
+							pEnv->SetStaticByteField (cls, fieldID, val);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -786,6 +821,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							__NEXT_RESULT.put_jbooleanArray (arr);
 							break;
 						}
+						case JTYPE_BYTE: {
+							jbyteArray arr = pEnv->NewByteArray (len);
+							__NEXT_RESULT.put_jbyteArray (arr);
+							break;
+						}
 						case JTYPE_CHAR: {
 							jcharArray arr = pEnv->NewCharArray (len);
 							__NEXT_RESULT.put_jcharArray (arr);
@@ -840,6 +880,13 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jboolean *pArr = pEnv->GetBooleanArrayElements (jArr, &isCopy);
 							jsize size = pEnv->GetArrayLength (jArr);
 							__NEXT_RESULT.put_jbooleanBuffer (pArr, size);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jbyteArray jArr = __NEXT_PARAM.get_jbyteArray ();
+							jbyte *pArr = pEnv->GetByteArrayElements (jArr, &isCopy);
+							jsize size = pEnv->GetArrayLength (jArr);
+							__NEXT_RESULT.put_jbyteBuffer (pArr, size);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -905,6 +952,13 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
 							jint mode = __NEXT_PARAM.get_jint ();
 							pEnv->ReleaseBooleanArrayElements (jArr, elems, mode);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jbyteArray jArr = __NEXT_PARAM.get_jbyteArray ();
+							jbyte *elems = __NEXT_PARAM.get_jbyteBuffer ();
+							jint mode = __NEXT_PARAM.get_jint ();
+							pEnv->ReleaseByteArrayElements (jArr, elems, mode);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -975,6 +1029,16 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
 							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->GetBooleanArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jbyteArray jArr = __NEXT_PARAM.get_jbyteArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jbyte *elems = __NEXT_PARAM.get_jbyteBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize ());
+							pEnv->GetByteArrayRegion (jArr, start, len, elems);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -1060,6 +1124,16 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							jboolean *elems = __NEXT_PARAM.get_jbooleanBuffer ();
 							assert (start + len <= buffer.get_jintBufferSize());
 							pEnv->SetBooleanArrayRegion (jArr, start, len, elems);
+							break;
+						}
+						case JTYPE_BYTE: {
+							jbyteArray jArr = __NEXT_PARAM.get_jbyteArray ();
+							jsize start = __NEXT_PARAM.get_jsize ();
+							jsize len = __NEXT_PARAM.get_jsize ();
+							CJniValue buffer = __NEXT_PARAM;
+							jbyte *elems = __NEXT_PARAM.get_jbyteBuffer ();
+							assert (start + len <= buffer.get_jintBufferSize ());
+							pEnv->SetByteArrayRegion (jArr, start, len, elems);
 							break;
 						}
 						case JTYPE_CHAR: {
@@ -1185,6 +1259,10 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						}
 						case JTYPE_BOOLEAN: {
 							sz = sizeof (jboolean);
+							break;
+						}
+						case JTYPE_BYTE: {
+							sz = sizeof (jbyte);
 							break;
 						}
 						case JTYPE_CHAR: {
