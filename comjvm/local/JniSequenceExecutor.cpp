@@ -278,48 +278,53 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					}
 					switch (jtype) {
 						case JTYPE_INT: {
-							jint result = pEnv->CallIntMethod (object, methodId, arguments);
+							jint result = pEnv->CallIntMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jint (result);
 							break;
 						}
 						case JTYPE_BOOLEAN: {
-							jboolean result = pEnv->CallBooleanMethod (object, methodId, arguments);
+							jboolean result = pEnv->CallBooleanMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
 						case JTYPE_BYTE: {
-							jbyte result = pEnv->CallByteMethod (object, methodId, arguments);
+							jbyte result = pEnv->CallByteMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jbyte (result);
 							break;
 						}
 						case JTYPE_CHAR: {
-							jchar result = pEnv->CallCharMethod (object, methodId, arguments);
+							jchar result = pEnv->CallCharMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jchar (result);
 							break;
 						}
 						case JTYPE_SHORT: {
-							jshort result = pEnv->CallShortMethod (object, methodId, arguments);
+							jshort result = pEnv->CallShortMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jshort (result);
 							break;
 						}
 						case JTYPE_LONG: {
-							jlong result = pEnv->CallLongMethod (object, methodId, arguments);
+							jlong result = pEnv->CallLongMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jlong (result);
 							break;
 						}
 						case JTYPE_FLOAT: {
-							jfloat result = pEnv->CallFloatMethod (object, methodId, arguments);
+							jfloat result = pEnv->CallFloatMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jfloat (result);
 							break;
 						}
 						case JTYPE_DOUBLE: {
-							jdouble result = pEnv->CallDoubleMethod (object, methodId, arguments);
+							jdouble result = pEnv->CallDoubleMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jdouble (result);
 							break;
 						}
 						case JTYPE_OBJECT:	{
-							jobject result = pEnv->CallObjectMethod (object, methodId, arguments);
+							jobject result = pEnv->CallObjectMethodA (object, methodId, arguments);
 							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						case JTYPE_VOID:	{
+							pEnv->CallVoidMethodA (object, methodId, arguments);
+							__NEXT_RESULT.put_nothing();
 							break;
 						}
 						default:
@@ -343,48 +348,53 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					}
 					switch (jtype) {
 						case JTYPE_INT: {
-							jint result = pEnv->CallNonvirtualIntMethod (object, sup, methodId, arguments);
+							jint result = pEnv->CallNonvirtualIntMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jint (result);
 							break;
 						}
 						case JTYPE_BOOLEAN: {
-							jboolean result = pEnv->CallNonvirtualBooleanMethod (object, sup, methodId, arguments);
+							jboolean result = pEnv->CallNonvirtualBooleanMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
 						case JTYPE_BYTE: {
-							jchar result = pEnv->CallNonvirtualCharMethod (object, sup, methodId, arguments);
+							jchar result = pEnv->CallNonvirtualCharMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jchar (result);
 							break;
 						}
 						case JTYPE_CHAR: {
-							jchar result = pEnv->CallNonvirtualCharMethod (object, sup, methodId, arguments);
+							jchar result = pEnv->CallNonvirtualCharMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jchar (result);
 							break;
 						}
 						case JTYPE_SHORT: {
-							jshort result = pEnv->CallNonvirtualShortMethod (object, sup, methodId, arguments);
+							jshort result = pEnv->CallNonvirtualShortMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jshort (result);
 							break;
 						}
 						case JTYPE_LONG: {
-							jlong result = pEnv->CallNonvirtualLongMethod (object, sup, methodId, arguments);
+							jlong result = pEnv->CallNonvirtualLongMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jlong (result);
 							break;
 						}
 						case JTYPE_FLOAT: {
-							jfloat result = pEnv->CallNonvirtualFloatMethod (object, sup, methodId, arguments);
+							jfloat result = pEnv->CallNonvirtualFloatMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jfloat (result);
 							break;
 						}
 						case JTYPE_DOUBLE: {
-							jdouble result = pEnv->CallNonvirtualDoubleMethod (object, sup, methodId, arguments);
+							jdouble result = pEnv->CallNonvirtualDoubleMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jdouble (result);
 							break;
 						}
 						case JTYPE_OBJECT:	{
-							jobject result = pEnv->CallNonvirtualObjectMethod (object, sup, methodId, arguments);
+							jobject result = pEnv->CallNonvirtualObjectMethodA (object, sup, methodId, arguments);
 							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						case JTYPE_VOID: {
+							pEnv->CallNonvirtualVoidMethodA (object, sup, methodId, arguments);
+							__NEXT_RESULT.put_nothing ();
 							break;
 						}
 						default:
@@ -541,48 +551,53 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					}
 					switch (jtype) {
 						case JTYPE_INT: {
-							jint result = pEnv->CallStaticIntMethod (cls, methodId, arguments);
+							jint result = pEnv->CallStaticIntMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jint (result);
 							break;
 						}
 						case JTYPE_BOOLEAN: {
-							jboolean result = pEnv->CallStaticBooleanMethod (cls, methodId, arguments);
+							jboolean result = pEnv->CallStaticBooleanMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jboolean (result);
 							break;
 						}
 						case JTYPE_BYTE: {
-							jbyte result = pEnv->CallStaticByteMethod (cls, methodId, arguments);
+							jbyte result = pEnv->CallStaticByteMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jbyte (result);
 							break;
 						}
 						case JTYPE_CHAR: {
-							jchar result = pEnv->CallStaticCharMethod (cls, methodId, arguments);
+							jchar result = pEnv->CallStaticCharMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jchar (result);
 							break;
 						}
 						case JTYPE_SHORT: {
-							jshort result = pEnv->CallStaticShortMethod (cls, methodId, arguments);
+							jshort result = pEnv->CallStaticShortMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jshort (result);
 							break;
 						}
 						case JTYPE_LONG: {
-							jlong result = pEnv->CallStaticLongMethod (cls, methodId, arguments);
+							jlong result = pEnv->CallStaticLongMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jlong (result);
 							break;
 						}
 						case JTYPE_FLOAT: {
-							jfloat result = pEnv->CallStaticFloatMethod (cls, methodId, arguments);
+							jfloat result = pEnv->CallStaticFloatMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jfloat (result);
 							break;
 						}
 						case JTYPE_DOUBLE: {
-							jdouble result = pEnv->CallStaticDoubleMethod (cls, methodId, arguments);
+							jdouble result = pEnv->CallStaticDoubleMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jdouble (result);
 							break;
 						}
 						case JTYPE_OBJECT:	{
-							jobject result = pEnv->CallStaticObjectMethod (cls, methodId, arguments);
+							jobject result = pEnv->CallStaticObjectMethodA (cls, methodId, arguments);
 							__NEXT_RESULT.put_jobject (result);
+							break;
+						}
+						case JTYPE_VOID: {
+							pEnv->CallStaticVoidMethodA (cls, methodId, arguments);
+							__NEXT_RESULT.put_nothing();
 							break;
 						}
 						default:
