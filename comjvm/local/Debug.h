@@ -11,3 +11,8 @@ public:
 	static HRESULT Debug::print_HRESULT (HRESULT result); 
 };
 
+#ifdef _DEBUG
+#define TRACE(x, ...) do { Debug::odprintf(TEXT(x) TEXT("\n"), __VA_ARGS__); } while (0)
+#else
+#define TRACE(x, ...) 
+#endif

@@ -36,7 +36,10 @@ public:
 			long fake[] = { 0 };
 			long lArrayList = pHelper->NewObject (TEXT ("java/util/ArrayList"), TEXT ("()V"), 0, fake);
 			pHelper->CallMethod (JTYPE_BOOLEAN, lArrayList,
-				pHelper->GetMethodID (TEXT ("java/util/ArrayList"), TEXT ("add"), TEXT ("(Ljava.lang.Object;)Z")),
+				pHelper->GetMethodID (TEXT ("java/util/ArrayList"), TEXT ("add"), TEXT ("(Ljava/lang/Object;)Z")),
+				1, lIntegerRef);
+			pHelper->CallMethod (JTYPE_BOOLEAN, lArrayList,
+				pHelper->GetMethodID (TEXT ("java/util/ArrayList"), TEXT ("add"), TEXT ("(Ljava/lang/Object;)Z")),
 				1, lIntegerRef);
 			long lSizeRef = pHelper->CallMethod (JTYPE_INT, lArrayList,
 				pHelper->GetMethodID (TEXT ("java/util/ArrayList"), TEXT ("size"), TEXT ("()I")), 0, fake);
@@ -44,7 +47,7 @@ public:
 			VARIANT aResults[1];
 			Assert::AreEqual (S_OK, Debug::print_HRESULT (pJni->Execute (0, NULL, 1, aResults)));
 			Assert::AreEqual ((short)VT_I4, (short)aResults[0].vt);
-			Assert::AreEqual (1, aResults[0].intVal);
+			Assert::AreEqual (2, aResults[0].intVal);
 		//}
 		//catch (_com_error& e) {
 		//	Debug::odprintf (TEXT ("Exception happened: %s\n"), e.ErrorMessage());
