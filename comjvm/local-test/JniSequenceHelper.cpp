@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"
-#include "Debug.h"
 #include "JniSequenceHelper.h"
 
 /// <summary>Constructor for the helper</summary>
@@ -466,4 +465,43 @@ long JniSequenceHelper::NewObjectArray (TCHAR *cls, int length, int width) {
 		}
 	}
 	return lArrayRef;
+}
+
+/// <summary>Get an element from an object array at the specified index</summary>
+/// <param name="lArrayRef">The reference to the array</param>
+/// <param name="index">The array index</param>
+/// <returns>A reference to the value</returns>
+long JniSequenceHelper::GetObjectArrayElement (long lArrayRef, long index) {
+	long lIndexRef = IntegerConstant (index);
+	long lObjectRef;
+	HRESULT result = pJni->jni_GetObjectArrayElement (lArrayRef, lIndexRef, &lObjectRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	return lObjectRef;
+}
+
+/// <summary>Set an element in an object array at the specified index</summary>
+/// <param name="lArrayRef">The reference to the array</param>
+/// <param name="index">The array index</param>
+/// <param name="lValueRef">A reference to the value to set the element to</param>
+/// <returns>A reference to the value</returns>
+void JniSequenceHelper::SetObjectArrayElement (long lArrayRef, long index, long lValueRef) {
+	long lIndexRef = IntegerConstant (index);
+	HRESULT result = pJni->jni_SetObjectArrayElement (lArrayRef, lIndexRef, lValueRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Get the length of an array
+/// <param name="lArrayRef">The reference to the array</param>
+/// <returns>A reference to the length of the array</param>
+long JniSequenceHelper::GetArrayLength (long lArrayRef) {
+	long lArrayLengthRef;
+	HRESULT result = pJni->jni_GetArrayLength (lArrayRef, &lArrayLengthRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	return lArrayLengthRef;
 }

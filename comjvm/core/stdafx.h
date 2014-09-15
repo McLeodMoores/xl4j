@@ -20,6 +20,7 @@
 #include <list>
 #include <hash_map>
 #include <hash_set>
+#include "debug/Debug.h"
 
 #ifdef _UNICODE
 typedef std::wstring _std_string_t;

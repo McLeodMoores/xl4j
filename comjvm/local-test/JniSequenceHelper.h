@@ -3,7 +3,6 @@
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"
-#include "Debug.h"
 
 class JniSequenceHelper {
 private:
@@ -32,4 +31,7 @@ public:
 	long NewArray (long type, int length, int width);
 	long NewObjectArray (long lClassRef, int lArrayClassRef, int length, int width);
 	long NewObjectArray (TCHAR *cls, int length, int width);
+	long GetObjectArrayElement (long lArrayRef, long lIndexRef);
+	void SetObjectArrayElement (long lArrayRef, long index, long lValueRef);
+	long GetArrayLength (long lArrayRef);
 };

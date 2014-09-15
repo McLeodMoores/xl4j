@@ -135,6 +135,94 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		memcpy (pArrayData, v._jbyteBuffer._pjbyte, v._jbyteBuffer._jsize);
 		SafeArrayUnaccessData (pvValue->parray);
 	} break;
+	case t_jbooleanBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jbooleanBuffer._jsize / sizeof jboolean;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_UI1;
+		pvValue->parray = SafeArrayCreate (VT_UI1, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jbooleanBuffer._pjboolean, v._jbooleanBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_jcharBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jbooleanBuffer._jsize / sizeof jchar;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_UI2;
+		pvValue->parray = SafeArrayCreate (VT_UI2, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jcharBuffer._pjchar, v._jcharBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_jshortBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jshortBuffer._jsize / sizeof jshort;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_I2;
+		pvValue->parray = SafeArrayCreate (VT_I2, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jshortBuffer._pjshort, v._jshortBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_jintBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jintBuffer._jsize / sizeof jint;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_I4;
+		pvValue->parray = SafeArrayCreate (VT_I4, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jintBuffer._pjint, v._jintBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_jfloatBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jfloatBuffer._jsize / sizeof jfloat;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_R4;
+		pvValue->parray = SafeArrayCreate (VT_R4, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jfloatBuffer._pjfloat, v._jfloatBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_jdoubleBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jdoubleBuffer._jsize / sizeof jdouble;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_R8;
+		pvValue->parray = SafeArrayCreate (VT_R8, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jdoubleBuffer._pjdouble, v._jdoubleBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_jlongBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._jlongBuffer._jsize / sizeof jlong;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_I8;
+		pvValue->parray = SafeArrayCreate (VT_I8, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._jlongBuffer._pjlong, v._jlongBuffer._jsize);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
+	case t_voidBuffer: {
+		SAFEARRAYBOUND bounds[1];
+		bounds[0].cElements = v._voidBuffer._size;
+		bounds[0].lLbound = 0;
+		pvValue->vt = VT_SAFEARRAY | VT_UI1;
+		pvValue->parray = SafeArrayCreate (VT_UI1, 1, bounds);
+		void *pArrayData = NULL;
+		SafeArrayAccessData (pvValue->parray, &pArrayData);
+		memcpy (pArrayData, v._voidBuffer._pvoid, v._voidBuffer._size);
+		SafeArrayUnaccessData (pvValue->parray);
+	}
 	case t_jclass:
 	case t_jobject:
 	case t_jmethodID:
@@ -178,6 +266,14 @@ void CJniValue::get_jvalue (jvalue *pValue) const {
 	case t_jfieldID:
 	case t_jobjectRefType:
 	case t_jbyteBuffer:
+	case t_jbooleanBuffer:
+	case t_jcharBuffer:
+	case t_jshortBuffer:
+	case t_jintBuffer:
+	case t_jfloatBuffer:
+	case t_jdoubleBuffer:
+	case t_jlongBuffer:
+	case t_voidBuffer:
 	case t_BSTR:
 	case t_pjchar:
 		_com_raise_error (E_INVALIDARG); // needs to have been allocated already on the java side

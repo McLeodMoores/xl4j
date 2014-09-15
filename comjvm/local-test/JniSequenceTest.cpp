@@ -8,7 +8,6 @@
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"
-#include "Debug.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

@@ -253,7 +253,6 @@
   <ItemGroup>
     <ClInclude Include="Cache.h" />
     <ClInclude Include="Classpath.h" />
-    <ClInclude Include="Debug.h" />
     <ClInclude Include="Delete.h" />
     <ClInclude Include="DirectoryWriter.h" />
     <ClInclude Include="FileWriter.h" />
@@ -270,7 +269,6 @@
   <ItemGroup>
     <ClCompile Include="Cache.cpp" />
     <ClCompile Include="Classpath.cpp" />
-    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="dlldata.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -301,6 +299,9 @@
   <ItemGroup>
     <ProjectReference Include="..\core\core.vcxproj">
       <Project>{9e596700-1153-46a5-b3b8-ca386ffd9b16}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\debug\debug.vcxproj">
+      <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
     </ProjectReference>
     <ProjectReference Include="..\jni\jni.vcxproj">
       <Project>{7007c71a-7b07-489e-b1b8-5b760252a6f7}</Project>

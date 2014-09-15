@@ -8,7 +8,6 @@
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"
-#include "Debug.h"
 #include "JniSequenceHelper.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
@@ -111,10 +110,17 @@ namespace localtest {
 			Assert::AreEqual (S_OK, pJni->Argument (&lParam1Ref));
 			long lParam2Ref;
 			Assert::AreEqual (S_OK, pJni->Argument (&lParam2Ref));
-			long hmRef = pHelper->NewObject ( TEXT("com/lang/HashMap"), TEXT("(IF)V"), 2, lParam1Ref, lParam2Ref);
-			pHelper->CallMethod (JTYPE_OBJECT, hmRef, pHelper->GetMethodID (hmRef, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", lParam1Ref, lParam2Ref);
-
-
+			long hmRef = pHelper->NewObject ( TEXT("java/util/HashMap"), TEXT("(IF)V"), 2, lParam1Ref, lParam2Ref);
+			//pHelper->CallMethod (JTYPE_OBJECT, hmRef, pHelper->GetMethodID(TEXT("java/lang/HashMap"), TEXT("put"), TEXT("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")), 2, lParam1Ref, lParam2Ref);
+			VARIANT aArgs[2];
+			aArgs[0].intVal = 7;
+			aArgs[0].vt = VT_I4;
+			aArgs[1].fltVal = 0.66f;
+			aArgs[1].vt = VT_R4;
+			Assert::AreEqual (S_OK, Debug::print_HRESULT (pJni->Execute (2, aArgs, 0, NULL)));
+			delete pHelper;
+			pJni->Release ();
+			TRACE ("Finished MultiParamTest");
 		}
 
 	};

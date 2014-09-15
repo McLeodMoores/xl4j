@@ -21,6 +21,8 @@
 #include <vector>
 #include <jni.h>
 
+#include "debug/Debug.h"
+
 #ifdef _UNICODE
 typedef std::wstring _std_string_t;
 __inline const _std_string_t _tstring (const std::string &ansi) {

@@ -8,7 +8,6 @@
 #include "stdafx.h"
 #include "JniSequence.h"
 #include "Internal.h"
-#include "Debug.h"
 
 CJniSequenceExecutor::CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults)
 	: m_lRefCount (1), m_pOwner (pOwner), m_cArgs (cArgs), m_pArgs (pArgs), m_cResults (cResults), m_pResults (pResults) {
