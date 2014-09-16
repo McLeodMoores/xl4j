@@ -11,12 +11,12 @@ package com.mcleodmoores.excel4j.typeconvert;
  */
 public interface TypeConverter {
   /**
-   * Get the Excel->Java mapping provided by this converter.
+   * Get the Excel-&gt;Java mapping provided by this converter.
    * @return the supported mapping
    */
   ExcelToJavaTypeMapping getExcelToJavaTypeMapping();
   /**
-   * Get the Java->Excel mapping provided by this converter.
+   * Get the Java-&gt;Excel mapping provided by this converter.
    * @return the supported mapping
    */
   JavaToExcelTypeMapping getJavaToExcelTypeMapping();

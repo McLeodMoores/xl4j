@@ -36,7 +36,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
       final XLString argumentNames,
       final XLValue functionType,
       final XLValue functionCategory,
-      final XLValue notUsed,
+      final XLValue acceleratorKey,
       final XLValue helpTopic,
       final XLValue description,
       final XLValue... argsHelp) {

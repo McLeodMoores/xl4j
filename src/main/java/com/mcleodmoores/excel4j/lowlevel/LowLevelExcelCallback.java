@@ -19,7 +19,7 @@ public interface LowLevelExcelCallback {
    * @param argumentNames  a comma separated list of function argument names (no padding spaces)
    * @param functionType  an integer representing the function type (1=Function, 2=Command)
    * @param functionCategory  the paste function category (see StandardFunctionCategories)
-   * @param acceleratorKey  for commands, represents a CTRL-SHIFT-<acceleratorKey> shortcut.  If not used, pass XLNil or XLMissing
+   * @param acceleratorKey  for commands, represents a CTRL-SHIFT-&lt;acceleratorKey&gt; shortcut.  If not used, pass XLNil or XLMissing
    * @param helpTopic  the help topic
    * @param description  a description of this function or command
    * @param argsHelp  a varargs/array of help strings for each parameter
