@@ -828,7 +828,7 @@ long JniSequenceHelper::GetArrayLength (long lArrayRef) {
 	return lArrayLengthRef;
 }
 
-/// <summary>Get the elements of an array
+/// <summary>Get the elements of an array.  Should be paired with ReleaseArrayElements.</summary>
 /// <param name="lType">The type of the elements e.g. JTYPE_INT</param>
 /// <param name="lArrayRef">The reference to the array</param>
 /// <param name="plIsCopyRef">Address of the reference holding whether this is a copy</param>
@@ -842,3 +842,120 @@ long JniSequenceHelper::GetArrayElements (long lType, long lArrayRef, long *plIs
 	}
 	return lElementsRef;
 }
+
+/// <summary>Release the elements of an array.  Should be paired with GetArrayElements.</summary>
+/// <param name="lType">The type of the elements e.g. JTYPE_INT</param>
+/// <param name="lArrayRef">The reference to the array</param>
+/// <param name="lElemsRef">Reference to the elements</param>
+/// <param name="mode">The mode (copy back, etc)</param>
+void JniSequenceHelper::ReleaseArrayElements (long lType, long lArrayRef, long lElemsRef, long mode) {
+	long lTypeRef = IntegerConstant (lType);
+	long lModeRef = IntegerConstant (mode);
+	HRESULT result = pJni->jni_ReleaseArrayElements (lTypeRef, lArrayRef, lElemsRef, mode);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Get array region.  Copy part of an array from Java array.</summary>
+/// <param name="lType">The type of the elements e.g. JTYPE_INT</param>
+/// <param name="lArrayRef">The reference to the array</param>
+/// <param name="start">The start index</param>
+/// <param name="length">The length of the region</param>
+/// <param name="lBufferRef">A reference to the buffer to copy into</param>
+void JniSequenceHelper::GetArrayRegion (long lType, long lArrayRef, int start, int length, long lBufferRef) {
+	long lTypeRef = IntegerConstant (lType);
+	long lStartRef = IntegerConstant (start);
+	long lLengthRef = IntegerConstant (length);
+	HRESULT result = pJni->jni_GetArrayRegion (lTypeRef, lArrayRef, lStartRef, lLengthRef, lBufferRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Set array region.  Copy part of an array to Java array.</summary>
+/// <param name="lType">The type of the elements e.g. JTYPE_INT</param>
+/// <param name="lArrayRef">The reference to the array</param>
+/// <param name="start">The start index</param>
+/// <param name="length">The length of the region</param>
+/// <param name="lBufferRef">A reference to the buffer to copy into</param>
+void JniSequenceHelper::SetArrayRegion (long lType, long lArrayRef, int start, int length, long lBufferRef) {
+	long lTypeRef = IntegerConstant (lType);
+	long lStartRef = IntegerConstant (start);
+	long lLengthRef = IntegerConstant (length);
+	HRESULT result = pJni->jni_SetArrayRegion (lTypeRef, lArrayRef, lStartRef, lLengthRef, lBufferRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+HELPER_METHOD_1 (MonitorEntry, lObjectRef)
+HELPER_METHOD_1 (MonitorExit, lObjectRef)
+
+/// <summary>Get a string region.  Copy part of a string from Java string.</summary>
+/// <param name="lStrRef">The reference to the Java String</param>
+/// <param name="start">The start index</param>
+/// <param name="length">The length of the region</param>
+/// <param name="lBufferRef">A reference to the buffer (of Unicode characters) to copy into</param>
+void JniSequenceHelper::GetStringRegion (long lStringRef, int start, int length, long lBufferRef) {
+	long lStartRef = IntegerConstant (start);
+	long lLengthRef = IntegerConstant (length);
+	HRESULT result = pJni->jni_GetStringRegion (lStringRef, lStartRef, lLengthRef, lBufferRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Get a string region.  Copy part of a string from Java string.</summary>
+/// <param name="lStrRef">The reference to the Java String</param>
+/// <param name="start">The start index</param>
+/// <param name="length">The length of the region</param>
+/// <param name="lBufferRef">A reference to the buffer (of modified UTF characters) to copy into</param>
+void JniSequenceHelper::GetStringUTFRegion (long lStringRef, int start, int length, long lBufferRef) {
+	long lStartRef = IntegerConstant (start);
+	long lLengthRef = IntegerConstant (length);
+	HRESULT result = pJni->jni_GetStringUTFRegion (lStringRef, lStartRef, lLengthRef, lBufferRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Gets and locks a primitive array</summary>
+/// <para>The lock will prevent garbage collection and could stall the VM completely so
+/// should only be held for as short a time as possible</para>
+/// <param name="lType">The type of the elements e.g. JTYPE_INT</param>
+/// <param name="lArrayRef">The reference to the Java array</param>
+/// <param name="plIsCopyRef">A reference to a boolean representing whether this array is a copy</param>
+/// <returns>A reference to a typed buffer</returns>
+long JniSequenceHelper::GetPrimitiveArrayCritical (long lType, long lArrayRef, long *plIsCopyRef) {
+	long lTypeRef = IntegerConstant (lType);
+	long lVoidBufferRef;
+	HRESULT result = pJni->jni_GetPrimitiveArrayCritical (lTypeRef, lArrayRef, plIsCopyRef, &lVoidBufferRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	return lVoidBufferRef;
+}
+
+/// <summary>Gets and locks a primitive array</summary>
+/// <para>The lock will prevent garbage collection and could stall the VM completely so
+/// should only be held for as short a time as possible</para>
+/// <param name="lArrayRef">The reference to the Java array</param>
+/// <param name="lCArrayRef">A reference to the buffer</param>
+/// <param name="mode">The mode (e.g. copy-back, etc)</param>
+void JniSequenceHelper::ReleasePrimitiveArrayCritical (long lArrayRef, long lCArrayRef, long mode) {
+	long lModeRef = IntegerConstant (mode);
+	HRESULT result = pJni->jni_ReleasePrimitiveArrayCritical (lArrayRef, lCArrayRef, lModeRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+HELPER_METHOD_2R (GetStringCritical, lStringRef, plIsCopyRef)
+HELPER_METHOD_2V (ReleaseStringCritical, lStringRef, lCStringRef)
+HELPER_METHOD_1 (NewWeakGlobalRef, lObjectRef)
+HELPER_METHOD_0 (ExceptionCheck)
+HELPER_METHOD_2 (NewDirectByteBuffer, lAddressRef, lCapacityRef)
+HELPER_METHOD_1 (GetDirectBufferAddress, lBufferRef)
+HELPER_METHOD_1 (GetDirectBufferCapacity, lBufferRef)
+HELPER_METHOD_1 (GetObjectRefType, lObjRef)

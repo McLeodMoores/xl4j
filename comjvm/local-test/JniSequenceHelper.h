@@ -97,7 +97,7 @@ public:
 	long GetPrimitiveArrayCritical (long lType, long lArrayRef, long *plIsCopyRef);
 	void ReleasePrimitiveArrayCritical (long lArrayRef, long lCArrayRef, long mode);
 	long GetStringCritical (long lStringRef, long *plIsCopyRef);
-	long ReleaseStringCritical (long lStringRef, long lCStringRef);
+	void ReleaseStringCritical (long lStringRef, long lCStringRef);
 	long NewWeakGlobalRef (long lObjectRef);
 	long ExceptionCheck ();
 	long NewDirectByteBuffer (long lAddressRef, long lCapacityRef);
