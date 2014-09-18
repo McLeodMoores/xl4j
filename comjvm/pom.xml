@@ -19,8 +19,8 @@
 
   <properties>
     <maven-native-packing.version>0.2.0</maven-native-packing.version>
-    <!--java.version>1.8.0</java.version-->
-    <java.version>1.7.0</java.version>
+    <java.version>1.8.0</java.version>
+    <!--java.version>1.7.0</java.version-->
   </properties>
 
   <build>
@@ -103,15 +103,33 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
-
   <dependencies>
     <dependency>
       <groupId>com.oracle.jdk</groupId>
       <artifactId>win32</artifactId>
       <version>${java.version}</version>
       <type>native-static</type>
+    </dependency>
+    <dependency>
+      <groupId>com.mcleodmoores</groupId>
+      <artifactId>excel4j</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

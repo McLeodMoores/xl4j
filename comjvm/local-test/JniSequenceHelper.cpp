@@ -274,7 +274,7 @@ long JniSequenceHelper::PushLocalFrame (int capacity) {
 	return lIntRef;
 }
 
-HELPER_METHOD_1 (PopLocalFrame, lResultRef)
+HELPER_METHOD_1 (PopLocalFrame, lResRef)
 HELPER_METHOD_1 (NewGlobalRef, lLobjRef)
 HELPER_METHOD_1V (DeleteGlobalRef, lGrefRef)
 HELPER_METHOD_1V (DeleteLocalRef, lLobjRef)
@@ -814,18 +814,6 @@ void JniSequenceHelper::SetObjectArrayElement (long lArrayRef, long index, long 
 	if (FAILED (result)) {
 		_com_raise_error (result);
 	}
-}
-
-/// <summary>Get the length of an array
-/// <param name="lArrayRef">The reference to the array</param>
-/// <returns>A reference to the length of the array</param>
-long JniSequenceHelper::GetArrayLength (long lArrayRef) {
-	long lArrayLengthRef;
-	HRESULT result = pJni->jni_GetArrayLength (lArrayRef, &lArrayLengthRef);
-	if (FAILED (result)) {
-		_com_raise_error (result);
-	}
-	return lArrayLengthRef;
 }
 
 /// <summary>Get the elements of an array.  Should be paired with ReleaseArrayElements.</summary>
