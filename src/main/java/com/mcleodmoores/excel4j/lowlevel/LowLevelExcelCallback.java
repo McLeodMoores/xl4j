@@ -3,8 +3,6 @@
  */
 package com.mcleodmoores.excel4j.lowlevel;
 
-import com.mcleodmoores.excel4j.values.XLString;
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * The Excel low-level callback interface.  This may or may not be necessary. 
@@ -26,17 +24,17 @@ public interface LowLevelExcelCallback {
    * @return the function registration number
    */
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters.  Take it up with Microsoft.
-  XLValue xlfRegister(final XLString dllPath,
-                      final XLString functionExportName,
-                      final XLString functionSignature,
-                      final XLString functionWorksheetName,
-                      final XLString argumentNames,
-                      final XLValue functionType,
-                      final XLValue functionCategory,
-                      final XLValue acceleratorKey,
-                      final XLValue helpTopic,
-                      final XLValue description,
-                      final XLValue... argsHelp);
+  int xlfRegister(final String dllPath,
+                  final String functionExportName,
+                  final String functionSignature,
+                  final String functionWorksheetName,
+                  final String argumentNames,
+                  final int functionType,
+                  final String functionCategory,
+                  final String acceleratorKey,
+                  final String helpTopic,
+                  final String description,
+                  final String... argsHelp);
   // CHECKSTYLE:ON
   /*
    * This block is to be ignored:

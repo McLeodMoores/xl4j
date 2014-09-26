@@ -6,6 +6,7 @@ import com.mcleodmoores.excel4j.FunctionRegistry;
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
+import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 
 /**
  * Implementation of Excel interface that actually communicates with the XLL plug-in.
@@ -34,6 +35,11 @@ public class NativeExcel implements Excel {
 
   @Override
   public ExcelFunctionCallHandler getExcelCallHandler() {
+    return null;
+  }
+
+  @Override
+  public TypeConverterRegistry getTypeConverterRegistry() {
     return null;
   }
 }

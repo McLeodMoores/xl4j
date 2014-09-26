@@ -72,7 +72,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
           constructor = typeConverterClass.getConstructor((Class<?>[]) null);
           typeConverter = (TypeConverter) constructor.newInstance((Object[]) null);
         } catch (NoSuchMethodException nsme) { // some type converters need a heap reference in their constructors
-          constructor = typeConverterClass.getConstructor(Heap.class);
+          constructor = typeConverterClass.getConstructor(Excel.class);
           typeConverter = (TypeConverter) constructor.newInstance(excel);
         }
         System.err.println("Registering type converter " + constructor);
