@@ -1,7 +1,10 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
+import java.lang.reflect.Type;
+
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.values.XLString;
 
 /**
@@ -20,7 +23,7 @@ public class EnumXLStringTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Class<?> expectedClass, final Object from) {
+  public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     final Enum<?> enumeration = (Enum<?>) from;
     return XLString.of(enumeration.name());
@@ -28,11 +31,11 @@ public class EnumXLStringTypeConverter extends AbstractTypeConverter {
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
   @Override
-  public Object toJavaObject(final Class<?> expectedClass, final Object from) {
-    ArgumentChecker.notNull(expectedClass, "expectedClass");
+  public Object toJavaObject(final Type expectedType, final Object from) {
+    ArgumentChecker.notNull(expectedType, "expectedClass");
     ArgumentChecker.notNull(from, "from");
     final XLString string = (XLString) from;
-    final Class<? extends Enum> enumClass = (Class<? extends Enum>) expectedClass;
+    final Class<? extends Enum> enumClass = (Class<? extends Enum>) Excel4JReflectionUtils.reduceToClass(expectedType);
     return Enum.valueOf(enumClass, string.getValue());
   }
 

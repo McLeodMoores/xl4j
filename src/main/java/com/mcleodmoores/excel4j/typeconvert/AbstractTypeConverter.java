@@ -16,7 +16,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
   /**
    * Convenience constructor, produces converter with default priority.
    * @param javaType the Java type, any object type
-   * @param excelType the Excel type, subclass of XLValue
+   * @param excelType the Excel type
    * @param priority the priority level, with larger values indicating higher priority
    */
   protected AbstractTypeConverter(final Class<?> javaType, final Class<?> excelType, final int priority) {
@@ -30,9 +30,9 @@ public abstract class AbstractTypeConverter implements TypeConverter {
   /**
    * Convenience constructor, produces converter with default priority.
    * @param javaType the Java type, any object type
-   * @param excelType the Excel type, subclass of XLValue
+   * @param excelType the Excel type
    */
-  protected AbstractTypeConverter(final Class<?> javaType, final Class<? extends XLValue> excelType) {
+  protected AbstractTypeConverter(final Class<?> javaType, final Class<?> excelType) {
     this(javaType, excelType, DEFAULT_PRIORITY);
   }
 

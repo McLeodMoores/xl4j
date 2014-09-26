@@ -14,6 +14,7 @@ import com.mcleodmoores.excel4j.javacode.ReflectiveInvokerFactory;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.ScanningTypeConverterRegistry;
+import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 
 /**
  * A mock implementation of the Excel interface for use in testing.
@@ -24,13 +25,15 @@ public class SimulatedExcel implements Excel {
   private final ExcelCallback _excelCallback;
   private final ExcelFunctionCallHandler _excelCallHandler;
   private ReflectiveInvokerFactory _invokerFactory;
+  private final TypeConverterRegistry _typeConverterRegistry;
   
   /**
    * Create an instance of the Excel interface suitable for testing.
    */
   public SimulatedExcel() {
     _heap = new Heap();
-    _invokerFactory = new ReflectiveInvokerFactory(_heap, new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(_heap)));
+    _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this));
+    _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
     _functionRegistry = new FunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
@@ -69,4 +72,8 @@ public class SimulatedExcel implements Excel {
     return _excelCallHandler;
   }
 
+  @Override
+  public TypeConverterRegistry getTypeConverterRegistry() {
+    return _typeConverterRegistry;
+  }
 }

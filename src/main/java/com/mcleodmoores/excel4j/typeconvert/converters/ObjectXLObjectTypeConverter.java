@@ -1,5 +1,8 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
+import java.lang.reflect.Type;
+
+import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.values.XLObject;
@@ -15,20 +18,20 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   /**
    * Default constructor.
-   * @param heap  the excel object heap 
+   * @param excel  the excel object to allow heap access 
    */
-  public ObjectXLObjectTypeConverter(final Heap heap) {
+  public ObjectXLObjectTypeConverter(final Excel excel) {
     super(Object.class, XLObject.class, OBJECT_CONVERTER_PRIORITY);
-    _heap = heap;
+    _heap = excel.getHeap();
   }
 
   @Override
-  public Object toXLValue(final Class<?> expectedClass, final Object from) {
+  public Object toXLValue(final Type expectedType, final Object from) {
     return XLObject.of(from.getClass(), _heap.getHandle(from));
   }
 
   @Override
-  public Object toJavaObject(final Class<?> expectedClass, final Object from) {
+  public Object toJavaObject(final Type expectedType, final Object from) {
     XLObject xlObj = (XLObject) from;
     return _heap.getObject(xlObj.getHandle());
   }

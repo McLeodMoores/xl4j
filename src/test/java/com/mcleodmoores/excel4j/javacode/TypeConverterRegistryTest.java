@@ -166,4 +166,46 @@ public class TypeConverterRegistryTest {
     Assert.assertEquals(excelObject.getClass(), XLString.class);
     Assert.assertEquals((XLString) excelObject, XLString.of("A"));
   }
+  
+  private static final Object[][] ARRAY_TEST_DATA = new Object[][] {
+    { ObjectArrayXLArrayrTypeConverter.class, BigDecimal[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, BigInteger[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Boolean[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Double[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Enum[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Float[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Integer[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Long[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Short[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, String[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, LocalDate[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, Object[].class, XLArray.class },
+    { BooleanArrayXLArrayrTypeConverter.class, boolean[].class, XLArray.class },
+    { DoubleArrayXLArrayrTypeConverter.class, double[].class, XLArray.class },
+    { FloatArrayXLArrayrTypeConverter.class, float[].class, XLArray.class },
+    { IntArrayXLArrayrTypeConverter.class, int[].class, XLArray.class },
+    { LongArrayXLArrayrTypeConverter.class, long[].class, XLArray.class },
+    { ObjectArrayXLArrayrTypeConverter.class, XLValue[].class, XLArray.class },
+    { XLValueIdentityConverters.XLArrayIdentityConverter.class, XLArray.class, XLArray.class },
+    { XLValueIdentityConverters.XLBigDataIdentityConverter.class, XLBigData[].class, XLBigData.class },
+    { XLValueIdentityConverters.XLBooleanIdentityConverter.class, XLBoolean[].class, XLBoolean.class },
+    { XLValueIdentityConverters.XLErrorIdentityConverter.class, XLError[].class, XLError.class },
+    { XLValueIdentityConverters.XLIntegerIdentityConverter.class, XLInteger[].class, XLInteger.class },
+    { XLValueIdentityConverters.XLLocalReferenceIdentityConverter.class, XLLocalReference[].class, XLLocalReference.class },
+    { XLValueIdentityConverters.XLMissingIdentityConverter.class, XLMissing.class, XLMissing.class },
+    { XLValueIdentityConverters.XLNilIdentityConverter.class, XLNil.class, XLNil.class },
+    { XLValueIdentityConverters.XLNumberIdentityConverter.class, XLNumber.class, XLNumber.class },
+    { XLValueIdentityConverters.XLObjectIdentityConverter.class, XLObject.class, XLObject.class },
+    { XLValueIdentityConverters.XLStringIdentityConverter.class, XLString.class, XLString.class },
+    { XLValueIdentityConverters.XLMultiReferenceIdentityConverter.class, XLMultiReference.class, XLMultiReference.class }
+  };
+  
+  /**
+   * Test array conversion.
+   * @param tcr  the type converter registry to test, provided by the data provider tcr
+   */
+  @Test(dataProvider = "tcr")
+  public void testArrays(final TypeConverterRegistry tcr) {
+    ExcelToJavaTypeMapping.of(XLArray.class, javaType)
+  }
 }

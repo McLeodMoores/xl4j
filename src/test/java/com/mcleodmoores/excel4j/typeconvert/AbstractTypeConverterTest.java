@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.excel4j.typeconvert;
 
+import java.lang.reflect.Type;
+
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
@@ -32,12 +34,12 @@ public class AbstractTypeConverterTest {
       }
       
       @Override
-      public Object toXLValue(final Class<?> expectedClass, final Object from) {
+      public Object toXLValue(final Type expectedType, final Object from) {
         return null;
       }
 
       @Override
-      public Object toJavaObject(final Class<?> expectedClass, final Object from) {
+      public Object toJavaObject(final Type expectedType, final Object from) {
         return null;
       }
     }
@@ -61,12 +63,12 @@ public class AbstractTypeConverterTest {
       }
 
       @Override
-      public Object toXLValue(final Class<?> expectedClass, final Object from) {
+      public Object toXLValue(final Type expectedType, final Object from) {
         return null;
       }
 
       @Override
-      public Object toJavaObject(final Class<?> expectedClass, final Object from) {
+      public Object toJavaObject(final Type expectedType, final Object from) {
         return null;
       }
     }

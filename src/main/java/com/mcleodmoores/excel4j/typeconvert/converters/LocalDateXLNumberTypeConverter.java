@@ -1,5 +1,7 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
+import java.lang.reflect.Type;
+
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
@@ -30,13 +32,13 @@ public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter 
                                                                             LocalDate.ofEpochDay(0)) + 1;
 
   @Override
-  public Object toXLValue(final Class<?> expectedClass, final Object from) {
+  public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLNumber.of(((LocalDate) from).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
   }
 
   @Override
-  public Object toJavaObject(final Class<?> expectedClass, final Object from) {
+  public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     final long epochDays = ((long) ((XLNumber) from).getValue()) - DAYS_FROM_EXCEL_EPOCH;
     return LocalDate.ofEpochDay(epochDays);

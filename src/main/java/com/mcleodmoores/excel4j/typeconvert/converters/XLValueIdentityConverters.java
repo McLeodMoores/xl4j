@@ -1,5 +1,7 @@
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
+import java.lang.reflect.Type;
+
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLBigData;
@@ -30,12 +32,12 @@ public class XLValueIdentityConverters {
     }
   
     @Override
-    public Object toXLValue(final Class<?> expectedClass, final Object from) {
+    public Object toXLValue(final Type expectedType, final Object from) {
       return (Object) from;
     }
   
     @Override
-    public Object toJavaObject(final Class<?> expectedClass, final Object from) {
+    public Object toJavaObject(final Type expectedType, final Object from) {
       return from;
     }
   }

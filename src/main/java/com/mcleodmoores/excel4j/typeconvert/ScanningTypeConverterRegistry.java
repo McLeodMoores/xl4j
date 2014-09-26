@@ -21,6 +21,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
@@ -38,10 +39,10 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
    * Construct a TypeResolver.
    * @param heap  the excel heap
    */
-  public ScanningTypeConverterRegistry(final Heap heap) {
+  public ScanningTypeConverterRegistry(final Excel excel) {
     Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
         .addScanners(new SubTypesScanner(true)));
-    scanAndCreateTypeConverters(reflections, heap);
+    scanAndCreateTypeConverters(reflections, excel);
   }
   
   /**
@@ -49,18 +50,16 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
    * @param heap  the excel heap
    * @param packageName  restrict scanning of implementations to a particular package
    */
-  public ScanningTypeConverterRegistry(final Heap heap, final String packageName) {
+  public ScanningTypeConverterRegistry(final Excel excel, final String packageName) {
     final Reflections reflections = new Reflections(
         new ConfigurationBuilder()
           .addUrls(ClasspathHelper.forPackage(packageName))
           .addScanners(new SubTypesScanner(true)));
-    scanAndCreateTypeConverters(reflections, heap);
+    scanAndCreateTypeConverters(reflections, excel);
   }
 
   @SuppressWarnings("rawtypes")
-  private void scanAndCreateTypeConverters(final Reflections reflections, final Heap heap) {
-
-    
+  private void scanAndCreateTypeConverters(final Reflections reflections, final Excel excel) {
     final Set<Class<? extends TypeConverter>> typeConverterClasses = reflections.getSubTypesOf(TypeConverter.class);
     for (final Class<? extends TypeConverter> typeConverterClass : typeConverterClasses) {
       if (Modifier.isAbstract(typeConverterClass.getModifiers()) || !Modifier.isPublic(typeConverterClass.getModifiers())) {
@@ -74,7 +73,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
           typeConverter = (TypeConverter) constructor.newInstance((Object[]) null);
         } catch (NoSuchMethodException nsme) { // some type converters need a heap reference in their constructors
           constructor = typeConverterClass.getConstructor(Heap.class);
-          typeConverter = (TypeConverter) constructor.newInstance(heap);
+          typeConverter = (TypeConverter) constructor.newInstance(excel);
         }
         System.err.println("Registering type converter " + constructor);
          
