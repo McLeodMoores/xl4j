@@ -22,7 +22,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.Excel;
-import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
@@ -37,7 +36,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
 
   /**
    * Construct a TypeResolver.
-   * @param heap  the excel heap
+   * @param excel  the excel context, allowing access to the heap.
    */
   public ScanningTypeConverterRegistry(final Excel excel) {
     Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
@@ -47,7 +46,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
   
   /**
    * Construct a TypeResolver for a particular package.  Useful for testing.
-   * @param heap  the excel heap
+   * @param excel  the excel context, allowing access to the heap.
    * @param packageName  restrict scanning of implementations to a particular package
    */
   public ScanningTypeConverterRegistry(final Excel excel, final String packageName) {
