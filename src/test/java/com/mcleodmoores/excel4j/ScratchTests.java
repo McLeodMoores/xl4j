@@ -12,7 +12,7 @@ import org.testng.annotations.Test;
  * Unit tests to prove API behaviour if not clear from docs.
  */
 public class ScratchTests {
-  
+  // CHECKSTYLE:OFF
   public void test1D(Collection<Integer>[] oneD) {
     
   }

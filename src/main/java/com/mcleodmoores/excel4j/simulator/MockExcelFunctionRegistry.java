@@ -11,12 +11,7 @@ import com.mcleodmoores.excel4j.FunctionType;
 import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.excel4j.values.XLError;
-import com.mcleodmoores.excel4j.values.XLInteger;
-import com.mcleodmoores.excel4j.values.XLNil;
-import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLReference;
-import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**

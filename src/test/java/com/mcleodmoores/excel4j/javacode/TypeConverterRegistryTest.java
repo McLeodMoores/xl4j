@@ -13,7 +13,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
-import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.ScanningTypeConverterRegistry;
@@ -34,8 +33,11 @@ import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveBooleanArrayXLAr
 import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveBooleanXLBooleanTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveDoubleArrayXLArrayTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveDoubleXLNumberTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveFloatArrayXLArrayTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveFloatXLNumberTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveIntegerArrayXLArrayTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveIntegerXLNumberTypeConverter;
+import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveLongArrayXLArrayTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.PrimitiveLongXLNumberTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.ShortXLNumberTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.converters.StringXLStringTypeConverter;
@@ -188,9 +190,9 @@ public class TypeConverterRegistryTest {
     { ObjectArrayXLArrayTypeConverter.class, Object[].class, XLArray.class },
     { PrimitiveBooleanArrayXLArrayTypeConverter.class, boolean[].class, XLArray.class },
     { PrimitiveDoubleArrayXLArrayTypeConverter.class, double[].class, XLArray.class },
-//    { FloatArrayXLArrayrTypeConverter.class, float[].class, XLArray.class },
-//    { IntArrayXLArrayrTypeConverter.class, int[].class, XLArray.class },
-//    { LongArrayXLArrayrTypeConverter.class, long[].class, XLArray.class },
+    { PrimitiveFloatArrayXLArrayTypeConverter.class, float[].class, XLArray.class },
+    { PrimitiveIntegerArrayXLArrayTypeConverter.class, int[].class, XLArray.class },
+    { PrimitiveLongArrayXLArrayTypeConverter.class, long[].class, XLArray.class },
 //    { ObjectArrayXLArrayrTypeConverter.class, XLValue[].class, XLArray.class },
 //    { XLValueIdentityConverters.XLArrayIdentityConverter.class, XLArray.class, XLArray.class },
 //    { XLValueIdentityConverters.XLBigDataIdentityConverter.class, XLBigData[].class, XLBigData.class },

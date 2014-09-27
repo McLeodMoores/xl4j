@@ -7,19 +7,16 @@ import java.io.File;
 
 import com.mcleodmoores.excel4j.FunctionDefinition;
 import com.mcleodmoores.excel4j.FunctionMetadata;
+import com.mcleodmoores.excel4j.FunctionType;
 import com.mcleodmoores.excel4j.XLArgument;
 import com.mcleodmoores.excel4j.XLFunction;
-import com.mcleodmoores.excel4j.FunctionType;
 import com.mcleodmoores.excel4j.XLNamespace;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLLocalReference;
 import com.mcleodmoores.excel4j.values.XLMultiReference;
-import com.mcleodmoores.excel4j.values.XLNil;
-import com.mcleodmoores.excel4j.values.XLString;
-import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
 /**
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
