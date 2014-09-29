@@ -1,7 +1,6 @@
 package com.mcleodmoores.excel4j.typeconvert;
 
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
-import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Base class for type converters, removes need for some boilerplate.

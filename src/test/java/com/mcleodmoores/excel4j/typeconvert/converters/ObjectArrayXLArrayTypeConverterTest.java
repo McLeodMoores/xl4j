@@ -6,8 +6,6 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import java.util.List;
-
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
@@ -17,7 +15,6 @@ import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
