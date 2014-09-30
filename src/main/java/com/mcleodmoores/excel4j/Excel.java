@@ -3,6 +3,7 @@ package com.mcleodmoores.excel4j;
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
+import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 
 /**
  * Interface to provide access to Excel services and callbacks.
@@ -30,4 +31,8 @@ public interface Excel {
    * @return the ExcelCallHandler for dispatching from Excel.
    */
   ExcelFunctionCallHandler getExcelCallHandler();
+  /**
+   * @return the type converter registry
+   */
+  TypeConverterRegistry getTypeConverterRegistry();
 }

@@ -15,6 +15,32 @@ public class CachingTypeConverterRegistry implements TypeConverterRegistry {
   private final ConcurrentMap<ExcelToJavaTypeMapping, TypeConverter> _excelToJavaCache = new ConcurrentHashMap<>();
   private final ConcurrentMap<Type, TypeConverter> _javaToExcelCache = new ConcurrentHashMap<>();
   
+  private static final TypeConverter NULL_CONVERTER = new TypeConverter() {
+    @Override
+    public ExcelToJavaTypeMapping getExcelToJavaTypeMapping() {
+      return null;
+    }
+
+    @Override
+    public JavaToExcelTypeMapping getJavaToExcelTypeMapping() {
+      return null;
+    }
+
+    @Override
+    public Object toXLValue(final Type expectedType, final Object from) {
+      return null;
+    }
+
+    @Override
+    public Object toJavaObject(final Type expectedType, final Object from) {
+      return null;
+    }
+
+    @Override
+    public int getPriority() {
+      return 0;
+    }
+  };
   /**
    * Construct a caching type converter registry.
    * @param underlying  the underlying type converter registry to cache
@@ -26,10 +52,19 @@ public class CachingTypeConverterRegistry implements TypeConverterRegistry {
   @Override
   public TypeConverter findConverter(final ExcelToJavaTypeMapping requiredMapping) {
     if (_excelToJavaCache.containsKey(requiredMapping)) {
-      return _excelToJavaCache.get(requiredMapping);
+      TypeConverter converter = _excelToJavaCache.get(requiredMapping);
+      if (converter == NULL_CONVERTER) {
+        return null;
+      } else {
+        return converter;
+      }
     } else {
       TypeConverter converter = _underlying.findConverter(requiredMapping);
-      _excelToJavaCache.putIfAbsent(requiredMapping, converter);
+      if (converter == null) {
+        _excelToJavaCache.putIfAbsent(requiredMapping, NULL_CONVERTER);
+      } else {
+        _excelToJavaCache.putIfAbsent(requiredMapping, converter);
+      }
       return converter;
     }
   }
@@ -37,10 +72,19 @@ public class CachingTypeConverterRegistry implements TypeConverterRegistry {
   @Override
   public TypeConverter findConverter(final Type requiredJava) {
     if (_javaToExcelCache.containsKey(requiredJava)) {
-      return _javaToExcelCache.get(requiredJava);
+      TypeConverter converter = _javaToExcelCache.get(requiredJava);
+      if (converter == NULL_CONVERTER) {
+        return null;
+      } else {
+        return converter;
+      }
     } else {
       TypeConverter converter = _underlying.findConverter(requiredJava);
-      _javaToExcelCache.putIfAbsent(requiredJava, converter);
+      if (converter == null) { 
+        _javaToExcelCache.putIfAbsent(requiredJava, NULL_CONVERTER);
+      } else {
+        _javaToExcelCache.putIfAbsent(requiredJava, converter);
+      }
       return converter;
     }
   }
