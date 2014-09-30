@@ -9,5 +9,5 @@ public:
 	Register ();
 	~Register ();
 	IJniSequence *get_JniSequence ();
-	void scanAndRegister ();
+	void scanAndRegister (XLOPER12 xDLL);
 };

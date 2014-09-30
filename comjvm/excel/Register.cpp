@@ -51,7 +51,7 @@ Register::Register () {
 	m_pJni = pJni;
 }
 
-void Register::scanAndRegister () {
+void Register::scanAndRegister (XLOPER12 xDLL) {
 	JniSequenceHelper *helper = new JniSequenceHelper (m_pJni);
 	long excel = helper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/excel4j/ExcelFactory"), TEXT ("getInstance"), TEXT ("()Lcom/mcleodmoores/excel4j/Excel;"), 0);
 	long nativeExcelClsId = helper->FindClass ("com/mcleodmoores/excel4j/xll/NativeExcel");
@@ -79,9 +79,9 @@ void Register::scanAndRegister () {
 		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_argumentNames"), TEXT ("Ljava/lang/String;"));
 		extractField (helper, JTYPE_INT,  entryCls, entryObj, TEXT ("_functionType"), TEXT ("I"));
 		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionCategory"), TEXT ("Ljava/lang/String;"));
-		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_acceleratorKey"), TEXT ("Ljava/lang/String;")));
-		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_helpTopic"), TEXT ("Ljava/lang/String;")));
-		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_description"), TEXT ("Ljava/lang/String;")));
+		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_acceleratorKey"), TEXT ("Ljava/lang/String;"));
+		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_helpTopic"), TEXT ("Ljava/lang/String;"));
+		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_description"), TEXT ("Ljava/lang/String;"));
 		// queue up request for global ref of argsHelp + argsHelp.length
 		long argsHelpArr = helper->GetField (JTYPE_OBJECT, entryObj, helper->GetFieldID (lowLevelEntryName, TEXT ("_argsHelp"), TEXT ("L[java/lang/String;")));
 		long gArgsHelpArr = helper->NewGlobalRef (gArgsHelpArr);
@@ -121,21 +121,31 @@ void Register::scanAndRegister () {
 		for (int m = 0; m < argsHelpSz; m++) {
 			argsHelp[m] = argsHelpArrResults[m].bstrVal;
 		}
-		registerFunction (dllPath, functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz, argsHelp);
+		registerFunction (xDLL, functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz, argsHelp);
+		delete argsHelp;
+		delete argsHelpArrResults;
 	}
 }
 
-void registerFunction (bstr_t dllPath, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
+void registerFunction (XLOPER12 xDll, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
 	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, size_t argsHelpSz, bstr_t *argsHelp) {
-
-}
-
-void releaseString (JniSequenceHelper *helper) {
-	long jStringRef = helper->Argument ();
-	long jcharRef = helper->Argument ();
-	helper->ReleaseStringChars (jStringRef, jcharRef);
-	helper->DeleteGlobalRef (jStringRef);
-	helper->DeleteGlobalRef (jcharRef);
+	TRACE ("functionExportName=%s\nfunctionSignature=%s\nworksheetName=%s\nargumentNames=%s\nfunctionType=%d\nfunctionCategory=%s\nacceleratorKey=%s\nhelpTopic=%s\ndescription=%s\nargsHelpSz=%d",
+		functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz);
+	LPXLOPER12 *args = new LPXLOPER12[10 + argsHelpSz];
+	args[0] = (LPXLOPER12)&xDll;
+	args[1] = (LPXLOPER12)TempStr12 (functionExportName);
+	args[2] = (LPXLOPER12)TempStr12 (functionSignature);
+	args[3] = (LPXLOPER12)TempStr12 (worksheetName);
+	args[4] = (LPXLOPER12)TempStr12 (argumentNames);
+	args[5] = (LPXLOPER12)TempInt12 (functionType);
+	args[6] = (LPXLOPER12)TempStr12 (functionCategory);
+	args[7] = (LPXLOPER12)TempStr12 (acceleratorKey);
+	args[8] = (LPXLOPER12)TempStr12 (helpTopic);
+	args[9] = (LPXLOPER12)TempStr12 (description);
+	for (int i = 0; i < argsHelpSz; i++) {
+		args[10 + i] = (LPXLOPER12)TempStr12 (argsHelp[i]);
+	}
+	Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
 }
 
 void extractField (JniSequenceHelper *helper, long fieldType, long entryCls, long entryObj, TCHAR *fieldName, TCHAR *signature) {
@@ -146,7 +156,7 @@ void extractField (JniSequenceHelper *helper, long fieldType, long entryCls, lon
 		helper->Result (fieldStr);
 		helper->ReleaseStringChars (field, fieldStr);
 	} else {
-		helper->Result (field)
+		helper->Result (field);
 	}
 }
 
