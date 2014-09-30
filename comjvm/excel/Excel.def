@@ -1,0 +1,18 @@
+;***************************************************************************
+; File: Generic.def
+;
+; Purpose: Definition file for Generic.xll project
+;***************************************************************************
+
+LIBRARY Excel.xll
+
+EXPORTS
+	xlAutoOpen
+	xlAutoClose
+	xlAutoRegister12
+	xlAutoAdd
+	xlAutoRemove
+	xlAddInManagerInfo12
+	Func1
+	FuncSum
+	FuncFib

@@ -23,4 +23,13 @@
 // Headers for CppUnitTest:
 #include "CppUnitTest.h"
 
+// Headers for Excel
+#include <xlcall.h>
+#include <framewrk.h>
+
+// comjvm stuff
+#include <iostream>
+#include "comjvm/local.h"
+#include "comjvm/core.h"
+
 #endif /* ifndef _STDAFX_H_ */

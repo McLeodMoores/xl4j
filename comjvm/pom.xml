@@ -21,6 +21,7 @@
     <maven-native-packing.version>0.2.0</maven-native-packing.version>
     <java.version>1.8.0</java.version>
     <!--java.version>1.7.0</java.version-->
+    <excelsdk.version>2013</excelsdk.version>
   </properties>
 
   <build>
@@ -124,6 +125,12 @@
       <groupId>com.oracle.jdk</groupId>
       <artifactId>win32</artifactId>
       <version>${java.version}</version>
+      <type>native-static</type>
+    </dependency>
+    <dependency>
+      <groupId>com.microsoft.excel</groupId>
+      <artifactId>xllsdk</artifactId>
+      <version>${excelsdk.version}</version>
       <type>native-static</type>
     </dependency>
     <dependency>

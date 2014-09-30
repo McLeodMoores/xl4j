@@ -20,6 +20,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "jni", "jni\jni.vcxproj", "{7007C71A-7B07-489E-B1B8-5B760252A6F7}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "excel", "excel\excel.vcxproj", "{5F107926-37EF-4A62-8B62-686A6D8F31D2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{58EFA4DB-40CD-4BB7-A8A5-8515166C7E00} = {58EFA4DB-40CD-4BB7-A8A5-8515166C7E00}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "debug", "debug\debug.vcxproj", "{A0CDA5B6-5EDD-4324-B09E-AEE599B41B74}"
 EndProject
