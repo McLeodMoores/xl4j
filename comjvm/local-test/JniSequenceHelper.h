@@ -19,6 +19,9 @@ public:
 	long LongConstant (long long val);
 	long FloatConstant (float val);
 	long DoubleConstant (double val);
+	void Result (long resultRef);
+	long Argument ();
+	void Execute (long cArgs, VARIANT *aArgs, long cResults, VARIANT *aResults);
 	long GetVersion ();
 	long DefineClass (long lNameRef, long lLoaderRef, long lBufRef, long lLenRef);
 	long FindClass (TCHAR *clsName);
@@ -57,6 +60,7 @@ public:
 	long CallNonVirtualMethodA (long returnType, long lObjectRef, long lClassRef, long lMethodIDRef, long numArgs, long *args);
 	long GetFieldID (long lClassRef, long lNameRef, long lSigRef);
 	long GetFieldID (TCHAR *clsName, TCHAR *fieldName, TCHAR *signature);
+	long GetFieldID (long lClassRef, TCHAR *fieldName, TCHAR *signature);
 	long GetField (long lType, long lObjRef, long lFieldIDRef);
 	void SetField (long lType, long lObjRef, long lFieldIDRef, long lValueRef);
 	long GetStaticMethodID (TCHAR *clsName, TCHAR *methodName, TCHAR *methodSignature);
@@ -67,6 +71,7 @@ public:
 	long CallStaticMethodA (long returnType, TCHAR *className, TCHAR *methodName, TCHAR *methodSignature, long numArgs, long *args);
 	long GetStaticFieldID (long lClassRef, long lNameRef, long lSigRef);
 	long GetStaticFieldID (TCHAR *className, TCHAR *fieldName, TCHAR *fieldSig);
+	long GetStaticFieldID (long lClassRef, TCHAR *fieldName, TCHAR *fieldSig);
 	long GetStaticField (long lType, long lClassRef, long lFieldIDRef);
 	void SetStaticField (long lType, long lClassRef, long lFieldIDRef, long lValueRef);
 	long NewString (long lUnicodeRef, long lSizeRef);

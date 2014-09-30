@@ -114,6 +114,38 @@ long JniSequenceHelper::DoubleConstant (double val) {
 	return lDoubleRef;
 }
 
+/// <summary>Assign a reference a slot in the results</summary>
+/// <param name="resultRef">The reference slot to put in the next result array slot</param>
+void JniSequenceHelper::Result (long resultRef) {
+	HRESULT result = pJni->Result (resultRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Execute the current sequence taking any argument and result arrays</summary>
+/// <param name="cArgs">The number of arguments</param>
+/// <param name="aArgs">Array of VARIANT containing arguments</param>
+/// <param name="cResults">The number of results</param>
+/// <param name="aResults">Array of VARIANT ready to receive results</param>
+void JniSequenceHelper::Execute (long cArgs, VARIANT *aArgs, long cResults, VARIANT *aResults) {
+	HRESULT result = pJni->Execute (cArgs, aArgs, cResults, aResults);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+}
+
+/// <summary>Get a reference slot for a value to be passed in on Execute</summary>
+/// <returns>Next reference slot for parameter</returns>
+long JniSequenceHelper::Argument () {
+	long lParamRef;
+	HRESULT result = pJni->Argument (&lParamRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	return lParamRef;
+}
+
 #define HELPER_METHOD_0(_methodName_) \
 	long JniSequenceHelper::_methodName_() { \
 		long lResultRef; \
@@ -458,10 +490,17 @@ long JniSequenceHelper::CallNonVirtualMethodA (long returnType, long lObjectRef,
 	return lResultRef;
 }
 
-HELPER_METHOD_3 (GetFieldID, lClassRef, lNameRef, lFieldIDRef)
-long JniSequenceHelper::GetFieldID (TCHAR *className, TCHAR *fieldNameRef, TCHAR *signature) {
-	long lClassRef = StringConstant (className);
-	long lFieldNameRef = StringConstant (fieldNameRef);
+HELPER_METHOD_3 (GetFieldID, lClassRef, lNameRef, lSignatureRef)
+
+long JniSequenceHelper::GetFieldID (TCHAR *className, TCHAR *fieldName, TCHAR *signature) {
+	long lClassRef = FindClass (className);
+	long lFieldNameRef = StringConstant (fieldName);
+	long lSignatureRef = StringConstant (signature);
+	return GetFieldID (lClassRef, lFieldNameRef, lSignatureRef);
+}
+
+long JniSequenceHelper::GetFieldID (long lClassRef, TCHAR *fieldName, TCHAR *signature) {
+	long lFieldNameRef = StringConstant (fieldName);
 	long lSignatureRef = StringConstant (signature);
 	return GetFieldID (lClassRef, lFieldNameRef, lSignatureRef);
 }
@@ -501,7 +540,7 @@ long JniSequenceHelper::GetStaticMethodID (TCHAR *clsName, TCHAR *methodName, TC
 /// <param name="methodSignature">The method signature, (see javap -s) e.g. '(I)V'</param>
 /// <returns>A reference to a jmethodID</returns>
 long JniSequenceHelper::GetStaticMethodID (long clsRef, TCHAR *methodName, TCHAR *methodSignature) {
-	long lMethodNameRef = StringConstant (methodName);
+	long lMethodNameRef = FindClass (methodName);
 	long lMethodSignatureRef = StringConstant (methodSignature);
 	long lMethodIDRef;
 	HRESULT result = pJni->jni_GetStaticMethodID (clsRef, lMethodNameRef, lMethodSignatureRef, &lMethodIDRef);
@@ -614,7 +653,13 @@ long JniSequenceHelper::CallStaticMethodA (long returnType, TCHAR *className, TC
 HELPER_METHOD_3 (GetStaticFieldID, lClassRef, lNameRef, lSigRef)
 
 long JniSequenceHelper::GetStaticFieldID (TCHAR *className, TCHAR *fieldName, TCHAR *signature) {
-	long lClassRef = StringConstant (className);
+	long lClassRef = FindClass (className);
+	long lNameRef = StringConstant (fieldName);
+	long lSigRef = StringConstant (signature);
+	return GetStaticFieldID (lClassRef, lNameRef, lSigRef);
+}
+
+long JniSequenceHelper::GetStaticFieldID (long lClassRef, TCHAR *fieldName, TCHAR *signature) {
 	long lNameRef = StringConstant (fieldName);
 	long lSigRef = StringConstant (signature);
 	return GetStaticFieldID (lClassRef, lNameRef, lSigRef);
