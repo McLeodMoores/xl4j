@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "local/JniSequenceHelper.h"
+#include "helper/JniSequenceHelper.h"
 
 class Register {
 private:

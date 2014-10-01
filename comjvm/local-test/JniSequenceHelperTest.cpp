@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"
-#include "local/JniSequenceHelper.h"
+#include "helper/JniSequenceHelper.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 

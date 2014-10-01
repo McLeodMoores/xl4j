@@ -265,7 +265,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\debug\debug.vcxproj">
+    <ProjectReference Include="..\utils\utils.vcxproj">
       <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
     </ProjectReference>
   </ItemGroup>

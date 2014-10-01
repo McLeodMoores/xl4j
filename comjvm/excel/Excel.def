@@ -4,7 +4,7 @@
 ; Purpose: Definition file for Generic.xll project
 ;***************************************************************************
 
-LIBRARY Excel.xll
+LIBRARY Excel.dll
 
 EXPORTS
 	xlAutoOpen

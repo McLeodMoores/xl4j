@@ -57,9 +57,6 @@
     <ClInclude Include="JniSequenceExecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JniSequenceHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -102,9 +99,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JniValue.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="JniSequenceHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

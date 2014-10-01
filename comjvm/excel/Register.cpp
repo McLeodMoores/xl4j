@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Register.h"
-#include "Debug/Debug.h"
-#include "local-test/JniSequenceHelper.h"
+#include "utils/Debug.h"
+#include "helper/JniSequenceHelper.h"
 
 using std::cerr;
 using std::cout;
@@ -54,9 +54,9 @@ Register::Register () {
 void Register::scanAndRegister (XLOPER12 xDLL) {
 	JniSequenceHelper *helper = new JniSequenceHelper (m_pJni);
 	long excel = helper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/excel4j/ExcelFactory"), TEXT ("getInstance"), TEXT ("()Lcom/mcleodmoores/excel4j/Excel;"), 0);
-	long nativeExcelClsId = helper->FindClass ("com/mcleodmoores/excel4j/xll/NativeExcel");
+	long nativeExcelClsId = helper->FindClass (TEXT("com/mcleodmoores/excel4j/xll/NativeExcel"));
 	long lowLevelExcelCallback = helper->CallMethod (JTYPE_OBJECT, excel, helper->GetMethodID (nativeExcelClsId, TEXT ("getLowLevelExcelCallback"), TEXT ("()Lcom/mcleodmoores/excel4j/lowlevel/LowLevelExcelCallback;")), 0);
-	long xllAccumulatingFunctionRegistryClsId = helper->FindClass ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry");
+	long xllAccumulatingFunctionRegistryClsId = helper->FindClass (TEXT("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry"));
 	long registerArr = helper->CallMethod (JTYPE_OBJECT, lowLevelExcelCallback, helper->GetMethodID (xllAccumulatingFunctionRegistryClsId, TEXT ("getEntries"), TEXT ("()L[com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;")), 0);
 	long gRegisterArr = helper->NewGlobalRef (registerArr);
 	long arrSize = helper->GetArrayLength (gRegisterArr);
@@ -84,7 +84,7 @@ void Register::scanAndRegister (XLOPER12 xDLL) {
 		extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_description"), TEXT ("Ljava/lang/String;"));
 		// queue up request for global ref of argsHelp + argsHelp.length
 		long argsHelpArr = helper->GetField (JTYPE_OBJECT, entryObj, helper->GetFieldID (lowLevelEntryName, TEXT ("_argsHelp"), TEXT ("L[java/lang/String;")));
-		long gArgsHelpArr = helper->NewGlobalRef (gArgsHelpArr);
+		long gArgsHelpArr = helper->NewGlobalRef (argsHelpArr);
 		helper->Result (gArgsHelpArr);
 		long argsHelpArrLength = helper->GetArrayLength (argsHelpArr);
 		helper->Result (argsHelpArrLength);

@@ -7,7 +7,7 @@
 
 #include "stdafx.h"
 #include "internal.h"
-#include "debug/Debug.h"
+#include "utils/Debug.h"
 
 static HMODULE CurrentModule (BOOL bIncrement) {
 	HMODULE hModule;
