@@ -125,10 +125,11 @@ void Register::scanAndRegister (XLOPER12 xDLL) {
 		delete argsHelp;
 		delete argsHelpArrResults;
 	}
+	delete helper;
 }
 
-void registerFunction (XLOPER12 xDll, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
-	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, size_t argsHelpSz, bstr_t *argsHelp) {
+void Register::registerFunction (XLOPER12 xDll, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
+	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp) {
 	TRACE ("functionExportName=%s\nfunctionSignature=%s\nworksheetName=%s\nargumentNames=%s\nfunctionType=%d\nfunctionCategory=%s\nacceleratorKey=%s\nhelpTopic=%s\ndescription=%s\nargsHelpSz=%d",
 		functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz);
 	LPXLOPER12 *args = new LPXLOPER12[10 + argsHelpSz];
@@ -145,10 +146,10 @@ void registerFunction (XLOPER12 xDll, bstr_t functionExportName, bstr_t function
 	for (int i = 0; i < argsHelpSz; i++) {
 		args[10 + i] = (LPXLOPER12)TempStr12 (argsHelp[i]);
 	}
-	Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
+	//Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
 }
 
-void extractField (JniSequenceHelper *helper, long fieldType, long entryCls, long entryObj, TCHAR *fieldName, TCHAR *signature) {
+void Register::extractField (JniSequenceHelper *helper, long fieldType, long entryCls, long entryObj, TCHAR *fieldName, TCHAR *signature) {
 	long field = helper->GetField (fieldType, entryObj, helper->GetFieldID (entryCls, fieldName, signature));
 	if (fieldType == JTYPE_OBJECT) {
 		long isCopy;
@@ -160,7 +161,7 @@ void extractField (JniSequenceHelper *helper, long fieldType, long entryCls, lon
 	}
 }
 
-Register::Register () {
+Register::~Register () {
 	m_pJni->Release ();
 	m_pJvm->Release ();
 	m_pConnector->Release ();
