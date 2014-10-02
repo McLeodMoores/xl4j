@@ -12,24 +12,12 @@
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 
-// Windows Header Files:
 #include <windows.h>
 #include <comdef.h>
-
-// Standard header files:
 #include <assert.h>
 #include <tchar.h>
-
-// Headers for CppUnitTest:
-#include "CppUnitTest.h"
-
-// Headers for Excel
-#include <xlcall.h>
-#include <framewrk.h>
-
-// comjvm stuff
-#include <iostream>
-#include "comjvm/local.h"
-#include "comjvm/core.h"
+#include <strsafe.h>
+#include <list>
+#include <vector>
 
 #endif /* ifndef _STDAFX_H_ */

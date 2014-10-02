@@ -21,7 +21,7 @@
 #include <vector>
 #include <jni.h>
 
-#include "debug/Debug.h"
+#include "utils/Debug.h"
 
 #ifdef _UNICODE
 typedef std::wstring _std_string_t;

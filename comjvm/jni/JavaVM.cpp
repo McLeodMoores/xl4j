@@ -8,7 +8,7 @@
 #include "stdafx.h"
 #include "jni.h"
 #include "internal.h"
-#include "debug\Debug.h"
+#include "utils\Debug.h"
 
 enum VMState {
 	NOT_RUNNING,

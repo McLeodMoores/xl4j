@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "internal.h"
-#include "debug/Debug.h"
+#include "utils/Debug.h"
 
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM);
 

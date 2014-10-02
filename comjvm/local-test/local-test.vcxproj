@@ -353,7 +353,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="JniSequenceHelper.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -363,7 +362,6 @@
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="ExternalJarsTest.cpp" />
     <ClCompile Include="filesystem.cpp" />
-    <ClCompile Include="JniSequenceHelper.cpp" />
     <ClCompile Include="JniSequenceHelperTest.cpp" />
     <ClCompile Include="JniSequenceTest.cpp" />
     <ClCompile Include="Metadata.cpp" />
@@ -383,11 +381,14 @@
     <ProjectReference Include="..\core\core.vcxproj">
       <Project>{9e596700-1153-46a5-b3b8-ca386ffd9b16}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\debug\debug.vcxproj">
-      <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
+    <ProjectReference Include="..\helper\helper.vcxproj">
+      <Project>{58075407-c624-49e9-9776-6a2831db8152}</Project>
     </ProjectReference>
     <ProjectReference Include="..\local\local.vcxproj">
       <Project>{c0d7a35b-7195-4541-bb35-6cd51ea739bd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\utils\utils.vcxproj">
+      <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

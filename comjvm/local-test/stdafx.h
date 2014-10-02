@@ -22,7 +22,7 @@
 #include <list>
 #include <vector>
 
-#include "debug/Debug.h"
+#include "utils/Debug.h"
 
 // Headers for CppUnitTest:
 #include "CppUnitTest.h"
