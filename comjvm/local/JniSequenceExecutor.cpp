@@ -677,6 +677,20 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						case JTYPE_OBJECT:	{
 							TRACE ("jni_CallStaticMethod(JTYPE_OBJECT, %p, %p, %d, ...)", cls, methodId, size);
 							jobject result = pEnv->CallStaticObjectMethodA (cls, methodId, arguments);
+							TRACE ("jni_CallStaticMethod result was %p", result);
+							if (!result) {
+								if (pEnv->ExceptionCheck ()) {
+									jthrowable exception = pEnv->ExceptionOccurred ();
+									pEnv->ExceptionClear ();
+									jclass throwable_class = pEnv->FindClass ("java/lang/Throwable");
+									jmethodID toString_ID = pEnv->GetMethodID (throwable_class, "toString", "()Ljava/lang/String;");
+									jstring message = (jstring) pEnv->CallObjectMethod (exception, toString_ID);
+									jboolean isCopy;
+									const jchar *msg = pEnv->GetStringChars (message, &isCopy);
+									TRACE ("jni_CallStaticMethod exception raised, calling toString %s", msg);
+									pEnv->ReleaseStringChars (message, msg);
+								}
+							}
 							__NEXT_RESULT.put_jobject (result);
 							break;
 						}
