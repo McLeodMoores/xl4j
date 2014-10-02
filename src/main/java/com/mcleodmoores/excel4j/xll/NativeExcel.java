@@ -72,6 +72,7 @@ public class NativeExcel implements Excel {
    * Get the low level callback handler so we can get accumulated registrations without callbacks.
    * @return the low level callback accumulator
    */
+  @Override
   public LowLevelExcelCallback getLowLevelExcelCallback() {
     return _rawCallback;
   }

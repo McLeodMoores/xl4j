@@ -26,6 +26,7 @@ public class SimulatedExcel implements Excel {
   private final ExcelFunctionCallHandler _excelCallHandler;
   private ReflectiveInvokerFactory _invokerFactory;
   private final TypeConverterRegistry _typeConverterRegistry;
+  private MockExcelFunctionRegistry _rawCallback;
   
   /**
    * Create an instance of the Excel interface suitable for testing.
@@ -36,8 +37,8 @@ public class SimulatedExcel implements Excel {
     _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
     _functionRegistry = new FunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
-    LowLevelExcelCallback rawCallback = new MockExcelFunctionRegistry();
-    _excelCallback = new DefaultExcelCallback(getDLLPath(), rawCallback);
+    _rawCallback = new MockExcelFunctionRegistry();
+    _excelCallback = new DefaultExcelCallback(getDLLPath(), _rawCallback);
   }
   
   /**
@@ -75,5 +76,10 @@ public class SimulatedExcel implements Excel {
   @Override
   public TypeConverterRegistry getTypeConverterRegistry() {
     return _typeConverterRegistry;
+  }
+  
+  @Override
+  public LowLevelExcelCallback getLowLevelExcelCallback() {
+    return _rawCallback;
   }
 }

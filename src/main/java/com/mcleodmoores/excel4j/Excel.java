@@ -3,6 +3,7 @@ package com.mcleodmoores.excel4j;
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
+import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverterRegistry;
 
 /**
@@ -35,4 +36,5 @@ public interface Excel {
    * @return the type converter registry
    */
   TypeConverterRegistry getTypeConverterRegistry();
+  public abstract LowLevelExcelCallback getLowLevelExcelCallback();
 }
