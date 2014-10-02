@@ -32,6 +32,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "helper", "helper\helper.vcx
 		{A0CDA5B6-5EDD-4324-B09E-AEE599B41B74} = {A0CDA5B6-5EDD-4324-B09E-AEE599B41B74}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "excel-test", "excel-test\excel-test.vcxproj", "{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -240,6 +242,30 @@ Global
 		{58075407-C624-49E9-9776-6A2831DB8152}.Release-Unicode|Win32.Build.0 = Release|Win32
 		{58075407-C624-49E9-9776-6A2831DB8152}.Release-Unicode|x64.ActiveCfg = Release|x64
 		{58075407-C624-49E9-9776-6A2831DB8152}.Release-Unicode|x64.Build.0 = Release|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug|Win32.ActiveCfg = Debug-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug|Win32.Build.0 = Debug-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug|x64.ActiveCfg = Debug-Unicode|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug|x64.Build.0 = Debug-Unicode|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Ascii|Win32.ActiveCfg = Debug-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Ascii|Win32.Build.0 = Debug-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Ascii|x64.ActiveCfg = Debug-Ascii|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Ascii|x64.Build.0 = Debug-Ascii|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Unicode|Win32.ActiveCfg = Debug-Unicode|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Unicode|Win32.Build.0 = Debug-Unicode|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Unicode|x64.ActiveCfg = Debug-Unicode|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Debug-Unicode|x64.Build.0 = Debug-Unicode|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release|Win32.ActiveCfg = Release-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release|Win32.Build.0 = Release-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release|x64.ActiveCfg = Release-Ascii|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release|x64.Build.0 = Release-Ascii|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Ascii|Win32.ActiveCfg = Release-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Ascii|Win32.Build.0 = Release-Ascii|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Ascii|x64.ActiveCfg = Release-Ascii|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Ascii|x64.Build.0 = Release-Ascii|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Unicode|Win32.ActiveCfg = Release-Unicode|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Unicode|Win32.Build.0 = Release-Unicode|Win32
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Unicode|x64.ActiveCfg = Release-Unicode|x64
+		{7F9A6D6A-1B88-440F-8E0F-C5FFFAD06A8C}.Release-Unicode|x64.Build.0 = Release-Unicode|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,7 +1,14 @@
 #include "stdafx.h"
 #include "helper/JniSequenceHelper.h"
 
-class Register {
+
+#ifdef COMJVM_EXCEL_EXPORT
+# define COMJVM_EXCEL_API __declspec(dllexport)
+#else
+# define COMJVM_EXCEL_API __declspec(dllimport)
+#endif /* ifndef COMJVM_DEBUG_API */
+
+class COMJVM_EXCEL_API Register {
 private:
 	IJniSequence *m_pJni;
 	IJvm *m_pJvm;

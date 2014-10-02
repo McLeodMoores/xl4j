@@ -540,7 +540,7 @@ long JniSequenceHelper::GetStaticMethodID (TCHAR *clsName, TCHAR *methodName, TC
 /// <param name="methodSignature">The method signature, (see javap -s) e.g. '(I)V'</param>
 /// <returns>A reference to a jmethodID</returns>
 long JniSequenceHelper::GetStaticMethodID (long clsRef, TCHAR *methodName, TCHAR *methodSignature) {
-	long lMethodNameRef = FindClass (methodName);
+	long lMethodNameRef = StringConstant (methodName);
 	long lMethodSignatureRef = StringConstant (methodSignature);
 	long lMethodIDRef;
 	HRESULT result = pJni->jni_GetStaticMethodID (clsRef, lMethodNameRef, lMethodSignatureRef, &lMethodIDRef);
