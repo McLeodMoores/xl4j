@@ -77,7 +77,11 @@ public class FunctionRegistry {
     try {
       Collection<FunctionDefinition> take = _finishedScan.take();
       for (FunctionDefinition functionDefinition : take) {
-        callback.registerFunction(functionDefinition);
+        try {
+          callback.registerFunction(functionDefinition);
+        } catch (Excel4JRuntimeException xl4jre) {
+          s_logger.error("Problem registering function, skipping", xl4jre);
+        }
       }
     } catch (InterruptedException e) {
       throw new Excel4JRuntimeException("Unexpected interrupt while waiting for function definitions from queue");
@@ -107,15 +111,19 @@ public class FunctionRegistry {
         resultType = TypeConversionMode.SIMPLEST_RESULT;
       }
       // build a method invoker
-      MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
-      // build the meta-data data structure and store it all in a FunctionDefinition
-      FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, xlArgumentAnnotations);
-      int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);
-      FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
-      // put the definition in some look-up tables.
-      s_logger.info("Allocating export number {} function {}", allocatedExportNumber, methodInvoker.getMethodName());
-      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
-      _functionDefinitions.add(functionDefinition);
+      try {
+        MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
+        // build the meta-data data structure and store it all in a FunctionDefinition
+        FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, xlArgumentAnnotations);
+        int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);
+        FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
+        // put the definition in some look-up tables.
+        s_logger.info("Allocating export number {} function {}", allocatedExportNumber, methodInvoker.getMethodName());
+        _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
+        _functionDefinitions.add(functionDefinition);
+      } catch (Exception e) {
+        s_logger.error("Exception while scanning annotated method", e);
+      }
     }
   }
   
