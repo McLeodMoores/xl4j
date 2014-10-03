@@ -22,6 +22,14 @@ private:
 	HANDLE m_hSemaphore;
 	HRESULT m_hRunResult;
 	~CJniSequenceExecutor ();
+	void append_exception_trace_messages (
+		JNIEnv&      a_jni_env,
+		std::wstring& a_error_msg,
+		jthrowable   a_exception,
+		jmethodID    a_mid_throwable_getCause,
+		jmethodID    a_mid_throwable_getStackTrace,
+		jmethodID    a_mid_throwable_toString,
+		jmethodID    a_mid_frame_toString);
 public:
 	CJniSequenceExecutor (CJniSequence *pOwner, long cArgs, VARIANT *pArgs, long cResults, VARIANT *pResults);
 	HRESULT Run (JNIEnv *pEnv);
