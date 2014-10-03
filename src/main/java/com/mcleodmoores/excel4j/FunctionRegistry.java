@@ -75,6 +75,7 @@ public class FunctionRegistry {
    * @param callback the Excel callback interface
    */
   public void registerFunctions(final ExcelCallback callback) {
+    s_logger.info("registerFunctions called with {}", callback);
     try {
       Collection<FunctionDefinition> take = _finishedScan.take();
       s_logger.info("got colleciton from finishedScan queue, iterating over them...");
