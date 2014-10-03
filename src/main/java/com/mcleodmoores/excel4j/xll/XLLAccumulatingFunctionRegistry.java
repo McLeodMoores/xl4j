@@ -6,12 +6,16 @@ package com.mcleodmoores.excel4j.xll;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 
 /**
  * 
  */
 public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
+  private static final Logger s_logger = LoggerFactory.getLogger(XLLAccumulatingFunctionRegistry.class);
   /**
    * Native accessed data structure (public fields for speed).
    */
@@ -52,10 +56,13 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     entry._description = description;
     entry._argsHelp = argsHelp;
     _entries.add(entry);
+    s_logger.info("just added entry to entries table");
     return 0;
   }
 
   public LowLevelEntry[] getEntries() {
-    return _entries.toArray(new LowLevelEntry[] {});
+    LowLevelEntry[] array = _entries.toArray(new LowLevelEntry[] {});
+    s_logger.info("getEntries() called, returning {} items", array.length);
+    return array;
   }
 }
