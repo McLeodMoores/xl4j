@@ -65,7 +65,7 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 	try {
 		JniSequenceHelper *helper = new JniSequenceHelper (m_pJni);
 		long excel = helper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/excel4j/ExcelFactory"), TEXT ("getInstance"), TEXT ("()Lcom/mcleodmoores/excel4j/Excel;"), 0);
-		long nativeExcelClsId = helper->FindClass (TEXT ("com/mcleodmoores/excel4j/xll/NativeExcel"));
+		long nativeExcelClsId = helper->FindClass (TEXT ("com/mcleodmoores/excel4j/Excel"));
 		long lowLevelExcelCallback = helper->CallMethod (JTYPE_OBJECT, excel, helper->GetMethodID (nativeExcelClsId, TEXT ("getLowLevelExcelCallback"), TEXT ("()Lcom/mcleodmoores/excel4j/lowlevel/LowLevelExcelCallback;")), 0);
 		long xllAccumulatingFunctionRegistryClsId = helper->FindClass (TEXT ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry"));
 		long registerArr = helper->CallMethod (JTYPE_OBJECT, lowLevelExcelCallback, helper->GetMethodID (xllAccumulatingFunctionRegistryClsId, TEXT ("getEntries"), TEXT ("()L[com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;")), 0);
