@@ -61,6 +61,7 @@ public class FunctionRegistry {
     @Override
     public void run() {
       scanAndCreateFunctions(_invokerFactory);
+      s_logger.info("Scan and create finished, putting to Blocking Queue");
       try {
         _finishedScan.put(_functionDefinitions);
       } catch (InterruptedException e) {
@@ -76,6 +77,7 @@ public class FunctionRegistry {
   public void registerFunctions(final ExcelCallback callback) {
     try {
       Collection<FunctionDefinition> take = _finishedScan.take();
+      s_logger.info("got colleciton from finishedScan queue, iterating over them...");
       for (FunctionDefinition functionDefinition : take) {
         try {
           callback.registerFunction(functionDefinition);
@@ -83,6 +85,7 @@ public class FunctionRegistry {
           s_logger.error("Problem registering function, skipping", xl4jre);
         }
       }
+      s_logger.info("finsihed registering functions");
     } catch (InterruptedException e) {
       throw new Excel4JRuntimeException("Unexpected interrupt while waiting for function definitions from queue");
     }
