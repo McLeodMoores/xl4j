@@ -2,6 +2,14 @@ package com.mcleodmoores.excel4j.xll;
 
 import java.io.File;
 
+import org.slf4j.LoggerFactory;
+
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.core.Context;
+import ch.qos.logback.core.FileAppender;
+
 import com.mcleodmoores.excel4j.DefaultExcelFunctionCallHandler;
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
@@ -32,6 +40,22 @@ public class NativeExcel implements Excel {
    * Create an instance of the Excel interface suitable for testing.
    */
   public NativeExcel() {
+    Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+    FileAppender fileAppender = new FileAppender();
+    fileAppender.setContext((Context) LoggerFactory.getILoggerFactory());
+    fileAppender.setName("timestamp");
+    // set the file name
+    fileAppender.setFile("log" + System.currentTimeMillis()+".log");
+
+    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+    encoder.setContext((Context) LoggerFactory.getILoggerFactory());
+    encoder.setPattern("%r %thread %level - %msg%n");
+    encoder.start();
+
+    fileAppender.setEncoder(encoder);
+    fileAppender.start();
+    root.addAppender(fileAppender);
+    
     _heap = new Heap();
     _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this));
     _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
