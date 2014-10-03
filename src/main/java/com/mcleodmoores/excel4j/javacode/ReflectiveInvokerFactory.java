@@ -134,6 +134,9 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     try {
       TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
       TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      if (resultConverter == null) {
+        throw new Excel4JRuntimeException("Could not find type converter for " + method.getReturnType() + " (return type)");
+      }
       if (resultType == TypeConversionMode.SIMPLEST_RESULT) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
       } else {
