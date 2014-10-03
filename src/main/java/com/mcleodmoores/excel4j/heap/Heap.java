@@ -42,10 +42,14 @@ public class Heap {
         final NetworkInterface networkInterface = networkInterfaces.nextElement();
         final byte[] hardwareAddress = networkInterface.getHardwareAddress();
         final byte[] extendedTo64bits = new byte[BYTES_IN_64BITS];
-        // we assume the hardware address is going to be 6 bytes, but we handle if it isn't, but top out at 8 bytes
-        System.arraycopy(hardwareAddress, 0, extendedTo64bits, 0, Math.min(hardwareAddress.length, BYTES_IN_64BITS));
-        final ByteBuffer byteBuffer = ByteBuffer.wrap(extendedTo64bits);
-        baseHandle = byteBuffer.getLong();
+        if (hardwareAddress != null) {
+          // we assume the hardware address is going to be 6 bytes, but we handle if it isn't, but top out at 8 bytes
+          System.arraycopy(hardwareAddress, 0, extendedTo64bits, 0, Math.min(hardwareAddress.length, BYTES_IN_64BITS));
+          final ByteBuffer byteBuffer = ByteBuffer.wrap(extendedTo64bits);
+          baseHandle = byteBuffer.getLong();
+        } else {
+          baseHandle = new SecureRandom().nextLong();
+        }
       } else {
         baseHandle = new SecureRandom().nextLong();
       }
