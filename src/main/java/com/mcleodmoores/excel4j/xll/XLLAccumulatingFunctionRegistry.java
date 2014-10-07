@@ -19,7 +19,7 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   /**
    * Native accessed data structure (public fields for speed).
    */
-  public static class LowLevelEntry {
+  public class LowLevelEntry {
     // CHECKSTYLE:OFF
     public String _dllPath;
     public String _functionExportName;
