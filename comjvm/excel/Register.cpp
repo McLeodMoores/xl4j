@@ -76,11 +76,11 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 		TRACE ("Number of entries was %d", size);
 		for (int i = 0; i < size; i++) {
 			long gArrayRef = helper->Argument ();
-			long entryObj = helper->GetObjectArrayElement (gArrayRef, helper->IntegerConstant (i));
+			long entryObj = helper->GetObjectArrayElement (gArrayRef, (long) i);
 			TCHAR *lowLevelEntryName = TEXT ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry");
 			long entryCls = helper->FindClass (lowLevelEntryName);
 			// queue up the sequence to extract global refs for each String field + pjchar references
-			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_dllPath"), TEXT ("Ljava/lang/String;"));
+			extractField (helper, JTYPE_INT, entryCls, entryObj, TEXT ("_exportNumber"), TEXT ("I"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionExportName"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionSignature"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionWorksheetName"), TEXT ("Ljava/lang/String;"));
@@ -101,7 +101,7 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 
 			helper->Execute (1, args, 12, entryResults);
 			// pull out all the fields from the results
-			bstr_t dllPath = entryResults[0].bstrVal;
+			int exportNumber = entryResults[0].intVal;
 			bstr_t functionExportName = entryResults[1].bstrVal;
 			bstr_t functionSignature = entryResults[2].bstrVal;
 			bstr_t worksheetName = entryResults[3].bstrVal;
@@ -130,9 +130,9 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 			for (int m = 0; m < argsHelpSz; m++) {
 				argsHelp[m] = argsHelpArrResults[m].bstrVal;
 			}
-			registerFunction (xDLL, functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz, argsHelp);
-			delete argsHelp;
-			delete argsHelpArrResults;
+			registerFunction (xDLL, exportNumber, functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz, argsHelp);
+			delete [] argsHelp;
+			delete [] argsHelpArrResults;
 		}
 		delete helper;
 	}
@@ -141,10 +141,10 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 	}
 }
 
-void COMJVM_EXCEL_API Register::registerFunction (XLOPER12 xDll, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
+void COMJVM_EXCEL_API Register::registerFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
 	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp) {
-	TRACE ("functionExportName=%s\nfunctionSignature=%s\nworksheetName=%s\nargumentNames=%s\nfunctionType=%d\nfunctionCategory=%s\nacceleratorKey=%s\nhelpTopic=%s\ndescription=%s\nargsHelpSz=%d",
-		functionExportName, functionSignature, worksheetName, argumentNames, functionType, functionCategory, acceleratorKey, helpTopic, description, argsHelpSz);
+	TRACE ("functionExportNumber=%d,functionExportName=%s\nfunctionSignature=%s\nworksheetName=%s\nargumentNames=%s\nfunctionType=%d\nfunctionCategory=%s\nacceleratorKey=%s\nhelpTopic=%s\ndescription=%s\nargsHelpSz=%d",
+		functionExportNumber, (wchar_t *)functionExportName, (wchar_t *)functionSignature, (wchar_t *)worksheetName, (wchar_t *)argumentNames, (wchar_t *)functionType, (wchar_t *)functionCategory, (wchar_t *)acceleratorKey, (wchar_t *)helpTopic, (wchar_t *)description, (wchar_t *)argsHelpSz);
 	LPXLOPER12 *args = new LPXLOPER12[10 + argsHelpSz];
 	args[0] = (LPXLOPER12)&xDll;
 	args[1] = (LPXLOPER12)TempStr12 (functionExportName);
@@ -159,6 +159,7 @@ void COMJVM_EXCEL_API Register::registerFunction (XLOPER12 xDll, bstr_t function
 	for (int i = 0; i < argsHelpSz; i++) {
 		args[10 + i] = (LPXLOPER12)TempStr12 (argsHelp[i]);
 	}
+	delete [] args;
 	//Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
 }
 

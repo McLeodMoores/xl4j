@@ -962,9 +962,6 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				}
 				case JniOperation::jni_GetStringChars
 					: {
-					if (pEnv->ExceptionCheck ()) {
-						TRACE ("Exception raised");
-					}
 					jstring str = __NEXT_PARAM.get_jstring ();
 					__NEXT_REF_PARAM (jboolean, isCopy);
 					TRACE ("jni_GetStringChars(%p)", str);
