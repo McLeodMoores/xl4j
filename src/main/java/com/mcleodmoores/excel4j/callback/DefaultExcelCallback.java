@@ -63,7 +63,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
     _rawCallback.xlfRegister(dllPath, exportName, signature, functionName, argumentNames, 
-                             functionTypeInt, functionCategory, null, helpTopic, description, argsHelp);
+                             functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
   
   private String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
