@@ -72,7 +72,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       if (argumentAnnotations[i] != null && !argumentAnnotations[i].description().isEmpty()) {
         results[i] = argumentAnnotations[i].description();
       } else {
-        results[i] = "";
+        results[i] = null;
       }
     }
     return results;
@@ -82,7 +82,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     if (functionAnnotation != null && !functionAnnotation.description().isEmpty()) {
       return functionAnnotation.description();
     } else {
-      return "";
+      return null;
     }
   }
   
@@ -90,7 +90,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     if (functionAnnotation != null && !functionAnnotation.helpTopic().isEmpty()) {
       return functionAnnotation.helpTopic();
     } else {
-      return "";
+      return null;
     }
   }
   private String buildFunctionCategory(final XLFunction functionAnnotation, final MethodInvoker methodInvoker) {

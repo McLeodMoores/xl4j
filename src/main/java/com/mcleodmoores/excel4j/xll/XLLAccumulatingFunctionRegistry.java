@@ -51,9 +51,9 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     entry._argumentNames = argumentNames;
     entry._functionType = functionType;
     entry._functionCategory = functionCategory;
-    entry._acceleratorKey = acceleratorKey;
-    entry._helpTopic = helpTopic;
-    entry._description = description;
+    entry._acceleratorKey = acceleratorKey == null ? "" : acceleratorKey;
+    entry._helpTopic = helpTopic == null ? "" : helpTopic;
+    entry._description = description == null ? "" : description;
     entry._argsHelp = argsHelp;
     _entries.add(entry);
     s_logger.info("just added entry to entries table");
