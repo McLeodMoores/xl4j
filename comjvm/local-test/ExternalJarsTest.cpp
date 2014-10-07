@@ -75,20 +75,17 @@ namespace localtest {
 		}
 
 		TEST_METHOD (CreateXLNumberAndReadValue) {
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, m_pJvm->CreateJni (&pJni));
-			JniSequenceHelper *pHelper = new JniSequenceHelper (pJni);
+			JniSequenceHelper *pHelper = new JniSequenceHelper (m_pJvm);
 			long lDoubleRef = pHelper->DoubleConstant (7.6);
 			long lXLNumberRef = pHelper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/excel4j/values/XLNumber"), TEXT ("of"), TEXT ("(D)Lcom/mcleodmoores/excel4j/values/XLNumber;"), 1, lDoubleRef);
 			long lIntegerRef = pHelper->NewObject (TEXT ("java/lang/Integer"), TEXT ("(I)V"), 1, pHelper->IntegerConstant (6));
 			long lValueRef = pHelper->CallMethod (JTYPE_DOUBLE, lXLNumberRef, pHelper->GetMethodID (TEXT ("com/mcleodmoores/excel4j/values/XLNumber"), TEXT ("getValue"), TEXT ("()D")), 0);
-			pJni->Result (lValueRef);
+			pHelper->Result (lValueRef);
 			VARIANT aResults[1];
-			Assert::AreEqual (S_OK, Debug::print_HRESULT (pJni->Execute (0, NULL, 1, aResults)));
+			pHelper->Execute (0, NULL, 1, aResults);
 			Assert::AreEqual ((short)VT_R8, (short)aResults[0].vt);
 			Assert::AreEqual (7.6, aResults[0].dblVal);
 			delete pHelper;
-			pJni->Release ();
 		}
 };
 

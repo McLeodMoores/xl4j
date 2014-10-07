@@ -88,14 +88,14 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		pvValue->vt = VT_I4;
 		pvValue->intVal = v._jvalue.i;
 		break;
-	case t_jstring:  // REVIEW: I think this is okay...
-		pvValue->vt = VT_BSTR;
-		pvValue->bstrVal = SysAllocString ((OLECHAR *)v._jvalue.l);
-		if (!pvValue->bstrVal) {
-			pvValue->vt = VT_NULL;
-			_com_raise_error (E_OUTOFMEMORY);
-		}
-		break;
+	//case t_jstring:  // REVIEW: I think this is okay...
+	//	pvValue->vt = VT_BSTR;
+	//	pvValue->bstrVal = SysAllocString ((OLECHAR *)v._jvalue.l);
+	//	if (!pvValue->bstrVal) {
+	//		pvValue->vt = VT_NULL;
+	//		_com_raise_error (E_OUTOFMEMORY);
+	//	}
+	//	break;
 	case t_jboolean:
 		pvValue->vt = VT_BOOL;
 		pvValue->boolVal = (v._jvalue.z == JNI_TRUE) ? VARIANT_TRUE : VARIANT_FALSE;
@@ -223,6 +223,7 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 		memcpy (pArrayData, v._voidBuffer._pvoid, v._voidBuffer._size);
 		SafeArrayUnaccessData (pvValue->parray);
 	}
+	case t_jstring:
 	case t_jclass:
 	case t_jobject:
 	case t_jmethodID:
@@ -366,6 +367,8 @@ jobjectRefType CJniValue::get_jobjectRefType_t () const {
 jstring CJniValue::get_jstring () const {
 	switch (type) {
 	case t_jstring:
+		return (jstring)v._jvalue.l;
+	case t_jobject:
 		return (jstring)v._jvalue.l;
 	}
 	_com_raise_error (E_INVALIDARG);
@@ -663,6 +666,7 @@ jlong CJniValue::get_voidBufferSize () const {
 
 jarray CJniValue::get_jarray () const {
 	switch (type) {
+	case t_jobject:
 	case t_jobjectArray:
 	case t_jbooleanArray:
 	case t_jbyteArray:

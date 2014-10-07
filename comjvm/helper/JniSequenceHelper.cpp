@@ -4,16 +4,22 @@
 #include "JniSequenceHelper.h"
 
 /// <summary>Constructor for the helper</summary>
-/// <param name="pJni">Pointer to an IJniSequence implementation</param>
+/// <param name="pJni">Pointer to an IJvm implementation</param>
 /// <returns>an instance of the helper</returns>
-JniSequenceHelper::JniSequenceHelper (IJniSequence *pJni) {
-	this->pJni = pJni;
+JniSequenceHelper::JniSequenceHelper (IJvm *pJvm) {
+	this->pJvm = pJvm;
+	HRESULT result = pJvm->CreateJni (&pJni);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	pJvm->AddRef ();
 	pJni->AddRef ();
 }
 
 /// <summary>Destructor for the helper</summary>
 JniSequenceHelper::~JniSequenceHelper () {
 	pJni->Release ();
+	pJvm->Release ();
 }
 
 /// <summary>Create a reference to a string constant</summary>
@@ -130,6 +136,11 @@ void JniSequenceHelper::Result (long resultRef) {
 /// <param name="aResults">Array of VARIANT ready to receive results</param>
 void JniSequenceHelper::Execute (long cArgs, VARIANT *aArgs, long cResults, VARIANT *aResults) {
 	HRESULT result = pJni->Execute (cArgs, aArgs, cResults, aResults);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	pJni->Release ();
+	result = pJvm->CreateJni (&pJni);
 	if (FAILED (result)) {
 		_com_raise_error (result);
 	}

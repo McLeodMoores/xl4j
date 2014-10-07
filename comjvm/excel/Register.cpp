@@ -35,7 +35,6 @@ COMJVM_EXCEL_API Register::Register () {
 	}
 
 	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
-
 	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
 	if (FAILED (hr)) {
 		_com_error err (hr);
@@ -52,31 +51,29 @@ COMJVM_EXCEL_API Register::Register () {
 		TRACE ("Could not release template");
 		_com_raise_error (hr);
 	}
-	IJniSequence *pJni;
-	hr = m_pJvm->CreateJni (&pJni);
-	if (FAILED (hr)) {
-		TRACE("Could not create JNI sequence");
-		_com_raise_error (hr);
-	}
-	m_pJni = pJni;
 }
 
 void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
-	try {
-		JniSequenceHelper *helper = new JniSequenceHelper (m_pJni);
+	try { 
+		JniSequenceHelper *helper = new JniSequenceHelper (m_pJvm);
 		long excel = helper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/excel4j/ExcelFactory"), TEXT ("getInstance"), TEXT ("()Lcom/mcleodmoores/excel4j/Excel;"), 0);
 		long nativeExcelClsId = helper->FindClass (TEXT ("com/mcleodmoores/excel4j/Excel"));
+		long excelCallback = helper->CallMethod (JTYPE_OBJECT, excel, helper->GetMethodID (nativeExcelClsId, TEXT ("getExcelCallback"), TEXT ("()Lcom/mcleodmoores/excel4j/callback/ExcelCallback;")), 0);
+		long functionRegistry = helper->CallMethod (JTYPE_OBJECT, excel, helper->GetMethodID (nativeExcelClsId, TEXT ("getFunctionRegistry"), TEXT ("()Lcom/mcleodmoores/excel4j/FunctionRegistry;")), 0);
+		long functionRegistryClsId = helper->FindClass (TEXT ("com/mcleodmoores/excel4j/FunctionRegistry"));
+		helper->CallMethod (JTYPE_VOID, functionRegistry, helper->GetMethodID (functionRegistryClsId, TEXT ("registerFunctions"), TEXT ("(Lcom/mcleodmoores/excel4j/callback/ExcelCallback;)V")), 1, excelCallback);
 		long lowLevelExcelCallback = helper->CallMethod (JTYPE_OBJECT, excel, helper->GetMethodID (nativeExcelClsId, TEXT ("getLowLevelExcelCallback"), TEXT ("()Lcom/mcleodmoores/excel4j/lowlevel/LowLevelExcelCallback;")), 0);
 		long xllAccumulatingFunctionRegistryClsId = helper->FindClass (TEXT ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry"));
-		long registerArr = helper->CallMethod (JTYPE_OBJECT, lowLevelExcelCallback, helper->GetMethodID (xllAccumulatingFunctionRegistryClsId, TEXT ("getEntries"), TEXT ("()L[com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;")), 0);
+		long registerArr = helper->CallMethod (JTYPE_OBJECT, lowLevelExcelCallback, helper->GetMethodID (xllAccumulatingFunctionRegistryClsId, TEXT ("getEntries"), TEXT ("()[Lcom/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;")), 0);
 		long gRegisterArr = helper->NewGlobalRef (registerArr);
-		long arrSize = helper->GetArrayLength (gRegisterArr);
+		long arrSize = helper->GetArrayLength (registerArr);
 		helper->Result (gRegisterArr);
 		helper->Result (arrSize);
 		VARIANT results[2];
 		helper->Execute (0, NULL, 2, results);
 		int size = results[1].intVal;
-
+		
+		TRACE ("Number of entries was %d", size);
 		for (int i = 0; i < size; i++) {
 			long gArrayRef = helper->Argument ();
 			long entryObj = helper->GetObjectArrayElement (gArrayRef, helper->IntegerConstant (i));
@@ -86,7 +83,7 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_dllPath"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionExportName"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionSignature"), TEXT ("Ljava/lang/String;"));
-			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_worksheetName"), TEXT ("Ljava/lang/String;"));
+			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionWorksheetName"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_argumentNames"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_INT, entryCls, entryObj, TEXT ("_functionType"), TEXT ("I"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_functionCategory"), TEXT ("Ljava/lang/String;"));
@@ -94,13 +91,14 @@ void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_helpTopic"), TEXT ("Ljava/lang/String;"));
 			extractField (helper, JTYPE_OBJECT, entryCls, entryObj, TEXT ("_description"), TEXT ("Ljava/lang/String;"));
 			// queue up request for global ref of argsHelp + argsHelp.length
-			long argsHelpArr = helper->GetField (JTYPE_OBJECT, entryObj, helper->GetFieldID (lowLevelEntryName, TEXT ("_argsHelp"), TEXT ("L[java/lang/String;")));
+			long argsHelpArr = helper->GetField (JTYPE_OBJECT, entryObj, helper->GetFieldID (lowLevelEntryName, TEXT ("_argsHelp"), TEXT ("[Ljava/lang/String;")));
 			long gArgsHelpArr = helper->NewGlobalRef (argsHelpArr);
 			helper->Result (gArgsHelpArr);
 			long argsHelpArrLength = helper->GetArrayLength (argsHelpArr);
 			helper->Result (argsHelpArrLength);
 			VARIANT entryResults[12];
 			VARIANT *args = results; // alias to the outer results, we only want the first value passed in, so we pass length of 1.
+
 			helper->Execute (1, args, 12, entryResults);
 			// pull out all the fields from the results
 			bstr_t dllPath = entryResults[0].bstrVal;
@@ -177,7 +175,6 @@ void COMJVM_EXCEL_API Register::extractField (JniSequenceHelper *helper, long fi
 }
 
 COMJVM_EXCEL_API Register::~Register () {
-	m_pJni->Release ();
 	m_pJvm->Release ();
 	m_pConnector->Release ();
 }

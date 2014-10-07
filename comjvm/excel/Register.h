@@ -10,7 +10,6 @@
 
 class COMJVM_EXCEL_API Register {
 private:
-	IJniSequence *m_pJni;
 	IJvm *m_pJvm;
 	IJvmConnector *m_pConnector;
 	void registerFunction (XLOPER12 xDll, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,

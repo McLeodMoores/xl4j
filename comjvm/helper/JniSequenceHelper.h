@@ -14,8 +14,9 @@
 class COMJVM_HELPER_API JniSequenceHelper {
 private:
 	IJniSequence *pJni;
+	IJvm *pJvm;
 public:
-	JniSequenceHelper (IJniSequence *pJni);
+	JniSequenceHelper (IJvm *pJvm);
 	~JniSequenceHelper ();
 
 	long StringConstant (TCHAR *str);

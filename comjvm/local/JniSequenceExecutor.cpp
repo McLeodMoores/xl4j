@@ -207,6 +207,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					TRACE ("jni_PopLocalFrame(%p)", frame);
 					jobject previousFrame = pEnv->PopLocalFrame (frame);
 					__NEXT_RESULT.put_jobject (frame);
+					break;
 				}
 				case JniOperation::jni_NewGlobalRef
 					: {
@@ -364,12 +365,81 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						case JTYPE_OBJECT:	{
 							TRACE ("jni_CallMethod(JTYPE_OBJECT, %p, %p, %d, ...)", object, methodId, size);
 							jobject result = pEnv->CallObjectMethodA (object, methodId, arguments);
+							TRACE ("jni_CallStaticMethod result was %p", result);
+							if (!result) {
+								if (pEnv->ExceptionCheck ()) {
+									jthrowable exception = pEnv->ExceptionOccurred ();
+									pEnv->ExceptionClear ();
+									jclass throwable_class = pEnv->FindClass ("java/lang/Throwable");
+									jmethodID mid_throwable_getCause =
+										pEnv->GetMethodID (throwable_class,
+										"getCause",
+										"()Ljava/lang/Throwable;");
+									jmethodID mid_throwable_getStackTrace =
+										pEnv->GetMethodID (throwable_class,
+										"getStackTrace",
+										"()[Ljava/lang/StackTraceElement;");
+									jmethodID mid_throwable_toString =
+										pEnv->GetMethodID (throwable_class,
+										"toString",
+										"()Ljava/lang/String;");
+
+									jclass frame_class = pEnv->FindClass ("java/lang/StackTraceElement");
+									jmethodID mid_frame_toString =
+										pEnv->GetMethodID (frame_class,
+										"toString",
+										"()Ljava/lang/String;");
+									std::wstring error_msg; // Could use ostringstream instead.
+
+									append_exception_trace_messages (*pEnv,
+										error_msg,
+										exception,
+										mid_throwable_getCause,
+										mid_throwable_getStackTrace,
+										mid_throwable_toString,
+										mid_frame_toString);
+									TRACE ("Exception occurred %s", error_msg.c_str ());
+								}
+							}
 							__NEXT_RESULT.put_jobject (result);
 							break;
 						}
 						case JTYPE_VOID:	{
 							TRACE ("jni_CallMethod(JTYPE_VOID, %p, %p, %d, ...)", object, methodId, size);
 							pEnv->CallVoidMethodA (object, methodId, arguments);
+							if (pEnv->ExceptionCheck ()) {
+								jthrowable exception = pEnv->ExceptionOccurred ();
+								pEnv->ExceptionClear ();
+								jclass throwable_class = pEnv->FindClass ("java/lang/Throwable");
+								jmethodID mid_throwable_getCause =
+									pEnv->GetMethodID (throwable_class,
+									"getCause",
+									"()Ljava/lang/Throwable;");
+								jmethodID mid_throwable_getStackTrace =
+									pEnv->GetMethodID (throwable_class,
+									"getStackTrace",
+									"()[Ljava/lang/StackTraceElement;");
+								jmethodID mid_throwable_toString =
+									pEnv->GetMethodID (throwable_class,
+									"toString",
+									"()Ljava/lang/String;");
+
+								jclass frame_class = pEnv->FindClass ("java/lang/StackTraceElement");
+								jmethodID mid_frame_toString =
+									pEnv->GetMethodID (frame_class,
+									"toString",
+									"()Ljava/lang/String;");
+								std::wstring error_msg; // Could use ostringstream instead.
+
+								append_exception_trace_messages (*pEnv,
+									error_msg,
+									exception,
+									mid_throwable_getCause,
+									mid_throwable_getStackTrace,
+									mid_throwable_toString,
+									mid_frame_toString);
+								TRACE ("Exception occurred %s", error_msg.c_str ());
+							}
 							__NEXT_RESULT.put_nothing();
 							break;
 						}
@@ -711,18 +781,6 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 										mid_throwable_toString,
 										mid_frame_toString);
 									TRACE ("Exception occurred %s", error_msg.c_str());
-									/*jclass throwable_class = pEnv->FindClass ("java/lang/Throwable");
-									jmethodID getCause_ID =
-										pEnv->GetMethodID (throwable_class,
-										"getCause",
-										"()Ljava/lang/Throwable;");
-									jobject cause = pEnv->CallObjectMethod (exception, getCause_ID);
-									jmethodID toString_ID = pEnv->GetMethodID (throwable_class, "toString", "()Ljava/lang/String;");
-									jstring message = (jstring) pEnv->CallObjectMethod (cause, toString_ID);
-									jboolean isCopy;
-									const jchar *msg = pEnv->GetStringChars (message, &isCopy);
-									TRACE ("jni_CallStaticMethod exception raised, calling toString %s", msg);
-									pEnv->ReleaseStringChars (message, msg);*/
 								}
 							}
 							__NEXT_RESULT.put_jobject (result);
@@ -904,6 +962,9 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				}
 				case JniOperation::jni_GetStringChars
 					: {
+					if (pEnv->ExceptionCheck ()) {
+						TRACE ("Exception raised");
+					}
 					jstring str = __NEXT_PARAM.get_jstring ();
 					__NEXT_REF_PARAM (jboolean, isCopy);
 					TRACE ("jni_GetStringChars(%p)", str);
@@ -955,6 +1016,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					jarray array = __NEXT_PARAM.get_jarray ();
 					TRACE ("jni_GetArrayLength(%p)", array);
 					jsize size = pEnv->GetArrayLength (array);
+					TRACE ("array length was %d", size);
 					__NEXT_RESULT.put_jsize (size);
 					break;
 				}
@@ -1621,6 +1683,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 	return m_hRunResult;
 }
 
+// This code is from Stack Overflow, modified to use wstring.
 void CJniSequenceExecutor::append_exception_trace_messages (
 	JNIEnv&      a_jni_env,
 	std::wstring& a_error_msg,

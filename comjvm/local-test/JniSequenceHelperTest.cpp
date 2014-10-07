@@ -39,9 +39,7 @@ namespace localtest {
 		}
 
 		TEST_METHOD (AddIntToArrayListTwiceAndGetSize) {
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, m_pJvm->CreateJni (&pJni));
-			JniSequenceHelper *pHelper = new JniSequenceHelper (pJni);
+			JniSequenceHelper *pHelper = new JniSequenceHelper (m_pJvm);
 			long lIntegerRef = pHelper->NewObject (TEXT ("java/lang/Integer"), TEXT ("(I)V"), 1, pHelper->IntegerConstant (6));
 			long fake[] = { 0 };
 			long lArrayList = pHelper->NewObject (TEXT ("java/util/ArrayList"), TEXT ("()V"), 0, fake);
@@ -53,13 +51,12 @@ namespace localtest {
 				1, lIntegerRef);
 			long lSizeRef = pHelper->CallMethod (JTYPE_INT, lArrayList,
 				pHelper->GetMethodID (TEXT ("java/util/ArrayList"), TEXT ("size"), TEXT ("()I")), 0, fake);
-			pJni->Result (lSizeRef);
+			pHelper->Result (lSizeRef);
 			VARIANT aResults[1];
-			Assert::AreEqual (S_OK, Debug::print_HRESULT (pJni->Execute (0, NULL, 1, aResults)));
+			pHelper->Execute (0, NULL, 1, aResults);
 			Assert::AreEqual ((short)VT_I4, (short)aResults[0].vt);
 			Assert::AreEqual (2, aResults[0].intVal);
 			delete pHelper;
-			pJni->Release ();
 		}
 
 		// new Integer(x) 
@@ -72,11 +69,8 @@ namespace localtest {
 		//  return l.size();
 		//  x = 7;  assert result == 2;
 		TEST_METHOD (NewArrayListAddX) {
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, m_pJvm->CreateJni (&pJni));
-			JniSequenceHelper *pHelper = new JniSequenceHelper (pJni);
-			long lParamRef;
-			Assert::AreEqual (S_OK, pJni->Argument (&lParamRef));
+			JniSequenceHelper *pHelper = new JniSequenceHelper (m_pJvm);
+			long lParamRef = pHelper->Argument ();
 			long lIntegerRef = pHelper->NewObject (TEXT ("java/lang/Integer"), TEXT ("(I)V"), 1, lParamRef);
 			long fake[] = { 0 };
 			long lArrayList = pHelper->NewObject (TEXT ("java/util/ArrayList"), TEXT ("()V"), 0, fake);
@@ -88,28 +82,23 @@ namespace localtest {
 				1, lIntegerRef);
 			long lSizeRef = pHelper->CallMethod (JTYPE_INT, lArrayList,
 				pHelper->GetMethodID (TEXT ("java/util/ArrayList"), TEXT ("size"), TEXT ("()I")), 0, fake);
-			pJni->Result (lSizeRef);
+			pHelper->Result (lSizeRef);
 			VARIANT aResults[1];
 			VARIANT aArgs[1];
 			aArgs[0].intVal = 7;
 			aArgs[0].vt = VT_I4;
-			Assert::AreEqual (S_OK, Debug::print_HRESULT (pJni->Execute (1, aArgs, 1, aResults)));
+			pHelper->Execute (1, aArgs, 1, aResults);
 			Assert::AreEqual ((short) VT_I4, (short) aResults[0].vt);
 			Assert::AreEqual (2, aResults[0].intVal);
 			TRACE ("Finished NewArrayListAddX Test phase, releasing resources.");
 			delete pHelper;
-			pJni->Release ();
 			TRACE ("Finished NewArrayListAddX");
 		}
 
 		TEST_METHOD (MultiParamTest) {
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, m_pJvm->CreateJni (&pJni));
-			JniSequenceHelper *pHelper = new JniSequenceHelper (pJni);
-			long lParam1Ref;
-			Assert::AreEqual (S_OK, pJni->Argument (&lParam1Ref));
-			long lParam2Ref;
-			Assert::AreEqual (S_OK, pJni->Argument (&lParam2Ref));
+			JniSequenceHelper *pHelper = new JniSequenceHelper (m_pJvm);
+			long lParam1Ref = pHelper->Argument ();
+			long lParam2Ref = pHelper->Argument ();
 			long hmRef = pHelper->NewObject ( TEXT("java/util/HashMap"), TEXT("(IF)V"), 2, lParam1Ref, lParam2Ref);
 			//pHelper->CallMethod (JTYPE_OBJECT, hmRef, pHelper->GetMethodID(TEXT("java/lang/HashMap"), TEXT("put"), TEXT("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")), 2, lParam1Ref, lParam2Ref);
 			VARIANT aArgs[2];
@@ -117,9 +106,8 @@ namespace localtest {
 			aArgs[0].vt = VT_I4;
 			aArgs[1].fltVal = 0.66f;
 			aArgs[1].vt = VT_R4;
-			Assert::AreEqual (S_OK, Debug::print_HRESULT (pJni->Execute (2, aArgs, 0, NULL)));
+			pHelper->Execute (2, aArgs, 0, NULL);
 			delete pHelper;
-			pJni->Release ();
 			TRACE ("Finished MultiParamTest");
 		}
 
