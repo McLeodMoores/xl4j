@@ -1,12 +1,10 @@
 package com.mcleodmoores.excel4j.xll;
 
-import java.io.File;
-
 import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
+import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.FileAppender;
 
@@ -41,11 +39,11 @@ public class NativeExcel implements Excel {
    */
   public NativeExcel() {
     Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    FileAppender fileAppender = new FileAppender();
+    FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
     fileAppender.setContext((Context) LoggerFactory.getILoggerFactory());
     fileAppender.setName("timestamp");
     // set the file name
-    fileAppender.setFile("log" + System.currentTimeMillis()+".log");
+    fileAppender.setFile("log" + System.currentTimeMillis() + ".log");
 
     PatternLayoutEncoder encoder = new PatternLayoutEncoder();
     encoder.setContext((Context) LoggerFactory.getILoggerFactory());
@@ -62,14 +60,7 @@ public class NativeExcel implements Excel {
     _functionRegistry = new FunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     _rawCallback = new XLLAccumulatingFunctionRegistry();
-    _excelCallback = new DefaultExcelCallback(getDLLPath(), _rawCallback);
-  }
-  
-  /**
-   * @return the DLL path
-   */
-  private File getDLLPath() {
-    return new File("NOEYEDDEAR");
+    _excelCallback = new DefaultExcelCallback(_rawCallback);
   }
   
   @Override

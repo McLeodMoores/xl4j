@@ -10,7 +10,7 @@ package com.mcleodmoores.excel4j.lowlevel;
 public interface LowLevelExcelCallback {
   /**
    * Excel callback interface to register a function.
-   * @param dllPath  the path the DLL in the file system, not null
+   * @param exportNumber  the export number allocated to this function
    * @param functionExportName  the name of the C export to handle this function call, not null
    * @param functionSignature  a string representing the functions return type, parameter types and calling permission, not null
    * @param functionWorksheetName  the name of the function as it is to appear on the worksheet, case sensitive, not null
@@ -24,7 +24,7 @@ public interface LowLevelExcelCallback {
    * @return the function registration number
    */
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters.  Take it up with Microsoft.
-  int xlfRegister(final String dllPath,
+  int xlfRegister(final int exportNumber,
                   final String functionExportName,
                   final String functionSignature,
                   final String functionWorksheetName,

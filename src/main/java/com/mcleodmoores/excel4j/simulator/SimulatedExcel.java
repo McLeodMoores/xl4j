@@ -1,7 +1,5 @@
 package com.mcleodmoores.excel4j.simulator;
 
-import java.io.File;
-
 import com.mcleodmoores.excel4j.DefaultExcelFunctionCallHandler;
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
@@ -38,16 +36,9 @@ public class SimulatedExcel implements Excel {
     _functionRegistry = new FunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     _rawCallback = new MockExcelFunctionRegistry();
-    _excelCallback = new DefaultExcelCallback(getDLLPath(), _rawCallback);
+    _excelCallback = new DefaultExcelCallback(_rawCallback);
   }
   
-  /**
-   * @return the DLL path
-   */
-  private File getDLLPath() {
-    return new File("NOEYEDDEAR");
-  }
-
   @Override
   public InvokerFactory getInvokerFactory() {
     return _invokerFactory;
