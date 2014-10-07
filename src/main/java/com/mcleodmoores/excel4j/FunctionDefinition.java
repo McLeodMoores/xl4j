@@ -55,4 +55,11 @@ public final class FunctionDefinition {
   public String getExportName() {
     return ExportUtils.buildExportName(_exportNumber);
   }
+  
+  /**
+   * @return the export number
+   */
+  public int getExportNumber() {
+    return _exportNumber;
+  }
 }

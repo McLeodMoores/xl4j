@@ -15,13 +15,13 @@ import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
  * 
  */
 public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
-  private static final Logger s_logger = LoggerFactory.getLogger(XLLAccumulatingFunctionRegistry.class);
+  private static Logger s_logger = LoggerFactory.getLogger(XLLAccumulatingFunctionRegistry.class);
   /**
    * Native accessed data structure (public fields for speed).
    */
   public class LowLevelEntry {
     // CHECKSTYLE:OFF
-    public String _dllPath;
+    public int _exportNumber;
     public String _functionExportName;
     public String _functionSignature;
     public String _functionWorksheetName;
@@ -39,12 +39,12 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   
   @Override
   // CHECKSTYLE:OFF can't control signature.
-  public int xlfRegister(final String dllPath, final String functionExportName, final String functionSignature, 
+  public int xlfRegister(final int exportNumber, final String functionExportName, final String functionSignature, 
       final String functionWorksheetName, final String argumentNames, final int functionType, 
       final String functionCategory, final String acceleratorKey, final String helpTopic, 
       final String description, final String... argsHelp) {
     LowLevelEntry entry = new LowLevelEntry();
-    entry._dllPath = dllPath;
+    entry._exportNumber = exportNumber;
     entry._functionExportName = functionExportName;
     entry._functionSignature = functionSignature;
     entry._functionWorksheetName = functionWorksheetName;

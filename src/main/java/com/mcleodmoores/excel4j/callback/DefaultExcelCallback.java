@@ -3,8 +3,6 @@
  */
 package com.mcleodmoores.excel4j.callback;
 
-import java.io.File;
-
 import com.mcleodmoores.excel4j.FunctionDefinition;
 import com.mcleodmoores.excel4j.FunctionMetadata;
 import com.mcleodmoores.excel4j.FunctionType;
@@ -22,16 +20,13 @@ import com.mcleodmoores.excel4j.values.XLMultiReference;
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
  */
 public class DefaultExcelCallback implements ExcelCallback {
-  private File _dllPath;
   private LowLevelExcelCallback _rawCallback;
 
   /**
    * Create a callback adapter.
-   * @param dllPath  the path of the DLL implementing this XLL
    * @param rawCallback  the raw callback interface to call through to
    */
-  public DefaultExcelCallback(final File dllPath, final LowLevelExcelCallback rawCallback) {
-    _dllPath = dllPath;
+  public DefaultExcelCallback(final LowLevelExcelCallback rawCallback) {
     _rawCallback = rawCallback;
   }
   
@@ -52,7 +47,6 @@ public class DefaultExcelCallback implements ExcelCallback {
     XLNamespace namespaceAnnotation = functionMetadata.getNamespace();
     XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
     XLArgument[] argumentAnnotations = functionMetadata.getArguments();
-    final String dllPath = _dllPath.getPath();
     final String exportName = functionDefinition.getExportName();
     final String functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
     final String argumentNames = buildArgNames(argumentAnnotations);
@@ -62,7 +56,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String helpTopic = buildHelpTopic(functionAnnotation);
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
-    _rawCallback.xlfRegister(dllPath, exportName, signature, functionName, argumentNames, 
+    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, signature, functionName, argumentNames, 
                              functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
   

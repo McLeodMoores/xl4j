@@ -24,7 +24,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
   public int xlfRegister(
-      final String dllPath, 
+      final int exportNumber, 
       final String functionExportName,
       final String functionSignature,
       final String functionWorksheetName,
