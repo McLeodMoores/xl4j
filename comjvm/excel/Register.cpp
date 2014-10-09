@@ -39,14 +39,14 @@ COMJVM_EXCEL_API Register::Register () {
 	if (FAILED (hr)) {
 		_com_error err (hr);
 		LPCTSTR errMsg = err.ErrorMessage ();
-		TRACE("could not create JVM: %s", errMsg);
+		TRACE ("could not create JVM: %s", errMsg);
 		_com_raise_error (hr);
 	}
-	TRACE("Created JVM!");
+	TRACE ("Created JVM!");
 	m_pConnector->Unlock ();
 	TRACE ("Unlocked connector");
 
-	hr = pTemplate->Release (); 
+	hr = pTemplate->Release ();
 	if (FAILED (hr)) {
 		TRACE ("Could not release template");
 		_com_raise_error (hr);
@@ -159,8 +159,9 @@ void COMJVM_EXCEL_API Register::registerFunction (XLOPER12 xDll, int functionExp
 	for (int i = 0; i < argsHelpSz; i++) {
 		args[10 + i] = (LPXLOPER12)TempStr12 (argsHelp[i]);
 	}
-	delete [] args;
-	//Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
+	m_numArgsForExport[functionExportNumber] = argsHelpSz; // num args
+	Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
+	delete[] args;
 }
 
 void COMJVM_EXCEL_API Register::extractField (JniSequenceHelper *helper, long fieldType, long entryCls, long entryObj, TCHAR *fieldName, TCHAR *signature) {

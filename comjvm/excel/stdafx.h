@@ -19,6 +19,7 @@
 // Standard header files:
 #include <assert.h>
 #include <tchar.h>
+#include <vector>
 
 // Headers for CppUnitTest:
 #include "CppUnitTest.h"

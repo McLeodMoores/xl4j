@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Register.h"
 //
 // Later, the instance handle is required to create dialog boxes.
 // g_hInst holds the instance handle passed in by DllMain so that it is
@@ -13,7 +14,7 @@
 HWND g_hWndMain = NULL;
 HANDLE g_hInst = NULL;
 XCHAR g_szBuffer[20] = L"";
-
+Register *g_Register = NULL;
 //
 // Syntax of the Register Command:
 //      REGISTER(module_text, procedure, type_text, function_text, 
@@ -715,6 +716,28 @@ __declspec(dllexport) LPXLOPER12 WINAPI Func1 (LPXLOPER12 x)
 	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
 	return(LPXLOPER12)&xResult;
 }
+
+LPXLOPER12 UDF (int exportNumber, ...) {
+	va_list ap;
+	int nArgs = g_Register->get_NumArgs (exportNumber);
+	va_start (ap, exportNumber);
+	for (int i = 0; i < nArgs; i++) {
+		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
+	}
+	va_end (ap);
+}
+
+#define EXPORT(num) __declspec(dllexport) LPXLOPER12 WINAPI UDF_##num (LPXLOPER12 first, ...) { \
+	va_list ap; \
+	va_start (ap, first); \
+	LPXLOPER12 result = UDF (num, first, ap); \
+	va_end (ap); \
+	return result; \
+}
+
+#include "Exports.cpp"
+
+
 
 ///***************************************************************************
 // FuncSum()
