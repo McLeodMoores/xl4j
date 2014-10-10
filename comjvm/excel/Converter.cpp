@@ -752,17 +752,17 @@ long Converter::convertToXLLocalReference (JniSequenceHelper *helper, LPXLOPER12
 LPXLOPER12 Converter::convertFromXLValue (JniSequenceHelper *helper, VARIANT classRef, VARIANT resultRef, std::vector<VARIANT> &inputs) {
 	
 	if (isClassEqual (m_xlStringCls, classRef)) {
-		return convertFromXLString (helper, resultRef, inputs);
+		return convertFromXLString (helper, resultRef);
 	} else if (isClassEqual (m_xlNumberCls, classRef)) {
-		return convertFromXLNumber (helper, resultRef, inputs);
+		return convertFromXLNumber (helper, resultRef);
 	} else if (isClassEqual (m_xlBooleanCls, classRef)) {
-		return convertFromXLBoolean (helper, resultRef, inputs);
+		return convertFromXLBoolean (helper, resultRef);
 	} else if (isClassEqual (m_xlMissingCls, classRef)) {
-		return convertFromXLMissing (helper, resultRef, inputs);
+		return convertFromXLMissing (helper, resultRef);
 	} else if (isClassEqual (m_xlNilCls, classRef)) {
-		return convertFromXLNil (helper, resultRef, inputs);
+		return convertFromXLNil (helper, resultRef);
 	} else if (isClassEqual (m_xlErrorCls, classRef)) {
-		return convertFromXLError (helper, resultRef, inputs);
+		return convertFromXLError (helper, resultRef);
 	} else if (isClassEqual (m_xlArrayCls, classRef)) {
 		return convertFromXLArray (helper, resultRef, inputs);
 	} else if (isClassEqual (m_xlIntegerCls, classRef)) {
