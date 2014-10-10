@@ -748,3 +748,113 @@ long Converter::convertToXLLocalReference (JniSequenceHelper *helper, LPXLOPER12
 	long xlMultiReference = helper->CallStaticMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 1, xlRangeRef);
 	return xlMultiReference;
 }
+
+LPXLOPER12 Converter::convertFromXLValue (JniSequenceHelper *helper, VARIANT classRef, VARIANT resultRef, std::vector<VARIANT> &inputs) {
+	
+	if (isClassEqual (m_xlStringCls, classRef)) {
+		return convertFromXLString (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlNumberCls, classRef)) {
+		return convertFromXLNumber (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlBooleanCls, classRef)) {
+		return convertFromXLBoolean (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlMissingCls, classRef)) {
+		return convertFromXLMissing (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlNilCls, classRef)) {
+		return convertFromXLNil (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlErrorCls, classRef)) {
+		return convertFromXLError (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlArrayCls, classRef)) {
+		return convertFromXLArray (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlIntegerCls, classRef)) {
+		return convertFromXLInteger (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlBigDataCls, classRef)) {
+		return convertFromXLBigData (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlLocalReferenceCls, classRef)) {
+		return convertFromXLLocalReference (helper, resultRef, inputs);
+	} else if (isClassEqual (m_xlMultiReferenceCls, classRef)) {
+		return convertFromXLMultiReference (helper, resultRef, inputs);
+	}
+}
+
+LPXLOPER12 Converter::convertFromXLString (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlStringGetValueMtd);
+	long string = helper->CallMethod (JTYPE_OBJECT, helper->Argument, helper->Argument (), 0);
+	long isCopy;
+	long charsRef = helper->GetStringChars (string, &isCopy);
+	helper->Result (charsRef);
+	helper->ReleaseStringChars (string, charsRef);
+	VARIANT results[1];
+	helper->Execute (2, inputs.data, 1, results);
+	return TempStr12 (results[0].bstrVal);
+}
+
+LPXLOPER12 Converter::convertFromXLNumber (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlNumberGetValueMtd);
+	long value = helper->CallMethod (JTYPE_DOUBLE, helper->Argument (), helper->Argument (), 0);
+	helper->Result (value);
+	VARIANT results[1];
+	helper->Execute (2, inputs.data, 1, results);
+	return TempNum12 (results[0].dblVal);
+}
+
+LPXLOPER12 Converter::convertFromXLBoolean (JniSequenceHelper *helper, VARIANT result) {
+	if (isInstanceEqual (result, m_xlBooleanTrueInstance)) {
+		return TempBool12 (TRUE);
+	}
+	else if (isInstanceEqual (result, m_xlBooleanTrueInstance)) {
+		return TempBool12 (FALSE);
+	}
+	else {
+		return TempErr12 (xlerrNull);
+	}
+}
+
+LPXLOPER12 Converter::convertFromXLMissing (JniSequenceHelper *helper, VARIANT resultRef) {
+	return TempMissing12 ();
+}
+
+LPXLOPER12 Converter::convertFromXLNil (JniSequenceHelper *helper, VARIANT resultRef) {
+	LPXLOPER12 nil = TempMissing12 (); // why is there no TempNil12()?
+	nil->xltype = xltypeNil;
+	return nil;
+}
+LPXLOPER12 Converter::convertFromXLError (JniSequenceHelper *helper, VARIANT result) {
+	if (isInstanceEqual (result, m_xlErrorDiv0Instance)) {
+		return TempErr12 (xlerrDiv0);
+	} else if (isInstanceEqual (result, m_xlErrorNAInstance)) {
+		return TempErr12 (xlerrNA);
+	} else if (isInstanceEqual (result, m_xlErrorNameInstance)) {
+		return TempErr12 (xlerrName);
+	} else if (isInstanceEqual (result, m_xlErrorNullInstance)) {
+		return TempErr12 (xlerrNull);
+	} else if (isInstanceEqual (result, m_xlErrorNumInstance)) {
+		return TempErr12 (xlerrNum);
+	} else if (isInstanceEqual (result, m_xlErrorRefInstance)) {
+		return TempErr12 (xlerrRef);
+	} else if (isInstanceEqual (result, m_xlErrorValueInstance)) {
+		return TempErr12 (xlerrValue);
+	} else {
+		TRACE ("Unknown error code from object %p", result.ullVal);
+		return TempErr12 (xlerrNull);
+	}
+}
+
+LPXLOPER12 Converter::convertFromXLArray (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
+
+}
+LPXLOPER12 Converter::convertFromXLInteger (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
+
+}
+LPXLOPER12 Converter::convertFromXLBigData (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
+
+}
+LPXLOPER12 Converter::convertFromXLLocalReference (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
+
+}
+LPXLOPER12 Converter::convertFromXLMultiReference (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
+
+}

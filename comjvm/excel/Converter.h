@@ -118,6 +118,20 @@ private:
 	long convertToXLArray (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs);
 	long convertToXLLocalReference (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs);
 	long convertToXLRange (JniSequenceHelper *helper, LPXLREF12 arg, std::vector<VARIANT> &inputs);
+	LPXLOPER12 convertFromXLValue (JniSequenceHelper *helper, VARIANT classRef, VARIANT resultRef, std::vector<VARIANT> &inputs);
+	LPXLOPER12 convertFromXLString (JniSequenceHelper *helper, VARIANT result);
+	LPXLOPER12 convertFromXLNumber (JniSequenceHelper *helper, VARIANT result);
+	LPXLOPER12 convertFromXLBoolean (JniSequenceHelper *helper, VARIANT result);
+	LPXLOPER12 convertFromXLMissing (JniSequenceHelper *helper, VARIANT result);
+	LPXLOPER12 convertFromXLNil (JniSequenceHelper *helper, VARIANT resultRef);
+	LPXLOPER12 convertFromXLError (JniSequenceHelper *helper, VARIANT resultRef);
+	LPXLOPER12 convertFromXLArray (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs);
+	LPXLOPER12 convertFromXLInteger (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs);
+	LPXLOPER12 convertFromXLBigData (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs);
+	LPXLOPER12 convertFromXLLocalReference (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs);
+	LPXLOPER12 convertFromXLMultiReference (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs);
+	inline boolean isClassEqual (VARIANT aClassRef, VARIANT bClassRef) { return aClassRef.ullVal == bClassRef.ullVal;  }
+	inline boolean isInstanceEqual (VARIANT aInstanceRef, VARIANT bInstanceRef) { return aInstanceRef.ullVal == bInstanceRef.ullVal; }
 public:
 	Converter ();
 	~Converter ();
