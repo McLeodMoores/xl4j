@@ -250,8 +250,8 @@ COMJVM_EXCEL_API void Converter::xlBigDataClsAnd3Methods (JniSequenceHelper *hel
 		helper->NewGlobalRef (
 			helper->GetMethodID (
 				xlBigDataCls,
-				TEXT ("getHandle"),
-				TEXT ("()J")
+				TEXT ("getBuffer"),
+				TEXT ("()[B")
 			)
 		)
 	);
@@ -514,7 +514,7 @@ COMJVM_EXCEL_API void Converter::lookupConstants (IJvm *jvm) {
 	// XLBigData
 	m_xlBigDataCls = constants[index++];
 	m_xlBigDataOfMtd = constants[index++];
-	m_xlBigDataGetHandleMtd = constants[index++];
+	m_xlBigDataGetBufferMtd = constants[index++];
 	m_xlBigDataGetLengthMtd = constants[index++];
 	// XLSheetId
 	m_xlSheetIdCls = constants[index++];
@@ -749,42 +749,64 @@ long Converter::convertToXLLocalReference (JniSequenceHelper *helper, LPXLOPER12
 	return xlMultiReference;
 }
 
-LPXLOPER12 Converter::convertFromXLValue (JniSequenceHelper *helper, VARIANT classRef, VARIANT resultRef, std::vector<VARIANT> &inputs) {
-	
-	if (isClassEqual (m_xlStringCls, classRef)) {
-		return convertFromXLString (helper, resultRef);
-	} else if (isClassEqual (m_xlNumberCls, classRef)) {
-		return convertFromXLNumber (helper, resultRef);
-	} else if (isClassEqual (m_xlBooleanCls, classRef)) {
-		return convertFromXLBoolean (helper, resultRef);
-	} else if (isClassEqual (m_xlMissingCls, classRef)) {
-		return convertFromXLMissing (helper, resultRef);
-	} else if (isClassEqual (m_xlNilCls, classRef)) {
-		return convertFromXLNil (helper, resultRef);
-	} else if (isClassEqual (m_xlErrorCls, classRef)) {
-		return convertFromXLError (helper, resultRef);
-	} else if (isClassEqual (m_xlArrayCls, classRef)) {
-		return convertFromXLArray (helper, resultRef, inputs);
-	} else if (isClassEqual (m_xlIntegerCls, classRef)) {
-		return convertFromXLInteger (helper, resultRef, inputs);
-	} else if (isClassEqual (m_xlBigDataCls, classRef)) {
-		return convertFromXLBigData (helper, resultRef, inputs);
-	} else if (isClassEqual (m_xlLocalReferenceCls, classRef)) {
-		return convertFromXLLocalReference (helper, resultRef, inputs);
-	} else if (isClassEqual (m_xlMultiReferenceCls, classRef)) {
-		return convertFromXLMultiReference (helper, resultRef, inputs);
+LPXLOPER12 Converter::convertFromXLValue (JniSequenceHelper *helper, VARIANT result) {
+	switch(switchClass (helper, result, 11, 
+		m_xlStringCls,
+		m_xlNumberCls,
+		m_xlBooleanCls,
+		m_xlMissingCls,
+		m_xlNilCls,
+		m_xlErrorCls,
+		m_xlArrayCls,
+		m_xlIntegerCls,
+		m_xlBigDataCls,
+		m_xlLocalReferenceCls,
+		m_xlMultiReferenceCls
+		)) {
+	case 0:
+		return convertFromXLString (helper, result);
+	case 1:
+		return convertFromXLNumber (helper, result);
+	case 2:
+		return convertFromXLBoolean (helper, result);
+	case 3:
+		return convertFromXLMissing (helper, result);
+	case 4:
+		return convertFromXLNil (helper, result);
+	case 5:
+		return convertFromXLError (helper, result);
+	case 6:
+		return convertFromXLArray (helper, result);
+	case 7:
+		return convertFromXLInteger (helper, result);
+	case 8:
+		return convertFromXLBigData (helper, result);
+	case 9:
+		return convertFromXLLocalReference (helper, result);
+	case 10:
+		return convertFromXLMultiReference (helper, result);
+	default:
+		TRACE ("Unknown type of result.");
+		_com_raise_error (E_INVALIDARG);
 	}
+}
+
+void Converter::convertFromXLString (JniSequenceHelper *helper, long xlStringObjRef, std::vector<VARIANT> &inputs) {
+	inputs.push_back (m_xlStringGetValueMtd);
+	long string = helper->CallMethod (JTYPE_OBJECT, xlStringObjRef, helper->Argument (), 0);
+	long isCopy;
+	long charsRef = helper->GetStringChars (string, &isCopy);
+	helper->Result (charsRef);
+	helper->ReleaseStringChars (string, charsRef);
+	helper->DeleteLocalRef (string);
+	helper->DeleteLocalRef (isCopy);
 }
 
 LPXLOPER12 Converter::convertFromXLString (JniSequenceHelper *helper, VARIANT result) {
 	std::vector<VARIANT> inputs;
 	inputs.push_back (result);
 	inputs.push_back (m_xlStringGetValueMtd);
-	long string = helper->CallMethod (JTYPE_OBJECT, helper->Argument, helper->Argument (), 0);
-	long isCopy;
-	long charsRef = helper->GetStringChars (string, &isCopy);
-	helper->Result (charsRef);
-	helper->ReleaseStringChars (string, charsRef);
+	convertFromXLString (helper, helper->Argument (), inputs);
 	VARIANT results[1];
 	helper->Execute (2, inputs.data, 1, results);
 	return TempStr12 (results[0].bstrVal);
@@ -802,13 +824,15 @@ LPXLOPER12 Converter::convertFromXLNumber (JniSequenceHelper *helper, VARIANT re
 }
 
 LPXLOPER12 Converter::convertFromXLBoolean (JniSequenceHelper *helper, VARIANT result) {
-	if (isInstanceEqual (result, m_xlBooleanTrueInstance)) {
+	switch (switchInstance (helper, result, 2,
+		m_xlBooleanTrueInstance,
+		m_xlBooleanFalseInstance
+		)) {
+	case 0:
 		return TempBool12 (TRUE);
-	}
-	else if (isInstanceEqual (result, m_xlBooleanTrueInstance)) {
+	case 1:
 		return TempBool12 (FALSE);
-	}
-	else {
+	default:
 		return TempErr12 (xlerrNull);
 	}
 }
@@ -822,39 +846,226 @@ LPXLOPER12 Converter::convertFromXLNil (JniSequenceHelper *helper, VARIANT resul
 	nil->xltype = xltypeNil;
 	return nil;
 }
+
+int Converter::switchClass (JniSequenceHelper *helper, VARIANT instance, int cArgs, ...) {
+	va_list ap;
+	va_start (ap, cArgs);
+	std::vector<VARIANT> inputs;
+	inputs.push_back (instance);
+	long instanceRef = helper->Argument ();
+	long clsRef = helper->GetObjectClass (instanceRef);
+	for (int i = 0; i < cArgs; i++) {
+		VARIANT cls = va_arg (ap, VARIANT);
+		inputs.push_back (cls);
+		long clsRef = helper->Argument ();
+		helper->Result(helper->IsInstanceOf (instanceRef, clsRef));
+	}
+	va_end (ap);
+	std::vector<VARIANT> results (cArgs);
+	helper->Execute (cArgs + 1, inputs.data, cArgs, results.data);
+	for (int i = 0; i < cArgs; i++) {
+		if (results[i].boolVal != FALSE) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int Converter::switchInstance (JniSequenceHelper *helper, VARIANT instance, int cArgs, ...) {
+	va_list ap;
+	va_start (ap, cArgs);
+	std::vector<VARIANT> inputs;
+	inputs.push_back (instance);
+	long instanceRef = helper->Argument ();
+	for (int i = 0; i < cArgs; i++) {
+		VARIANT cls = va_arg (ap, VARIANT);
+		inputs.push_back (cls);
+		long objRef = helper->Argument ();
+		helper->Result (helper->IsSameObject (instanceRef, objRef));
+	}
+	va_end (ap);
+	std::vector<VARIANT> results (cArgs);
+	helper->Execute (cArgs + 1, inputs.data, cArgs, results.data);
+	for (int i = 0; i < cArgs; i++) {
+		if (results[i].boolVal != FALSE) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 LPXLOPER12 Converter::convertFromXLError (JniSequenceHelper *helper, VARIANT result) {
-	if (isInstanceEqual (result, m_xlErrorDiv0Instance)) {
+	int err = switchInstance (helper, result, 7,
+		m_xlErrorDiv0Instance,
+		m_xlErrorNAInstance,
+		m_xlErrorNameInstance,
+		m_xlErrorNullInstance,
+		m_xlErrorNumInstance,
+		m_xlErrorRefInstance,
+		m_xlErrorValueInstance);
+	switch (err) {
+	case 0:
 		return TempErr12 (xlerrDiv0);
-	} else if (isInstanceEqual (result, m_xlErrorNAInstance)) {
+	case 1:
 		return TempErr12 (xlerrNA);
-	} else if (isInstanceEqual (result, m_xlErrorNameInstance)) {
+	case 2:
 		return TempErr12 (xlerrName);
-	} else if (isInstanceEqual (result, m_xlErrorNullInstance)) {
+	case 3:
 		return TempErr12 (xlerrNull);
-	} else if (isInstanceEqual (result, m_xlErrorNumInstance)) {
+	case 4:
 		return TempErr12 (xlerrNum);
-	} else if (isInstanceEqual (result, m_xlErrorRefInstance)) {
+	case 5:
 		return TempErr12 (xlerrRef);
-	} else if (isInstanceEqual (result, m_xlErrorValueInstance)) {
+	case 6:
 		return TempErr12 (xlerrValue);
-	} else {
+	default:
 		TRACE ("Unknown error code from object %p", result.ullVal);
 		return TempErr12 (xlerrNull);
 	}
 }
 
-LPXLOPER12 Converter::convertFromXLArray (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
-
+LPXLOPER12 Converter::convertFromXLArray (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlArrayGetArrayMtd);
+	long arrRef = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 0);
+	helper->Result(helper->GetArrayLength (arrRef));
+	long innerArrRef = helper->GetObjectArrayElement (arrRef, 0);
+	helper->Result (helper->GetArrayLength (innerArrRef));
+	VARIANT results[2];
+	helper->Execute (2, inputs.data, 2, results);
+	arrRef = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 0);
+	int cols = results[0].intVal;
+	int rows = results[1].intVal;
+	long *xlValues = new long[rows * cols];
+	long *xlClasses = new long[rows * cols];
+	XLOPER12 *xlArrayBlock = NULL;
+	for (int col = 0; col < cols; col++) {
+		for (int row = 0; row < rows; row++) {
+			long rowArr = helper->GetObjectArrayElement (arrRef, col);
+			long xlValueRef = helper->GetObjectArrayElement (rowArr, row);
+			long g_xlValueCls = helper->NewGlobalRef(xlValueRef);
+			helper->Execute (2, inputs.data, 1, results);
+			LPXLOPER12 xlValue = convertFromXLValue (helper, results[0]);
+			if (xlArrayBlock == NULL) {
+				// the logic here is a bit odd - we're banking on all the conversions allocating memory from a contiguous block
+				// which is allocated per-thread by the framework library.  This should lead to exactly the required structure 
+				// to point to from the xlarray, so we record the first allocation in it.  
+				// This will totally fail if any of the conversions don't work.
+				xlArrayBlock = xlValue;
+			}
+		}
+	}
+	LPXLOPER12 xlArrOper = (LPXLOPER12) GetTempMemory (sizeof (XLOPER12));
+	xlArrOper->xltype = xltypeMulti;
+	xlArrOper->val.array.lparray = xlArrayBlock;
+	xlArrOper->val.array.columns = cols;
+	xlArrOper->val.array.rows = rows;
+	return xlArrOper;
 }
-LPXLOPER12 Converter::convertFromXLInteger (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
 
+LPXLOPER12 Converter::convertFromXLInteger (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlIntegerGetValueMtd);
+	long value = helper->CallMethod (JTYPE_INT, helper->Argument (), helper->Argument (), 0);
+	helper->Result (value);
+	VARIANT results[1];
+	helper->Execute (2, inputs.data, 1, results);
+	return TempInt12 (results[0].intVal);
 }
-LPXLOPER12 Converter::convertFromXLBigData (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
 
+LPXLOPER12 Converter::convertFromXLBigData (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlBigDataGetLengthMtd);
+	long value = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 0);
+	helper->Result (value);
+	VARIANT results[1];
+	helper->Execute (2, inputs.data, 1, results);
+	LPXLOPER12 xlBigDataOper = (LPXLOPER12)GetTempMemory (sizeof (XLOPER12));
+	xlBigDataOper->xltype = xltypeBigData;
+	xlBigDataOper->val.bigdata.h.lpbData = (BYTE *) results[0].parray->pvData;
+	xlBigDataOper->val.bigdata.cbData = results[0].parray->cbElements;
+	return xlBigDataOper;
 }
-LPXLOPER12 Converter::convertFromXLLocalReference (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
 
+LPXLOPER12 Converter::convertFromXLLocalReference (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlLocalReferenceGetRangeMtd);
+	inputs.push_back (m_xlRangeGetRowFirstMtd);
+	inputs.push_back (m_xlRangeGetRowLastMtd);
+	inputs.push_back (m_xlRangeGetColumnFirstMtd);
+	inputs.push_back (m_xlRangeGetColumnLastMtd);
+	long range = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 0);
+	long rowFirstRef = helper->CallMethod (JTYPE_INT, range, helper->Argument (), 0);
+	helper->Result (rowFirstRef);
+	long rowLastRef = helper->CallMethod (JTYPE_INT, range, helper->Argument (), 0);
+	helper->Result (rowLastRef);
+	long columnFirstRef = helper->CallMethod (JTYPE_INT, range, helper->Argument (), 0);
+	helper->Result (columnFirstRef);
+	long columnLastRef = helper->CallMethod (JTYPE_INT, range, helper->Argument (), 0);
+	helper->Result (columnLastRef);
+	VARIANT results[4];
+	helper->Execute (6, inputs.data, 4, results);
+	LPXLOPER12 xlLocalReferenceOper = TempActiveRef12 (results[0].intVal, results[1].intVal, results[2].intVal, results[3].intVal);
+	return xlLocalReferenceOper;
 }
-LPXLOPER12 Converter::convertFromXLMultiReference (JniSequenceHelper *helper, VARIANT resultRef, std::vector<VARIANT> &inputs) {
 
+LPXLOPER12 Converter::convertFromXLMultiReference (JniSequenceHelper *helper, VARIANT result) {
+	std::vector<VARIANT> inputs;
+	inputs.push_back (result);
+	inputs.push_back (m_xlMultiReferenceGetSheetIdMtd);
+	inputs.push_back (m_xlMultiReferenceGetRangesMtd);
+	inputs.push_back (m_xlSheetIdGetSheetIdMtd);
+	long resultRef = helper->Argument ();
+	long sheetIdObjRef = helper->CallMethod (JTYPE_OBJECT, resultRef, helper->Argument (), 0);
+	long rangesRef = helper->CallMethod (JTYPE_OBJECT, resultRef, helper->Argument (), 0);
+	long g_rangesRef = helper->NewGlobalRef (rangesRef);
+	long sheetIdRef = helper->CallMethod (JTYPE_INT, sheetIdObjRef, helper->Argument (), 0);
+	long lengthRef = helper->GetArrayLength (rangesRef);
+	helper->Result (sheetIdRef);
+	helper->Result (lengthRef);
+	helper->Result (g_rangesRef);
+	VARIANT results[3];
+	helper->Execute (4, inputs.data, 3, results);
+	int length = results[1].intVal;
+
+	std::vector<VARIANT> inputs2;
+	inputs2.push_back (results[2]); // global ref to ranges array.
+	inputs2.push_back (m_xlRangeGetRowFirstMtd);
+	inputs2.push_back (m_xlRangeGetRowLastMtd);
+	inputs2.push_back (m_xlRangeGetColumnFirstMtd);
+	inputs2.push_back (m_xlRangeGetColumnLastMtd);
+	long rangesArrayRef = helper->Argument ();
+	long getRowFirstMtdIDRef = helper->Argument ();
+	long getRowLastMtdIDRef = helper->Argument ();
+	long getColumnFirstMtdIDRef = helper->Argument ();
+	long getColumnLastMtdIDRef = helper->Argument ();
+	std::vector<VARIANT> results2 (length * 4);
+	LPXLMREF12 xlmRef12 = (LPXLMREF12) GetTempMemory (sizeof XLMREF12 + (sizeof XLREF12 * (length - 1))); // xlmref12 includes 1 xlref12already.
+	for (int i = 0; i < length; i++) {
+		long range = helper->GetObjectArrayElement (rangesArrayRef, i);
+		long rowFirstRef = helper->CallMethod (JTYPE_INT, range, getRowFirstMtdIDRef, 0);
+		helper->Result (rowFirstRef);
+		long rowLastRef = helper->CallMethod (JTYPE_INT, range, getRowLastMtdIDRef, 0);
+		helper->Result (rowLastRef);
+		long columnFirstRef = helper->CallMethod (JTYPE_INT, range, getColumnFirstMtdIDRef, 0);
+		helper->Result (columnFirstRef);
+		long columnLastRef = helper->CallMethod (JTYPE_INT, range, getColumnLastMtdIDRef, 0);
+		helper->Result (columnLastRef);
+	}
+	helper->Execute (5, inputs2.data, length * 4, results2.data);
+	for (int i = 0; i < length; i++) {
+		xlmRef12->reftbl[i].colFirst = results2[(i * 4)].intVal;
+		xlmRef12->reftbl[i].colLast = results2[(i * 4) + 1].intVal;
+		xlmRef12->reftbl[i].rwFirst = results2[(i * 4) + 2].intVal;
+		xlmRef12->reftbl[i].rwLast = results2[(i * 4) + 3].intVal;
+	}
+	LPXLOPER12 mref = (LPXLOPER12) GetTempMemory (sizeof XLOPER12);
+	mref->xltype = xltypeRef;
+	mref->val.mref.idSheet = results[0].intVal;
+	mref->val.mref.lpmref = xlmRef12;
+	return mref;
 }
