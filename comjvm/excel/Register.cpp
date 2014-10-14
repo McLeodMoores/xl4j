@@ -8,49 +8,9 @@ using std::cerr;
 using std::cout;
 using std::endl;
 
-COMJVM_EXCEL_API Register::Register () {
-	HRESULT hr = ComJvmCreateLocalConnector (&m_pConnector);
-	if (FAILED (hr)) {
-		TRACE ("CreateLocalConnector failed");
-		_com_raise_error (hr);
-	}
-	hr = m_pConnector->Lock ();
-	if (FAILED (hr)) {
-		TRACE ("connector Lock could not be aquired");
-		_com_raise_error (hr);
-	}
-
-	IJvmTemplate *pTemplate;
-
-	hr = ComJvmCreateTemplate (NULL, &pTemplate);
-	if (FAILED (hr)) {
-		TRACE ("could not create template");
-		_com_raise_error (hr);
-	}
-	IClasspathEntries *entries;
-	hr = pTemplate->get_Classpath (&entries);
-	if (FAILED (hr)) {
-		TRACE ("could not get template classpath");
-		_com_raise_error (hr);
-	}
-
-	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
-	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		LPCTSTR errMsg = err.ErrorMessage ();
-		TRACE ("could not create JVM: %s", errMsg);
-		_com_raise_error (hr);
-	}
-	TRACE ("Created JVM!");
-	m_pConnector->Unlock ();
-	TRACE ("Unlocked connector");
-
-	hr = pTemplate->Release ();
-	if (FAILED (hr)) {
-		TRACE ("Could not release template");
-		_com_raise_error (hr);
-	}
+COMJVM_EXCEL_API Register::Register (IJvm *pJvm) {
+	m_pJvm = pJvm;
+	m_pJvm->AddRef ();
 }
 
 void COMJVM_EXCEL_API Register::scanAndRegister (XLOPER12 xDLL) {
@@ -178,5 +138,4 @@ void COMJVM_EXCEL_API Register::extractField (JniSequenceHelper *helper, long fi
 
 COMJVM_EXCEL_API Register::~Register () {
 	m_pJvm->Release ();
-	m_pConnector->Release ();
 }

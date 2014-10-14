@@ -1,53 +1,59 @@
+#include "stdafx.h"
 #include "Converter.h"
+#include "Jvm.h"
 #include "utils/Debug.h"
 #include "helper/JniSequenceHelper.h"
 #include "helper/ClasspathUtils.h"
 #include <vector>
 
-COMJVM_EXCEL_API Converter::Converter () {
-	HRESULT hr = ComJvmCreateLocalConnector (&m_pConnector);
-	if (FAILED (hr)) {
-		TRACE ("CreateLocalConnector failed");
-		_com_raise_error (hr);
-	}
-	hr = m_pConnector->Lock ();
-	if (FAILED (hr)) {
-		TRACE ("connector Lock could not be aquired");
-		_com_raise_error (hr);
-	}
-
-	IJvmTemplate *pTemplate;
-
-	hr = ComJvmCreateTemplate (NULL, &pTemplate);
-	if (FAILED (hr)) {
-		TRACE ("could not create template");
-		_com_raise_error (hr);
-	}
-	IClasspathEntries *entries;
-	hr = pTemplate->get_Classpath (&entries);
-	if (FAILED (hr)) {
-		TRACE ("could not get template classpath");
-		_com_raise_error (hr);
-	}
-
-	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
-	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		LPCTSTR errMsg = err.ErrorMessage ();
-		TRACE ("could not create JVM: %s", errMsg);
-		_com_raise_error (hr);
-	}
-	TRACE ("Created JVM!");
-	m_pConnector->Unlock ();
-	TRACE ("Unlocked connector");
-
-	hr = pTemplate->Release ();
-	if (FAILED (hr)) {
-		TRACE ("Could not release template");
-		_com_raise_error (hr);
-	}
+COMJVM_EXCEL_API Converter::Converter (IJvm *pJvm) {
+	m_pJvm = pJvm;
+	m_pJvm->AddRef ();
 	lookupConstants (m_pJvm);
+}
+
+COMJVM_EXCEL_API Converter::~Converter () {
+	// TODO: free up all the global refs.
+	m_pJvm->Release ();
+}
+
+COMJVM_EXCEL_API ULONG Converter::AddRef () {
+	return InterlockedIncrement (&m_lRefCount);
+}
+
+COMJVM_EXCEL_API ULONG Converter::Release () {
+	ULONG lResult = InterlockedDecrement (&m_lRefCount);
+	if (!lResult) delete this;
+	return lResult;
+}
+
+COMJVM_EXCEL_API void Converter::xlExcelAndFunctionCallHandlerInstanceAnd1Method (JniSequenceHelper *helper) {
+	long excel = helper->CallStaticMethod (
+		JTYPE_OBJECT,
+		TEXT ("com/mcleodmoores/excel4j/ExcelFactory"),
+		TEXT ("getInstance"),
+		TEXT ("()Lcom/mcleodmoores/excel4j/Excel;"),
+		0
+	);
+	helper->Result (helper->NewGlobalRef (excel));
+	long functionCallHandler = helper->CallMethod (JTYPE_OBJECT, excel,
+		helper->GetMethodID(
+			TEXT ("com/mcleodmoores/excel4j/Excel"),
+			TEXT ("getExcelCallHandler"),
+			TEXT ("()Lcom/mcleodmoores/excel4j/ExcelFunctionCallHandler;")
+		), 
+		0
+	);
+	helper->Result (helper->NewGlobalRef (functionCallHandler));
+	helper->Result (
+		helper->NewGlobalRef (
+			helper->GetMethodID (
+				TEXT ("com/mcleodmoores/excel4j/ExcelFunctionCallHandler"),
+				TEXT ("invoke"),
+				TEXT ("(I[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLValue;")
+			)
+		)
+	);
 }
 
 COMJVM_EXCEL_API void Converter::xlClass (JniSequenceHelper *helper, TCHAR *className) {
@@ -455,6 +461,7 @@ COMJVM_EXCEL_API void Converter::lookupConstants (IJvm *jvm) {
 	JniSequenceHelper *helper = new JniSequenceHelper (jvm);
 	xlClass (helper, TEXT ("com/mcleodmoores/excel4j/values/XLValue")); // 1
 	xlClass (helper, TEXT ("[Lcom/mcleodmoores/excel4j/values/XLValue;")); // 1
+	xlExcelAndFunctionCallHandlerInstanceAnd1Method (helper);			// 3
 	xlRangeClsAnd9Methods (helper);										// 10
 	xlStringClsAnd2Methods (helper);									// 3
 	xlNumberClsAnd2Methods (helper);									// 3
@@ -469,8 +476,8 @@ COMJVM_EXCEL_API void Converter::lookupConstants (IJvm *jvm) {
 	xlBooleanClsAnd2Instances (helper);									// 3
 	xlErrorClsAnd7Instances (helper);									// 8
 	//																	----
-	//																	  53
-	const int NUM_CONSTANTS = 53;
+	//																	  56
+	const int NUM_CONSTANTS = 56;
 	VARIANT constants[NUM_CONSTANTS];
 	helper->Execute (0, NULL, NUM_CONSTANTS, constants);
 	bool badConstant = false;
@@ -485,9 +492,15 @@ COMJVM_EXCEL_API void Converter::lookupConstants (IJvm *jvm) {
 		_com_raise_error (E_FAIL);
 	}
 	int index = 0;
+
 	// XLValue
 	m_xlValueCls = constants[index++];
 	m_arrXlValueCls = constants[index++];
+	// Excel Instance
+	m_excelInstance = constants[index++];
+	// ExcelFunctionCallHandler
+	m_excelFunctionCallHandlerInstance = constants[index++];
+	m_excelFunctionCallHandlerInvokeMtd = constants[index++];
 	// XLRange
 	m_xlRangeCls = constants[index++];
 	m_xlRangeOfMtd = constants[index++];
@@ -571,28 +584,28 @@ void Converter::enumConstResult (JniSequenceHelper *helper, long clsRef, long me
 COMJVM_EXCEL_API long Converter::convertArgument (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs) {
 	switch (arg->xltype) {
 	case xltypeStr:
-		convertToXLString (helper, arg, inputs);
+		return convertToXLString (helper, arg, inputs);
 		break;
 	case xltypeNum:
-		convertToXLNumber (helper, arg, inputs);
+		return convertToXLNumber (helper, arg, inputs);
 		break;
 	case xltypeBool:
-		convertToXLBoolean (helper, arg, inputs);
+		return convertToXLBoolean (helper, arg, inputs);
 		break;
 	case xltypeErr:
-		convertToXLError (helper, arg, inputs);
+		return convertToXLError (helper, arg, inputs);
 		break;
 	case xltypeInt:
-		convertToXLInteger (helper, arg, inputs);
+		return convertToXLInteger (helper, arg, inputs);
 		break;
 	case xltypeMissing:
-		convertToXLMissing (helper, arg, inputs);
+		return convertToXLMissing (helper, arg, inputs);
 		break;
 	case xltypeNil:
-		convertToXLNil (helper, arg, inputs);
+		return convertToXLNil (helper, arg, inputs);
 		break;
 	case xltypeBigData:
-		convertToXLBigData (helper, arg, inputs);
+		return convertToXLBigData (helper, arg, inputs);
 		break;
 	case xltypeFlow:
 		_com_raise_error (E_FAIL);
@@ -606,7 +619,12 @@ COMJVM_EXCEL_API long Converter::convertArgument (JniSequenceHelper *helper, LPX
 	case xltypeSRef:
 		convertToXLLocalReference (helper, arg, inputs);
 		break;
+	default:
+		TRACE ("Unrecognised XLOPER type");
+		_com_raise_error (E_FAIL);
+		break;
 	}
+	return -1;
 }
 
 
@@ -808,7 +826,7 @@ LPXLOPER12 Converter::convertFromXLString (JniSequenceHelper *helper, VARIANT re
 	inputs.push_back (m_xlStringGetValueMtd);
 	convertFromXLString (helper, helper->Argument (), inputs);
 	VARIANT results[1];
-	helper->Execute (2, inputs.data, 1, results);
+	helper->Execute (2, inputs.data(), 1, results);
 	return TempStr12 (results[0].bstrVal);
 }
 
@@ -819,7 +837,7 @@ LPXLOPER12 Converter::convertFromXLNumber (JniSequenceHelper *helper, VARIANT re
 	long value = helper->CallMethod (JTYPE_DOUBLE, helper->Argument (), helper->Argument (), 0);
 	helper->Result (value);
 	VARIANT results[1];
-	helper->Execute (2, inputs.data, 1, results);
+	helper->Execute (2, inputs.data(), 1, results);
 	return TempNum12 (results[0].dblVal);
 }
 
@@ -862,7 +880,7 @@ int Converter::switchClass (JniSequenceHelper *helper, VARIANT instance, int cAr
 	}
 	va_end (ap);
 	std::vector<VARIANT> results (cArgs);
-	helper->Execute (cArgs + 1, inputs.data, cArgs, results.data);
+	helper->Execute (cArgs + 1, inputs.data(), cArgs, results.data());
 	for (int i = 0; i < cArgs; i++) {
 		if (results[i].boolVal != FALSE) {
 			return i;
@@ -885,7 +903,7 @@ int Converter::switchInstance (JniSequenceHelper *helper, VARIANT instance, int 
 	}
 	va_end (ap);
 	std::vector<VARIANT> results (cArgs);
-	helper->Execute (cArgs + 1, inputs.data, cArgs, results.data);
+	helper->Execute (cArgs + 1, inputs.data(), cArgs, results.data());
 	for (int i = 0; i < cArgs; i++) {
 		if (results[i].boolVal != FALSE) {
 			return i;
@@ -933,7 +951,7 @@ LPXLOPER12 Converter::convertFromXLArray (JniSequenceHelper *helper, VARIANT res
 	long innerArrRef = helper->GetObjectArrayElement (arrRef, 0);
 	helper->Result (helper->GetArrayLength (innerArrRef));
 	VARIANT results[2];
-	helper->Execute (2, inputs.data, 2, results);
+	helper->Execute (2, inputs.data(), 2, results);
 	arrRef = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 0);
 	int cols = results[0].intVal;
 	int rows = results[1].intVal;
@@ -945,7 +963,7 @@ LPXLOPER12 Converter::convertFromXLArray (JniSequenceHelper *helper, VARIANT res
 			long rowArr = helper->GetObjectArrayElement (arrRef, col);
 			long xlValueRef = helper->GetObjectArrayElement (rowArr, row);
 			long g_xlValueCls = helper->NewGlobalRef(xlValueRef);
-			helper->Execute (2, inputs.data, 1, results);
+			helper->Execute (2, inputs.data(), 1, results);
 			LPXLOPER12 xlValue = convertFromXLValue (helper, results[0]);
 			if (xlArrayBlock == NULL) {
 				// the logic here is a bit odd - we're banking on all the conversions allocating memory from a contiguous block
@@ -971,7 +989,7 @@ LPXLOPER12 Converter::convertFromXLInteger (JniSequenceHelper *helper, VARIANT r
 	long value = helper->CallMethod (JTYPE_INT, helper->Argument (), helper->Argument (), 0);
 	helper->Result (value);
 	VARIANT results[1];
-	helper->Execute (2, inputs.data, 1, results);
+	helper->Execute (2, inputs.data(), 1, results);
 	return TempInt12 (results[0].intVal);
 }
 
@@ -982,7 +1000,7 @@ LPXLOPER12 Converter::convertFromXLBigData (JniSequenceHelper *helper, VARIANT r
 	long value = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 0);
 	helper->Result (value);
 	VARIANT results[1];
-	helper->Execute (2, inputs.data, 1, results);
+	helper->Execute (2, inputs.data(), 1, results);
 	LPXLOPER12 xlBigDataOper = (LPXLOPER12)GetTempMemory (sizeof (XLOPER12));
 	xlBigDataOper->xltype = xltypeBigData;
 	xlBigDataOper->val.bigdata.h.lpbData = (BYTE *) results[0].parray->pvData;
@@ -1008,7 +1026,7 @@ LPXLOPER12 Converter::convertFromXLLocalReference (JniSequenceHelper *helper, VA
 	long columnLastRef = helper->CallMethod (JTYPE_INT, range, helper->Argument (), 0);
 	helper->Result (columnLastRef);
 	VARIANT results[4];
-	helper->Execute (6, inputs.data, 4, results);
+	helper->Execute (6, inputs.data(), 4, results);
 	LPXLOPER12 xlLocalReferenceOper = TempActiveRef12 (results[0].intVal, results[1].intVal, results[2].intVal, results[3].intVal);
 	return xlLocalReferenceOper;
 }
@@ -1029,7 +1047,7 @@ LPXLOPER12 Converter::convertFromXLMultiReference (JniSequenceHelper *helper, VA
 	helper->Result (lengthRef);
 	helper->Result (g_rangesRef);
 	VARIANT results[3];
-	helper->Execute (4, inputs.data, 3, results);
+	helper->Execute (4, inputs.data(), 3, results);
 	int length = results[1].intVal;
 
 	std::vector<VARIANT> inputs2;
@@ -1056,7 +1074,7 @@ LPXLOPER12 Converter::convertFromXLMultiReference (JniSequenceHelper *helper, VA
 		long columnLastRef = helper->CallMethod (JTYPE_INT, range, getColumnLastMtdIDRef, 0);
 		helper->Result (columnLastRef);
 	}
-	helper->Execute (5, inputs2.data, length * 4, results2.data);
+	helper->Execute (5, inputs2.data(), length * 4, results2.data());
 	for (int i = 0; i < length; i++) {
 		xlmRef12->reftbl[i].colFirst = results2[(i * 4)].intVal;
 		xlmRef12->reftbl[i].colLast = results2[(i * 4) + 1].intVal;
@@ -1068,4 +1086,20 @@ LPXLOPER12 Converter::convertFromXLMultiReference (JniSequenceHelper *helper, VA
 	mref->val.mref.idSheet = results[0].intVal;
 	mref->val.mref.lpmref = xlmRef12;
 	return mref;
+}
+
+COMJVM_EXCEL_API VARIANT Converter::invoke (JniSequenceHelper *helper, std::vector<VARIANT> &inputs) {
+	int size = inputs.size () - 1;
+	inputs[0] = m_xlValueCls; // we left a free slot before calling this method to hold this.
+	long argsArrRef = helper->NewObjectArray (helper->Argument (), size);
+	for (int i = 0; i < inputs.size (); i++) {
+		helper->SetObjectArrayElement (argsArrRef, i, helper->Argument ());
+	}
+	inputs.push_back (m_excelFunctionCallHandlerInstance);
+	inputs.push_back (m_excelFunctionCallHandlerInvokeMtd);
+	long result = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 2, size, argsArrRef);
+	helper->Result (result);
+	VARIANT results[1];
+	helper->Execute (inputs.size (), inputs.data (), 1, results);
+	return results[0];
 }

@@ -1,3 +1,18 @@
+#include "stdafx.h"
+#include "Register.h"
+#include "Jvm.h"
+#include "Converter.h"
+
+__declspec(dllexport) LPXLOPER12 UDF (int exportNumber, ...);
+
+#define EXPORT(num) __declspec(dllexport) LPXLOPER12 WINAPI UDF_##num (LPXLOPER12 first, ...) { \
+	va_list ap; \
+	va_start (ap, first); \
+	LPXLOPER12 result = UDF (num, first, ap); \
+	va_end (ap); \
+	return result; \
+}
+
 EXPORT (0)
 EXPORT (1)
 EXPORT (2)

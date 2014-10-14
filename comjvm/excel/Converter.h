@@ -8,10 +8,9 @@
 # define COMJVM_EXCEL_API __declspec(dllimport)
 #endif /* ifndef COMJVM_DEBUG_API */
 
-
-
 class COMJVM_EXCEL_API Converter {
 private:
+	volatile ULONG m_lRefCount;
 	IJvm *m_pJvm;
 	IJvmConnector *m_pConnector;
 	// each slot (indexed by the export number) holds the number of args for that export.
@@ -19,6 +18,8 @@ private:
 
 	// Excel instance
 	VARIANT m_excelInstance;
+	VARIANT m_excelFunctionCallHandlerInstance;
+	VARIANT m_excelFunctionCallHandlerInvokeMtd;
 	// XLValue constants
 	VARIANT m_xlValueCls;
 	VARIANT m_arrXlValueCls;
@@ -91,6 +92,7 @@ private:
 		bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp);
 	void extractField (JniSequenceHelper *helper, long fieldType, long entryCls, long entryObj, TCHAR *fieldName, TCHAR *signature);
 	void xlClass (JniSequenceHelper *helper, TCHAR *className);
+	void xlExcelAndFunctionCallHandlerInstanceAnd1Method (JniSequenceHelper *helper);
 	void xlRangeClsAnd9Methods (JniSequenceHelper *helper);
 	void xlStringClsAnd2Methods (JniSequenceHelper *helper);
 	void xlNumberClsAnd2Methods (JniSequenceHelper *helper);
@@ -119,7 +121,7 @@ private:
 	long convertToXLLocalReference (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs);
 	long convertToXLRange (JniSequenceHelper *helper, LPXLREF12 arg, std::vector<VARIANT> &inputs);
 	long convertFromXLValue (JniSequenceHelper *helper, long resultRef, std::vector<VARIANT> &inputs);
-	LPXLOPER12 convertFromXLValue (JniSequenceHelper *helper, VARIANT result);
+	
 	void Converter::convertFromXLString (JniSequenceHelper *helper, long xlStringObjRef, std::vector<VARIANT> &inputs);
 	LPXLOPER12 convertFromXLString (JniSequenceHelper *helper, VARIANT result);
 		LPXLOPER12 convertFromXLNumber (JniSequenceHelper *helper, VARIANT result);
@@ -137,11 +139,12 @@ private:
 	int switchInstance (JniSequenceHelper *helper, VARIANT instance, int cArgs, ...);
 	inline boolean isInstanceEqual (JniSequenceHelper *helper, VARIANT aInstanceRef, VARIANT bInstanceRef) { return aInstanceRef.ullVal == bInstanceRef.ullVal; }
 public:
-	Converter ();
+	Converter (IJvm *pJvm);
 	~Converter ();
 	void lookupConstants (IJvm *jvm);
 	long convertArgument (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs);
-	IJniSequence *get_JniSequence ();
-	void scanAndRegister (XLOPER12 xDLL);
-	inline int get_NumArgs (int exportNumber) { return m_numArgsForExport[exportNumber]; }
+	LPXLOPER12 convertFromXLValue (JniSequenceHelper *helper, VARIANT result);
+	VARIANT invoke (JniSequenceHelper *helper, std::vector<VARIANT> &inputs);
+	ULONG AddRef ();
+	ULONG Release ();
 };

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "excel/Register.h"
+#include "excel/Jvm.h"
 #include <io.h>
 #include <iostream>
 #include <fcntl.h>
@@ -25,7 +26,8 @@ namespace localtest {
 				//fclose (stdout);
 				//fclose (stdin);
 			}
-			Register reg;
+			Jvm jvm;
+			Register reg(jvm.getJvm());
 			reg.scanAndRegister(*(TempStr12 (L"TEST")));
 		}
 	};

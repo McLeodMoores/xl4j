@@ -710,7 +710,7 @@ HELPER_METHOD_1 (GetArrayLength, lArrayRef)
 /// <param name="type">The primitive type constant (e.g JTYPE_INT)</param>
 /// <param name="length">The length of the first dimension of the array</param>
 /// <returns>Reference to the new array< / returns>
-long JniSequenceHelper::NewArray (long type, int length) {
+long JniSequenceHelper::NewArray (long type, long length) {
 	long lTypeRef = IntegerConstant (type);
 	long lSizeRef = IntegerConstant (length);
 	long lArrayRef;
@@ -727,7 +727,7 @@ long JniSequenceHelper::NewArray (long type, int length) {
 /// <param name="length">The length of the first dimension of the array</param>
 /// <param name="width">The length of the second dimension of the array</param>
 /// <returns>Reference to the new array< / returns>
-long JniSequenceHelper::NewArray (long type, int length, int width) {
+long JniSequenceHelper::NewArray (long type, long length, long width) {
 	long lTypeRef = IntegerConstant (type);
 	long lLengthRef = IntegerConstant (length);
 	long lWidthRef = IntegerConstant (width);
@@ -785,6 +785,23 @@ long JniSequenceHelper::NewArray (long type, int length, int width) {
 	return lArrayRef;
 }
 
+
+/// <summary>Create a new array of objects of the specified class reference</summary>
+/// <para>This is a convenience method that should have reasonable performance.  lArrayClassRef should
+/// can be found by using FindCLass and passing the class-name prefixed with a '[' character.</para>
+/// <param name="lClassRef">The reference to the class the array is to contain references to</param>
+/// <param name="length">The length of the first dimension of the array</param>
+/// <returns>Reference to the new array< / returns>
+long JniSequenceHelper::NewObjectArray (long lClassRef, long length) {
+	long lLengthRef = IntegerConstant (length);
+	long lArrayRef;
+	HRESULT result = pJni->jni_NewObjectArray (lClassRef, lLengthRef, NULL, &lArrayRef);
+	if (FAILED (result)) {
+		_com_raise_error (result);
+	}
+	return lArrayRef;
+}
+
 /// <summary>Create a new 2D array of objects of the specified class and array of class references</summary>
 /// <para>This is a convenience method that should have reasonable performance.  lArrayClassRef should
 /// can be found by using FindCLass and passing the class-name prefixed with a '[' character.</para>
@@ -793,7 +810,7 @@ long JniSequenceHelper::NewArray (long type, int length, int width) {
 /// <param name="length">The length of the first dimension of the array</param>
 /// <param name="width">The length of the second dimension of the array</param>
 /// <returns>Reference to the new array< / returns>
-long JniSequenceHelper::NewObjectArray (long lClassRef, long lArrayClassRef, int length, int width) {
+long JniSequenceHelper::NewObjectArray (long lClassRef, long lArrayClassRef, long length, long width) {
 	long lLengthRef = IntegerConstant (length);
 	long lWidthRef = IntegerConstant (width);
 	long lArrayRef;			
@@ -820,7 +837,7 @@ long JniSequenceHelper::NewObjectArray (long lClassRef, long lArrayClassRef, int
 /// <param name="length">The length of the first dimension of the array</param>
 /// <param name="width">The length of the second dimension of the array</param>
 /// <returns>Reference to the new array< / returns>
-long JniSequenceHelper::NewObjectArray (TCHAR *cls, int length, int width) {
+long JniSequenceHelper::NewObjectArray (TCHAR *cls, long length, long width) {
 	long lLengthRef = IntegerConstant (length);
 	long lWidthRef = IntegerConstant (width);
 	TCHAR *clsArr = new TCHAR[_tcslen (cls) + 2];

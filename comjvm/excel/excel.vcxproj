@@ -142,7 +142,7 @@
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <TargetExt>.dll</TargetExt>
+    <TargetExt>.xll</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Unicode|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -365,6 +365,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="Jvm.h" />
     <ClInclude Include="Register.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -373,6 +374,7 @@
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Excel.cpp" />
     <ClCompile Include="Exports.cpp" />
+    <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="Register.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="Source1.cpp" />
