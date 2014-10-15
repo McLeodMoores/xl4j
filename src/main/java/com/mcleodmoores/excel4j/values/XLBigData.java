@@ -25,7 +25,7 @@ public final class XLBigData implements XLValue {
     _valueToExcel = valueToExcel;
     _excel = null;
     _handleFromExcel = 0;
-    _length = 0; // length embedded in _valueToExcel array in this case.
+    _length = valueToExcel.length; // length embedded in _valueToExcel array in this case.
   }
 
   private XLBigData(final Excel excel, final long handleFromExcel, final long length) {
@@ -99,6 +99,21 @@ public final class XLBigData implements XLValue {
    */
   public Serializable getValue() {
     return SerializationUtils.deserialize(getBuffer());
+  }
+  
+  /**
+   * Return the Excel handle for this data.
+   * @return the Excel handle for the binary data area
+   */
+  public long getHandle() {
+    return _handleFromExcel;
+  }
+  
+  /**
+   * @return the length of the data
+   */
+  public long getLength() {
+    return _length;
   }
 
   @Override
