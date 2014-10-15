@@ -123,7 +123,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void)
 	g_pJvm = new Jvm ();
 	g_pRegister = new Register (g_pJvm->getJvm ());
 	g_pRegister->scanAndRegister (xDLL);
-		
+	TRACE ("Finished scan and register!");
 	// Free the XLL filename //
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 

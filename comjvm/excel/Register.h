@@ -14,7 +14,7 @@ class COMJVM_EXCEL_API Register {
 private:	
 	IJvm *m_pJvm;
 	// each slot (indexed by the export number) holds the number of args for that export.
-	std::vector<int> m_numArgsForExport;
+	int m_numArgsForExport[1024];
 	void registerFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
 		bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp);
 	void extractField (JniSequenceHelper *helper, long fieldType, long entryCls, long entryObj, TCHAR *fieldName, TCHAR *signature);

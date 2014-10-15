@@ -219,6 +219,7 @@
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;COMJVM_EXCEL_EXPORT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
