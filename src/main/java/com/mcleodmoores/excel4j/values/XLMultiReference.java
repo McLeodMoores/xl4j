@@ -66,6 +66,13 @@ public final class XLMultiReference implements XLValue {
   public List<XLRange> getRanges() {
     return _ranges;
   }
+  
+  /**
+   * @return the range, not null
+   */
+  public XLRange[] getRangesArray() {
+    return _ranges.toArray(new XLRange[] {});
+  }
 
   /**
    * @return true, if a single range

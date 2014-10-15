@@ -54,7 +54,12 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     entry._acceleratorKey = acceleratorKey == null ? "" : acceleratorKey;
     entry._helpTopic = helpTopic == null ? "" : helpTopic;
     entry._description = description == null ? "" : description;
-    entry._argsHelp = argsHelp;
+    // replace any missing help strings with empty string. 
+    String[] argsHelpCp = new String[argsHelp.length];
+    for (int i = 0; i < argsHelp.length; i++) {
+      argsHelpCp[i] = argsHelp[i] == null ? "" : argsHelp[i];
+    }
+    entry._argsHelp = argsHelpCp;
     _entries.add(entry);
     s_logger.info("just added entry to entries table");
     return 0;
