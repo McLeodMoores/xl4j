@@ -572,6 +572,7 @@ long JniSequenceHelper::GetStaticMethodID (long clsRef, TCHAR *methodName, TCHAR
 /// <param name="...">Vararg list of references to the arguments to pass to the method</param>
 /// <returns>Reference to the result, or -1 if void</returns>
 long JniSequenceHelper::CallStaticMethod (long returnType, long lClassRef, long lMethodIDRef, long numArgs, ...) {
+	TRACE ("JniSequenceHelper::CallStaticMethod");
 	std::vector<long> args (numArgs);
 	va_list list;
 	va_start (list, numArgs);
@@ -581,7 +582,7 @@ long JniSequenceHelper::CallStaticMethod (long returnType, long lClassRef, long 
 	va_end (list);
 	long lReturnTypeRef = IntegerConstant (returnType);
 	long lResultRef;
-	HRESULT result = pJni->jni_CallStaticMethod (lReturnTypeRef, lClassRef, lMethodIDRef, numArgs, numArgs > 0 ? &args[0] : NULL, &lResultRef);
+	HRESULT result = pJni->jni_CallStaticMethod (lReturnTypeRef, lClassRef, lMethodIDRef, numArgs, numArgs > 0 ? args.data() : NULL, &lResultRef);
 	if (FAILED (result)) {
 		_com_raise_error (result);
 	}

@@ -327,23 +327,34 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 
 __declspec(thread) Converter *t_pConverter = NULL;
 
-__declspec(dllexport) LPXLOPER12 UDF (int exportNumber, ...) {
-	va_list ap;
+__declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
 	// Init TLS-based type converter.
 	if (!t_pConverter) t_pConverter = new Converter (g_pJvm->getJvm ());
 	JniSequenceHelper *helper = new JniSequenceHelper (g_pJvm->getJvm ());
 	int nArgs = g_pRegister->get_NumArgs (exportNumber);
+	TRACE ("UDF_%d invoked (%d params)", exportNumber, nArgs);
 	va_start (ap, exportNumber);
 	std::vector<VARIANT> inputs;
-	for (int i = 0; i < nArgs; i++) {
+	TRACE ("Got XLOPER12 %p, type = %x", first, first->xltype);
+	long slot1 = t_pConverter->convertArgument (helper, first, inputs);
+	helper->Result (slot1);
+	TRACE ("Queued converter code");
+	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
-		t_pConverter->convertArgument (helper, arg, inputs);
+		TRACE ("Got XLOPER12 %p, type = %x", arg, arg->xltype);
+		long slot = t_pConverter->convertArgument (helper, arg, inputs);
+		helper->Result (slot);
+		TRACE ("Queued converter code");
 	}
 	va_end (ap);
 	std::vector<VARIANT> results (nArgs + 1);
+	TRACE ("Executing conversion code");
 	helper->Execute (inputs.size (), inputs.data(), nArgs, &((results.data())[1]));
+	TRACE ("Done. Now invoking Java method");
 	VARIANT result = t_pConverter->invoke (helper, results);
+	TRACE ("Done. Converting Result.");
 	LPXLOPER12 xlResult = t_pConverter->convertFromXLValue (helper, result);
+	TRACE ("Done, returning LPXLOPER12 to Excel!");
 	delete helper;
 	return xlResult;
 }

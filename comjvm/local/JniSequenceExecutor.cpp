@@ -687,13 +687,22 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				}
 				case JniOperation::jni_CallStaticMethod
 					: {
+					TRACE ("jniCallStaticMethod preamble...");
 					long jtype = (long)__NEXT_PARAM.get_jint ();
+					TRACE ("type = %d", jtype);
 					jclass cls = __NEXT_PARAM.get_jclass ();
+					TRACE ("class = %p", cls);
 					jmethodID methodId = __NEXT_PARAM.get_jmethodID ();
+					TRACE ("methodId = %p", methodId);
 					jsize size = __NEXT_PARAM.get_jsize (); //m_pOwner->Params ()->size ();
+					TRACE ("size = %d", size);
 					jvalue *arguments = new jvalue[size];
 					for (int i = 0; i < size; i++) {
-						(__NEXT_PARAM.get_jvalue (&arguments[i]));
+						TRACE ("about to process arg %d", i);
+						CJniValue arg = __NEXT_PARAM;
+						TRACE ("arg vtype is %d", arg.get_type());
+						arg.get_jvalue (&arguments[i]);
+						TRACE ("arg[%d] = %p", i, arguments[i]);
 					}
 					switch (jtype) {
 						case JTYPE_INT: {

@@ -137,7 +137,7 @@ private:
 	long m_cResult;
 
 	~CJniSequence ();
-	HRESULT AddOperation (JniOperation operation);
+	HRESULT AddOperation (JniOperation operation); 
 	HRESULT AddOperation (JniOperation operation, long lParam);
 	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2);
 	HRESULT AddOperation (JniOperation operation, long lParam1, long lParam2, long lParam3);
