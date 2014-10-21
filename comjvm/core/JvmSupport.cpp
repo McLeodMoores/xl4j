@@ -170,5 +170,6 @@ HRESULT STDMETHODCALLTYPE CJvmSupport::CreateManagedJni (
 	/* [retval][out] */ IJniSequence **ppJni
 	) {
 	// TODO
+//	TRACE ("CreateManagedJni not implemented");
 	return E_NOTIMPL;
 }

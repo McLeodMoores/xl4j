@@ -125,6 +125,7 @@ long JniSequenceHelper::DoubleConstant (double val) {
 void JniSequenceHelper::Result (long resultRef) {
 	HRESULT result = pJni->Result (resultRef);
 	if (FAILED (result)) {
+		TRACE ("Result returned error");
 		_com_raise_error (result);
 	}
 }
@@ -449,16 +450,19 @@ long JniSequenceHelper::GetMethodID (long clsRef, TCHAR *methodName, TCHAR *meth
 /// <returns>Reference to the result, or -1 if void</returns>
 long JniSequenceHelper::CallMethod (long returnType, long lObjectRef, long lMethodIDRef, long numArgs, ...) {
 	std::vector<long> args (numArgs);
+	TRACE ("JniSequenceHelper::CallMethod");
 	va_list list;
 	va_start (list, numArgs);
 	for (int i = 0; i < numArgs; i++) {
+		TRACE ("JniSequenceHelper::CallMethod: extracting arg %d", i);
 		args[i] = va_arg (list, long);
 	}
 	va_end (list);
 	long lReturnTypeRef = IntegerConstant (returnType);
 	long lResultRef;
-	HRESULT result = pJni->jni_CallMethod (lReturnTypeRef, lObjectRef, lMethodIDRef, numArgs, numArgs > 0 ? &args[0] : NULL, &lResultRef);
+	HRESULT result = pJni->jni_CallMethod (lReturnTypeRef, lObjectRef, lMethodIDRef, numArgs, numArgs > 0 ? args.data() : NULL, &lResultRef);
 	if (FAILED (result)) {
+		TRACE ("Call to add CallMethod to sequence failed");
 		_com_raise_error (result);
 	}
 	return lResultRef;
@@ -768,6 +772,7 @@ long JniSequenceHelper::NewArray (long type, long length, long width) {
 		break;
 	}
 	case JTYPE_OBJECT: {
+		TRACE ("NewArray: unsupported type %d", type);
 		_com_raise_error (E_INVALIDARG);
 	}
 	}
@@ -796,7 +801,7 @@ long JniSequenceHelper::NewArray (long type, long length, long width) {
 long JniSequenceHelper::NewObjectArray (long lClassRef, long length) {
 	long lLengthRef = IntegerConstant (length);
 	long lArrayRef;
-	HRESULT result = pJni->jni_NewObjectArray (lClassRef, lLengthRef, NULL, &lArrayRef);
+	HRESULT result = pJni->jni_NewObjectArray (lLengthRef, lClassRef, NULL, &lArrayRef);
 	if (FAILED (result)) {
 		_com_raise_error (result);
 	}
@@ -818,7 +823,7 @@ long JniSequenceHelper::NewObjectArray (long lClassRef, long lArrayClassRef, lon
 	HRESULT result = pJni->jni_NewObjectArray (lLengthRef, lArrayClassRef, NULL, &lArrayRef);
 	for (int i = 0; i < width; i++) {
 		long lInnerArrayRef;
-		HRESULT result = pJni->jni_NewObjectArray (lClassRef, lWidthRef, NULL, &lInnerArrayRef);
+		HRESULT result = pJni->jni_NewObjectArray (lWidthRef, lClassRef, NULL, &lInnerArrayRef);
 		if (FAILED (result)) {
 			_com_raise_error (result);
 		}
@@ -851,7 +856,7 @@ long JniSequenceHelper::NewObjectArray (TCHAR *cls, long length, long width) {
 	HRESULT result = pJni->jni_NewObjectArray (lLengthRef, lArrayClassRef, NULL, &lArrayRef);
 	for (int i = 0; i < width; i++) {
 		long lInnerArrayRef;
-		HRESULT result = pJni->jni_NewObjectArray (lClassRef, lWidthRef, NULL, &lInnerArrayRef);
+		HRESULT result = pJni->jni_NewObjectArray (lWidthRef, lClassRef, NULL, &lInnerArrayRef);
 		if (FAILED (result)) {
 			_com_raise_error (result);
 		}

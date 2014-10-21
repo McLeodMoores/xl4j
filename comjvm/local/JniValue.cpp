@@ -74,6 +74,7 @@ void CJniValue::put_variant (const VARIANT *pvValue) {
 		put_jbyteBuffer ((jbyte *)safeArray->pvData, safeArray->cbElements);
 	} break;
 	default:
+		TRACE ("JniValue::put_variant type %d not implemented", pvValue->vt);
 		_com_raise_error (E_NOTIMPL);
 	}
 }
@@ -254,7 +255,12 @@ void CJniValue::get_variant (VARIANT *pvValue) const {
 	case t_BSTR:
 		pvValue->bstrVal = v._bstr->copy (); // copy() will raise COM error if no mem.
 		break;
+	case t_HANDLE:
+		pvValue->vt = VT_UI8;
+		pvValue->ullVal = (ULONGLONG)v._HANDLE;
+		break; 
 	default:
+		TRACE ("JniValue::get_variant type %d not implemented", type);
 		_com_raise_error (E_NOTIMPL);
 		break;
 	}
@@ -277,6 +283,7 @@ void CJniValue::get_jvalue (jvalue *pValue) const {
 	case t_voidBuffer:
 	case t_BSTR:
 	case t_pjchar:
+		TRACE ("CJniValue::get_jvalue: unsupported type %d", type);
 		_com_raise_error (E_INVALIDARG); // needs to have been allocated already on the java side
 		break;
 		// these are all types you can pass to a Java method. jsize is a bit marginal.
@@ -351,6 +358,7 @@ char *CJniValue::get_pchar () const {
 		case t_pchar:
 			return v._pchar;
 	}
+	TRACE ("CJniValue::get_pchar: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -361,6 +369,7 @@ jobjectRefType CJniValue::get_jobjectRefType_t () const {
 	case t_HANDLE:
 		return (jobjectRefType)v._HANDLE;
 	}
+	TRACE ("CJniValue::get_jobjectRefType_t: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -376,6 +385,7 @@ jobject CJniValue::get_jobject () const {
 	case t_HANDLE:
 		return (jobject)v._HANDLE;
 	}
+	TRACE ("CJniValue::get_jobject: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -387,6 +397,7 @@ jclass CJniValue::get_jclass () const {
 	case t_HANDLE:
 		return (jclass)v._HANDLE;
 	}
+	TRACE ("CJniValue::get_jclass: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -397,6 +408,7 @@ jstring CJniValue::get_jstring () const {
 	case t_jobject:
 		return (jstring)v._jvalue.l;
 	}
+	TRACE ("CJniValue::get_jstring: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -408,6 +420,7 @@ jint CJniValue::get_jint () const {
 	case t_jsize:
 		return v._jvalue.i;
 	}
+	TRACE ("JniValue::get_jint() type %d not handled", type);
 	_com_raise_error (E_NOTIMPL);
 }
 
@@ -418,6 +431,7 @@ jint CJniValue::get_jsize () const {
 	case t_jsize:
 		return v._jvalue.i;
 	}
+	TRACE ("JniValue::get_jsize() type %d not handled", type);
 	_com_raise_error (E_NOTIMPL);
 }
 
@@ -446,6 +460,7 @@ jboolean *CJniValue::get_jbooleanBuffer () const {
 	if (type == t_jbooleanBuffer) {
 		return v._jbooleanBuffer._pjboolean;
 	}
+	TRACE ("CJniValue::get_jbooleanBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -453,6 +468,7 @@ jsize CJniValue::get_jbooleanBufferSize () const {
 	if (type == t_jbooleanBuffer) {
 		return v._jbooleanBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jbooleanBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -471,6 +487,7 @@ jbyte *CJniValue::get_jbyteBuffer () const {
 	if (type == t_jbyteBuffer) {
 		return v._jbyteBuffer._pjbyte;
 	}
+	TRACE ("CJniValue::get_jbyteBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -478,6 +495,7 @@ jsize CJniValue::get_jbyteBufferSize () const {
 	if (type == t_jbyteBuffer) {
 		return v._jbyteBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jbyteBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -497,6 +515,8 @@ jint *CJniValue::get_jintBuffer () const {
 	if (type == t_jintBuffer) {
 		return v._jintBuffer._pjint;
 	}
+
+	TRACE ("CJniValue::get_jintBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -504,6 +524,7 @@ jsize CJniValue::get_jintBufferSize () const {
 	if (type == t_jintBuffer) {
 		return v._jintBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jintBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -523,6 +544,7 @@ jchar *CJniValue::get_jcharBuffer () const {
 	if (type == t_jcharBuffer) {
 		return v._jcharBuffer._pjchar;
 	}
+	TRACE ("CJniValue::get_jcharBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -530,6 +552,7 @@ jsize CJniValue::get_jcharBufferSize () const {
 	if (type == t_jcharBuffer) {
 		return v._jcharBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jcharBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -549,6 +572,7 @@ jshort *CJniValue::get_jshortBuffer () const {
 	if (type == t_jshortBuffer) {
 		return v._jshortBuffer._pjshort;
 	}
+	TRACE ("CJniValue::get_jshortBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -556,6 +580,7 @@ jsize CJniValue::get_jshortBufferSize () const {
 	if (type == t_jshortBuffer) {
 		return v._jshortBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jshortBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -575,6 +600,7 @@ jlong *CJniValue::get_jlongBuffer () const {
 	if (type == t_jlongBuffer) {
 		return v._jlongBuffer._pjlong;
 	}
+	TRACE ("CJniValue::get_jlongBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -582,6 +608,7 @@ jsize CJniValue::get_jlongBufferSize () const {
 	if (type == t_jlongBuffer) {
 		return v._jlongBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jlongBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -602,6 +629,7 @@ jfloat *CJniValue::get_jfloatBuffer () const {
 	if (type == t_jfloatBuffer) {
 		return v._jfloatBuffer._pjfloat;
 	}
+	TRACE ("CJniValue::get_jfloatBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -609,6 +637,7 @@ jsize CJniValue::get_jfloatBufferSize () const {
 	if (type == t_jfloatBuffer) {
 		return v._jfloatBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jfloatBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -629,6 +658,7 @@ jdouble *CJniValue::get_jdoubleBuffer () const {
 	if (type == t_jdoubleBuffer) {
 		return v._jdoubleBuffer._pjdouble;
 	}
+	TRACE ("CJniValue::get_jdoubleBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -636,6 +666,7 @@ jsize CJniValue::get_jdoubleBufferSize () const {
 	if (type == t_jdoubleBuffer) {
 		return v._jdoubleBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jdoubleBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -655,6 +686,7 @@ jobject *CJniValue::get_jobjectBuffer () const {
 	if (type == t_jobjectBuffer) {
 		return v._jobjectBuffer._pjobject;
 	}
+	TRACE ("CJniValue::get_jobjectBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -662,6 +694,7 @@ jsize CJniValue::get_jobjectBufferSize () const {
 	if (type == t_jobjectBuffer) {
 		return v._jobjectBuffer._jsize;
 	}
+	TRACE ("CJniValue::get_jobjectBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -680,6 +713,7 @@ void *CJniValue::get_voidBuffer () const {
 	if (type == t_voidBuffer) {
 		return v._voidBuffer._pvoid;
 	}
+	TRACE ("CJniValue::get_voidBuffer: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -687,6 +721,7 @@ jlong CJniValue::get_voidBufferSize () const {
 	if (type == t_voidBuffer) {
 		return v._voidBuffer._size;
 	}
+	TRACE ("CJniValue::get_voidBufferSize: unsupported type %d", type);
 	_com_raise_error (E_INVALIDARG);
 }
 
@@ -704,6 +739,7 @@ jarray CJniValue::get_jarray () const {
 	case t_jdoubleArray:
 		return (jarray) v._jvalue.l;
 	default:
+		TRACE ("CJniValue::get_jarray: unsupported type %d", type);
 		_com_raise_error (E_INVALIDARG);
 	}
 }
