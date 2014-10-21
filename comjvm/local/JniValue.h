@@ -125,7 +125,7 @@ private:
 		BSTR copy () { return m_bstr.copy (); }
 		PCSTR pcstr () { return (PCSTR)m_bstr; }
 		PCWSTR pcwstr () { return (PCWSTR)m_bstr; }
-
+		
 	};
 	union {
 		// a COM string, converted on demand into a jstring.
@@ -196,7 +196,7 @@ public:
 	void get_variant (VARIANT *pvValue) const;
 	CJniValue &operator= (const CJniValue &rhs);
 	void get_jvalue (jvalue *pValue) const;
-
+	vtype get_type () { return type; };
 	/// <summary>these are specialised so they access the jvalue embedded union</summary>
 #define __GETPRIMITIVE(_t, _field) \
 	_t get_##_t () const { \
@@ -281,9 +281,12 @@ public:
 	char *get_pchar () const;
 	
 	__PUTHANDLE (jobject);
-	__GETHANDLE (jobject);
+
+	jobject get_jobject () const;
+	//__GETHANDLE (jobject);
 	__PUTHANDLE (jclass);
-	__GETHANDLE (jclass);
+
+	jclass get_jclass () const;
 	__PUTHANDLE (jthrowable);
 	__GETHANDLE (jthrowable);
 	jarray get_jarray () const;

@@ -245,10 +245,10 @@ COMJVM_EXCEL_API void Converter::xlBigDataClsAnd3Methods (JniSequenceHelper *hel
 	// MethodID for XLBigData.of(Excel, long, long)
 	helper->Result (
 		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlBigDataCls,
-				TEXT ("of"),
-				TEXT ("(Lcom/mcleodmoores/excel4j/Excel;JJ)Lcom/mcleodmoores/excel4j/values/XLBigData")
+		helper->GetStaticMethodID (
+		xlBigDataCls,
+		TEXT ("of"),
+		TEXT ("(Lcom/mcleodmoores/excel4j/Excel;JJ)Lcom/mcleodmoores/excel4j/values/XLBigData;")
 			)
 		)
 	);
@@ -283,7 +283,7 @@ COMJVM_EXCEL_API void Converter::xlSheetIdClsAnd2Methods (JniSequenceHelper *hel
 			helper->GetStaticMethodID (
 				xlSheetIdCls,
 				TEXT ("of"),
-				TEXT ("(I)Lcom/mcleodmoores/excel4j/values/XLSheetId")
+				TEXT ("(I)Lcom/mcleodmoores/excel4j/values/XLSheetId;")
 			)
 		)
 	);
@@ -310,7 +310,7 @@ COMJVM_EXCEL_API void Converter::xlArrayClsAnd2Methods (JniSequenceHelper *helpe
 			helper->GetStaticMethodID (
 				xlArrayCls,
 				TEXT ("of"),
-				TEXT ("([[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLArray")
+				TEXT ("([[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLArray;")
 			)
 		)
 	);
@@ -337,7 +337,7 @@ COMJVM_EXCEL_API void Converter::xlLocalReferenceClsAnd2Methods (JniSequenceHelp
 			helper->GetStaticMethodID (
 				xlLocalReferenceCls,
 				TEXT ("of"),
-				TEXT ("(Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLLocalReference")
+				TEXT ("(Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLLocalReference;")
 			)
 		)
 	);
@@ -364,7 +364,7 @@ COMJVM_EXCEL_API void Converter::xlMultiReferenceClsAnd3Methods (JniSequenceHelp
 		helper->GetStaticMethodID (
 		xlMultiReferenceCls,
 		TEXT ("of"),
-		TEXT ("(Lcom/mcleodmoores/excel4j/values/XLSheetId;[Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLMultiReference")
+		TEXT ("(Lcom/mcleodmoores/excel4j/values/XLSheetId;[Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLMultiReference;")
 			)
 		)
 	);
@@ -399,7 +399,7 @@ COMJVM_EXCEL_API void Converter::xlMissingClsAnd1Instance (JniSequenceHelper *he
 	long xlMissingValueOfMtd = helper->GetStaticMethodID (
 		xlMissingCls,
 		TEXT ("valueOf"),
-		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLMissing")
+		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLMissing;")
 	);
 	enumConstResult (helper, xlMissingCls, xlMissingValueOfMtd, TEXT ("INSTANCE"));
 }
@@ -412,7 +412,7 @@ COMJVM_EXCEL_API void Converter::xlNilClsAnd1Instance (JniSequenceHelper *helper
 	long xlNilValueOfMtd = helper->GetStaticMethodID (
 		xlNilCls,
 		TEXT ("valueOf"),
-		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLNil")
+		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLNil;")
 	);
 	enumConstResult (helper, xlNilCls, xlNilValueOfMtd, TEXT ("INSTANCE"));
 }
@@ -425,7 +425,7 @@ COMJVM_EXCEL_API void Converter::xlBooleanClsAnd2Instances (JniSequenceHelper *h
 	long xlBooleanValueOfMtd = helper->GetStaticMethodID (
 		xlBooleanCls,
 		TEXT ("valueOf"),
-		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLBoolean")
+		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLBoolean;")
 	);
 	enumConstResult (helper, xlBooleanCls, xlBooleanValueOfMtd, TEXT ("TRUE"));
 	enumConstResult (helper, xlBooleanCls, xlBooleanValueOfMtd, TEXT ("FALSE"));
@@ -439,7 +439,7 @@ COMJVM_EXCEL_API void Converter::xlErrorClsAnd7Instances (JniSequenceHelper *hel
 	long xlErrorValueOfMtd = helper->GetStaticMethodID (
 		xlErrorCls,
 		TEXT ("valueOf"),
-		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLError")
+		TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLError;")
 		);
 	// XLError.valueOf("Null")
 	enumConstResult (helper, xlErrorCls, xlErrorValueOfMtd, TEXT ("Null"));
@@ -468,18 +468,28 @@ COMJVM_EXCEL_API void Converter::lookupConstants (IJvm *jvm) {
 	xlIntegerClsAnd2Methods (helper);									// 3
 	xlBigDataClsAnd3Methods (helper);									// 4
 	xlSheetIdClsAnd2Methods (helper);									// 3
+	TRACE ("Queued SheetId constants");
 	xlArrayClsAnd2Methods (helper);										// 3
+	TRACE ("Queued Array constants");
 	xlLocalReferenceClsAnd2Methods (helper);							// 3
+	TRACE ("Queued LocalRference constants");
 	xlMultiReferenceClsAnd3Methods (helper);							// 4
+	TRACE ("Queued MultiReference constants");
 	xlMissingClsAnd1Instance (helper);									// 2
+	TRACE ("Queued Missing constants");
 	xlNilClsAnd1Instance (helper);										// 2
+	TRACE ("Queued Nil constants");
 	xlBooleanClsAnd2Instances (helper);									// 3
+	TRACE ("Queued Boolean constants");
 	xlErrorClsAnd7Instances (helper);									// 8
+	TRACE ("Queued Error constants");
 	//																	----
 	//																	  56
 	const int NUM_CONSTANTS = 56;
-	VARIANT constants[NUM_CONSTANTS];
+	VARIANT constants[NUM_CONSTANTS + 20];
+	TRACE ("About to run constants lookup sequence");
 	helper->Execute (0, NULL, NUM_CONSTANTS, constants);
+	TRACE ("Created instance, class and method constants");
 	bool badConstant = false;
 	for (int i = 0; i < NUM_CONSTANTS; i++) {
 		if (constants->vt != VT_UI8 || !constants->ullVal) {
@@ -565,6 +575,7 @@ COMJVM_EXCEL_API void Converter::lookupConstants (IJvm *jvm) {
 	m_xlErrorNameInstance = constants[index++];
 	m_xlErrorNumInstance = constants[index++];
 	m_xlErrorNAInstance = constants[index++];
+	delete helper;
 }
 
 void Converter::enumConstResult (JniSequenceHelper *helper, long clsRef, long methodIDRef, TCHAR *name) {
@@ -575,14 +586,17 @@ void Converter::enumConstResult (JniSequenceHelper *helper, long clsRef, long me
 				clsRef,
 				methodIDRef,
 				1,
-				helper->StringConstant (name)
+				helper->NewString (
+					helper->StringConstant (name), 
+					helper->IntegerConstant(_tcslen (name))
+				)
 			)
 		)
 	);
 }
 
 COMJVM_EXCEL_API long Converter::convertArgument (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs) {
-	switch (arg->xltype) {
+	switch (arg->xltype & 0x0fff) {
 	case xltypeStr:
 		return convertToXLString (helper, arg, inputs);
 		break;
@@ -620,7 +634,7 @@ COMJVM_EXCEL_API long Converter::convertArgument (JniSequenceHelper *helper, LPX
 		convertToXLLocalReference (helper, arg, inputs);
 		break;
 	default:
-		TRACE ("Unrecognised XLOPER type");
+		TRACE ("Unrecognised XLOPER type %d", arg->xltype);
 		_com_raise_error (E_FAIL);
 		break;
 	}

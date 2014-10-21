@@ -364,6 +364,32 @@ jobjectRefType CJniValue::get_jobjectRefType_t () const {
 	_com_raise_error (E_INVALIDARG);
 }
 
+jobject CJniValue::get_jobject () const {
+	switch (type) {
+	case t_jclass:
+	case t_jstring:
+	case t_jthrowable:
+	case t_jfieldID:
+	case t_jmethodID:
+	case t_jobject:
+		return (jobject)v._jvalue.l;
+	case t_HANDLE:
+		return (jobject)v._HANDLE;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
+jclass CJniValue::get_jclass () const {
+	switch (type) {
+	case t_jclass:
+	case t_jobject:
+		return (jclass)v._jvalue.l;
+	case t_HANDLE:
+		return (jclass)v._HANDLE;
+	}
+	_com_raise_error (E_INVALIDARG);
+}
+
 jstring CJniValue::get_jstring () const {
 	switch (type) {
 	case t_jstring:

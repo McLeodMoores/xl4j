@@ -3,7 +3,7 @@
 #include "Jvm.h"
 #include "Converter.h"
 
-__declspec(dllexport) LPXLOPER12 UDF (int exportNumber, ...);
+__declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap);
 
 #define EXPORT(num) __declspec(dllexport) LPXLOPER12 WINAPI UDF_##num (LPXLOPER12 first, ...) { \
 	va_list ap; \
