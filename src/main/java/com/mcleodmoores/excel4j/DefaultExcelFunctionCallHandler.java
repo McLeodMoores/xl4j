@@ -37,7 +37,9 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
       s_logger.info("arg = {}", arg);
     }
     final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
+    s_logger.info("functionDefinition", functionDefinition.getFunctionMetadata().getFunctionSpec().name());
     final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
+    s_logger.info("method invoker = {}", methodInvoker.getMethodName());
     try {
       if (methodInvoker.isStatic()) {
         return methodInvoker.invoke(null, args);  
