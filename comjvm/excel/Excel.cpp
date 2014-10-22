@@ -349,14 +349,22 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	va_end (ap);
 	std::vector<VARIANT> results (nArgs + 1);
 	TRACE ("Executing conversion code");
-	helper->Execute (inputs.size (), inputs.data(), nArgs, &((results.data())[1]));
-	TRACE ("Done. Now invoking Java method");
-	VARIANT result = t_pConverter->invoke (helper, results);
-	TRACE ("Done. Converting Result.");
-	LPXLOPER12 xlResult = t_pConverter->convertFromXLValue (helper, result);
-	TRACE ("Done, returning LPXLOPER12 to Excel!");
-	delete helper;
-	return xlResult;
+	try {
+		helper->Execute (inputs.size (), inputs.data (), nArgs, &((results.data ())[1]));
+
+		TRACE ("Done. Now invoking Java method");
+		VARIANT result = t_pConverter->invoke (helper, results);
+		TRACE ("Done. Converting Result.");
+		LPXLOPER12 xlResult = t_pConverter->convertFromXLValue (helper, result);
+		TRACE ("Done, returning LPXLOPER12 to Excel!");
+		delete helper;
+		return xlResult;
+	} catch (_com_error &e) {
+		TRACE ("Exception (%d) occurred %s", e.Error (), e.ErrorMessage ());
+		delete helper;
+		return NULL;
+	}
+
 }
 
 ///***************************************************************************

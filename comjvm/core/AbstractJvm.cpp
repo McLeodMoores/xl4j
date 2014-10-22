@@ -30,6 +30,7 @@ HRESULT STDMETHODCALLTYPE CAbstractJvm::QueryInterface (
 	/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject
 	) {
 	// TODO
+//	TRACE ("Query interface not implemented");
 	return E_NOTIMPL;
 }
 

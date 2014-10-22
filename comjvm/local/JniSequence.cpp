@@ -481,6 +481,8 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Argument (
 		if (SUCCEEDED (hr)) {
 			m_cArgument++;
 			*plValueRef = m_cValue++;
+		} else {
+			TRACE ("Argument returned error");
 		}
 	}
 	__RETURN_HR;
@@ -492,6 +494,7 @@ HRESULT STDMETHODCALLTYPE CJniSequence::Result (
 	__JNI_OPERATION {
 		if ((lValueRef < 0) || (lValueRef >= (long)m_cValue)) {
 			hr = E_INVALIDARG;
+			TRACE ("Result returned error");
 		} else {
 			hr = AddOperation (JniOperation::io_StoreResult, lValueRef);
 			if (SUCCEEDED (hr)) {
@@ -728,7 +731,9 @@ HRESULT STDMETHODCALLTYPE CJniSequence::jni_CallMethod (
 	) {
 	if (cArgs && !alArgRefs) return E_POINTER;
 	if (!plResultRef) return E_POINTER;
-	if (cArgs < 0) return E_INVALIDARG;
+	if (cArgs < 0) {
+		TRACE ("CJniSequence::jni_CallMethod: cArgs<0");  return E_INVALIDARG;
+	}
 	__JNI_OPERATION {
 		long lSizeRef;
 		hr = IntConstant (cArgs, &lSizeRef);

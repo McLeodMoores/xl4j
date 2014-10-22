@@ -1106,14 +1106,19 @@ COMJVM_EXCEL_API VARIANT Converter::invoke (JniSequenceHelper *helper, std::vect
 	int size = inputs.size () - 1;
 	inputs[0] = m_xlValueCls; // we left a free slot before calling this method to hold this.
 	long argsArrRef = helper->NewObjectArray (helper->Argument (), size);
-	for (int i = 0; i < inputs.size (); i++) {
+	for (int i = 0; i < size; i++) {
 		helper->SetObjectArrayElement (argsArrRef, i, helper->Argument ());
 	}
 	inputs.push_back (m_excelFunctionCallHandlerInstance);
 	inputs.push_back (m_excelFunctionCallHandlerInvokeMtd);
-	long result = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 2, size, argsArrRef);
+	long boxedSize = helper->NewObject (_T("java/lang/Integer"), _T("(I)V"), 1, helper->IntegerConstant(size));
+	for (int i = 0; i < inputs.size(); i++) {
+		TRACE ("Inputs[%d] type = %d, value = %p", i, inputs[i].vt, inputs[i].ullVal);
+	}
+	long result = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 2, boxedSize, argsArrRef);
 	helper->Result (result);
 	VARIANT results[1];
+	TRACE ("Converter::invoke: calling Execute");
 	helper->Execute (inputs.size (), inputs.data (), 1, results);
 	return results[0];
 }

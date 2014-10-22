@@ -50,8 +50,10 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						VARIANT *val = m_pArgs++;
 						__NEXT_RESULT.put_variant (val);
 						TRACE ("io_LoadArgument(VARIANT type=%d)", val->vt);
+					} else {
+						TRACE ("io_LoadArgument: Trying to load arg from empty argument list");
+						_com_raise_error (E_FAIL);
 					}
-
 					break;
 				}
 				case JniOperation::io_LoadConstant
@@ -231,10 +233,16 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					pEnv->DeleteLocalRef (localRef);
 					break;
 				}
-				case JniOperation::jni_IsSameObject:
+				case JniOperation::jni_IsSameObject
+					: {
 					// TODO
-					_com_raise_error (E_NOTIMPL);
+					jobject obj1 = __NEXT_PARAM.get_jobject ();
+					jobject obj2 = __NEXT_PARAM.get_jobject ();
+					TRACE ("jni_IsSameObject(%p, %p)", obj1, obj2);
+					jboolean same = pEnv->IsSameObject (obj1, obj2);
+					__NEXT_RESULT.put_jboolean (same);
 					break;
+				}
 				case JniOperation::jni_NewLocalRef
 					: {
 					jobject obj = __NEXT_PARAM.get_jobject ();
@@ -305,13 +313,20 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				}
 				case JniOperation::jni_CallMethod
 					: {
+					TRACE ("jni_CallMethod: started");
 					long jtype = (long)__NEXT_PARAM.get_jint ();
+					TRACE ("jni_CallMethod: jtype = %d", jtype);
 					jobject object = __NEXT_PARAM.get_jobject ();
+					TRACE ("jni_CallMethod: object = %p", object);
 					jmethodID methodId = __NEXT_PARAM.get_jmethodID ();
+					TRACE ("jni_CallMethod: methodId = %p", methodId);
 					jsize size = __NEXT_PARAM.get_jsize (); //m_pOwner->Params ()->size ();
+					TRACE ("jni_CallMethod: size = %d", size);
 					jvalue *arguments = new jvalue[size];
 					for (int i = 0; i < size; i++) {
-						(__NEXT_PARAM.get_jvalue (&arguments[i]));
+						TRACE ("jni_CallMethod: reading arg %d", i);
+						__NEXT_PARAM.get_jvalue (&arguments[i]);
+						TRACE ("jni_CallMethod: done");
 					}
 					switch (jtype) {
 						case JTYPE_INT: {
@@ -445,6 +460,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						}
 						default:
 							delete arguments;
+							TRACE ("jni_CallMethod: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 					}
@@ -525,6 +541,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						}
 						default:
 							delete arguments;
+							TRACE ("jni_CallNonVirtualMethod: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 					}
@@ -603,6 +620,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						default:
+							TRACE ("jni_GetField: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 					}
@@ -670,6 +688,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						default:
+							TRACE ("jni_SetField: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 					}
@@ -803,6 +822,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 						}
 						default:
 							delete arguments;
+							TRACE ("jni_CallStaticMethod: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 					}
@@ -881,6 +901,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						default:
+							TRACE ("jni_GetStaticField: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 					}
@@ -948,6 +969,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						default: {
+							TRACE ("jni_SetStaticField: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1047,8 +1069,11 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				}
 				case JniOperation::jni_SetObjectArrayElement
 					: {
+					TRACE ("jni_SetObjectArrayElement: called");
 					jobjectArray array = __NEXT_PARAM.get_jobjectArray ();
+					TRACE ("jni_SetObjectArrayElement: array = %p", array);
 					jsize index = __NEXT_PARAM.get_jsize ();
+					TRACE ("jni_SetObjectArrayElement: size = %d");
 					jobject val = __NEXT_PARAM.get_jobject ();
 					TRACE ("jni_SetObjectArrayElement(%p, %d, %p)", array, index, val);
 					pEnv->SetObjectArrayElement (array, index, val);
@@ -1108,10 +1133,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_OBJECT:	{
+							TRACE ("jni_NewArray(JTYPE_OBJECT) not implemented");
 							_com_raise_error (E_NOTIMPL);
 							break;
 						}
 						default: {
+							TRACE ("jni_NewArray: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1189,10 +1216,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_OBJECT:	{
+							TRACE ("jni_GetArrayElements(JTYPE_OBJECT) not implemented");
 							_com_raise_error (E_NOTIMPL);
 							break;
 						}
 						default: {
+							TRACE ("jni_GetArrayElements: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1269,10 +1298,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_OBJECT:	{
+							TRACE ("jni_ReleaseArrayElements(JTYPE_OBJECT) not implemented");
 							_com_raise_error (E_NOTIMPL);
 							break;
 						}
 						default: {
+							TRACE ("jni_ReleaseArrayElements: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1372,10 +1403,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_OBJECT:	{
+							TRACE ("jni_GetArrayRegion(JTYPE_OBJECT) not implemented");
 							_com_raise_error (E_NOTIMPL);
 							break;
 						}
 						default: {
+							TRACE ("jni_GetArrayRegion: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1475,10 +1508,12 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						case JTYPE_OBJECT:	{
+							TRACE ("jni_SetArrayRegion(JTYPE_OBJECT) not implemented");
 							_com_raise_error (E_NOTIMPL);
 							break;
 						}
 						default: {
+							TRACE ("jni_SetArrayRegion: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1488,12 +1523,14 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 				case JniOperation::jni_RegisterNatives
 					: {
 					// TODO: this doesn't really make sense to support?
+					TRACE ("jni_RegisterNatives not implemented");
 					_com_raise_error (E_NOTIMPL);
 					break;
 				}
 				case JniOperation::jni_UnregisterNatives
 					: {
 					// TODO: this doesn't really make sense to support?
+					TRACE ("jni_UnregisterNatives no implemented");
 					_com_raise_error (E_NOTIMPL);
 					break;
 				}
@@ -1583,6 +1620,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 							break;
 						}
 						default: {
+							TRACE ("jni_GetPrimitiveArrayCritical: unsupported type %d", jtype);
 							_com_raise_error (E_INVALIDARG);
 							break;
 						}
@@ -1674,6 +1712,7 @@ HRESULT CJniSequenceExecutor::Run (JNIEnv *pEnv) {
 					break;
 				}
 				default:
+					TRACE ("Unknown JNI operation type");
 					_com_raise_error (E_NOTIMPL);
 			}
 		}

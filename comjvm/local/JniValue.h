@@ -203,21 +203,21 @@ public:
 		switch (type) { \
 		case t_##_t: \
 			return v._jvalue.##_field; \
-			} \
+				} \
 		assert(0); \
 		return v._jvalue.##_field; \
-		}
+			}
 #define __PUTPRIMITIVE(_t,_field) \
 	void put_##_t (_t value) { \
 	  reset (t_##_t); \
 	  v._jvalue.##_field = value; \
-			}
+				}
 
 #define __CONSPRIMITIVE(_t,_field) \
 	__PUTPRIMITIVE(_t,_field) \
 	CJniValue (_t value) : type (t_##_t) { \
 		v._jvalue.##_field = value; \
-			}
+				}
 
 	/// <summary>these are for anything bunged in the _HANDLE field.</summary>
 #define __GETHANDLE(_t) \
@@ -227,6 +227,8 @@ public:
 			return (_t) v._jvalue.l; \
 		case t_HANDLE: \
 		    return (_t) v._HANDLE; \
+		case t_jobject: \
+			return (_t) v._jvalue.l; \
 			} \
 		assert(0); \
 		return (_t) v._jvalue.l; \
@@ -235,7 +237,7 @@ public:
 #define __PUTHANDLE(_t) \
 	void put_##_t (_t value) { \
 		reset (t_##_t); \
-		v._jvalue.l = value; \
+		v._jvalue.l = (jobject) value; \
 		}
 
 #define __GET(_t) \
@@ -312,8 +314,8 @@ public:
 	__PUTHANDLE (jweak);
 	__PUT (jobjectRefType);
 	jobjectRefType get_jobjectRefType_t () const;
-	__PUT (jmethodID);
-	__GET (jmethodID);
+	__PUTHANDLE (jmethodID);
+	__GETHANDLE (jmethodID);
 	__PUT (jfieldID);
 	__GET (jfieldID);
 
