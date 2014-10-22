@@ -46,12 +46,10 @@ COMJVM_EXCEL_API void Converter::xlExcelAndFunctionCallHandlerInstanceAnd1Method
 	);
 	helper->Result (helper->NewGlobalRef (functionCallHandler));
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				TEXT ("com/mcleodmoores/excel4j/ExcelFunctionCallHandler"),
-				TEXT ("invoke"),
-				TEXT ("(I[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLValue;")
-			)
+		helper->GetMethodID (
+			TEXT ("com/mcleodmoores/excel4j/ExcelFunctionCallHandler"),
+			TEXT ("invoke"),
+			TEXT ("(I[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLValue;")
 		)
 	);
 }
@@ -71,92 +69,74 @@ COMJVM_EXCEL_API void Converter::xlRangeClsAnd9Methods (JniSequenceHelper *helpe
 	helper->Result (xlRangeCls);
 	// XLRange.of(int,int,int,int)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlRangeCls,
-				TEXT ("of"),
-				TEXT ("(IIII)Lcom/mcleodmoores/excel4j/values/XLRange;")
-			)
+		helper->GetStaticMethodID (
+			xlRangeCls,
+			TEXT ("of"),
+			TEXT ("(IIII)Lcom/mcleodmoores/excel4j/values/XLRange;")
 		)
 	);
 	// XLRange.ofCell(int,int)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlRangeCls,
-				TEXT ("ofCell"),
-				TEXT ("(II)Lcom/mcleodmoores/excel4j/values/XLRange;")
-			)
+		helper->GetStaticMethodID (
+			xlRangeCls,
+			TEXT ("ofCell"),
+			TEXT ("(II)Lcom/mcleodmoores/excel4j/values/XLRange;")
 		)
 	);
 	// XLRange.getRowFirst()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("getRowFirst"),
-				TEXT ("()I")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("getRowFirst"),
+			TEXT ("()I")
 		)
 	);
 	// XLRange.getRowLast()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("getRowLast"),
-				TEXT ("()I")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("getRowLast"),
+			TEXT ("()I")
 		)
 	);
 	// XLRange.getColumnFirst()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("getColumnFirst"),
-				TEXT ("()I")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("getColumnFirst"),
+			TEXT ("()I")
 		)
 	);
 	// XLRange.getColumnLast()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("getColumnLast"),
-				TEXT ("()I")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("getColumnLast"),
+			TEXT ("()I")
 		)
 	);
 	// XLRange.isSingleColumn()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("isSingleColumn"),
-				TEXT ("()Z")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("isSingleColumn"),
+			TEXT ("()Z")
 		)
 	);
 	// XLRange.isSingleRow()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("isSingleRow"),
-				TEXT ("()Z")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("isSingleRow"),
+			TEXT ("()Z")
 		)
 	);
 	// XLRange.isSingleCell()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlRangeCls,
-				TEXT ("isSingleColumn"),
-				TEXT ("()Z")
-			)
+		helper->GetMethodID (
+			xlRangeCls,
+			TEXT ("isSingleColumn"),
+			TEXT ("()Z")
 		)
 	);
 }
@@ -166,21 +146,17 @@ COMJVM_EXCEL_API void Converter::xlStringClsAnd2Methods (JniSequenceHelper *help
 	);
 	helper->Result (xlStringCls);
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlStringCls,
-				TEXT ("of"),
-				TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLString;")
-			)
+		helper->GetStaticMethodID (
+			xlStringCls,
+			TEXT ("of"),
+			TEXT ("(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLString;")
 		)
 	);
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlStringCls,
-				TEXT ("getValue"),
-				TEXT ("()Ljava/lang/String;")
-			)
+		helper->GetMethodID (
+			xlStringCls,
+			TEXT ("getValue"),
+			TEXT ("()Ljava/lang/String;")
 		)
 	);
 }
@@ -192,21 +168,17 @@ COMJVM_EXCEL_API void Converter::xlNumberClsAnd2Methods (JniSequenceHelper *help
 	helper->Result (xlNumberCls);
 	// MethodID for XLNumber.of(double)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlNumberCls,
-				TEXT ("of"),
-				TEXT ("(D)Lcom/mcleodmoores/excel4j/values/XLNumber")
-			)
+		helper->GetStaticMethodID (
+			xlNumberCls,
+			TEXT ("of"),
+			TEXT ("(D)Lcom/mcleodmoores/excel4j/values/XLNumber")
 		)
 	);
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlNumberCls,
-				TEXT ("getValue"),
-				TEXT ("()D")
-			)
+		helper->GetMethodID (
+			xlNumberCls,
+			TEXT ("getValue"),
+			TEXT ("()D")
 		)
 	);
 }
@@ -218,21 +190,17 @@ COMJVM_EXCEL_API void Converter::xlIntegerClsAnd2Methods (JniSequenceHelper *hel
 	helper->Result (xlIntegerCls);
 	// MethodID for XLInteger.of(int)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlIntegerCls,
-				TEXT ("of"),
-				TEXT ("(I)Lcom/mcleodmoores/excel4j/values/XLInteger")
-			)
+		helper->GetStaticMethodID (
+			xlIntegerCls,
+			TEXT ("of"),
+			TEXT ("(I)Lcom/mcleodmoores/excel4j/values/XLInteger")
 		)
 	);
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlIntegerCls,
-				TEXT ("getValue"),
-				TEXT ("()I")
-			)
+		helper->GetMethodID (
+			xlIntegerCls,
+			TEXT ("getValue"),
+			TEXT ("()I")
 		)
 	);
 }
@@ -244,30 +212,24 @@ COMJVM_EXCEL_API void Converter::xlBigDataClsAnd3Methods (JniSequenceHelper *hel
 	helper->Result (xlBigDataCls);
 	// MethodID for XLBigData.of(Excel, long, long)
 	helper->Result (
-		helper->NewGlobalRef (
 		helper->GetStaticMethodID (
-		xlBigDataCls,
-		TEXT ("of"),
-		TEXT ("(Lcom/mcleodmoores/excel4j/Excel;JJ)Lcom/mcleodmoores/excel4j/values/XLBigData;")
-			)
+			xlBigDataCls,
+			TEXT ("of"),
+			TEXT ("(Lcom/mcleodmoores/excel4j/Excel;JJ)Lcom/mcleodmoores/excel4j/values/XLBigData;")
 		)
 	);
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlBigDataCls,
-				TEXT ("getBuffer"),
-				TEXT ("()[B")
-			)
+		helper->GetMethodID (
+			xlBigDataCls,
+			TEXT ("getBuffer"),
+			TEXT ("()[B")
 		)
 	);
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlBigDataCls,
-				TEXT ("getLength"),
-				TEXT ("()J")
-			)
+		helper->GetMethodID (
+			xlBigDataCls,
+			TEXT ("getLength"),
+			TEXT ("()J")
 		)
 	);
 }
@@ -279,22 +241,18 @@ COMJVM_EXCEL_API void Converter::xlSheetIdClsAnd2Methods (JniSequenceHelper *hel
 	helper->Result (xlSheetIdCls);
 	// MethodID for XLSheetId.of(int)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlSheetIdCls,
-				TEXT ("of"),
-				TEXT ("(I)Lcom/mcleodmoores/excel4j/values/XLSheetId;")
-			)
+		helper->GetStaticMethodID (
+			xlSheetIdCls,
+			TEXT ("of"),
+			TEXT ("(I)Lcom/mcleodmoores/excel4j/values/XLSheetId;")
 		)
 	);
 	// MethodID for XLSheetId.getSheetId() (non-static)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlSheetIdCls,
-				TEXT ("getSheetId"),
-				TEXT ("()I")
-			)
+		helper->GetMethodID (
+			xlSheetIdCls,
+			TEXT ("getSheetId"),
+			TEXT ("()I")
 		)
 	);
 }
@@ -306,22 +264,18 @@ COMJVM_EXCEL_API void Converter::xlArrayClsAnd2Methods (JniSequenceHelper *helpe
 	helper->Result (xlArrayCls);
 	// MethodID for XLSheetId.of(int)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlArrayCls,
-				TEXT ("of"),
-				TEXT ("([[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLArray;")
-			)
+		helper->GetStaticMethodID (
+			xlArrayCls,
+			TEXT ("of"),
+			TEXT ("([[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLArray;")
 		)
 	);
 	// MethodID for XLSheetId.of(int)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlArrayCls,
-				TEXT ("getArray"),
-				TEXT ("()[[Lcom/mcleodmoores/excel4j/values/XLValue;")
-			)
+		helper->GetMethodID (
+			xlArrayCls,
+			TEXT ("getArray"),
+			TEXT ("()[[Lcom/mcleodmoores/excel4j/values/XLValue;")
 		)
 	);
 }
@@ -333,22 +287,18 @@ COMJVM_EXCEL_API void Converter::xlLocalReferenceClsAnd2Methods (JniSequenceHelp
 	helper->Result (xlLocalReferenceCls);
 	// MethodID for XLLocalReference.of(Range)
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetStaticMethodID (
-				xlLocalReferenceCls,
-				TEXT ("of"),
-				TEXT ("(Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLLocalReference;")
-			)
+		helper->GetStaticMethodID (
+			xlLocalReferenceCls,
+			TEXT ("of"),
+			TEXT ("(Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLLocalReference;")
 		)
 	);
 	// MethodID for XLLocalReference.getRange()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlLocalReferenceCls,
-				TEXT ("getRange"),
-				TEXT ("()Lcom/mcleodmoores/excel4j/values/XLRange;")
-			)
+		helper->GetMethodID (
+			xlLocalReferenceCls,
+			TEXT ("getRange"),
+			TEXT ("()Lcom/mcleodmoores/excel4j/values/XLRange;")
 		)
 	);
 }
@@ -360,32 +310,26 @@ COMJVM_EXCEL_API void Converter::xlMultiReferenceClsAnd3Methods (JniSequenceHelp
 	helper->Result (xlMultiReferenceCls);
 	// MethodID for XLMultiReference.of(Range)
 	helper->Result (
-		helper->NewGlobalRef (
 		helper->GetStaticMethodID (
-		xlMultiReferenceCls,
-		TEXT ("of"),
-		TEXT ("(Lcom/mcleodmoores/excel4j/values/XLSheetId;[Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLMultiReference;")
-			)
+			xlMultiReferenceCls,
+			TEXT ("of"),
+			TEXT ("(Lcom/mcleodmoores/excel4j/values/XLSheetId;[Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLMultiReference;")
 		)
 	);
 	// MethodID for XLMultiReference.getRanges()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlMultiReferenceCls,
-				TEXT ("getRanges"),
-				TEXT ("()Ljava/util/List;")
-			)
+		helper->GetMethodID (
+			xlMultiReferenceCls,
+			TEXT ("getRanges"),
+			TEXT ("()Ljava/util/List;")
 		)
 	);
 	// MethodID for XLMultiReference.getSheetId()
 	helper->Result (
-		helper->NewGlobalRef (
-			helper->GetMethodID (
-				xlMultiReferenceCls,
-				TEXT ("getSheetId"),
-				TEXT ("()Lcom/mcleodmoores/excel4j/values/XLSheetId;")
-			)
+		helper->GetMethodID (
+			xlMultiReferenceCls,
+			TEXT ("getSheetId"),
+			TEXT ("()Lcom/mcleodmoores/excel4j/values/XLSheetId;")
 		)
 	);
 }
@@ -643,9 +587,13 @@ COMJVM_EXCEL_API long Converter::convertArgument (JniSequenceHelper *helper, LPX
 
 
 long Converter::convertToXLString (JniSequenceHelper *helper, LPXLOPER12 arg, std::vector<VARIANT> &inputs) {
-	inputs.push_back (m_xlStringCls);
+	//inputs.push_back (m_xlStringCls);
 	inputs.push_back (m_xlStringOfMtd);
-	long xlString = helper->CallStaticMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 1, helper->StringConstant (arg->val.str));
+	long jString = helper->NewString (helper->StringConstant (&arg->val.str[1]), helper->IntegerConstant (arg->val.str[0]));
+	long xlStringCls = helper->FindClass (_T("com/mcleodmoores/excel4j/values/XLString"));
+	long xlString = helper->CallStaticMethod (JTYPE_OBJECT, xlStringCls, helper->Argument (), 1, jString);
+	//long xlString = helper->CallStaticMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 1, jString);
+	helper->DeleteLocalRef (jString);
 	return xlString;
 }
 
@@ -1109,13 +1057,35 @@ COMJVM_EXCEL_API VARIANT Converter::invoke (JniSequenceHelper *helper, std::vect
 	for (int i = 0; i < size; i++) {
 		helper->SetObjectArrayElement (argsArrRef, i, helper->Argument ());
 	}
-	inputs.push_back (m_excelFunctionCallHandlerInstance);
-	inputs.push_back (m_excelFunctionCallHandlerInvokeMtd);
-	long boxedSize = helper->NewObject (_T("java/lang/Integer"), _T("(I)V"), 1, helper->IntegerConstant(size));
+	//inputs.push_back (m_excelFunctionCallHandlerInstance);
+	//inputs.push_back (m_excelFunctionCallHandlerInvokeMtd);
+	long boxedSize = helper->IntegerConstant (size);// helper->NewObject (_T ("java/lang/Integer"), _T ("(I)V"), 1, helper->IntegerConstant (size));
 	for (int i = 0; i < inputs.size(); i++) {
 		TRACE ("Inputs[%d] type = %d, value = %p", i, inputs[i].vt, inputs[i].ullVal);
 	}
-	long result = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 2, boxedSize, argsArrRef);
+	long excel = helper->CallStaticMethod (
+		JTYPE_OBJECT,
+		TEXT ("com/mcleodmoores/excel4j/ExcelFactory"),
+		TEXT ("getInstance"),
+		TEXT ("()Lcom/mcleodmoores/excel4j/Excel;"),
+		0
+		);
+	long functionCallHandler = helper->CallMethod (JTYPE_OBJECT, excel,
+		helper->GetMethodID (
+		TEXT ("com/mcleodmoores/excel4j/Excel"),
+		TEXT ("getExcelCallHandler"),
+		TEXT ("()Lcom/mcleodmoores/excel4j/ExcelFunctionCallHandler;")
+		),
+		0
+		);
+	long invokeMtd = 
+		helper->GetMethodID (
+		TEXT ("com/mcleodmoores/excel4j/ExcelFunctionCallHandler"),
+		TEXT ("invoke"),
+		TEXT ("(I[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLValue;")
+		);
+	long result = helper->NewGlobalRef(helper->CallMethod (JTYPE_OBJECT, functionCallHandler, invokeMtd, 2, boxedSize, argsArrRef));
+	//long result = helper->CallMethod (JTYPE_OBJECT, helper->Argument (), helper->Argument (), 2, boxedSize, argsArrRef);
 	helper->Result (result);
 	VARIANT results[1];
 	TRACE ("Converter::invoke: calling Execute");

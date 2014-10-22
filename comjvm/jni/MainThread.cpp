@@ -99,12 +99,13 @@ static void UnloadJVMLibrary () {
 
 static BOOL StartJVMImpl (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath) {
 	JavaVMInitArgs args;
-	JavaVMOption aOptions[1];
+	JavaVMOption aOptions[2];
 	ZeroMemory (&args, sizeof (args));
 	ZeroMemory (aOptions, sizeof (aOptions));
 	std::string strClasspath ("-Djava.class.path=");
 	strClasspath += pszClasspath;
 	aOptions[0].optionString = (char*)strClasspath.data ();
+	aOptions[1].optionString = "-Xcheck:jni";
 	args.version = JNI_VERSION_1_6;
 	args.nOptions = sizeof (aOptions) / sizeof (JavaVMOption);
 	args.options = aOptions;
