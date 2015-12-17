@@ -883,6 +883,54 @@ midl_pragma warning (disable: 2362)
 };
 
 [
+	object,
+	uuid (5d378715-1487-489c-854e-6469a252f602)
+] interface IXLValue : Unknown
+[
+	object,
+	uuid (77bafe78-56e5-4897-9eb0-86780bc6e2a7)
+] interface IXLNumber : IXLValue {
+	[propget] HRESULT Value ([out, retval] double *pdValue);
+	[propput] HRESULT Value ([in] double value);
+};
+
+[
+	object
+	uuid (df3ff229-88dd-419e-ab2f-65b07b29f13e)
+] interface IXLString : IXLValue {
+	[propget] HRESULT Value ([out, retval] BSTR *pbstrValue);
+	[propput] HRESULT Value ([in] BSTR value);
+};
+
+[
+	object,
+	uuid (9151f467-2e15-4541-a640-03d02c4c08dc)
+] interface IXLBoolean : IXLValue {
+	[propget] HRESULT Value ([out, retval] boolean *value);
+	[propput] HRESULT Value ([in] boolean value);
+};
+
+[
+	object,
+	uuid (2121f73c-0fa8-475c-9f94-8aa06d175e1e)
+] interface IXLError : IXLValue {
+	typedef enum { Null, Div0, Value, Ref, Name, Num, NA } Error;
+	[propget] HRESULT Value ([out, retval] Error *value);
+	[propput] HRESULT Value ([in] Error value);
+};
+
+[
+	object,
+	uuid ()
+] interface IXLArray : IXLValue {
+	[propget] HRESULT Value ([out, retval] XLValue *)
+};
+
+
+
+
+
+[
 	uuid (0e07a0b8-0fa3-4497-bc66-6d2af2a0b9c8),
 	helpstring ("Core JVM Support 1.0 Type Library"),
 	version (1.0)
