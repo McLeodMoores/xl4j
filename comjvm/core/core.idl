@@ -885,7 +885,9 @@ midl_pragma warning (disable: 2362)
 [
 	object,
 	uuid (5d378715-1487-489c-854e-6469a252f602)
-] interface IXLValue : Unknown
+] interface IXLValue : IUnknown {
+};
+
 [
 	object,
 	uuid (77bafe78-56e5-4897-9eb0-86780bc6e2a7)
@@ -895,7 +897,7 @@ midl_pragma warning (disable: 2362)
 };
 
 [
-	object
+	object,
 	uuid (df3ff229-88dd-419e-ab2f-65b07b29f13e)
 ] interface IXLString : IXLValue {
 	[propget] HRESULT Value ([out, retval] BSTR *pbstrValue);
@@ -906,7 +908,7 @@ midl_pragma warning (disable: 2362)
 	object,
 	uuid (9151f467-2e15-4541-a640-03d02c4c08dc)
 ] interface IXLBoolean : IXLValue {
-	[propget] HRESULT Value ([out, retval] boolean *value);
+	[propget] HRESULT Value ([out, retval] boolean *pValue);
 	[propput] HRESULT Value ([in] boolean value);
 };
 
@@ -914,21 +916,93 @@ midl_pragma warning (disable: 2362)
 	object,
 	uuid (2121f73c-0fa8-475c-9f94-8aa06d175e1e)
 ] interface IXLError : IXLValue {
-	typedef enum { Null, Div0, Value, Ref, Name, Num, NA } Error;
-	[propget] HRESULT Value ([out, retval] Error *value);
+	typedef enum { Null = 0, Div0 = 7, Value = 15, Ref = 23, Name = 29, Num = 36, NA = 43 } Error;
+	[propget] HRESULT Value ([out, retval] Error *pValue);
 	[propput] HRESULT Value ([in] Error value);
 };
 
 [
 	object,
-	uuid ()
+	uuid (a53c84ef-54a3-4b7d-b1d1-a21190960c80)
 ] interface IXLArray : IXLValue {
-	[propget] HRESULT Value ([out, retval] XLValue *)
+	[propget] HRESULT Value ([out, retval] SAFEARRAY(IXLValue *) *pArr);
+	[propput] HRESULT Value ([in] SAFEARRAY(IXLValue *) arr);
+};
+
+[
+	object,
+	uuid (b745ee66-1087-4941-ab6c-c96cfac3469a)
+] interface IXLBigData : IXLValue {
+	[propget] HRESULT Value ([out, retval] SAFEARRAY(byte) *pData);
+	[propput] HRESULT Value ([in] SAFEARRAY (byte) data);
+};
+
+[
+	object,
+	uuid (b1f87c33-884b-4e62-9246-f82a0783af01)
+] interface IXLRange : IUnknown {
+	[propget] HRESULT RowFirst ([out, retval] int *piRowFirst);
+	[propput] HRESULT RowFirst ([in] int rowFirst);
+	[propget] HRESULT RowLast ([out, retval] int *piRowLast);
+	[propput] HRESULT RowLast ([in] int rowLast);
+	[propget] HRESULT ColumnFirst ([out, retval] int *piColumnFirst);
+	[propput] HRESULT ColumnFirst ([in] int columnFirst);
+	[propget] HRESULT ColumnLast ([out, retval] int *piColumnLast);
+	[propput] HRESULT ColumnLast ([in] int columnLast);
+};
+
+[
+	object,
+	uuid (a662adb8-ed38-4336-8f0c-545c7332fccd)
+] interface IXLReference : IXLValue {
+};
+
+[
+	object,
+	uuid (9a07370e-8315-45d4-a52d-5f8c60477994)
+] interface IXLLocalReference : IXLValue {
+	[propput] HRESULT Range ([in] IXLRange *range);
+	[propget] HRESULT Range ([out, retval]IXLRange **pRange);
+};
+
+[
+	object,
+	uuid (011334d4-3d91-4ea0-80c8-2abbf0971c38)
+] interface IXLSheetId {
+	[propget] HRESULT SheetId ([out, retval] int *piSheetId);
+	[propput] HRESULT SheetId ([in] int sheetId);
+};
+
+[
+	object,
+	uuid (9fb7b7f3-dbb3-435f-a5ef-70ee05fc0233)
+] interface IXLMultiReference : IXLValue {
+	[propput] HRESULT Range ([in] SAFEARRAY (IXLRange *) range);
+	[propget] HRESULT Range ([out, retval] SAFEARRAY (IXLRange *) *pRange);
+	[propput] HRESULT SheetId ([in] IXLSheetId *sheetId);
+	[propget] HRESULT SheetId ([out, retval] IXLSheetId **pSheetId);
+}
+
+[
+	object,
+	uuid (43c88afd-a4b3-49a4-92e2-5502752eb5f7)
+] interface IXLMissing : IXLValue {
+};
+
+[
+	object,
+	uuid (0e959324-3d99-4b80-8fef-6e02b55c1643)
+] interface IXLNil : IXLValue {
 };
 
 
-
-
+[
+	object,
+	uuid (c68b5f60-2729-4c80-bf2f-d5b12cf2f4b6)
+] interface IXLInteger : IXLValue {
+	[propget] HRESULT Value ([out, retval] int *piValue);
+	[propput] HRESULT Value ([in] int value);
+};
 
 [
 	uuid (0e07a0b8-0fa3-4497-bc66-6d2af2a0b9c8),
