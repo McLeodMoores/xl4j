@@ -882,127 +882,117 @@ midl_pragma warning (disable: 2362)
 	HRESULT AppendDefaults ();
 };
 
-[
-	object,
-	uuid (5d378715-1487-489c-854e-6469a252f602)
-] interface IXLValue : IUnknown {
-};
+/*
+** XL 12 Basic Datatypes
+**/
+
+typedef INT32 BOOL;			/* Boolean */
+typedef WCHAR XCHAR;			/* Wide Character */
+typedef INT32 RW;			/* XL 12 Row */
+typedef INT32 COL;	 	      	/* XL 12 Column */
+typedef DWORD_PTR IDSHEET;		/* XL12 Sheet ID */
+typedef unsigned short WORD;
+
+/*
+** Flow data types
+**
+** Used for val.flow.xlflow field of XLOPER and XLOPER12 structures
+** when constructing flow-control XLOPERs and XLOPER12s
+**/
+
+const byte xlflowHalt = 1;
+const byte xlflowGoto = 2;
+const byte xlflowRestart = 8;
+const byte xlflowPause = 16;
+const byte xlflowResume = 64;
+
+const long xl4jtypeNum = 0x0001;
+const long xl4jtypeStr = 0x0002;
+const long xl4jtypeBool = 0x0004;
+const long xl4jtypeRef = 0x0008;
+const long xl4jtypeErr = 0x0010;
+const long xl4jtypeFlow = 0x0020;
+const long xl4jtypeMulti = 0x0040;
+const long xl4jtypeMissing = 0x0080;
+const long xl4jtypeNil = 0x0100;
+const long xl4jtypeSRef = 0x0400;
+const long xl4jtypeInt = 0x0800;
+
+const long xl4jbitXLFree = 0x1000;
+const long xl4jbitDLLFree = 0x4000;
+
+const long xl4jtypeBigData = 0x0802;// (xltypeStr | xltypeInt);
+
+
+[uuid (2b9360c6-65c5-4725-8094-3e5d29c8363f)]
+typedef struct xl4jref12 {
+	RW rwFirst;
+	RW rwLast;
+	COL colFirst;
+	COL colLast;
+} XL4JREF12;//  , [uuid (bbd33753-de3a-47e7-95ec-ac105cf102b6)] * LPXL4JREF12;
+
+[uuid (2d860bb2-441c-49e9-a002-d0d70a19700b)]
+typedef struct xl4jmref {
+	unsigned short count;
+	[size_is(count)] XL4JREF12 reftbl[*];
+} XL4JMREF12;// , *LPXL4JMREF12;
+
+[uuid (a290eb4b-29ef-4990-ba2a-c2d7abcae51f)]
+typedef struct xl4joper12 {
+	[switch_type(unsigned long)] [switch_is(xl4jtype)] union{
+		[case(xl4jtypeNum)]
+		double num;				       	/* xltypeNum */
+		[case(xl4jtypeStr)]
+		XCHAR *str;				       	/* xltypeStr */
+		[case(xl4jtypeBool)]
+		BOOL xbool;				       	/* xltypeBool */
+		[case(xl4jtypeErr)]
+		int err;				       	/* xltypeErr */
+		/* ??	int w; */
+		[case(xl4jtypeSRef)]
+		struct {
+			WORD count;			       	/* always = 1 */
+			XL4JREF12 ref;
+		} sref;						/* xltypeSRef */
+		[case(xl4jtypeRef)]
+		struct {
+			XL4JMREF12 *lpmref;
+			IDSHEET idSheet;
+		} mref;						/* xltypeRef */
+		[case(xl4jtypeMulti)]
+		struct {
+			struct xl4joper12 *lparray;
+			RW rows;
+			COL columns;
+		} array;					/* xltypeMulti */
+		[case(xl4jtypeFlow)]
+		struct {
+			[switch_type(byte)] [switch_is(xlflow)] union {
+				[case(xlflowRestart)] int level;			/* xlflowRestart */
+				[case(xlflowPause)] int tbctrl;			/* xlflowPause */
+				[case(xlflowGoto)] IDSHEET idSheet;		/* xlflowGoto */
+			} valflow;
+			RW rw;				       	/* xlflowGoto */
+			COL col;			       	/* xlflowGoto */
+			byte xlflow;
+		} flow;						/* xltypeFlow */
+		[case(xl4jtypeBigData)]
+		struct {
+			[size_is(cbData)] byte *lpbData;			/* data passed to XL */
+			long cbData;
+		} bigdata;					/* xltypeBigData */
+	} val;
+	unsigned long xl4jtype;
+} XL4JOPER12;// , *LPXL4JOPER12;
 
 [
 	object,
-	uuid (77bafe78-56e5-4897-9eb0-86780bc6e2a7)
-] interface IXLNumber : IXLValue {
-	[propget] HRESULT Value ([out, retval] double *pdValue);
-	[propput] HRESULT Value ([in] double value);
-};
-
-[
-	object,
-	uuid (df3ff229-88dd-419e-ab2f-65b07b29f13e)
-] interface IXLString : IXLValue {
-	[propget] HRESULT Value ([out, retval] BSTR *pbstrValue);
-	[propput] HRESULT Value ([in] BSTR value);
-};
-
-[
-	object,
-	uuid (9151f467-2e15-4541-a640-03d02c4c08dc)
-] interface IXLBoolean : IXLValue {
-	[propget] HRESULT Value ([out, retval] boolean *pValue);
-	[propput] HRESULT Value ([in] boolean value);
-};
-
-[
-	object,
-	uuid (2121f73c-0fa8-475c-9f94-8aa06d175e1e)
-] interface IXLError : IXLValue {
-	typedef enum { Null = 0, Div0 = 7, Value = 15, Ref = 23, Name = 29, Num = 36, NA = 43 } Error;
-	[propget] HRESULT Value ([out, retval] Error *pValue);
-	[propput] HRESULT Value ([in] Error value);
-};
-
-[
-	object,
-	uuid (a53c84ef-54a3-4b7d-b1d1-a21190960c80)
-] interface IXLArray : IXLValue {
-	[propget] HRESULT Value ([out, retval] SAFEARRAY(IXLValue *) *pArr);
-	[propput] HRESULT Value ([in] SAFEARRAY(IXLValue *) arr);
-};
-
-[
-	object,
-	uuid (b745ee66-1087-4941-ab6c-c96cfac3469a)
-] interface IXLBigData : IXLValue {
-	[propget] HRESULT Value ([out, retval] SAFEARRAY(byte) *pData);
-	[propput] HRESULT Value ([in] SAFEARRAY (byte) data);
-};
-
-[
-	object,
-	uuid (b1f87c33-884b-4e62-9246-f82a0783af01)
-] interface IXLRange : IUnknown {
-	[propget] HRESULT RowFirst ([out, retval] int *piRowFirst);
-	[propput] HRESULT RowFirst ([in] int rowFirst);
-	[propget] HRESULT RowLast ([out, retval] int *piRowLast);
-	[propput] HRESULT RowLast ([in] int rowLast);
-	[propget] HRESULT ColumnFirst ([out, retval] int *piColumnFirst);
-	[propput] HRESULT ColumnFirst ([in] int columnFirst);
-	[propget] HRESULT ColumnLast ([out, retval] int *piColumnLast);
-	[propput] HRESULT ColumnLast ([in] int columnLast);
-};
-
-[
-	object,
-	uuid (a662adb8-ed38-4336-8f0c-545c7332fccd)
-] interface IXLReference : IXLValue {
-};
-
-[
-	object,
-	uuid (9a07370e-8315-45d4-a52d-5f8c60477994)
-] interface IXLLocalReference : IXLValue {
-	[propput] HRESULT Range ([in] IXLRange *range);
-	[propget] HRESULT Range ([out, retval]IXLRange **pRange);
-};
-
-[
-	object,
-	uuid (011334d4-3d91-4ea0-80c8-2abbf0971c38)
-] interface IXLSheetId {
-	[propget] HRESULT SheetId ([out, retval] int *piSheetId);
-	[propput] HRESULT SheetId ([in] int sheetId);
-};
-
-[
-	object,
-	uuid (9fb7b7f3-dbb3-435f-a5ef-70ee05fc0233)
-] interface IXLMultiReference : IXLValue {
-	[propput] HRESULT Range ([in] SAFEARRAY (IXLRange *) range);
-	[propget] HRESULT Range ([out, retval] SAFEARRAY (IXLRange *) *pRange);
-	[propput] HRESULT SheetId ([in] IXLSheetId *sheetId);
-	[propget] HRESULT SheetId ([out, retval] IXLSheetId **pSheetId);
+	uuid(1edb5111-1544-4a2c-b99e-b65e5813a48a)
+]
+interface IXLCall : IUnknown {
+	[vararg] HRESULT call ([out] XL4JOPER12 *result, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) args);
 }
-
-[
-	object,
-	uuid (43c88afd-a4b3-49a4-92e2-5502752eb5f7)
-] interface IXLMissing : IXLValue {
-};
-
-[
-	object,
-	uuid (0e959324-3d99-4b80-8fef-6e02b55c1643)
-] interface IXLNil : IXLValue {
-};
-
-
-[
-	object,
-	uuid (c68b5f60-2729-4c80-bf2f-d5b12cf2f4b6)
-] interface IXLInteger : IXLValue {
-	[propget] HRESULT Value ([out, retval] int *piValue);
-	[propput] HRESULT Value ([in] int value);
-};
 
 [
 	uuid (0e07a0b8-0fa3-4497-bc66-6d2af2a0b9c8),
@@ -1024,6 +1014,8 @@ midl_pragma warning (disable: 2362)
 	interface IJvmContainer;
 	interface IJvmSupport;
 	interface IJvmTemplate;
+	interface IXLCall;
+	
 	[
 		uuid (34b9de97-d756-4d18-a65c-e7a688cdf3e7),
 		helpstring ("Library entry point"),
