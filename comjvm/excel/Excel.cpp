@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "Register.h"
+#define COMJVM_EXCEL_EXPORT
 #include "Jvm.h"
-#include "Converter.h"
+#include "local/CScanExecutor.h"
+#include "local/CCallExecutor.h"
+#include "FunctionRegistry.h"
 //
 // Later, the instance handle is required to create dialog boxes.
 // g_hInst holds the instance handle passed in by DllMain so that it is
@@ -16,7 +18,8 @@
 HWND g_hWndMain = NULL;
 HANDLE g_hInst = NULL;
 XCHAR g_szBuffer[20] = L"";
-Register *g_pRegister = NULL;
+FunctionRegistry *g_pFunctionRegistry;
+IRecordInfo *g_pOperRecordInfo;
 Jvm *g_pJvm = NULL;
 
 ///***************************************************************************
@@ -113,17 +116,57 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 //
 // History:  Date       Author        Reason
 ///***************************************************************************
+const IID XL4JOPER12_IID2 = {
+	0x053798d7,
+	0xeef0,
+	0x4ac5,
+	{
+		0x8e,
+		0xb8,
+		0x4d,
+		0x51,
+		0x5e,
+		0x7c,
+		0x5d,
+		0xb5
+	}
+};
+
+const IID ComJvmCore_LIBID2 = {
+	0x0e07a0b8,
+	0x0fa3,
+	0x4497,
+	{
+		0xbc,
+		0x66,
+		0x6d,
+		0x2a,
+		0xf2,
+		0xa0,
+		0xb9,
+		0xc8
+	}
+};
 
 __declspec(dllexport) int WINAPI xlAutoOpen (void)
 {
 
 	static XLOPER12 xDLL;
-
+	HRESULT hr;
 	Excel12f (xlGetName, &xDLL, 0);
 	g_pJvm = new Jvm ();
-	g_pRegister = new Register (g_pJvm->getJvm ());
-	g_pRegister->scanAndRegister (xDLL);
-	TRACE ("Finished scan and register!");
+	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm());
+	g_pFunctionRegistry->scan (); 
+	TRACE ("Finished scan");
+	g_pFunctionRegistry->registerFunctions (xDLL);
+	TRACE ("Finished registration");
+	if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID2, 1, 0, 0, XL4JOPER12_IID2, &g_pOperRecordInfo))) {
+		_com_error err (hr);
+		LPCTSTR errMsg = err.ErrorMessage ();
+		TRACE ("xlAutoOpen::Failed to GetRecordInfoFromGuids %s", errMsg);
+		return hr;
+	}
+	TRACE ("Finished loading RecordInfo for XL4JOPER12");
 	// Free the XLL filename //
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 
@@ -325,47 +368,53 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	return(LPXLOPER12)&xInfo;
 }
 
-__declspec(thread) Converter *t_pConverter = NULL;
-
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	// Init TLS-based type converter.
-	if (!t_pConverter) t_pConverter = new Converter (g_pJvm->getJvm ());
-	JniSequenceHelper *helper = new JniSequenceHelper (g_pJvm->getJvm ());
-	int nArgs = g_pRegister->get_NumArgs (exportNumber);
+	// Find out how many parameters this function should expect.
+	FUNCTIONINFO functionInfo;
+	int nArgs = g_pFunctionRegistry->get (exportNumber, &functionInfo);
 	TRACE ("UDF_%d invoked (%d params)", exportNumber, nArgs);
-	va_start (ap, exportNumber);
-	std::vector<VARIANT> inputs;
+	
+	if (g_pOperRecordInfo == NULL) {
+		TRACE ("Type RecordInfo for XL4JOPER12 not loaded");
+		return NULL;
+	}
+	// Create a SAFEARRAY(XL4JOPER12) of nArg entries
+	SAFEARRAYBOUND bounds = { nArgs, 0 };
+	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_RECORD, 1, &bounds, g_pOperRecordInfo);
+	if (saInputs == NULL) {
+		TRACE ("Could not create SAFEARRAY");
+		return NULL;
+	}
+	// Get a ptr into the SAFEARRAY
+	LPXLOPER12 inputs;
+	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
 	TRACE ("Got XLOPER12 %p, type = %x", first, first->xltype);
-	long slot1 = t_pConverter->convertArgument (helper, first, inputs);
-	helper->Result (slot1);
+	inputs[0] = *first;
 	TRACE ("Queued converter code");
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
 		TRACE ("Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		long slot = t_pConverter->convertArgument (helper, arg, inputs);
-		helper->Result (slot);
-		TRACE ("Queued converter code");
+		inputs[i] = *arg;
+		TRACE ("copied into SAFEARRAY");
 	}
 	va_end (ap);
-	std::vector<VARIANT> results (nArgs + 1);
-	TRACE ("Executing conversion code");
-	try {
-		helper->Execute (inputs.size (), inputs.data (), nArgs, &((results.data ())[1]));
-
-		TRACE ("Done. Now invoking Java method");
-		VARIANT result = t_pConverter->invoke (helper, results);
-		TRACE ("Done. Converting Result.");
-		LPXLOPER12 xlResult = t_pConverter->convertFromXLValue (helper, result);
-		TRACE ("Done, returning LPXLOPER12 to Excel!");
-		delete helper;
-		return xlResult;
-	} catch (_com_error &e) {
-		TRACE ("Exception (%d) occurred %s", e.Error (), e.ErrorMessage ());
-		delete helper;
+	SafeArrayUnaccessData (saInputs);
+	HRESULT hr;
+	// IT'S VERY IMPORTANT WE CLEAN THIS UP!
+	LPXLOPER12 pResult = (XLOPER12 *) ::CoTaskMemAlloc (sizeof XLOPER12);
+	ICall *pCall;
+	if (FAILED(hr = g_pJvm->getJvm ()->CreateCall (&pCall))) {
+		TRACE ("CreateCall failed on JVM");
 		return NULL;
 	}
-
+	if (FAILED(hr = pCall->call ((XL4JOPER12 *)pResult, exportNumber, saInputs))) {
+		_com_error err (hr);
+		TRACE ("call failed %s.", err.ErrorMessage ());
+		return NULL;
+	}
+	return pResult;
 }
+
 
 ///***************************************************************************
 // fExit()

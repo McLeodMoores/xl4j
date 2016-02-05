@@ -74,10 +74,6 @@ namespace localtest {
 			Assert::IsNotNull (pTemplate);
 			pTemplate->Release ();
 			Assert::AreEqual (S_OK, pJvm->Heartbeat ());
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, pJvm->CreateJni (&pJni));
-			Assert::IsNotNull (pJni);
-			pJni->Release ();
 			pJvm->Release ();
 			pConnector->Release ();
 		}

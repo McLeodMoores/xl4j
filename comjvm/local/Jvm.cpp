@@ -6,11 +6,14 @@
  */
 
 #include "stdafx.h"
+#include "CScan.h"
+#include "CCall.h"
 #include "Jvm.h"
-#include "JniSequence.h"
+
 #include "Internal.h"
 
 #include "core/AbstractJvm.cpp"
+
 
 CJvm::CJvm (IJvmTemplate *pTemplate, const GUID *pguid, DWORD dwJvm)
 : CAbstractJvm (pTemplate, pguid), m_dwJvm (dwJvm) {
@@ -32,12 +35,22 @@ HRESULT CJvm::Execute (JNICallbackProc pfnCallback, LPVOID lpData) {
 	return JNICallback (m_dwJvm, pfnCallback, lpData);
 }
 
-HRESULT STDMETHODCALLTYPE CJvm::CreateJni (
-    /* [retval][out] */ IJniSequence **ppTransaction
-	) {
-	if (!ppTransaction) return E_POINTER;
+HRESULT STDMETHODCALLTYPE CJvm::CreateScan (
+	/* [retval][out] */ IScan **ppScan) {
+	if (!ppScan) return E_POINTER;
 	try {
-		*ppTransaction = new CJniSequence (this);
+		*ppScan = reinterpret_cast<IScan *> (new CScan (this));
+		return S_OK;
+	} catch (std::bad_alloc) {
+		return E_OUTOFMEMORY;
+	}
+}
+
+HRESULT STDMETHODCALLTYPE CJvm::CreateCall (
+	/* [retval][out] */ ICall **ppCall) {
+	if (!ppCall) return E_POINTER;
+	try {
+		*ppCall = reinterpret_cast<ICall *> (new CCall (this));
 		return S_OK;
 	} catch (std::bad_alloc) {
 		return E_OUTOFMEMORY;

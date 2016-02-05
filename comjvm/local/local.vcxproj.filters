@@ -39,9 +39,6 @@
     <ClInclude Include="Delete.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JniSequence.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Jvm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,7 +51,16 @@
     <ClInclude Include="JniValue.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="JniSequenceExecutor.h">
+    <ClInclude Include="CScan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CScanExecutor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCall.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCallExecutor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -86,19 +92,22 @@
     <ClCompile Include="Jvm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JniSequence.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dlldata.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JvmConnector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JniSequenceExecutor.cpp">
+    <ClCompile Include="CScan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="JniValue.cpp">
+    <ClCompile Include="CScanExectutor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCallExecutor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

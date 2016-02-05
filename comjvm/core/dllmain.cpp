@@ -32,6 +32,34 @@ HRESULT APIENTRY DllGetClassObject (REFCLSID clsid, REFIID iid, LPVOID *ppv) {
 	}
 }
 
+static HRESULT RegisterTypeLibrary () {
+	HRESULT hr;
+	HMODULE hModule;
+	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)DllGetClassObject, &hModule)) {
+		TCHAR szFilename[MAX_PATH + 1];
+		if (GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR)) <= MAX_PATH) {
+			size_t cch = _tcslen (szFilename);
+			hr = StringCchCopy (szFilename + cch - 3, 4, TEXT ("tlb"));
+			ITypeLib *typelib;
+			OutputDebugStringW (szFilename);
+			hr = LoadTypeLibEx (szFilename, REGKIND_REGISTER, &typelib);
+			if (FAILED (hr)) {
+				_com_error err (hr);
+				OutputDebugStringW (err.ErrorMessage());
+				return hr;
+			}
+			//hr = RegisterTypeLibForUser (typelib, szFilename, NULL);
+			//if (FAILED (hr)) {
+			//	_com_error err (hr);
+			//	OutputDebugStringW (err.ErrorMessage());
+			//	return hr;
+			//}
+		}
+		FreeLibrary (hModule);
+	}
+	return S_OK;
+}
+
 static HRESULT RegisterServer (HKEY hkeyRoot) {
 	HRESULT hr;
 	HKEY hkeyCLSID;
@@ -69,7 +97,14 @@ static HRESULT RegisterServer (HKEY hkeyRoot) {
 	} else {
 		hr = HRESULT_FROM_WIN32 (dwError);
 	}
+	if (SUCCEEDED(hr)) {
+		hr = RegisterTypeLibrary ();
+	}
 	return hr;
+}
+
+static HRESULT UnregisterTypeLibrary () {
+	return UnRegisterTypeLibForUser (LIBID_ComJvmCore, 1, 0, 0, SYS_WIN32);
 }
 
 static HRESULT UnregisterServer (HKEY hkeyRoot) {
@@ -82,7 +117,11 @@ static HRESULT UnregisterServer (HKEY hkeyRoot) {
 	CoTaskMemFree (lpsz);
 	if (FAILED (hr)) return hr;
 	DWORD dwError = RegDeleteTree (hkeyRoot, szKey);
-	return HRESULT_FROM_WIN32 (dwError);
+	hr = HRESULT_FROM_WIN32 (dwError);
+	if (SUCCEEDED (hr)) {
+		hr = UnregisterTypeLibrary ();
+	}
+	return hr;
 }
 
 HRESULT APIENTRY DllRegisterServer () {

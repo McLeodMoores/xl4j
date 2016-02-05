@@ -32,5 +32,8 @@
 #include <iostream>
 #include "comjvm/local.h"
 #include "comjvm/core.h"
+#include <jni.h>
+
+#include "utils/Debug.h"
 
 #endif /* ifndef _STDAFX_H_ */

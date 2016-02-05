@@ -221,6 +221,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_LOCAL_API=__declspec(dllexport) __stdcall;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_20\include\win32;C:\Program Files\Java\jdk1.8.0_20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -254,13 +255,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Cache.h" />
+    <ClInclude Include="CCall.h" />
+    <ClInclude Include="CCallExecutor.h" />
     <ClInclude Include="Classpath.h" />
+    <ClInclude Include="CScan.h" />
+    <ClInclude Include="CScanExecutor.h" />
     <ClInclude Include="Delete.h" />
     <ClInclude Include="DirectoryWriter.h" />
     <ClInclude Include="FileWriter.h" />
     <ClInclude Include="Internal.h" />
-    <ClInclude Include="JniSequence.h" />
-    <ClInclude Include="JniSequenceExecutor.h" />
     <ClInclude Include="JniValue.h" />
     <ClInclude Include="Jvm.h" />
     <ClInclude Include="JvmConnector.h" />
@@ -270,7 +273,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cache.cpp" />
+    <ClCompile Include="CCall.cpp" />
+    <ClCompile Include="CCallExecutor.cpp" />
     <ClCompile Include="Classpath.cpp" />
+    <ClCompile Include="CScan.cpp" />
+    <ClCompile Include="CScanExectutor.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="dlldata.c">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
@@ -285,12 +292,9 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="DirectoryWriter.cpp" />
     <ClCompile Include="FileWriter.cpp" />
-    <ClCompile Include="JniSequence.cpp" />
-    <ClCompile Include="JniValue.cpp" />
     <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="JvmConnector.cpp" />
     <ClCompile Include="local.cpp" />
-    <ClCompile Include="JniSequenceExecutor.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -67,6 +67,4 @@ public:
     HRESULT STDMETHODCALLTYPE CreateClasspathEntry ( 
         /* [in] */ BSTR bstrLocalPath,
         /* [retval][out] */ IClasspathEntry **ppEntry);
-	HRESULT STDMETHODCALLTYPE CreateManagedJni (
-		/* [retval][out] */ IJniSequence **ppJni);
 };

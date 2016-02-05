@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#define COMJVM_EXCEL_EXPORT
 #include "Jvm.h"
 #include "helper/ClasspathUtils.h"
 
-COMJVM_EXCEL_API Jvm::Jvm () {
+Jvm::Jvm () {
 	HRESULT hr = ComJvmCreateLocalConnector (&m_pConnector);
 	if (FAILED (hr)) {
 		TRACE ("CreateLocalConnector failed");
@@ -47,16 +48,16 @@ COMJVM_EXCEL_API Jvm::Jvm () {
 	}
 }
 
-COMJVM_EXCEL_API Jvm::~Jvm () {
+Jvm::~Jvm () {
 	m_pJvm->Release ();
 	m_pConnector->Release ();
 }
 
-COMJVM_EXCEL_API ULONG Jvm::AddRef () {
+ULONG Jvm::AddRef () {
 	return InterlockedIncrement (&m_lRefCount);
 }
 
-COMJVM_EXCEL_API ULONG Jvm::Release () {
+ULONG Jvm::Release () {
 	ULONG lResult = InterlockedDecrement (&m_lRefCount);
 	if (!lResult) delete this;
 	return lResult;

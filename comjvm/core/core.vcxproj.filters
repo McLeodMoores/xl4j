@@ -120,5 +120,8 @@
     <None Include="core.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\target\Debug-Win32\core.tlb">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

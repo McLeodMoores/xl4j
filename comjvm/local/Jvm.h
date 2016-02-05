@@ -19,6 +19,8 @@ public:
 	CJvm (IJvmTemplate *pTemplate, const GUID *pguid, DWORD dwJvm);
 	HRESULT Execute (JNICallbackProc pfnCallback, LPVOID lpData);
 	// IJvm
-    HRESULT STDMETHODCALLTYPE CreateJni (
-        /* [retval][out] */ IJniSequence **ppTransaction);
+	HRESULT STDMETHODCALLTYPE CreateScan (
+		/* [retval][out] */ IScan **ppScan);
+	HRESULT STDMETHODCALLTYPE CreateCall (
+		/* [retval][out] */ ICall **ppCall);
 };

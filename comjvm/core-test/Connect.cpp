@@ -99,15 +99,15 @@ namespace coretest {
 			GUID guid2;
 			Assert::AreEqual (S_OK, pJvm->get_Identifier (&guid1));
 			pJvm->Release ();
-			Assert::AreEqual (S_OK, pContainer2->Jvm (&pJvm));
-			Assert::IsNotNull (pJvm);
-			Assert::AreEqual (S_OK, pJvm->get_Identifier (&guid2));
-			pJvm->Release ();
-			if (bSameJVM) {
-				Assert::IsTrue (memcmp (&guid1, &guid2, sizeof (GUID)) == 0);
-			} else {
-				Assert::IsTrue (memcmp (&guid1, &guid2, sizeof (GUID)) != 0);
-			}
+Assert::AreEqual (S_OK, pContainer2->Jvm (&pJvm));
+Assert::IsNotNull (pJvm);
+Assert::AreEqual (S_OK, pJvm->get_Identifier (&guid2));
+pJvm->Release ();
+if (bSameJVM) {
+	Assert::IsTrue (memcmp (&guid1, &guid2, sizeof (GUID)) == 0);
+} else {
+	Assert::IsTrue (memcmp (&guid1, &guid2, sizeof (GUID)) != 0);
+}
 		}
 
 		TEST_METHOD (AnonymousJvm) {
@@ -162,7 +162,7 @@ namespace coretest {
 
 }
 
-static CLSID CLSID_ConnectUnitTest = {0x6f44bbe5,0xc38a,0x4159,{0x90,0x15,0xcd,0xdb,0x2c,0x14,0x6f,0x2b}};
+static CLSID CLSID_ConnectUnitTest = { 0x6f44bbe5, 0xc38a, 0x4159, { 0x90, 0x15, 0xcd, 0xdb, 0x2c, 0x14, 0x6f, 0x2b } };
 
 #ifndef _M_X64
 # pragma comment(linker, "/EXPORT:DllGetImplementingCLSID=_DllGetImplementingCLSID@16")
@@ -191,8 +191,13 @@ public:
 		: CAbstractJvm (pTemplate) {
 	}
 	// IJvm
-	HRESULT STDMETHODCALLTYPE CreateJni (
-		/* [retval][out] */ IJniSequence **ppSequence
+	HRESULT STDMETHODCALLTYPE CreateScan (
+		/* [retval][out] */ IScan **ppScan
+		) {
+		return E_NOTIMPL;
+	}
+	HRESULT STDMETHODCALLTYPE CreateCall (
+		/* [retval][out] */ ICall **pCall
 		) {
 		return E_NOTIMPL;
 	}

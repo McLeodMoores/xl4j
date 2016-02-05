@@ -54,9 +54,6 @@ HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryW (/* [in] */ PCWSTR pszLocalP
 #else /* ifdef _UNICODE */
 # define ComJvmCreateClasspathEntry ComJvmCreateClasspathEntryA
 #endif /* ifdef _UNICODE */
-
-HRESULT COMJVM_CORE_API ComJvmCreateManagedJni (/* [out][retval] */ IJniSequence **ppJni);
-
 #ifdef __cplusplus
 }
 #endif /* ifdef __cplusplus */

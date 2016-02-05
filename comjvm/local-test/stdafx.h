@@ -21,6 +21,7 @@
 #include <tchar.h>
 #include <list>
 #include <vector>
+#include <jni.h>
 
 #include "utils/Debug.h"
 

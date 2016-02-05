@@ -1,6 +1,7 @@
 #include "stdafx.h"
-#include "helper/JniSequenceHelper.h"
 #include <vector>
+
+#pragma once
 
 #ifdef COMJVM_EXCEL_EXPORT
 # define COMJVM_EXCEL_API __declspec(dllexport)

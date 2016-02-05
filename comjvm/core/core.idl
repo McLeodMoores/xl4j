@@ -16,13 +16,14 @@ interface IDirectoryWriter;
 interface IFileWriter;
 interface IJarFile;
 interface IJDispatch;
-interface IJniSequence;
 interface IJObject;
 interface IJvm;
 interface IJvmConnector;
 interface IJvmContainer;
 interface IJvmSupport;
 interface IJvmTemplate;
+interface IScan;
+interface ICall;
 
 /// <summary>Folder, on disk, containing Java class files.</summary>
 ///
@@ -318,225 +319,10 @@ interface IJvmTemplate;
 	HRESULT Invoke ([in] long lDispId, [in] long cArgs, [in, size_is (cArgs)] VARIANT *pvArgs, [out, retval] VARIANT *pvResult);
 };
 
-const long JTYPE_OBJECT = 'L';
-const long JTYPE_BOOLEAN = 'Z';
-const long JTYPE_BYTE = 'B';
-const long JTYPE_CHAR = 'C';
-const long JTYPE_SHORT = 'S';
-const long JTYPE_INT = 'I';
-const long JTYPE_LONG = 'J';
-const long JTYPE_FLOAT = 'F';
-const long JTYPE_DOUBLE = 'D';
-const long JTYPE_VOID = 'V';
+
 
 midl_pragma warning (disable: 2362)
-/// <summary>One or more JNI operations.</summary>
-///
-/// <para>The JNI transaction may be associated with its owning JVM which will be used to
-/// execute it when requested. If the JVM has failed then the transaction will fail and may
-/// no longer be used. Such circumstances must be handled by the client, typically by
-/// requesting a new JVM from the managing container and re-creating the transaction object.</para>
-///
-/// <para>An alternative implementation is provided by IJvmSupport#CreateManagedJNI which
-/// associates the transaction instance with an IJvmContainer to automatically handle trivial
-/// JVM disconnect/reconnect scenarios.</para>
-[
-	object,
-	uuid (bf027fd9-f1b6-4b85-80cd-8dfb2cbd681f)
-] interface IJniSequence : IUnknown {
-	/// <summary>Number of control parameters.</summary>
-	///
-	/// <para>Control parameters are allocated by the Argument method. The value of this
-	/// property is the number of items that must be passed to the Execute method to run
-	/// the JNI operations.</para>
-	///
-	/// <param name="pcArgs">Receives the number of parameters</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	[propget] HRESULT Arguments ([out, retval] long *pcArgs);
-	/// <summary>Number of results.</summary>
-	///
-	/// <para>Results are allocated by the Result method. The value of this property is the
-	/// number of items that the Execute method can return after running the JNI operations.</para>
-	///
-	/// <param name="pcResults">Receives the number of results</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	[propget] HRESULT Results ([out, retval] long *pcResults);
-	/// <summary>Executes the sequence.</summary>
-	///
-	/// <param name="cArgs">Number of control parameters</param>
-	/// <param name="aArgs">Control parameters</param>
-	/// <param name="cResults">Number of results</param>
-	/// <param name="aResults">Receives the results</param>
-	/// <returns>S_OK if the sequence was executed, an error code otherwise</returns>
-	HRESULT Execute ([in] long cArgs, [in, size_is (cArgs)] VARIANT *aArgs, [in] long cResults, [out, size_is (cResults)] VARIANT *aResults);
-	/// <summary>Declares a control parameter for the sequence.</summary>
-	///
-	/// <para>The number of expected control parameters needed for Execute will be increased.
-	/// The value of this argument may be used for JNI operations using the returned handle.</para>
-	///
-	/// <param name="plVauleRef">Receives the handle referencing this parameter's value</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT Argument ([out, retval] long *plValueRef);
-	/// <summary>Declares a result exported by this sequence.</summary>
-	///
-	/// <para>The number of expected results produced by Execute will be increased.
-	/// The value of this result will be the value referenced by the supplied handle.</para>
-	///
-	/// <param name="lValueRef">Handle to an intermediate value created by a JNI operation</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT Result ([in] long lValueRef);
-	/// <summary>Stores a string constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass a string constant it must first
-	/// be loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="bstrConstant">String to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT StringConstant ([in] BSTR bstr, [out, retval] long *plValueRef);
-	/// <summary>Stores an 8-bit integer constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass an integer constant it must first
-	/// be loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="nValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT ByteConstant ([in] byte nValue, [out, retval] long *plValueRef);
-	/// <summary>Stores a 16-bit integer constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass an integer constant it must first
-	/// be loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="nValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT ShortConstant ([in] short nValue, [out, retval] long *plValueRef);
-	/// <summary>Stores a 32-bit integer constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass an integer constant it must first
-	/// be loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="nValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT IntConstant ([in] long nValue, [out, retval] long *plValueRef);
-	/// <summary>Stores a 64-bit integer constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass an integer constant it must first
-	/// be loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="nValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT LongConstant ([in] hyper nValue, [out, retval] long *plValueRef);
-	/// <summary>Stores a 32-bit floating point constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass a float constant it must first be
-	/// loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="fValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT FloatConstant ([in] float fValue, [out, retval] long *plValueRef);
-	/// <summary>Stores a 64-bit floating point constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass a double constant it must first be
-	/// loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="dValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT DoubleConstant ([in] double dValue, [out, retval] long *plValueRef);
-	/// <summary>Stores a boolean constant for use by JNI operations.</summary>
-	///
-	/// <para>All operations take a value reference. To pass an integer constant it must first
-	/// be loaded using this method to obtain a reference.</para>
-	///
-	/// <param name="fValue">Value to load</param>
-	/// <param name="plValueRef">Receives the handle referencing this constant</param>
-	/// <returns>S_OK if successful, an error code otherwise</returns>
-	HRESULT BooleanConstant ([in] BOOL fValue, [out, retval] long *plValueRef);
 
-	// TODO: NULL constants
-	// TODO: Label/Goto-If for conditional stuff
-	// TODO: Callback - passes values into the callback and receives the result back into one or more local variables
-	// TODO: Allocate/Release arbitrary buffers
-	// TODO: Pointer arithmetic
-
-	HRESULT jni_GetVersion ([out] long *plValueRef);
-	HRESULT jni_DefineClass ([in] long lNameRef, [in] long lLoaderRef, [in] long lBufRef, [in] long lLenRef, [out, retval] long *plClassRef);
-	HRESULT jni_FindClass ([in] long lNameRef, [out, retval] long *plClassRef);
-	HRESULT jni_FromReflectedMethod ([in] long lMethodRef, [out, retval] long *plMethodIDRef);
-	HRESULT jni_FromReflectedField ([in] long lFieldRef, [out, retval] long *plFieldIDRef);
-	HRESULT jni_ToReflectedMethod ([in] long lClsRef, [in] long lMethodIDRef, [in] long lIsStaticRef, [out, retval] long *plObjectRef);
-	HRESULT jni_GetSuperclass ([in] long lSubRef, [out, retval] long *plClassRef);
-	HRESULT jni_IsAssignableFrom ([in] long lSubRef, [in] long lSupRef, [out, retval] long *plBooleanRef);
-	HRESULT jni_ToReflectedField ([in] long lClsRef, [in] long lFieldIDRef, [in] long lIsStaticRef, [out, retval] long *plObjectRef);
-	HRESULT jni_Throw ([in] long lObjRef, [out, retval] long *plIntRef);
-	HRESULT jni_ThrowNew ([in] long lClassRef, [in] long lMsgRef, [out, retval] long *plIntRef);
-	HRESULT jni_ExceptionOccurred ([out, retval] long *plThrowableRef);
-	HRESULT jni_ExceptionDescribe ();
-	HRESULT jni_ExceptionClear ();
-	HRESULT jni_FatalError ([in] long lMsgRef);
-	HRESULT jni_PushLocalFrame ([in] long lCapacityRef, [out, retval] long *plIntRef);
-	HRESULT jni_PopLocalFrame ([in] long lResultRef, [out, retval] long *plObjectRef);
-	HRESULT jni_NewGlobalRef ([in] long lLobjRef, [out, retval] long *plObjectRef);
-	HRESULT jni_DeleteGlobalRef ([in] long lGrefRef);
-	HRESULT jni_DeleteLocalRef ([in] long lObjRef);
-	HRESULT jni_IsSameObject ([in] long lObj1Ref, [in] long lObj2Ref, [out, retval] long *plBooleanRef);
-	HRESULT jni_NewLocalRef ([in] long lRefRef, [out, retval] long *plObjectRef);
-	HRESULT jni_EnsureLocalCapacity ([in] long lCapacityRet, [out, retval] long *plIntRef);
-	HRESULT jni_AllocObject ([in] long lClassRef, [out, retval] long *plObjectRef);
-	HRESULT jni_NewObject ([in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plObjectRef);
-	HRESULT jni_GetObjectClass ([in] long lObjRef, [out, retval] long *plClassRef);
-	HRESULT jni_IsInstanceOf ([in] long lObjRef, [in] long lClassRef, [out, retval] long *plBooleanRef);
-	HRESULT jni_GetMethodID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plMethodIDRef);
-	HRESULT jni_CallMethod ([in] long lType, [in] long lObjRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plResultRef);
-	HRESULT jni_CallNonVirtualMethod ([in] long lType, [in] long lObjRef, [in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgRefs, [out, retval] long *plResultRef);
-	HRESULT jni_GetFieldID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plFieldIDRef);
-	HRESULT jni_GetField ([in] long lType, [in] long lObjRef, [in] long lFieldIDRef, [out, retval] long *plResultRef);
-	HRESULT jni_SetField ([in] long lType, [in] long lObjRef, [in] long lFieldIDRef, [in] long lValueRef);
-	HRESULT jni_GetStaticMethodID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plMethodIDRef);
-	HRESULT jni_CallStaticMethod ([in] long lType, [in] long lClassRef, [in] long lMethodIDRef, [in] long cArgs, [in, size_is (cArgs)] long *alArgsRef, [out, retval] long *plResultRef);
-	HRESULT jni_GetStaticFieldID ([in] long lClassRef, [in] long lNameRef, [in] long lSigRef, [out, retval] long *plFieldIDRef);
-	HRESULT jni_GetStaticField ([in] long lType, [in] long lClassRef, [in] long lFieldIDRef, [out, retval] long *plResultRef);
-	HRESULT jni_SetStaticField ([in] long lType, [in] long lClassRef, [in] long lFieldIDRef, [in] long lValueRef);
-	HRESULT jni_NewString ([in] long lUnicodeRef, [in] long lSizeRef, [out, retval] long *plStringRef);
-	HRESULT jni_GetStringLength ([in] long lStrRef, [out, retval] long *plSizeRef);
-	HRESULT jni_GetStringChars ([in] long lStrRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
-	HRESULT jni_ReleaseStringChars ([in] long lStrRef, [in] long lCharsRef);
-	HRESULT jni_NewStringUTF ([in] long lUtfRef, [out, retval] long *plStringRef);
-	HRESULT jni_GetStringUTFLength ([in] long lStrRef, [out, retval] long *plSizeRef);
-	HRESULT jni_GetStringUTFChars ([in] long lStrRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
-	HRESULT jni_ReleaseStringUTFChars ([in] long lStrRef, [in] long lCharsRef);
-	HRESULT jni_GetArrayLength ([in] long lArrayRef, [out, retval] long *plSizeRef);
-	HRESULT jni_NewObjectArray ([in] long lLenRef, [in] long lClassRef, [in] long lInitRef, [out, retval] long *plArrayRef);
-	HRESULT jni_GetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [out, retval] long *plObjectRef);
-	HRESULT jni_SetObjectArrayElement ([in] long lArrayRef, [in] long lIndexRef, [in] long lValRef);
-	HRESULT jni_NewArray ([in] long lType, [in] long lLenRef, [out, retval] long *plArrayRef);
-	HRESULT jni_GetArrayElements ([in] long lType, [in] long lArrayRef, [out, optional] long *plIsCopyRef, [out, retval] long *plPointerRef);
-	HRESULT jni_ReleaseArrayElements ([in] long lType, [in] long lArrayRef, [in] long lElemsRef, [in] long lModeRef);
-	HRESULT jni_GetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
-	HRESULT jni_SetArrayRegion ([in] long lType, [in] long lArrayRef, [in] long lStartRef, [in] long lLRef, [in] long lBufRef);
-	HRESULT jni_RegisterNatives ([in] long lClassRef, [in] long lMethodsRef, [in] long lNMethodsef, [out, retval] long *plIntRef);
-	HRESULT jni_UnregisterNatives ([in] long lClassRef, [out, retval] long *plIntRef);
-	HRESULT jni_MonitorEntry ([in] long lObjRef, [out, retval] long *plIntRef);
-	HRESULT jni_MonitorExit ([in] long lObjRef, [out, retval] long *plIntRef);
-	HRESULT jni_GetStringRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
-	HRESULT jni_GetStringUTFRegion ([in] long lStrRef, [in] long lStartRef, [in] long lLenRef, [in] long lBufRef);
-	HRESULT jni_GetPrimitiveArrayCritical ([in] long lType, [in] long lArrayRef, [out, optional] long *plIsCopyRef, [out, retval] long *plVoidRef);
-	HRESULT jni_ReleasePrimitiveArrayCritical ([in] long lArrayRef, [in] long lCArrayRef, [in] long lModeRef);
-	HRESULT jni_GetStringCritical ([in] long lStringRef, [out, optional] long *plIsCopyRef, [out, retval] long *plCharRef);
-	HRESULT jni_ReleaseStringCritical ([in] long lStringRef, [in] long lCStringRef);
-	HRESULT jni_NewWeakGlobalRef ([in] long lObjRef, [out, retval] long *plWeakRef);
-	HRESULT jni_DeleteWeakGlobalRef ([in] long lRefRef);
-	HRESULT jni_ExceptionCheck ([out, retval] long *plBooleanRef);
-	HRESULT jni_NewDirectByteBuffer ([in] long lAddressRef, [in] long lCapacityRef, [out, retval] long *plObjectRef);
-	HRESULT jni_GetDirectBufferAddress ([in] long lBufRef, [out, retval] long *plVoidRef);
-	HRESULT jni_GetDirectBufferCapacity ([in] long lBufRef, [out, retval] long *plLongRef);
-	HRESULT jni_GetObjectRefType ([in] long lObjRef, [out, retval] long *plObjectRefTypeRef);
-};
 
 /// <summary>Wrapper around a `jobject` global reference.</summary>
 ///
@@ -583,6 +369,178 @@ midl_pragma warning (disable: 2362)
 	/// <returns>S_OK if successful, an error code otherwise</returns>
 	[propput] HRESULT Index ([in] GUID *pguidJVM, [in] long lIndex);
 };
+
+/*
+** XL 12 Basic Datatypes
+**/
+
+typedef INT32 BOOL;			/* Boolean */
+typedef WCHAR XCHAR;			/* Wide Character */
+typedef INT32 RW;			/* XL 12 Row */
+typedef INT32 COL;	 	      	/* XL 12 Column */
+typedef DWORD_PTR IDSHEET;		/* XL12 Sheet ID */
+typedef unsigned short WORD;
+
+/*
+** Flow data types
+**
+** Used for val.flow.xlflow field of XLOPER and XLOPER12 structures
+** when constructing flow-control XLOPERs and XLOPER12s
+**/
+
+const byte xl4jflowHalt = 1;
+const byte xl4jflowGoto = 2;
+const byte xl4jflowRestart = 8;
+const byte xl4jflowPause = 16;
+const byte xl4jflowResume = 64;
+
+const long xl4jtypeNum = 0x0001;
+const long xl4jtypeStr = 0x0002;
+const long xl4jtypeBool = 0x0004;
+const long xl4jtypeRef = 0x0008;
+const long xl4jtypeErr = 0x0010;
+const long xl4jtypeFlow = 0x0020;
+const long xl4jtypeMulti = 0x0040;
+const long xl4jtypeMissing = 0x0080;
+const long xl4jtypeNil = 0x0100;
+const long xl4jtypeSRef = 0x0400;
+const long xl4jtypeInt = 0x0800;
+
+const long xl4jbitXLFree = 0x1000;
+const long xl4jbitDLLFree = 0x4000;
+
+const long xl4jtypeBigData = 0x0802;// (xltypeStr | xltypeInt);
+
+/*
+** Error codes
+**
+** Used for val.err field of XLOPER and XLOPER12 structures
+** when constructing error XLOPERs and XLOPER12s
+*/
+
+const long xl4jerrNull = 0;
+const long xl4jerrDiv0 = 7;
+const long xl4jerrValue = 15;
+const long xl4jerrRef = 23;
+const long xl4jerrName = 29;
+const long xl4jerrNum = 36;
+const long xl4jerrNA = 42;
+const long xl4jerrGettingData = 43;
+
+
+typedef
+[uuid (2b9360c6-65c5-4725-8094-3e5d29c8363f)]
+struct XL4JREF12 {
+	RW rwFirst;
+	RW rwLast;
+	COL colFirst;
+	COL colLast;
+} XL4JREF12;//  , [uuid (bbd33753-de3a-47e7-95ec-ac105cf102b6)] * LPXL4JREF12;
+
+typedef
+[uuid (2d860bb2-441c-49e9-a002-d0d70a19700b)]
+struct XL4JMREF12 {
+	unsigned short count;
+	[size_is(count)] XL4JREF12 reftbl[*];
+} XL4JMREF12;// , *LPXL4JMREF12;
+
+
+typedef
+[uuid (1267bfc0-7a26-4cc9-b84e-b638d19a1f82)]
+struct MREF {
+	XL4JMREF12 *lpmref;
+	IDSHEET idSheet;
+} MREF;
+
+
+typedef
+[uuid (f1afcab6-16d6-4186-bd91-bbe3b331c09f)]
+struct SREF {
+	WORD count;			       	/* always = 1 */
+	XL4JREF12 ref;
+} SREF;
+
+struct _XL4JOPER12;
+
+
+typedef 
+[uuid (e12efb81-7c77-4cfb-ab2a-4ba4ed0f868f)]
+struct multi {
+	[size_is(rows * columns)] struct _XL4JOPER12 *lparray;
+	RW rows;
+	COL columns;
+} MULTI;
+
+typedef
+[uuid (59a40af3-f5c5-4751-9b9a-31c51e51bfa2)]
+struct FLOW {
+	[switch_type(byte)] [switch_is(xlflow)] union {
+		[case(xl4jflowRestart)]
+		int level;			/* xlflowRestart */
+		[case(xl4jflowPause)]
+		int tbctrl;			/* xlflowPause */
+		[case(xl4jflowGoto)]
+		IDSHEET idSheet;		/* xlflowGoto */
+	} valflow;
+	RW rw;				       	/* xlflowGoto */
+	COL col;			       	/* xlflowGoto */
+	byte xlflow;
+} FLOW;
+
+//
+typedef
+[uuid (f06a4f01-04dc-49df-9323-50b83a89f24b)]
+struct BIGDATA {
+	[size_is(cbData)] byte *lpbData;			/* data passed to XL */
+	long cbData;
+} BIGDATA;
+
+typedef
+[switch_type(int), uuid(79ae766d-f888-47ad-b07e-7d2c86edaf90)] union XL4JOPER12UNION {
+	[case(xl4jtypeNum)]
+	double num;				       	/* xltypeNum */
+	////[case(xl4jtypeStr)]
+	////[string] XCHAR *str;				       	/* xltypeStr */
+	//[case(xl4jtypeBool)]
+	//BOOL xbool;				       	/* xltypeBool */
+	//[case(xl4jtypeErr)]
+	//int err;				       	/* xltypeErr */
+	//[case(xl4jtypeSRef)]
+	//SREF sref;						/* xltypeSRef */
+	//[case(xl4jtypeRef)]
+	//MREF mref;						/* xltypeRef */
+	//[case(xl4jtypeMulti)]
+	//struct multi {
+	//	[size_is(rows * columns)] struct XL4JOPER12 *lparray;
+	//	RW rows;
+	//	COL columns;
+	//} array;
+	////MULTI array;					/* xltypeMulti */
+	//[case(xl4jtypeFlow)]
+	//FLOW flow;						/* xltypeFlow */
+	//[case(xl4jtypeBigData)]
+	//BIGDATA bigdata;				/* xltypeBigData */
+	[default]
+	int w;
+} XL4JOPER12UNION;
+
+
+
+[
+	uuid (053798d7-eef0-4ac5-8eb8-4d515e7c5db5),
+]
+struct XL4JOPER12 {
+	//[switch_is(xl4jtype)] XL4JOPER12UNION val;
+	/*unsigned long*/ long xl4jtype;
+	VARIANT aVariant;
+	//union VALUE switch (long a) {
+	//case 1: long i;
+	//case 2:  float f;
+	//	default: int e;
+	//};
+};
+
+typedef struct XL4JOPER12 XL4JOPER12;
 
 /// <summary>JVM abstraction.</summary>
 ///
@@ -633,15 +591,10 @@ midl_pragma warning (disable: 2362)
 	///
 	/// <returns>S_OK if the JVM is available, an error code otherwise</returns>
 	HRESULT Heartbeat ();
-	/// <summary>Creates a JNI transaction.</summary>
-	///
-	/// <para>The transaction can be used to invoke a sequence of one or more JNI calls to
-	/// this JVM. The transaction may be executed one or more times, with different control
-	/// parameters, or never be executed.</para>
-	///
-	/// <param name="ppTransaction">Receives the new transaction object</param>
-	/// <returns>S_OK if the transaction was created, an error code otherwise</returns>
-	HRESULT CreateJni ([out, retval] IJniSequence **ppTransaction);
+
+	HRESULT CreateScan ([out, retval] IScan **ppScan);
+	HRESULT CreateCall ([out, retval] ICall **ppCall);
+	//HRESULT scan ([out, retval] SAFEARRAY (FUNCTIONINFO) *result);
 }
 
 /// <summary>JVM resolution and connection abstraction.</summary>
@@ -829,14 +782,6 @@ midl_pragma warning (disable: 2362)
 	/// <param name="ppEntry">Receives the new IClasspathEntry instance</param>
 	/// <returns>S_OK if the entry was created, an error code otherwise</returns>
 	HRESULT CreateClasspathEntry ([in] BSTR bstrLocalPath, [out, retval] IClasspathEntry **ppEntry);
-	/// <summary>Creates a managed IJniSequence associated with an IJvmContainer instance.</summary>
-	///
-	/// <para>The IJvm implementing the underlying sequence will be constructed or re-constructed
-	/// from the container on demand.</para>
-	///
-	/// <param name="ppJni">Receives the new IJniSequence instance</param>
-	/// <returns>S_OK if the object was created, an error code otherwise</returns>
-	HRESULT CreateManagedJni ([out, retval] IJniSequence **ppJni);
 };
 
 /// <summary>Describes a JVM's construction configuration.</summary>
@@ -882,116 +827,41 @@ midl_pragma warning (disable: 2362)
 	HRESULT AppendDefaults ();
 };
 
-/*
-** XL 12 Basic Datatypes
-**/
-
-typedef INT32 BOOL;			/* Boolean */
-typedef WCHAR XCHAR;			/* Wide Character */
-typedef INT32 RW;			/* XL 12 Row */
-typedef INT32 COL;	 	      	/* XL 12 Column */
-typedef DWORD_PTR IDSHEET;		/* XL12 Sheet ID */
-typedef unsigned short WORD;
-
-/*
-** Flow data types
-**
-** Used for val.flow.xlflow field of XLOPER and XLOPER12 structures
-** when constructing flow-control XLOPERs and XLOPER12s
-**/
-
-const byte xlflowHalt = 1;
-const byte xlflowGoto = 2;
-const byte xlflowRestart = 8;
-const byte xlflowPause = 16;
-const byte xlflowResume = 64;
-
-const long xl4jtypeNum = 0x0001;
-const long xl4jtypeStr = 0x0002;
-const long xl4jtypeBool = 0x0004;
-const long xl4jtypeRef = 0x0008;
-const long xl4jtypeErr = 0x0010;
-const long xl4jtypeFlow = 0x0020;
-const long xl4jtypeMulti = 0x0040;
-const long xl4jtypeMissing = 0x0080;
-const long xl4jtypeNil = 0x0100;
-const long xl4jtypeSRef = 0x0400;
-const long xl4jtypeInt = 0x0800;
-
-const long xl4jbitXLFree = 0x1000;
-const long xl4jbitDLLFree = 0x4000;
-
-const long xl4jtypeBigData = 0x0802;// (xltypeStr | xltypeInt);
 
 
-[uuid (2b9360c6-65c5-4725-8094-3e5d29c8363f)]
-typedef struct xl4jref12 {
-	RW rwFirst;
-	RW rwLast;
-	COL colFirst;
-	COL colLast;
-} XL4JREF12;//  , [uuid (bbd33753-de3a-47e7-95ec-ac105cf102b6)] * LPXL4JREF12;
+typedef 
+[
+	uuid(dff6d900-b72f-4f06-a1ad-0466ad25c352),
+	version(1.0),
+	helpstring("Information about a UDF")
+]
+struct FUNCTIONINFO {
+	int exportNumber;
+	BSTR functionExportName;
+	BSTR functionSignature;
+	BSTR functionWorksheetName;
+	BSTR argumentNames;
+	int functionType;
+	BSTR functionCategory;
+	BSTR acceleratorKey;
+	BSTR helpTopic;
+	BSTR description;
+	SAFEARRAY (BSTR) argsHelp;
+} FUNCTIONINFO;
 
-[uuid (2d860bb2-441c-49e9-a002-d0d70a19700b)]
-typedef struct xl4jmref {
-	unsigned short count;
-	[size_is(count)] XL4JREF12 reftbl[*];
-} XL4JMREF12;// , *LPXL4JMREF12;
-
-[uuid (a290eb4b-29ef-4990-ba2a-c2d7abcae51f)]
-typedef struct xl4joper12 {
-	[switch_type(unsigned long)] [switch_is(xl4jtype)] union{
-		[case(xl4jtypeNum)]
-		double num;				       	/* xltypeNum */
-		[case(xl4jtypeStr)]
-		XCHAR *str;				       	/* xltypeStr */
-		[case(xl4jtypeBool)]
-		BOOL xbool;				       	/* xltypeBool */
-		[case(xl4jtypeErr)]
-		int err;				       	/* xltypeErr */
-		/* ??	int w; */
-		[case(xl4jtypeSRef)]
-		struct {
-			WORD count;			       	/* always = 1 */
-			XL4JREF12 ref;
-		} sref;						/* xltypeSRef */
-		[case(xl4jtypeRef)]
-		struct {
-			XL4JMREF12 *lpmref;
-			IDSHEET idSheet;
-		} mref;						/* xltypeRef */
-		[case(xl4jtypeMulti)]
-		struct {
-			struct xl4joper12 *lparray;
-			RW rows;
-			COL columns;
-		} array;					/* xltypeMulti */
-		[case(xl4jtypeFlow)]
-		struct {
-			[switch_type(byte)] [switch_is(xlflow)] union {
-				[case(xlflowRestart)] int level;			/* xlflowRestart */
-				[case(xlflowPause)] int tbctrl;			/* xlflowPause */
-				[case(xlflowGoto)] IDSHEET idSheet;		/* xlflowGoto */
-			} valflow;
-			RW rw;				       	/* xlflowGoto */
-			COL col;			       	/* xlflowGoto */
-			byte xlflow;
-		} flow;						/* xltypeFlow */
-		[case(xl4jtypeBigData)]
-		struct {
-			[size_is(cbData)] byte *lpbData;			/* data passed to XL */
-			long cbData;
-		} bigdata;					/* xltypeBigData */
-	} val;
-	unsigned long xl4jtype;
-} XL4JOPER12;// , *LPXL4JOPER12;
+[
+	object,
+	uuid (c9e3e9e1-a28e-4ce3-8bd2-6d72fba2b7c1)
+] interface IScan : IUnknown {
+	HRESULT scan ([retval, out] SAFEARRAY (FUNCTIONINFO) *result);
+};
 
 [
 	object,
 	uuid(1edb5111-1544-4a2c-b99e-b65e5813a48a)
 ]
-interface IXLCall : IUnknown {
-	[vararg] HRESULT call ([out] XL4JOPER12 *result, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) args);
+interface ICall : IUnknown {
+	HRESULT call ([out] struct XL4JOPER12 *result, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) args);
 }
 
 [
@@ -1007,15 +877,14 @@ interface IXLCall : IUnknown {
 	interface IFileWriter;
 	interface IJarFile;
 	interface IJDispatch;
-	interface IJniSequence;
 	interface IJObject;
 	interface IJvm;
 	interface IJvmConnector;
 	interface IJvmContainer;
 	interface IJvmSupport;
 	interface IJvmTemplate;
-	interface IXLCall;
-	
+	interface IScan;
+	interface ICall;
 	[
 		uuid (34b9de97-d756-4d18-a65c-e7a688cdf3e7),
 		helpstring ("Library entry point"),

@@ -11,114 +11,114 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace localtest {
+//namespace localtest {
 	
-	TEST_CLASS (JniSequenceTest) {
-	public:
-		// new Integer(6) 
-		TEST_METHOD (NewInteger6) {
-			IJvmConnector *pConnector;
-			Assert::AreEqual (S_OK, ComJvmCreateLocalConnector (&pConnector));
-			IJvm *pJvm;
-			Assert::AreEqual (S_OK, pConnector->Lock ());
-			IJvmTemplate *pTemplate;
-			Assert::AreEqual (S_OK, ComJvmCreateTemplate (NULL, &pTemplate));
-			Assert::AreEqual (S_OK, pConnector->CreateJvm (pTemplate, NULL, &pJvm));
-			pTemplate->Release ();
-			Assert::AreEqual (S_OK, pConnector->Unlock ());
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, pJvm->CreateJni (&pJni));
-			_bstr_t bstrClassName (TEXT ("java/lang/Integer"));
-			long lClassNameRef;
-			Assert::AreEqual (S_OK, pJni->StringConstant (bstrClassName.Detach (), &lClassNameRef));
-			long lClassRef;
-			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
-			Assert::AreEqual (S_OK, pJni->Result (lClassRef));
-			_bstr_t bstrConstructorName (TEXT ("<init>"));
-			long lConstructorNameRef;
-			Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorName.Detach (), &lConstructorNameRef));
-			_bstr_t bstrConstructorSig (TEXT ("(I)V"));
-			long lConstructorSigRef;
-			Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorSig.Detach (), &lConstructorSigRef)); 
-			long lIntegerArgumentRef;
-			Assert::AreEqual (S_OK, pJni->IntConstant (6, &lIntegerArgumentRef));
-			long lNumArgsRef;
-			Assert::AreEqual (S_OK, pJni->IntConstant (1, &lNumArgsRef));
-			long lMethodIDRef;
-			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lMethodIDRef));
-			long lObjectRef;
-			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, lNumArgsRef, &lIntegerArgumentRef, &lObjectRef));
-			long l;
-			Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
-			Assert::AreEqual (0L, l);
-			Assert::AreEqual (S_OK, pJni->get_Results (&l));
-			Assert::AreEqual (1L, l);
-			VARIANT aResults[1];
+	//TEST_CLASS (JniSequenceTest) {
+	//public:
+	//	// new Integer(6) 
+	//	TEST_METHOD (NewInteger6) {
+	//		IJvmConnector *pConnector;
+	//		Assert::AreEqual (S_OK, ComJvmCreateLocalConnector (&pConnector));
+	//		IJvm *pJvm;
+	//		Assert::AreEqual (S_OK, pConnector->Lock ());
+	//		IJvmTemplate *pTemplate;
+	//		Assert::AreEqual (S_OK, ComJvmCreateTemplate (NULL, &pTemplate));
+	//		Assert::AreEqual (S_OK, pConnector->CreateJvm (pTemplate, NULL, &pJvm));
+	//		pTemplate->Release ();
+	//		Assert::AreEqual (S_OK, pConnector->Unlock ());
+	//		IJniSequence *pJni;
+	//		Assert::AreEqual (S_OK, pJvm->CreateJni (&pJni));
+	//		_bstr_t bstrClassName (TEXT ("java/lang/Integer"));
+	//		long lClassNameRef;
+	//		Assert::AreEqual (S_OK, pJni->StringConstant (bstrClassName.Detach (), &lClassNameRef));
+	//		long lClassRef;
+	//		Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
+	//		Assert::AreEqual (S_OK, pJni->Result (lClassRef));
+	//		_bstr_t bstrConstructorName (TEXT ("<init>"));
+	//		long lConstructorNameRef;
+	//		Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorName.Detach (), &lConstructorNameRef));
+	//		_bstr_t bstrConstructorSig (TEXT ("(I)V"));
+	//		long lConstructorSigRef;
+	//		Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorSig.Detach (), &lConstructorSigRef)); 
+	//		long lIntegerArgumentRef;
+	//		Assert::AreEqual (S_OK, pJni->IntConstant (6, &lIntegerArgumentRef));
+	//		long lNumArgsRef;
+	//		Assert::AreEqual (S_OK, pJni->IntConstant (1, &lNumArgsRef));
+	//		long lMethodIDRef;
+	//		Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lMethodIDRef));
+	//		long lObjectRef;
+	//		Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, lNumArgsRef, &lIntegerArgumentRef, &lObjectRef));
+	//		long l;
+	//		Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
+	//		Assert::AreEqual (0L, l);
+	//		Assert::AreEqual (S_OK, pJni->get_Results (&l));
+	//		Assert::AreEqual (1L, l);
+	//		VARIANT aResults[1];
 
-			Assert::AreEqual (S_OK, Debug::print_HRESULT(pJni->Execute (0, NULL, 1, aResults)));
-			Assert::AreEqual ((short)VT_UI8, (short)aResults[0].vt);
+	//		Assert::AreEqual (S_OK, Debug::print_HRESULT(pJni->Execute (0, NULL, 1, aResults)));
+	//		Assert::AreEqual ((short)VT_UI8, (short)aResults[0].vt);
 
-			pJni->Release ();
-			Assert::AreNotEqual (0ull, aResults[0].ullVal);
-			pJvm->Release ();
-			pConnector->Release ();
-		}
+	//		pJni->Release ();
+	//		Assert::AreNotEqual (0ull, aResults[0].ullVal);
+	//		pJvm->Release ();
+	//		pConnector->Release ();
+	//	}
 
-		// new Integer(x) 
-		TEST_METHOD (NewIntegerX) {
-			IJvmConnector *pConnector;
-			Assert::AreEqual (S_OK, ComJvmCreateLocalConnector (&pConnector));
-			IJvm *pJvm;
-			Assert::AreEqual (S_OK, pConnector->Lock ());
-			IJvmTemplate *pTemplate;
-			Assert::AreEqual (S_OK, ComJvmCreateTemplate (NULL, &pTemplate));
-			Assert::AreEqual (S_OK, pConnector->CreateJvm (pTemplate, NULL, &pJvm));
-			pTemplate->Release ();
-			Assert::AreEqual (S_OK, pConnector->Unlock ());
-			IJniSequence *pJni;
-			Assert::AreEqual (S_OK, pJvm->CreateJni (&pJni));
-			_bstr_t bstrClassName (TEXT ("java/lang/Integer"));
-			long lClassNameRef;
-			Assert::AreEqual (S_OK, pJni->StringConstant (bstrClassName.Detach (), &lClassNameRef));
-			long lClassRef;
-			Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
-			Assert::AreEqual (S_OK, pJni->Result (lClassRef));
-			_bstr_t bstrConstructorName (TEXT ("<init>"));
-			long lConstructorNameRef;
-			Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorName.Detach (), &lConstructorNameRef));
-			_bstr_t bstrConstructorSig (TEXT ("(I)V"));
-			long lConstructorSigRef;
-			Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorSig.Detach (), &lConstructorSigRef));
-			long lIntegerArgumentRef;
-			Assert::AreEqual (S_OK, pJni->Argument (&lIntegerArgumentRef));
-			long lNumArgsRef;
-			Assert::AreEqual (S_OK, pJni->IntConstant (1, &lNumArgsRef));
-			long lMethodIDRef;
-			Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lMethodIDRef));
-			long lObjectRef;
-			long args[] = { lIntegerArgumentRef };
-			Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, lNumArgsRef, args, &lObjectRef));
-			long l;
-			//Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
-			//Assert::AreEqual (1L, l);
-			Assert::AreEqual (S_OK, pJni->get_Results (&l));
-			Assert::AreEqual (1L, l);
-			VARIANT aResults[1];
-			VARIANT aArgs[1];
-			aArgs[0].intVal = 6;
-			aArgs[0].vt = VT_I4;
-			HRESULT result = pJni->Execute (1, aArgs, 1, aResults);\
-			if (result != S_OK) {
-				_com_error error (result);
-			}
-			Assert::AreEqual (S_OK, result);
-			Assert::AreEqual ((short) VT_UI8, (short) aResults[0].vt);
+	//	// new Integer(x) 
+	//	TEST_METHOD (NewIntegerX) {
+	//		IJvmConnector *pConnector;
+	//		Assert::AreEqual (S_OK, ComJvmCreateLocalConnector (&pConnector));
+	//		IJvm *pJvm;
+	//		Assert::AreEqual (S_OK, pConnector->Lock ());
+	//		IJvmTemplate *pTemplate;
+	//		Assert::AreEqual (S_OK, ComJvmCreateTemplate (NULL, &pTemplate));
+	//		Assert::AreEqual (S_OK, pConnector->CreateJvm (pTemplate, NULL, &pJvm));
+	//		pTemplate->Release ();
+	//		Assert::AreEqual (S_OK, pConnector->Unlock ());
+	//		IJniSequence *pJni;
+	//		Assert::AreEqual (S_OK, pJvm->CreateJni (&pJni));
+	//		_bstr_t bstrClassName (TEXT ("java/lang/Integer"));
+	//		long lClassNameRef;
+	//		Assert::AreEqual (S_OK, pJni->StringConstant (bstrClassName.Detach (), &lClassNameRef));
+	//		long lClassRef;
+	//		Assert::AreEqual (S_OK, pJni->jni_FindClass (lClassNameRef, &lClassRef));
+	//		Assert::AreEqual (S_OK, pJni->Result (lClassRef));
+	//		_bstr_t bstrConstructorName (TEXT ("<init>"));
+	//		long lConstructorNameRef;
+	//		Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorName.Detach (), &lConstructorNameRef));
+	//		_bstr_t bstrConstructorSig (TEXT ("(I)V"));
+	//		long lConstructorSigRef;
+	//		Assert::AreEqual (S_OK, pJni->StringConstant (bstrConstructorSig.Detach (), &lConstructorSigRef));
+	//		long lIntegerArgumentRef;
+	//		Assert::AreEqual (S_OK, pJni->Argument (&lIntegerArgumentRef));
+	//		long lNumArgsRef;
+	//		Assert::AreEqual (S_OK, pJni->IntConstant (1, &lNumArgsRef));
+	//		long lMethodIDRef;
+	//		Assert::AreEqual (S_OK, pJni->jni_GetMethodID (lClassRef, lConstructorNameRef, lConstructorSigRef, &lMethodIDRef));
+	//		long lObjectRef;
+	//		long args[] = { lIntegerArgumentRef };
+	//		Assert::AreEqual (S_OK, pJni->jni_NewObject (lClassRef, lMethodIDRef, lNumArgsRef, args, &lObjectRef));
+	//		long l;
+	//		//Assert::AreEqual (S_OK, pJni->get_Arguments (&l));
+	//		//Assert::AreEqual (1L, l);
+	//		Assert::AreEqual (S_OK, pJni->get_Results (&l));
+	//		Assert::AreEqual (1L, l);
+	//		VARIANT aResults[1];
+	//		VARIANT aArgs[1];
+	//		aArgs[0].intVal = 6;
+	//		aArgs[0].vt = VT_I4;
+	//		HRESULT result = pJni->Execute (1, aArgs, 1, aResults);\
+	//		if (result != S_OK) {
+	//			_com_error error (result);
+	//		}
+	//		Assert::AreEqual (S_OK, result);
+	//		Assert::AreEqual ((short) VT_UI8, (short) aResults[0].vt);
 
-			pJni->Release ();
-			Assert::AreNotEqual (0ull, aResults[0].ullVal);
-			pJvm->Release ();
-			pConnector->Release ();
-		}
+	//		pJni->Release ();
+	//		Assert::AreNotEqual (0ull, aResults[0].ullVal);
+	//		pJvm->Release ();
+	//		pConnector->Release ();
+	//	}
 		
 		// NOTE: This is commented out because it needs to create a local reference for the Integer.
 		//  List l = new ArrayList<?>();
@@ -221,6 +221,6 @@ namespace localtest {
 		//	pConnector->Release ();
 		//}
 
-	};
+	//};
 
-}
+//}

@@ -1,7 +1,5 @@
 #include "stdafx.h"
-#include "Register.h"
 #include "Jvm.h"
-#include "Converter.h"
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap);
 
