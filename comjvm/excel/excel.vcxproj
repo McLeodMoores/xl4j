@@ -74,7 +74,7 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <IncludePath>C:\2013 Office System Developer Resources\Excel2013XLLSDK\INCLUDE;$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
     <TargetExt>.xll</TargetExt>
   </PropertyGroup>

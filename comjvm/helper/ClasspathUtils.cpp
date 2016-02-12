@@ -29,3 +29,12 @@ void ClasspathUtils::AddEntries (IClasspathEntries *entries, TCHAR *base) {
 		}
 	} while (FindNextFile (hFind, &findData) != 0);
 }
+
+void ClasspathUtils::AddEntry (IClasspathEntries *entries, TCHAR *path) {
+	IClasspathEntry *pEntry;
+	HRESULT hr = ComJvmCreateClasspathEntry (path, &pEntry);
+	if (FAILED (hr)) {
+		_com_raise_error (hr);
+	}
+	entries->Add (pEntry);
+}

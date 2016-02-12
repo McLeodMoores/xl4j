@@ -26,7 +26,7 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, VARIANT *oper) {
 	{
 		jclass jcXLNumber = pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLNumber");
 		jmethodID jmXLNumber_of = pEnv->GetStaticMethodID (jcXLNumber, "of", "(D)Lcom/mcleodmoores/excel4j/values/XLNumber;");
-		joResult = pEnv->CallStaticObjectMethod (jcXLNumber, jmXLNumber_of, oper->intVal);
+		joResult = pEnv->CallStaticObjectMethod (jcXLNumber, jmXLNumber_of, oper->dblVal);
 	}
 	break;
 	case VT_BSTR:
@@ -250,7 +250,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, jobject joXLValue) {
 		storeBSTR (pEnv, joStringValue, &V_BSTR (&result));
 	} else if (pEnv->IsAssignableFrom(jcXLValue, jcXLNumber)) {
 		TRACE ("XLNumber");
-		jmethodID jmXLNumber_getValue = pEnv->GetMethodID (jcXLNumber, "getValue", "()D;");
+		jmethodID jmXLNumber_getValue = pEnv->GetMethodID (jcXLNumber, "getValue", "()D");
 		jdouble value = pEnv->CallDoubleMethod (joXLValue, jmXLNumber_getValue);
 		V_VT (&result) = VT_R8;
 		V_R8 (&result) = value;

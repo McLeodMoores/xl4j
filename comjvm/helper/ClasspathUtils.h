@@ -14,4 +14,5 @@
 class COMJVM_HELPER_API ClasspathUtils {
 public:
 	static void AddEntries (IClasspathEntries *entries, TCHAR *base);
+	static void AddEntry (IClasspathEntries *entries, TCHAR *path);
 };

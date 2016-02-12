@@ -36,12 +36,14 @@ public final class JConstruct {
                            @XLArgument(name = "args", description = "") 
                            final XLValue... args) {
     try {
+      System.err.println("jconstruct(" + className.toString());
       Excel excelFactory = ExcelFactory.getInstance();
       InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
       ConstructorInvoker constructorTypeConverter = 
           invokerFactory.getConstructorTypeConverter(resolveClass(className), TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.
     } catch (ClassNotFoundException e) {
+      e.printStackTrace(System.err);
       return XLError.Null;
     }
   }

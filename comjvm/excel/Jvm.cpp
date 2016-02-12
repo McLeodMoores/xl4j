@@ -30,6 +30,8 @@ Jvm::Jvm () {
 	}
 
 	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
+	ClasspathUtils::AddEntry (entries, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar"));
+	
 	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
 	if (FAILED (hr)) {
 		_com_error err (hr);
