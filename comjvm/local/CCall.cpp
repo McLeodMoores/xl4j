@@ -21,39 +21,37 @@ CCall::~CCall () {
 	DecrementActiveObjectCount ();
 }
 
-typedef struct Params {
-	XL4JOPER12 *result;
-	int iFunctionNum;
-	SAFEARRAY *args;
-} Params;
-
 static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
-	TRACE ("Entering static callback function _scan");
+	TRACE ("Entering static callback function _call");
 	CCallExecutor *pExecutor = (CCallExecutor*)lpData;
 	HRESULT hr = pExecutor->Run (pEnv);
 	if (SUCCEEDED (hr)) {
+		TRACE ("_call: Run returned success");
 		hr = pExecutor->Wait ();
+		TRACE ("pExecutor->Wait() returned");
+		Debug::print_HRESULT (hr);
 	} else {
+		TRACE ("_call: Run returned failure");
+		Debug::print_HRESULT (hr);
 		pExecutor->Release ();
 	}
 	return hr;
 }
 
-
-
-HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ XL4JOPER12 *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
+HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
 	HRESULT hr;
 	try {
 		CCallExecutor *pExecutor = new CCallExecutor (this, result, iFunctionNum, args); // RC1
 		pExecutor->AddRef (); // RC2
-		TRACE ("CScan::scan on safearray** about to call Execute on vm");
+		TRACE ("CCall::call on safearray** about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);
 		if (SUCCEEDED (hr)) {
-			TRACE ("CScan::scan vm execute succeeded");
+			TRACE ("CCall::call vm execute succeeded");
 			// The executor will release RC2
 			hr = pExecutor->Wait ();
+			TRACE ("hr = %x after Wait()", hr);
 		} else {
-			TRACE ("CScan::scan vm execute failed");
+			TRACE ("CCall::call vm execute failed");
 			// Release RC2
 			pExecutor->Release ();
 		}
@@ -62,6 +60,7 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ XL4JOPER12 *result, /* [in] *
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
+	TRACE ("Returning hr = %x", hr);
 	return hr;
 }
 

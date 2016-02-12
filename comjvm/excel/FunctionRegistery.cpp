@@ -37,18 +37,19 @@ HRESULT FunctionRegistry::get (int functionNumber, FUNCTIONINFO *pFunctionInfo) 
 		TRACE ("scan not called first");
 		return E_POINTER;
 	}
-	long UBound;
+	long count;
 	HRESULT hr;
-	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &UBound))) {
+	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &count))) {
 		TRACE ("get::SafeArrayGetUBound failed");
 		return hr;
 	}
+	count++;
 	FUNCTIONINFO *pFunctionInfos;
 	if (FAILED (hr == ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
 		TRACE ("get::SafeArrayAccessData failed");
 		return hr;
 	}
-	for (int i = 0; i < UBound; i++) {
+	for (int i = 0; i < count; i++) {
 		if (pFunctionInfos[i].exportNumber == functionNumber) {
 			*pFunctionInfo = pFunctionInfos[i];
 			::SafeArrayUnaccessData (m_pResults);
@@ -87,20 +88,21 @@ HRESULT FunctionRegistry::registerFunctions (XLOPER12 xDll) {
 		TRACE ("scan not called first");
 		return E_POINTER;
 	}
-	long UBound;
+	long count;
 	HRESULT hr;
-	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &UBound))) {
+	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &count))) {
 		_com_error err (hr);
 		TRACE ("registerFunctions::SafeArrayGetUBound failed: %s", err.ErrorMessage());
 		return hr;
 	}
+	count++;
 	FUNCTIONINFO *pFunctionInfos;
 	if (FAILED (hr = ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
 		TRACE ("registerFunctions::SafeArrayAccessData failed");
 		return hr;
 	}
 	
-	for (int i = 0; i < UBound; i++) {
+	for (int i = 0; i < count; i++) {
 		FUNCTIONINFO fi = pFunctionInfos[i];
 		bstr_t *psArgsHelp;
 		long cArgsHelp;
@@ -112,12 +114,12 @@ HRESULT FunctionRegistry::registerFunctions (XLOPER12 xDll) {
 			TRACE ("registerFunctions::SafeArrayGetUBound (argshelp %d) failed", fi.exportNumber);
 			return hr;
 		}
+		cArgsHelp++; // upper bound is not same as count
 		registerFunction (xDll, fi.exportNumber, fi.functionExportName, fi.functionSignature,
 			fi.functionWorksheetName, fi.argumentNames, fi.functionType,
 			fi.functionCategory, fi.acceleratorKey, fi.helpTopic, fi.description,
 			cArgsHelp, psArgsHelp);
 		::SafeArrayUnaccessData (fi.argsHelp);
-
 	}
 	::SafeArrayUnaccessData (m_pResults);
 	return S_OK;

@@ -4,6 +4,7 @@
 #include "local/CScanExecutor.h"
 #include "local/CCallExecutor.h"
 #include "FunctionRegistry.h"
+#include "Converter.h"
 //
 // Later, the instance handle is required to create dialog boxes.
 // g_hInst holds the instance handle passed in by DllMain so that it is
@@ -152,7 +153,6 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void)
 {
 
 	static XLOPER12 xDLL;
-	HRESULT hr;
 	Excel12f (xlGetName, &xDLL, 0);
 	g_pJvm = new Jvm ();
 	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm());
@@ -160,13 +160,13 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void)
 	TRACE ("Finished scan");
 	g_pFunctionRegistry->registerFunctions (xDLL);
 	TRACE ("Finished registration");
-	if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID2, 1, 0, 0, XL4JOPER12_IID2, &g_pOperRecordInfo))) {
-		_com_error err (hr);
-		LPCTSTR errMsg = err.ErrorMessage ();
-		TRACE ("xlAutoOpen::Failed to GetRecordInfoFromGuids %s", errMsg);
-		return hr;
-	}
-	TRACE ("Finished loading RecordInfo for XL4JOPER12");
+	//if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID2, 1, 0, 0, XL4JOPER12_IID2, &g_pOperRecordInfo))) {
+	//	_com_error err (hr);
+	//	LPCTSTR errMsg = err.ErrorMessage ();
+	//	TRACE ("xlAutoOpen::Failed to GetRecordInfoFromGuids %s", errMsg);
+	//	return hr;
+	//}
+	//TRACE ("Finished loading RecordInfo for XL4JOPER12");
 	// Free the XLL filename //
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 
@@ -371,46 +371,72 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
 	// Find out how many parameters this function should expect.
 	FUNCTIONINFO functionInfo;
-	int nArgs = g_pFunctionRegistry->get (exportNumber, &functionInfo);
+	HRESULT hr = g_pFunctionRegistry->get (exportNumber, &functionInfo);
+	long nArgs = wcslen (functionInfo.functionSignature) - 2;
+	//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
 	TRACE ("UDF_%d invoked (%d params)", exportNumber, nArgs);
 	
-	if (g_pOperRecordInfo == NULL) {
-		TRACE ("Type RecordInfo for XL4JOPER12 not loaded");
-		return NULL;
-	}
+	//if (g_pOperRecordInfo == NULL) {
+	//	TRACE ("Type RecordInfo for XL4JOPER12 not loaded");
+	//	XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+	//	return pErrVal;
+	//}
 	// Create a SAFEARRAY(XL4JOPER12) of nArg entries
 	SAFEARRAYBOUND bounds = { nArgs, 0 };
-	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_RECORD, 1, &bounds, g_pOperRecordInfo);
+	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
 	if (saInputs == NULL) {
 		TRACE ("Could not create SAFEARRAY");
-		return NULL;
+		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+		return pErrVal;
 	}
 	// Get a ptr into the SAFEARRAY
-	LPXLOPER12 inputs;
+	VARIANT *inputs;
 	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
 	TRACE ("Got XLOPER12 %p, type = %x", first, first->xltype);
-	inputs[0] = *first;
+	if (first != NULL) {
+		Converter::convert (first, inputs++);
+		TRACE ("copied first element into SAFEARRAY");
+	} else {
+		TRACE ("first paramter was NULL, no conversion");
+	}
 	TRACE ("Queued converter code");
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
 		TRACE ("Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		inputs[i] = *arg;
+		Converter::convert (arg, inputs++);
 		TRACE ("copied into SAFEARRAY");
 	}
 	va_end (ap);
 	SafeArrayUnaccessData (saInputs);
-	HRESULT hr;
-	// IT'S VERY IMPORTANT WE CLEAN THIS UP!
-	LPXLOPER12 pResult = (XLOPER12 *) ::CoTaskMemAlloc (sizeof XLOPER12);
+	
+	VARIANT result;
 	ICall *pCall;
 	if (FAILED(hr = g_pJvm->getJvm ()->CreateCall (&pCall))) {
 		TRACE ("CreateCall failed on JVM");
-		return NULL;
+		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+		return pErrVal;
 	}
-	if (FAILED(hr = pCall->call ((XL4JOPER12 *)pResult, exportNumber, saInputs))) {
+	long szInputs;
+	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
+		TRACE ("Yawn");
+		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+		return pErrVal;
+	}
+	szInputs++;
+	TRACE ("Prior to invocation saInputs has %d elements", szInputs);
+	if (FAILED(hr = pCall->call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
 		TRACE ("call failed %s.", err.ErrorMessage ());
-		return NULL;
+		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+		return pErrVal;
+	}
+	// IT'S VERY IMPORTANT WE CLEAN THIS UP!
+	XLOPER12 *pResult = (XLOPER12 *) CoTaskMemAlloc (sizeof (XLOPER12));
+	hr = Converter::convert (&result, pResult);
+	if (FAILED (hr)) {
+		TRACE ("Result conversion failed");
+		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+		return pErrVal;
 	}
 	return pResult;
 }

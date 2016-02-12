@@ -40,7 +40,7 @@ class CCallExecutor {
 private:
 	volatile long m_lRefCount;
 	CCall *m_pOwner;
-	XL4JOPER12 *m_pResult;
+	VARIANT *m_pResult;
 	int m_iFunctionNum;
 	SAFEARRAY *m_pArgs;
 	HANDLE m_hSemaphore;
@@ -50,12 +50,13 @@ private:
 	void freeBSTR (BSTR pStr);
 	HRESULT storeBSTR (JNIEnv *pEnv, jstring jsStr, BSTR *result);
 	HRESULT storeXCHAR (JNIEnv *pEnv, jstring jsStr, XCHAR **result);
-	void allocMREF (XL4JMREF12 **result, jsize elems);
-	void allocArray (XL4JOPER12 **result, jsize rows, jsize cols);
-	XL4JOPER12 convert (JNIEnv *pEnv, jobject joXLValue);
-	jobject convert (JNIEnv *pEnv, XL4JOPER12 *oper);
+	HRESULT allocMultiReference (XL4JMULTIREFERENCE **result, jsize elems);
+	HRESULT allocReference (XL4JREFERENCE **result);
+	void allocArray (SAFEARRAY **result, jsize rows, jsize cols);
+	VARIANT convert (JNIEnv *pEnv, jobject joXLValue);
+	jobject convert (JNIEnv *pEnv, VARIANT *oper);
 public:
-	CCallExecutor (CCall *pOwner, XL4JOPER12 *result, int iFunctionNum, SAFEARRAY * args);
+	CCallExecutor (CCall *pOwner, VARIANT *result, int iFunctionNum, SAFEARRAY * args);
 	HRESULT Run (JNIEnv *pEnv);
 	HRESULT Wait ();
 	void AddRef ();

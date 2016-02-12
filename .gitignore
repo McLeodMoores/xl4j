@@ -7,6 +7,7 @@
 *.user
 *.aps
 *.pch
+*.pd_
 *.vspscc
 *.vssscc
 *_i.c
@@ -78,3 +79,4 @@ packages/
 *.war
 *.ear
 /target/
+/comjvm/target/

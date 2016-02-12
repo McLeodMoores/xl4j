@@ -18,7 +18,7 @@ private:
 public:
 	CCall (CJvm *pJvm);
 	~CCall ();
-	HRESULT STDMETHODCALLTYPE call (/* [out] */ XL4JOPER12 *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
+	HRESULT STDMETHODCALLTYPE call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
 	ULONG STDMETHODCALLTYPE AddRef ();
 	ULONG STDMETHODCALLTYPE Release ();
 	// IUnknown

@@ -86,14 +86,15 @@ public:
 		FUNCTIONINFO *pFunctionInfos;
 
 		//Assert::AreEqual (S_OK, hr);
-		long upperBound;
-		SafeArrayGetUBound (results, 1, &upperBound);
+		long count;
+		SafeArrayGetUBound (results, 1, &count);
+		count++;
 		SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
-		for (int i = 0; i < upperBound; i++) {
+		for (int i = 0; i < count; i++) {
 			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].functionExportName, pFunctionInfos[i].functionSignature, pFunctionInfos[i].description);
 		}
 		SafeArrayUnaccessData (results);
-		Assert::AreNotEqual ((long) 100, upperBound);
+		Assert::AreNotEqual ((long) 100, count);
 		SafeArrayDestroy (results);
 		pScan->Release ();
 	}
