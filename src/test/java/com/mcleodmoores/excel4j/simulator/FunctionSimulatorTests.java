@@ -51,8 +51,7 @@ public class FunctionSimulatorTests {
     Assert.assertEquals(result2.getClass(), XLString.class);
     Assert.assertEquals(((XLString) result2).getValue(), "Two");   
   }
-  
-  
+    
   @SuppressWarnings("unchecked")
   @Test
   public void testSequence() {

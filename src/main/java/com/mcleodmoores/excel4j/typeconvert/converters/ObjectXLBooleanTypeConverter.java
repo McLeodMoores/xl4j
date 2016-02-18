@@ -11,7 +11,7 @@ import com.mcleodmoores.excel4j.values.XLBoolean;
  * Type converter to convert from Objects to Excel Numbers and back again.
  */
 public final class ObjectXLBooleanTypeConverter extends AbstractTypeConverter {
-  private static final int PRIORITY = 7;
+  private static final int PRIORITY = 	-7;
 
   /**
    * Default constructor.

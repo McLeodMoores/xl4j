@@ -11,7 +11,7 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  */
 public final class XLString implements XLValue {
 
-  private static final String OBJECT_PREFIX = "\u0026";
+  private static final String OBJECT_PREFIX = "\u001A";
   private final String _value;
 
   private XLString(final String value) {
