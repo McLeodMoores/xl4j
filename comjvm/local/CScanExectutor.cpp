@@ -136,7 +136,7 @@ void CScanExecutor::freeBSTR (BSTR pStr) {
 
 HRESULT CScanExecutor::storeBSTR (JNIEnv *pEnv, jstring jsStr, BSTR *result) {
 	const jchar* jcstr = pEnv->GetStringCritical (jsStr, JNI_FALSE);
-#if 0
+#if 1
 	/* use system allocator */
 	* result = ::SysAllocStringLen ((const OLECHAR *)jcstr, pEnv->GetStringLength (jsStr));
 #else

@@ -9,8 +9,11 @@ import java.util.Arrays;
 
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.ExcelFactory;
+import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLValue;
+import com.mcleodmoores.excel4j.xll.XLLAccumulatingFunctionRegistry;
+import com.mcleodmoores.excel4j.xll.XLLAccumulatingFunctionRegistry.LowLevelEntry;
 
 /**
  * 
@@ -31,16 +34,24 @@ public class MockFunctionProcessor {
    * @return the result
    */
   public XLValue invoke(final String functionName, final XLValue... args) {
-    MockExcelFunctionRegistry excelFunctionRegistry = (MockExcelFunctionRegistry) _excel.getExcelCallback().getLowLevelExcelCallback();
-    FunctionEntry functionEntry = excelFunctionRegistry.getFunctionEntry(functionName);
-    MockDLLExports dllTable = new MockDLLExports(_excel.getExcelCallHandler());
-    Method entryPointMethod = functionEntry.getEntryPointMethod();
+    XLLAccumulatingFunctionRegistry excelFunctionRegistry = (XLLAccumulatingFunctionRegistry) _excel.getExcelCallback().getLowLevelExcelCallback();
+    LowLevelEntry[] entries = excelFunctionRegistry.getEntries();
+    int exportNumber = -1;
+    for (LowLevelEntry entry : entries) {
+    	if (entry._functionWorksheetName.equals(functionName)) {
+    		exportNumber = entry._exportNumber;
+    	}
+    }
+    ExcelFunctionCallHandler excelCallHandler = _excel.getExcelCallHandler();
+    
+    //Method entryPointMethod = functionEntry.getEntryPointMethod();
     Object[] newArgs = new Object[args.length];
     System.arraycopy(args, 0, newArgs, 0, args.length);
     try {
-      System.err.println("invoking method " + entryPointMethod.getName() + " with args " + Arrays.toString(args));
-      return (XLValue) entryPointMethod.invoke(dllTable, new Object[] { args });
-    } catch (IllegalAccessException | IllegalArgumentException | ClassCastException | InvocationTargetException e) {
+      System.err.println("invoking method " + functionName + " (" + exportNumber + ") with args " + Arrays.toString(args));
+      return (XLValue) excelCallHandler.invoke(exportNumber, args);
+      //return (XLValue) entryPointMethod.invoke(dllTable, new Object[] { args });
+    } catch (IllegalArgumentException | ClassCastException e) {
       throw new Excel4JRuntimeException("Problem invoking function " + functionName + " with args " + Arrays.toString(newArgs), e);
     }
   }

@@ -48,8 +48,8 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, VARIANT *oper) {
 	case VT_BOOL:
 	{
 		jclass jcXLBoolean = pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLBoolean");
-		jmethodID jmXLBoolean_of = pEnv->GetStaticMethodID (jcXLBoolean, "of", "(Z)Lcom/mcleodmoores/excel4j/values/XLBoolean;");
-		joResult = pEnv->CallStaticObjectMethod (jcXLBoolean, jmXLBoolean_of, oper->boolVal != VARIANT_FALSE); // hope this deals with TRUE == -1 crap
+		jmethodID jmXLBoolean_from = pEnv->GetStaticMethodID (jcXLBoolean, "from", "(Z)Lcom/mcleodmoores/excel4j/values/XLBoolean;");
+		joResult = pEnv->CallStaticObjectMethod (jcXLBoolean, jmXLBoolean_from, oper->boolVal != VARIANT_FALSE); // hope this deals with TRUE == -1 crap
 	}
 	break;
 	case VT_RECORD:
@@ -236,7 +236,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, jobject joXLValue) {
 		
 	if (pEnv->IsAssignableFrom (jcXLValue, jcXLObject)) {
 		TRACE ("XLObject");
-		jmethodID jmXLObject_getValue = pEnv->GetMethodID (jcXLObject, "toXLString()", "()Lcom/mcleodmoores/excel4j/values/XLString;");
+		jmethodID jmXLObject_getValue = pEnv->GetMethodID (jcXLObject, "toXLString", "()Lcom/mcleodmoores/excel4j/values/XLString;");
 		jobject joXLString = pEnv->CallObjectMethod (joXLValue, jmXLObject_getValue);
 		jmethodID jmXLString_getValue = pEnv->GetMethodID (jcXLString, "getValue", "()Ljava/lang/String;");
 		jstring joStringValue = (jstring)pEnv->CallObjectMethod (joXLString, jmXLString_getValue);
@@ -248,6 +248,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, jobject joXLValue) {
 		jstring joStringValue = (jstring) pEnv->CallObjectMethod (joXLValue, jmXLString_getValue);
 		V_VT (&result) = VT_BSTR;
 		storeBSTR (pEnv, joStringValue, &V_BSTR (&result));
+		TRACE ("String is %s", V_BSTR (&result));
 	} else if (pEnv->IsAssignableFrom(jcXLValue, jcXLNumber)) {
 		TRACE ("XLNumber");
 		jmethodID jmXLNumber_getValue = pEnv->GetMethodID (jcXLNumber, "getValue", "()D");
@@ -425,7 +426,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, jobject joXLValue) {
 				jobjectArray joaValuesRow = (jobjectArray)pEnv->GetObjectArrayElement (joaValuesRows, j);
 				for (jsize i = 0; i < jsValuesColumns; i++) {
 					jobject joValue = pEnv->GetObjectArrayElement (joaValuesRow, i);
-					pVariant[(j * jsValuesRows) + i] = convert (pEnv, joValue);
+					*(pVariant++) = convert (pEnv, joValue);
 				}
 			}
 			SafeArrayUnaccessData (psa);
@@ -575,9 +576,9 @@ HRESULT CCallExecutor::allocReference (XL4JREFERENCE **result) {
 
 HRESULT CCallExecutor::storeBSTR (JNIEnv *pEnv, jstring jsStr, BSTR *result) {
 	const jchar* jcstr = pEnv->GetStringCritical (jsStr, JNI_FALSE);
-#if 0
+#if 1
 	/* use system allocator */
-	* result = ::SysAllocStringLen ((const OLECHAR *)jcstr, pEnv->GetStringLength (jsStr));
+	*result = ::SysAllocStringLen ((const OLECHAR *)jcstr, pEnv->GetStringLength (jsStr));
 #else
 	/* use COM task allocator */
 	size_t len = pEnv->GetStringLength (jsStr);

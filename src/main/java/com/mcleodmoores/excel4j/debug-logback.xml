@@ -1,19 +1,43 @@
 <!-- If you want to make things really noisy, use this file like -Dlogback.configurationFile=com/opengamma/util/debug-logback.xml -->
 <configuration>
 
-  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+<!--   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> -->
+<!--     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder"> -->
+<!--       <layout class="ch.qos.logback.classic.PatternLayout"> -->
+<!--         <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern> -->
+<!--       </layout> -->
+<!--     </encoder> -->
+<!--   </appender> -->
+  
+   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>engine.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>excel4j.%i.log.gz</fileNamePattern>
+      <minIndex>1</minIndex>
+      <maxIndex>9</maxIndex>
+    </rollingPolicy>
+    <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+      <maxFileSize>50MB</maxFileSize>
+    </triggeringPolicy>
     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
       <layout class="ch.qos.logback.classic.PatternLayout">
-        <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+        <Pattern>%date [%thread] %-5level %logger{36} - %msg%n</Pattern>
       </layout>
     </encoder>
   </appender>
   
   <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" />
-
+   
   <root level="debug">
-    <appender-ref ref="STDOUT" />
+    <appender-ref ref="FILE" />
     <appender-ref ref="BRIDGE" />
   </root>
+  
+<!--   <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /> -->
+
+<!--   <root level="debug"> -->
+<!--     <appender-ref ref="STDOUT" /> -->
+<!--     <appender-ref ref="BRIDGE" /> -->
+<!--   </root> -->
   
 </configuration>

@@ -14,6 +14,7 @@ private:
 	static HRESULT allocMREF (size_t ranges, XLMREF12 **result);
 	static HRESULT allocARRAY (size_t cols, size_t rows, XLOPER12 **arr);
 	static HRESULT allocBSTR (XCHAR *str, BSTR *out);
+	static HRESULT allocXCHAR (BSTR in, XCHAR **out);
 	static HRESULT allocMultiReference (XL4JMULTIREFERENCE **result, size_t elems);
 	static HRESULT allocReference (XL4JREFERENCE **result);
 	Converter ();

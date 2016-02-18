@@ -13,6 +13,7 @@
 #include <strsafe.h>
 #include "jni.h"
 #include <string>
+//#include <xlcall.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +36,7 @@ public:
 	static void odprintf (LPCTSTR sFormat, ...);
 	static HRESULT print_HRESULT (HRESULT result); 
 	static void printException (JNIEnv *pEnv, jthrowable exception);
+	//static void printXLOPER (XLOPER12 *oper);
 };
 
 #ifdef _DEBUG

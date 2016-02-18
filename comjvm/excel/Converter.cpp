@@ -4,18 +4,35 @@
 Converter::Converter () {
 }
 
+HRESULT Converter::allocXCHAR (BSTR in, XCHAR **out) {
+	const UINT cbLen = SysStringByteLen (in);
+	*out = (XCHAR *) GetTempMemory (cbLen + 2); // add two bytes for length prefix, remember no null terminator
+	if (*out == NULL) {
+		return E_OUTOFMEMORY;
+	}
+	(*out)[0] = (XCHAR) SysStringLen (in);
+	CopyMemory ((*out) + 1, in, cbLen); // copying memory because no null terminator, so string function can't handle.
+	return S_OK;
+}
+
 HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	switch (V_VT(in)) {
 	case VT_R8:
 	{
+		TRACE ("Converter::convert(VARIANT->XLOPER): VT_R8");
 		out->xltype = xltypeNum;
 		out->val.num = V_R8 (in);
 	}
 	break;
 	case VT_BSTR:
 	{
+		TRACE ("Converter::convert(VARIANT->XLOPER): VT_BSTR (%s)", V_BSTR(in));
 		out->xltype = xltypeStr;
-		out->val.str = V_BSTR (in);
+		HRESULT hr = allocXCHAR (V_BSTR (in), &(out->val.str));
+		if (FAILED (hr)) {
+			TRACE ("Converter::convert(VARIANT->XLOPER): could not alloc XCHAR array for string.");
+			return hr;
+		}
 	}
 	break;
 	case VT_BOOL:
@@ -77,9 +94,10 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	break;
 	case VT_ARRAY:
 	{
+		TRACE ("Converter::convert(VARIANT->XLOPER): VT_ARRAY");
 		SAFEARRAY *psa = V_ARRAY (in);
 		if (SafeArrayGetDim (psa) != 2) {
-			TRACE ("CCallExecutor::convert: VT_ARRAY not a 2D array");
+			TRACE ("Converter::convert: VT_ARRAY not a 2D array");
 			return E_NOT_VALID_STATE;
 		}
 		long cRows;
@@ -92,11 +110,13 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		HRESULT hr = SafeArrayAccessData (psa, (PVOID *)&pArray);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("CCallExecutor::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
+			TRACE ("Converter::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
 			return hr;
 		}
 		XLOPER12 *pXLOPERArr;
+		TRACE ("Converter::convert(VARIANT->XLOPER): allocating (%d x %d) array.", cColumns, cRows);
 		hr = allocARRAY (cColumns, cRows, &pXLOPERArr);
+		out->val.array.lparray = pXLOPERArr; // assign BEFORE walking it along array!!!
 		if (FAILED (hr)) {
 			_com_error err (hr);
 			TRACE ("CCallExecutor::convert allocARRAY failed: %s", err.ErrorMessage ());
@@ -105,14 +125,16 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		
 		for (int j = 0; j < cRows; j++) {
 			for (int i = 0; i < cColumns; i++) {
+				TRACE ("Converter::convert(VARIANT->XLOPER): converting element (%d, %d)", i, j);
 				hr = convert (pArray++, pXLOPERArr++);
 			}
 		}
+		TRACE ("Converter::convert(VARIANT->XLOPER): finished converting elements, writing to out structure");
 		SafeArrayUnaccessData (psa);
 		out->xltype = xltypeMulti;
 		out->val.array.columns = cColumns;
 		out->val.array.rows = cRows;
-		out->val.array.lparray = pXLOPERArr;
+		
 	}
 	break;
 	case VT_NULL:
@@ -285,10 +307,11 @@ HRESULT Converter::allocARRAY (size_t cols, size_t rows, XLOPER12 **arr) {
 }
 
 HRESULT Converter::allocBSTR (XCHAR *str, BSTR *out) {
-	*out = SysAllocString (str);
+	*out = SysAllocStringLen (str + 1, (UINT)((unsigned short) str[0])); // two casts probably unnecessary
 	if (*out == NULL) {
 		return E_OUTOFMEMORY;
 	}
+	TRACE ("Converter::allocBSTR: str = %s, out = %s", str, *out);
 	return S_OK;
 }
 

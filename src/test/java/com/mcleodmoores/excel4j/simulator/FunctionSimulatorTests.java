@@ -9,6 +9,7 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.heap.Heap;
+import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -37,6 +38,20 @@ public class FunctionSimulatorTests {
     Object arrayList = _heap.getObject(arrayListObj.getHandle());
     Assert.assertEquals(arrayList.getClass(), ArrayList.class);
   }
+  
+  @Test
+  public void testGetElem() {
+    XLValue result = _processor.invoke("MakeList", XLArray.of(new XLValue[][] { { XLString.of("One"), XLString.of("Two") } } ));
+    Assert.assertEquals(result.getClass(), XLObject.class);
+    XLObject arrayListObj = (XLObject) result;
+    Object arrayList = _heap.getObject(arrayListObj.getHandle());
+    Assert.assertEquals(arrayList.getClass(), ArrayList.class);
+    Assert.assertEquals(((List<?>)arrayList).size(), 2);
+    XLValue result2 = _processor.invoke("ListElement",  result, XLNumber.of(1));
+    Assert.assertEquals(result2.getClass(), XLString.class);
+    Assert.assertEquals(((XLString) result2).getValue(), "Two");   
+  }
+  
   
   @SuppressWarnings("unchecked")
   @Test

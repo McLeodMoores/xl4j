@@ -374,37 +374,33 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	HRESULT hr = g_pFunctionRegistry->get (exportNumber, &functionInfo);
 	long nArgs = wcslen (functionInfo.functionSignature) - 2;
 	//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
-	TRACE ("UDF_%d invoked (%d params)", exportNumber, nArgs);
+	TRACE ("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
 	
-	//if (g_pOperRecordInfo == NULL) {
-	//	TRACE ("Type RecordInfo for XL4JOPER12 not loaded");
-	//	XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-	//	return pErrVal;
-	//}
 	// Create a SAFEARRAY(XL4JOPER12) of nArg entries
 	SAFEARRAYBOUND bounds = { nArgs, 0 };
 	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
 	if (saInputs == NULL) {
-		TRACE ("Could not create SAFEARRAY");
+		TRACE ("UDF stub: Could not create SAFEARRAY");
 		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
 		return pErrVal;
 	}
+	TRACE ("UDF stub: Created SAFEARRAY for parameters");
 	// Get a ptr into the SAFEARRAY
 	VARIANT *inputs;
 	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
-	TRACE ("Got XLOPER12 %p, type = %x", first, first->xltype);
-	if (first != NULL) {
+	if (nArgs > 0) {
+		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
 		Converter::convert (first, inputs++);
-		TRACE ("copied first element into SAFEARRAY");
+		TRACE ("UDF stub: copied first element into SAFEARRAY");
 	} else {
-		TRACE ("first paramter was NULL, no conversion");
+		TRACE ("UDF stub: first paramter was NULL, no conversion");
 	}
-	TRACE ("Queued converter code");
+	TRACE ("UDF stub: converting any remaining parameters");
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
-		TRACE ("Got XLOPER12 %p, type = %x", arg, arg->xltype);
+		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
 		Converter::convert (arg, inputs++);
-		TRACE ("copied into SAFEARRAY");
+		TRACE ("UDF stub: converted and copied into SAFEARRAY");
 	}
 	va_end (ap);
 	SafeArrayUnaccessData (saInputs);
@@ -412,21 +408,21 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	VARIANT result;
 	ICall *pCall;
 	if (FAILED(hr = g_pJvm->getJvm ()->CreateCall (&pCall))) {
-		TRACE ("CreateCall failed on JVM");
+		TRACE ("UDF stub: CreateCall failed on JVM");
 		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
 		return pErrVal;
 	}
 	long szInputs;
 	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
-		TRACE ("Yawn");
+		TRACE ("UDF stub: Yawn");
 		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
 		return pErrVal;
 	}
 	szInputs++;
-	TRACE ("Prior to invocation saInputs has %d elements", szInputs);
+	TRACE ("UDF stub: Prior to invocation saInputs has %d elements", szInputs);
 	if (FAILED(hr = pCall->call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
-		TRACE ("call failed %s.", err.ErrorMessage ());
+		TRACE ("UDF stub: call failed %s.", err.ErrorMessage ());
 		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
 		return pErrVal;
 	}
@@ -434,9 +430,22 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	XLOPER12 *pResult = (XLOPER12 *) CoTaskMemAlloc (sizeof (XLOPER12));
 	hr = Converter::convert (&result, pResult);
 	if (FAILED (hr)) {
-		TRACE ("Result conversion failed");
+		TRACE ("UDF stub: Result conversion failed");
 		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
 		return pErrVal;
+	}
+	TRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
+	//Debug::printXLOPER (pResult);
+	if (pResult->xltype == xltypeMulti) {
+		TRACE ("UDF stub: returning multi: columns = %d, rows = %d, arr = %p", pResult->val.array.columns, pResult->val.array.rows, pResult->val.array.lparray);
+		XLOPER12 *arr = pResult->val.array.lparray;
+		if (arr->xltype == xltypeNum) {
+			TRACE ("first element in array is number %f", arr->val.num);
+		} else if (arr->xltype == xltypeStr) {
+			TRACE ("first element is string");
+		} else {
+			TRACE ("Unrecognised xltype %d (0x%x)", arr->xltype, arr->xltype);
+		}
 	}
 	return pResult;
 }
