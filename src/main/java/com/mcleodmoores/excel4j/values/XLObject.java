@@ -12,10 +12,10 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 public final class XLObject implements XLValue {
 
   private static final char OBJECT_PREFIX = '\u001A';
-  private final Class<?> _clazz;
+  private final String _clazz;
   private final long _handle;
 
-  private XLObject(final Class<?> clazz, final long handle) {
+  private XLObject(final String clazz, final long handle) {
     _clazz = clazz;
     _handle = handle;
   }
@@ -26,15 +26,26 @@ public final class XLObject implements XLValue {
    * @param handle the object handle
    * @return an instance
    */
-  public static XLObject of(final Class<?> clazz, final long handle) {
+  public static XLObject of(final String clazz, final long handle) {
     ArgumentChecker.notNull(clazz, "clazz");
     return new XLObject(clazz, handle);
+  }
+  
+  /**
+   * Static factory method to create an instance of an XLString.
+   * @param clazz the Class that this object points to
+   * @param handle the object handle
+   * @return an instance
+   */
+  public static XLObject of(final Class<?> clazz, final long handle) {
+    ArgumentChecker.notNull(clazz, "clazz");
+    return new XLObject(clazz.getSimpleName(), handle);
   }
 
   /**
    * @return the object's class
    */
-  public Class<?> getClazz() {
+  public String getClazz() {
     return _clazz;
   }
 
@@ -55,7 +66,7 @@ public final class XLObject implements XLValue {
   public XLString toXLString() {
     final StringBuilder sb = new StringBuilder();
     sb.append(OBJECT_PREFIX);
-    sb.append(_clazz.getSimpleName());
+    sb.append(_clazz);
     sb.append('-');
     sb.append(_handle);
     return XLString.of(sb.toString());

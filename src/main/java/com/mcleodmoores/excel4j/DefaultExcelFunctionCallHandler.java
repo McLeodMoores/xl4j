@@ -10,6 +10,7 @@ import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLObject;
+import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -31,10 +32,17 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
   }
   
   @Override
-  public XLValue invoke(final int exportNumber, final XLValue... args) {
+  public XLValue invoke(final int exportNumber, XLValue... args) {
     s_logger.info("invoke called with {}", exportNumber);
-    for (XLValue arg : args) {
-      s_logger.info("arg = {}", arg);
+    for (int i = 0; i < args.length; i++) {
+      s_logger.info("arg = {}", args[i]);
+      if (args[i] instanceof XLString) {
+        XLString xlString = (XLString) args[i];
+    	  if (xlString.isXLObject()) {
+    	    args[i] = xlString.toXLObject();
+    	    s_logger.info("converted arg to XLObject");
+    	  }
+      }
     }
     final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
     s_logger.info("functionDefinition", functionDefinition.getFunctionMetadata().getFunctionSpec().name());

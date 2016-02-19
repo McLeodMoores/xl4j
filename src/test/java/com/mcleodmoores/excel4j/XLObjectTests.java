@@ -46,7 +46,7 @@ public class XLObjectTests {
    */
   @Test
   public void testGetters() {
-    final XLObject xlStringArray = XLObject.of(String[].class, LONG_123);
+    final XLObject xlStringArray = XLObject.of(String[].class.getSimpleName(), LONG_123);
     final Method[] methods = xlStringArray.getClass().getMethods();
     int count = 0;
     for (final Method method : methods) {

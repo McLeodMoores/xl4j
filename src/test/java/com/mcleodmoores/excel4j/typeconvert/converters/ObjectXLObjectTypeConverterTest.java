@@ -28,7 +28,7 @@ public class ObjectXLObjectTypeConverterTest {
   private static final int TEN_I = 10;
   private static final double TEN_D = 10d;
   /** XLObject. */
-  private static final XLObject XL_OBJECT = XLObject.of(List.class, 1L);
+  private static final XLObject XL_OBJECT = XLObject.of(List.class.getSimpleName(), 1L);
   /** Empty Object. */
   private static final Object OBJECT = new Object();
   /** The converter */

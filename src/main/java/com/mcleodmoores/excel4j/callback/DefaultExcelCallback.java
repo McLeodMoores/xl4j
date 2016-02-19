@@ -110,7 +110,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     // Return type character
     if (functionType == FunctionType.COMMAND) {
       if (!excelReturnType.isAssignableFrom(XLInteger.class)) {
-        throw new Excel4JRuntimeException("Commands must have a return type XLInteger (gets convertered to type J (int))");
+        throw new Excel4JRuntimeException("Commands must have a return type XLInteger (gets converted to type J (int))");
       }
       signature.append("J"); // means int, but we'll convert from XLInteger to make the class hierarchy cleaner.
     } else {
