@@ -20,6 +20,7 @@ import com.mcleodmoores.excel4j.values.XLMultiReference;
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
  */
 public class DefaultExcelCallback implements ExcelCallback {
+  private static final int VARARGS_MAX_PARAMS = 32;
   private LowLevelExcelCallback _rawCallback;
 
   /**
@@ -49,6 +50,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     XLArgument[] argumentAnnotations = functionMetadata.getArguments();
     final String exportName = functionDefinition.getExportName();
     final String functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
+    final boolean isVarArgs = methodInvoker.isVarArgs();
     final String argumentNames = buildArgNames(argumentAnnotations);
     final Integer functionTypeInt = getFunctionType(functionAnnotation);
     final String signature = buildFunctionSignature(functionAnnotation, argumentAnnotations, methodInvoker);
@@ -56,7 +58,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String helpTopic = buildHelpTopic(functionAnnotation);
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
-    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, signature, functionName, argumentNames, 
+    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs,  signature, functionName, argumentNames, 
                              functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
   
@@ -137,6 +139,19 @@ public class DefaultExcelCallback implements ExcelCallback {
         signature.append("U"); // XLOPER12 byref
       } else {
         signature.append("Q"); // XLOPER12 byval
+      }
+    }
+    if (methodInvoker.isVarArgs()) {
+      if (parameterTypes.length == 0) {
+        throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
+      }
+      boolean isLastTypeReferenceType = argumentAnnotations[parameterTypes.length - 1].referenceType();
+      for (int i = 0; i < VARARGS_MAX_PARAMS - parameterTypes.length; i++) {
+        if (isLastTypeReferenceType) {
+          signature.append("U"); // XLOPER12 byref
+        } else {
+          signature.append("Q"); // XLOPER12 byval
+        }
       }
     }
     // Characters on the end -- we checked some invalid states at the start.

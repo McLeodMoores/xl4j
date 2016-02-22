@@ -724,6 +724,7 @@ typedef
 struct FUNCTIONINFO {
 	int exportNumber;
 	BSTR functionExportName;
+	boolean isVarArgs;
 	BSTR functionSignature;
 	BSTR functionWorksheetName;
 	BSTR argumentNames;

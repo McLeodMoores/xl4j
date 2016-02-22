@@ -381,8 +381,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
 	if (saInputs == NULL) {
 		TRACE ("UDF stub: Could not create SAFEARRAY");
-		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-		return pErrVal;
+		goto error;
 	}
 	TRACE ("UDF stub: Created SAFEARRAY for parameters");
 	// Get a ptr into the SAFEARRAY
@@ -403,36 +402,42 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 		TRACE ("UDF stub: converted and copied into SAFEARRAY");
 	}
 	va_end (ap);
-	SafeArrayUnaccessData (saInputs);
-	
+	// trim off any VT_NULLs if it's a varargs function.
+	if (functionInfo.isVarArgs) {
+		int i = nArgs - 1;
+		while (i > 0 && V_VT (&(inputs[i])) == VT_NULL) {
+			i--;
+		}
+		SafeArrayUnaccessData (saInputs);
+		SAFEARRAYBOUND trimmedBounds = { i, 0 };
+		SafeArrayRedim (saInputs, &trimmedBounds);
+	} else {
+		SafeArrayUnaccessData (saInputs);
+	}
 	VARIANT result;
 	ICall *pCall;
 	if (FAILED(hr = g_pJvm->getJvm ()->CreateCall (&pCall))) {
 		TRACE ("UDF stub: CreateCall failed on JVM");
-		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-		return pErrVal;
+		goto error;
 	}
 	long szInputs;
 	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
-		TRACE ("UDF stub: Yawn");
-		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-		return pErrVal;
+		TRACE ("UDF stub: SafeArrayGetUBound failed");
+		goto error;
 	}
 	szInputs++;
-	TRACE ("UDF stub: Prior to invocation saInputs has %d elements", szInputs);
+	TRACE ("UDF stub: Prior to invocation saInputs has %d elements (post trimming)", szInputs);
 	if (FAILED(hr = pCall->call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
 		TRACE ("UDF stub: call failed %s.", err.ErrorMessage ());
-		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-		return pErrVal;
+		goto error;
 	}
 	// IT'S VERY IMPORTANT WE CLEAN THIS UP!
 	XLOPER12 *pResult = (XLOPER12 *) CoTaskMemAlloc (sizeof (XLOPER12));
 	hr = Converter::convert (&result, pResult);
 	if (FAILED (hr)) {
 		TRACE ("UDF stub: Result conversion failed");
-		XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-		return pErrVal;
+		goto error;
 	}
 	TRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
 	//Debug::printXLOPER (pResult);
@@ -448,6 +453,16 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 		}
 	}
 	return pResult;
+error:
+	if (saInputs) {
+		SafeArrayDestroy (saInputs);
+	}
+	if (pResult) {
+		CoTaskMemFree (pResult);
+	}
+	// free result...
+	XLOPER12 *pErrVal = TempErr12 (xlerrValue);
+	return pErrVal;
 }
 
 
