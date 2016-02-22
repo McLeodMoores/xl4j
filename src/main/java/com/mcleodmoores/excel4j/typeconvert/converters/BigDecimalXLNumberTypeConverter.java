@@ -12,7 +12,7 @@ import com.mcleodmoores.excel4j.values.XLNumber;
  */
 public final class BigDecimalXLNumberTypeConverter extends AbstractTypeConverter {
   /** The priority */
-  private static final int PRIORITY = 11111;
+  private static final int PRIORITY = 11;
   /**
    * Default constructor.
    */

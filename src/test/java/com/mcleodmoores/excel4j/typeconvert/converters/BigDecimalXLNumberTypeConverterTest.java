@@ -19,8 +19,11 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
+import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
+import com.mcleodmoores.excel4j.values.XLObject;
+import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -172,24 +175,65 @@ public class BigDecimalXLNumberTypeConverterTest {
     assertEquals(bigDecimal, BIG_DECIMAL);
   }
 
-  //  /**
-  //   * Tests construction of a BigDecimal from the function processor.
-  //   */
-  //  @Test
-  //  public void testJConstruct() {
-  //    // no no-args constructor for BigDecimal
-  //    XLValue xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME));
-  //    assertEquals(xlValue.getClass(), XLError.class);
-  //    // constructors
-  //    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_DOUBLE);
-  //    assertTrue(xlValue instanceof XLObject);
-  //    final Object bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
-  //    assertEquals(bigDecimalObject.getClass(), BigDecimal.class);
-  //    //    assertEquals(xlNumber.getValue(), XL_NUMBER_DOUBLE.getValue(), 0);
-  //    //    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_INT);
-  //    //    assertTrue(xlValue instanceof XLNumber);
-  //    //    xlNumber = xlValue;
-  //    //    assertEquals(xlNumber.getValue(), XL_NUMBER_INT.getValue(), 0);
-  //  }
-  //}
+  /**
+   * Tests creation of BigDecimals using the constructors.
+   */
+  @Test
+  public void testJConstruct() {
+    // no no-args constructor for BigDecimal
+    XLValue xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME));
+    assertTrue(xlValue instanceof XLError);
+    // double constructor
+    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_DOUBLE);
+    assertTrue(xlValue instanceof XLObject);
+    Object bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    BigDecimal bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.doubleValue(), BIG_DECIMAL.doubleValue(), 0);
+    // long constructor
+    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_LONG);
+    assertTrue(xlValue instanceof XLObject);
+    bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.longValue(), BIG_DECIMAL.longValue());
+    // int constructor
+    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_INT);
+    assertTrue(xlValue instanceof XLObject);
+    bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.intValue(), BIG_DECIMAL.intValue());
+  }
+
+  /**
+   * Tests creation of BigDecimals using the static constructors.
+   */
+  @Test
+  public void testJMethod() {
+    // no BigDecimal.valueOf(String)
+    XLValue xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
+    assertTrue(xlValue instanceof XLError);
+    // BigDecimal.valueOf(double)
+    xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_DOUBLE);
+    assertTrue(xlValue instanceof XLObject);
+    Object bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    BigDecimal bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.doubleValue(), BIG_DECIMAL.doubleValue(), 0);
+    // BigDecimal.valueOf(long)
+    xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_LONG);
+    assertTrue(xlValue instanceof XLObject);
+    bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.longValue(), BIG_DECIMAL.longValue());
+    // BigDecimal.valueOf(long, int)
+    xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_INT);
+    assertTrue(xlValue instanceof XLObject);
+    bigDecimalObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.intValue(), BIG_DECIMAL.intValue());
+  }
 }
