@@ -387,9 +387,10 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	// Get a ptr into the SAFEARRAY
 	VARIANT *inputs;
 	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
+	VARIANT *pInputs = inputs;
 	if (nArgs > 0) {
 		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
-		Converter::convert (first, inputs++);
+		Converter::convert (first, pInputs++);
 		TRACE ("UDF stub: copied first element into SAFEARRAY");
 	} else {
 		TRACE ("UDF stub: first paramter was NULL, no conversion");
@@ -398,19 +399,25 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
 		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		Converter::convert (arg, inputs++);
+		Converter::convert (arg, pInputs++);
 		TRACE ("UDF stub: converted and copied into SAFEARRAY");
 	}
 	va_end (ap);
 	// trim off any VT_NULLs if it's a varargs function.
 	if (functionInfo.isVarArgs) {
+		TRACE ("Detected VarArgs, trying to trim");
 		int i = nArgs - 1;
-		while (i > 0 && V_VT (&(inputs[i])) == VT_NULL) {
+		while (i > 0 && inputs[i].vt == VT_EMPTY) {
 			i--;
 		}
 		SafeArrayUnaccessData (saInputs);
+		TRACE ("Trimming to %d", i);
 		SAFEARRAYBOUND trimmedBounds = { i, 0 };
-		SafeArrayRedim (saInputs, &trimmedBounds);
+		hr = SafeArrayRedim (saInputs, &trimmedBounds);
+		if (FAILED (hr)) {
+			TRACE ("SafeArrayRedim failed");
+			goto error;
+		}
 	} else {
 		SafeArrayUnaccessData (saInputs);
 	}
