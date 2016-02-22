@@ -8,14 +8,16 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLNumber;
 
 /**
- * Type converter to convert from Doubles to Excel Numbers and back again.
+ * Type converter to convert from BigDecimals to XLNumbers and back again.
  */
 public final class BigDecimalXLNumberTypeConverter extends AbstractTypeConverter {
+  /** The priority */
+  private static final int PRIORITY = 11111;
   /**
    * Default constructor.
    */
   public BigDecimalXLNumberTypeConverter() {
-    super(BigDecimal.class, XLNumber.class);
+    super(BigDecimal.class, XLNumber.class, PRIORITY);
   }
 
   @Override

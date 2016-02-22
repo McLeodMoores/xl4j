@@ -50,6 +50,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jclass jcLowLevelEntry = pEnv->FindClass ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry");
 		jfieldID jfExportNumber = pEnv->GetFieldID (jcLowLevelEntry, "_exportNumber", "I");
 		jfieldID jfFunctionExportName = pEnv->GetFieldID (jcLowLevelEntry, "_functionExportName", "Ljava/lang/String;");
+		jfieldID jfIsVarArgs = pEnv->GetFieldID (jcLowLevelEntry, "_isVarArgs", "Z");
 		jfieldID jfFunctionSignature = pEnv->GetFieldID (jcLowLevelEntry, "_functionSignature", "Ljava/lang/String;");
 		jfieldID jfFunctionWorksheetname = pEnv->GetFieldID (jcLowLevelEntry, "_functionWorksheetName", "Ljava/lang/String;");
 		jfieldID jfArgumentNames = pEnv->GetFieldID (jcLowLevelEntry, "_argumentNames", "Ljava/lang/String;");
@@ -83,6 +84,8 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 			pFunctionInfos[i].exportNumber = pEnv->GetIntField (joElement, jfExportNumber);
 			jstring jsFunctionExportName = (jstring) pEnv->GetObjectField (joElement, jfFunctionExportName);
 			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].functionExportName);
+			jboolean jsIsVarArgs = pEnv->GetBooleanField (joElement, jfIsVarArgs);
+			pFunctionInfos[i].isVarArgs = jsIsVarArgs;
 			jstring jsFunctionSignature = (jstring)pEnv->GetObjectField (joElement, jfFunctionSignature);
 			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].functionSignature);
 			jstring jsFunctionWorksheetname = (jstring)pEnv->GetObjectField (joElement, jfFunctionWorksheetname);

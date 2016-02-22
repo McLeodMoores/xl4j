@@ -12,6 +12,7 @@ public interface LowLevelExcelCallback {
    * Excel callback interface to register a function.
    * @param exportNumber  the export number allocated to this function
    * @param functionExportName  the name of the C export to handle this function call, not null
+   * @param isVarArgs  true, if the function has a variable argument list
    * @param functionSignature  a string representing the functions return type, parameter types and calling permission, not null
    * @param functionWorksheetName  the name of the function as it is to appear on the worksheet, case sensitive, not null
    * @param argumentNames  a comma separated list of function argument names (no padding spaces)
@@ -26,6 +27,7 @@ public interface LowLevelExcelCallback {
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters.  Take it up with Microsoft.
   int xlfRegister(final int exportNumber,
                   final String functionExportName,
+                  final boolean isVarArgs,
                   final String functionSignature,
                   final String functionWorksheetName,
                   final String argumentNames,

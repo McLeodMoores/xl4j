@@ -212,6 +212,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		SafeArrayUnaccessData (pMultiReference->refs);
 	} break;
 	case xltypeMissing: {
+		TRACE ("Converter::convert(XLOPER->VARIANT): Missing->VT_EMPTY");
 		VariantClear (out);
 		V_VT (out) = VT_EMPTY;
 	} break;

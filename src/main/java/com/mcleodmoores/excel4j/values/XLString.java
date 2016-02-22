@@ -4,6 +4,7 @@
 package com.mcleodmoores.excel4j.values;
 
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
 /**
  * Java representation of the xloper type xltypeStr.
@@ -41,7 +42,22 @@ public final class XLString implements XLValue {
   public boolean isXLObject() {
     return _value.startsWith(OBJECT_PREFIX);
   }
-
+  
+  /**
+   * @return XLObject if string contains object handle, throws Excel4JRuntimeException otherwise
+   * Check with isXLObject before calling.  Note this does not check validity on heap.
+   */
+  public XLObject toXLObject() {
+    if (isXLObject()) {
+      String[] split = _value.split("-");
+      if (split.length != 2) {
+        throw new Excel4JRuntimeException("String has object prefix character but cannot split on hyphen");
+      }
+      return XLObject.of(split[0], Long.parseLong(split[1]));
+    }
+    throw new Excel4JRuntimeException("XLString is not object handle");
+  }
+  
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLString(this);

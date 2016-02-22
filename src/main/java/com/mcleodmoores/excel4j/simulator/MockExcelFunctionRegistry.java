@@ -26,6 +26,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   public int xlfRegister(
       final int exportNumber, 
       final String functionExportName,
+      final boolean isVarArgs,
       final String functionSignature,
       final String functionWorksheetName,
       final String argumentNames,

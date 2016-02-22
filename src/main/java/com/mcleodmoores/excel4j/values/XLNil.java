@@ -6,7 +6,7 @@ package com.mcleodmoores.excel4j.values;
 
 /**
  * Java representation of the xloper type xltypeNil.
- * This is used to represent completely blank cells in XLValueRanges.
+ * This is used to represent completely blank cells in XLArrays.
  */
 public enum XLNil implements XLValue {
   /**
