@@ -411,8 +411,8 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 			i--;
 		}
 		SafeArrayUnaccessData (saInputs);
-		TRACE ("Trimming to %d", i);
-		SAFEARRAYBOUND trimmedBounds = { i, 0 };
+		TRACE ("Trimming to %d", i + 1);
+		SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
 		hr = SafeArrayRedim (saInputs, &trimmedBounds);
 		if (FAILED (hr)) {
 			TRACE ("SafeArrayRedim failed");
