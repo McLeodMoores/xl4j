@@ -231,6 +231,6 @@ public class ShortXLNumberTypeConverterTest {
     shortObject = _heap.getObject(((XLObject) xlValue).getHandle());
     assertTrue(shortObject instanceof Short);
     shortVal = (Short) shortObject;
-    assertEquals(shortVal.shortValue(), SHORT.shortValue());
+    assertEquals(shortVal.shortValue(), Short.valueOf("12", 8).shortValue());
   }
 }
