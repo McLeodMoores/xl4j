@@ -11,13 +11,12 @@ import com.mcleodmoores.excel4j.values.XLNumber;
  * Type converter to convert from BigDecimals to XLNumbers and back again.
  */
 public final class BigDecimalXLNumberTypeConverter extends AbstractTypeConverter {
-  /** The priority */
-  private static final int PRIORITY = 11;
+
   /**
    * Default constructor.
    */
   public BigDecimalXLNumberTypeConverter() {
-    super(BigDecimal.class, XLNumber.class, PRIORITY);
+    super(BigDecimal.class, XLNumber.class);
   }
 
   @Override
