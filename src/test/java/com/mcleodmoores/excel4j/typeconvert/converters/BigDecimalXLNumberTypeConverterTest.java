@@ -176,7 +176,7 @@ public class BigDecimalXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests creation of BigDecimals using the constructors.
+   * Tests creation of BigDecimals using its constructors.
    */
   @Test
   public void testJConstruct() {
@@ -207,7 +207,7 @@ public class BigDecimalXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests creation of BigDecimals using the static constructors.
+   * Tests creation of BigDecimals using its static constructors.
    */
   @Test
   public void testJMethod() {

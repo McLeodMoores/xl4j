@@ -6,15 +6,22 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.excel4j.ExcelFactory;
+import com.mcleodmoores.excel4j.heap.Heap;
+import com.mcleodmoores.excel4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
+import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
+import com.mcleodmoores.excel4j.values.XLObject;
+import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -41,6 +48,21 @@ public class ShortXLNumberTypeConverterTest {
   private static final Short SHORT = Short.valueOf((short) 10);
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new ShortXLNumberTypeConverter();
+  /** The class name */
+  private static final String CLASSNAME = "java.lang.Short";
+  /** Test function processor */
+  private MockFunctionProcessor _processor;
+  /** The heap */
+  private Heap _heap;
+
+  /**
+   * Initialization.
+   */
+  @BeforeTest
+  public void init() {
+    _processor = new MockFunctionProcessor();
+    _heap = ExcelFactory.getInstance().getHeap();
+  }
 
   /**
    * Tests that the java type is {@link Short}.
@@ -107,11 +129,11 @@ public class ShortXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Long.class, XLNumber.of(TEN_D));
+    assertEquals(CONVERTER.toJavaObject(Long.class, XLNumber.of(TEN_D)), SHORT);
   }
 
   /**
@@ -123,11 +145,11 @@ public class ShortXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, (short) 1);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, (short) 1), XLNumber.of(1));
   }
 
   /**
@@ -158,5 +180,57 @@ public class ShortXLNumberTypeConverterTest {
     assertTrue(converted instanceof Short);
     shor = (Short) converted;
     assertEquals(shor, SHORT);
+  }
+
+  /**
+   * Tests creation of Shorts using its constructors.
+   */
+  @Test
+  public void testJConstruct() {
+    // no no-args constructor for Short
+    XLValue xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME));
+    assertTrue(xlValue instanceof XLError);
+    // short constructor
+    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_SHORT);
+    assertTrue(xlValue instanceof XLObject);
+    Object shortObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(shortObject instanceof Short);
+    Short shortVal = (Short) shortObject;
+    assertEquals(shortVal.shortValue(), SHORT.shortValue());
+    // String constructor
+    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XLString.of("10"));
+    assertTrue(xlValue instanceof XLObject);
+    shortObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(shortObject instanceof Short);
+    shortVal = (Short) shortObject;
+    assertEquals(shortVal.shortValue(), SHORT.shortValue());
+  }
+
+  /**
+   * Tests creation of Shorts using its static constructors.
+   */
+  @Test
+  public void testJMethod() {
+    // Short.valueOf(short)
+    XLValue xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_SHORT);
+    assertTrue(xlValue instanceof XLObject);
+    Object shortObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(shortObject instanceof Short);
+    Short shortVal = (Short) shortObject;
+    assertEquals(shortVal.shortValue(), SHORT.shortValue());
+    // Short.valueOf(string)
+    xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
+    assertTrue(xlValue instanceof XLObject);
+    shortObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(shortObject instanceof Short);
+    shortVal = (Short) shortObject;
+    assertEquals(shortVal.shortValue(), SHORT.shortValue());
+    // 10 in base 8
+    xlValue = _processor.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("12"), XLNumber.of(8));
+    assertTrue(xlValue instanceof XLObject);
+    shortObject = _heap.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(shortObject instanceof Short);
+    shortVal = (Short) shortObject;
+    assertEquals(shortVal.shortValue(), SHORT.shortValue());
   }
 }
