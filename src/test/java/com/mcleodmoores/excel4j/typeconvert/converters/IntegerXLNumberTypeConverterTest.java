@@ -186,7 +186,7 @@ public class IntegerXLNumberTypeConverterTest extends TypeConverterTests {
     integerObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(integerObject instanceof Integer);
     integerVal = (Integer) integerObject;
-    assertEquals(integerVal.shortValue(), INTEGER.shortValue());
+    assertEquals(integerVal.intValue(), INTEGER.intValue());
   }
 
   /**
