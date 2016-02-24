@@ -27,7 +27,6 @@ import com.mcleodmoores.excel4j.values.XLValue;
 @Test
 public class LocalDateXLNumberTypeConverterTest extends TypeConverterTests {
   private static final int TEN_I = 10;
-  private static final double TEN_D = 10d;
   private static final int TWO_THOUSAND = 2000;
   private static final int EXCEL_EPOCH_YEAR = 1900;
   /** The number of days from the Excel epoch */
@@ -162,17 +161,11 @@ public class LocalDateXLNumberTypeConverterTest extends TypeConverterTests {
     // no visible constructors
     XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME));
     assertTrue(xlValue instanceof XLError);
-    xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME));
+    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("ofEpochDay"), XL_DATE);
     assertTrue(xlValue instanceof XLObject);
-    Object dateObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    final Object dateObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(dateObject instanceof LocalDate);
-    LocalDate date = (LocalDate) dateObject;
-    assertEquals(date, LOCAL_DATE);
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("of"), XLNumber.of(2000), XLNumber.of(1), XLNumber.of(2));
-    assertTrue(xlValue instanceof XLObject);
-    dateObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(dateObject instanceof LocalDate);
-    date = (LocalDate) dateObject;
+    final LocalDate date = (LocalDate) dateObject;
     assertEquals(date, LOCAL_DATE);
   }
 }
