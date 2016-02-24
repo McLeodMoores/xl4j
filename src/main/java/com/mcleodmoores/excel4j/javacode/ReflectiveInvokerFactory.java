@@ -5,6 +5,7 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 
 import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.TypeConversionMode;
@@ -17,12 +18,12 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * 
+ *
  */
 public class ReflectiveInvokerFactory implements InvokerFactory {
-  private TypeConverterRegistry _typeConverterRegistry;
-  private ObjectXLObjectTypeConverter _objectXlObjectConverter;
-  
+  private final TypeConverterRegistry _typeConverterRegistry;
+  private final ObjectXLObjectTypeConverter _objectXlObjectConverter;
+
   /**
    * Default constructor.
    * @param excel  the excel object to allow heap access
@@ -32,32 +33,32 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     _objectXlObjectConverter = new ObjectXLObjectTypeConverter(excel);
     _typeConverterRegistry = typeConverterRegistry;
   }
-  
+
   @Override
   public ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
-                                                        @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
-                                                        throws ClassNotFoundException {
+      @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes)
+          throws ClassNotFoundException {
     outer:
-    for (Constructor<?> constructor : clazz.getConstructors()) {
-      Class<?>[] parameterTypes = constructor.getParameterTypes();
-      if (argTypes.length != parameterTypes.length) {
-        continue; // number of arguments don't match so skip this one.
-      }
-      if (typeConversionMode == TypeConversionMode.OBJECT_RESULT) {
-        TypeConverter[] argumentConverters = buildArgumentConverters(parameterTypes, argTypes);
-        if (argumentConverters == null) {
-          continue outer;
+      for (final Constructor<?> constructor : clazz.getConstructors()) {
+        final Class<?>[] parameterTypes = constructor.getParameterTypes();
+        if (argTypes.length != parameterTypes.length) {
+          continue; // number of arguments don't match so skip this one.
         }
-        return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
-      } else if (typeConversionMode == TypeConversionMode.PASSTHROUGH) {
-        if (isAssignableFrom(parameterTypes, argTypes)) {
-          return new PassthroughConstructorInvoker(constructor);
+        if (typeConversionMode == TypeConversionMode.OBJECT_RESULT) {
+          final TypeConverter[] argumentConverters = buildArgumentConverters(parameterTypes, argTypes);
+          if (argumentConverters == null) {
+            continue outer;
+          }
+          return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
+        } else if (typeConversionMode == TypeConversionMode.PASSTHROUGH) {
+          if (isAssignableFrom(parameterTypes, argTypes)) {
+            return new PassthroughConstructorInvoker(constructor);
+          }
         }
       }
-    }
-    throw new Excel4JRuntimeException("Could not find matching constructor");
+  throw new Excel4JRuntimeException("Could not find matching constructor with args " + Arrays.toString(argTypes) + " for class " + clazz);
   }
-  
+
   private boolean isAssignableFrom(final Class<?>[] parameterTypes, final Class<? extends XLValue>[] argumentTypes) {
     if (parameterTypes.length != argumentTypes.length) {
       return false;
@@ -69,45 +70,45 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     }
     return true;
   }
-  
+
   @Override
   public MethodInvoker getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final TypeConversionMode typeConversionMode,
-                                               @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
-                                               throws ClassNotFoundException {
+      @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes)
+          throws ClassNotFoundException {
     // TODO: we should probably check here that object.getClass().getSimpleName() == objectHandle.getClazz()
     outer:
-    for (Method method : clazz.getMethods()) {
-      if (!method.getName().equals(methodName.getValue())) {
-        continue; // name of method doesn't match.
+      for (final Method method : clazz.getMethods()) {
+        if (!method.getName().equals(methodName.getValue())) {
+          continue; // name of method doesn't match.
+        }
+        final Class<?>[] genericParameterTypes = method.getParameterTypes();
+        if (argTypes.length != genericParameterTypes.length) {
+          continue; // number of arguments don't match so skip this one.
+        }
+        final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
+        if (argumentConverters == null) {
+          continue outer;
+        }
+        // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
+        final TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+        switch (typeConversionMode) {
+          case SIMPLEST_RESULT:
+            return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+          case OBJECT_RESULT:
+            return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
+          case PASSTHROUGH:
+            return new PassthroughMethodInvoker(method);
+          default:
+            throw new Excel4JRuntimeException("Unrecognised or null TypeConversionMode:" + typeConversionMode);
+        }
       }
-      Class<?>[] genericParameterTypes = (Class<?>[]) method.getParameterTypes();
-      if (argTypes.length != genericParameterTypes.length) {
-        continue; // number of arguments don't match so skip this one.
-      }
-      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes, argTypes);
-      if (argumentConverters == null) {
-        continue outer;
-      }
-      // this might be swapped out for OBJECT_XLOBJECT_CONVERTER at run-time.
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());  
-      switch (typeConversionMode) {
-        case SIMPLEST_RESULT:
-          return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
-        case OBJECT_RESULT:
-          return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
-        case PASSTHROUGH:
-          return new PassthroughMethodInvoker(method);
-        default:
-          throw new Excel4JRuntimeException("Unrecognised or null TypeConversionMode:" + typeConversionMode);
-      }
-    }
-    throw new Excel4JRuntimeException("Could not find matching method");
+  throw new Excel4JRuntimeException("Could not find matching method for " + methodName + " with args " + Arrays.toString(argTypes) + " for class " + clazz);
   }
-  
+
   private TypeConverter[] buildArgumentConverters(final Class<?>[] targetArgTypes, final Class<?>[] argTypes) {
-    TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
+    final TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
     for (int i = 0; i < targetArgTypes.length; i++) {
-      ExcelToJavaTypeMapping arrayExcelToJavaTypeMapping = ExcelToJavaTypeMapping.of(argTypes[i], targetArgTypes[i]);
+      final ExcelToJavaTypeMapping arrayExcelToJavaTypeMapping = ExcelToJavaTypeMapping.of(argTypes[i], targetArgTypes[i]);
       argumentConverters[i] = _typeConverterRegistry.findConverter(arrayExcelToJavaTypeMapping);
       if (argumentConverters[i] == null) {
         return null;
@@ -115,9 +116,9 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     }
     return argumentConverters;
   }
-  
+
   private TypeConverter[] buildArgumentConverters(final Class<?>[] targetArgTypes) {
-    TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
+    final TypeConverter[] argumentConverters = new TypeConverter[targetArgTypes.length];
     for (int i = 0; i < targetArgTypes.length; i++) {
       argumentConverters[i] = _typeConverterRegistry.findConverter(targetArgTypes[i]);
       if (argumentConverters[i] == null) {
@@ -126,14 +127,14 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     }
     return argumentConverters;
   }
-  
+
 
   @Override
   public MethodInvoker getMethodTypeConverter(final Method method, final TypeConversionMode resultType) {
-    Class<?>[] genericParameterTypes = method.getParameterTypes();
+    final Class<?>[] genericParameterTypes = method.getParameterTypes();
     try {
-      TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
-      TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
+      final TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
       if (resultConverter == null) {
         throw new Excel4JRuntimeException("Could not find type converter for " + method.getReturnType() + " (return type)");
       }
@@ -142,10 +143,10 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       } else {
         return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
       }
-    } catch (Excel4JRuntimeException e) {
+    } catch (final Excel4JRuntimeException e) {
       // here we chain on the exception that details the parameter name that doesn't match.
       throw new Excel4JRuntimeException("Could not find matching method " + method, e);
     }
-    
+
   }
 }
