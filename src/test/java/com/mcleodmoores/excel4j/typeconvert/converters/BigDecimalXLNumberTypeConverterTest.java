@@ -39,19 +39,6 @@ public class BigDecimalXLNumberTypeConverterTest extends TypeConverterTests {
   private static final AbstractTypeConverter CONVERTER = new BigDecimalXLNumberTypeConverter();
   /** The class name */
   private static final String CLASSNAME = "java.math.BigDecimal";
-  //  /** Test function processor */
-  //  private MockFunctionProcessor _processor;
-  //  /** The heap */
-  //  private Heap _heap;
-  //
-  //  /**
-  //   * Initialization.
-  //   */
-  //  @BeforeTest
-  //  public void init() {
-  //    _processor = new MockFunctionProcessor();
-  //    _heap = ExcelFactory.getInstance().getHeap();
-  //  }
 
   /**
    * Tests that the java type is {@link BigDecimal}.

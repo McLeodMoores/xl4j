@@ -166,7 +166,7 @@ public class IntegerXLNumberTypeConverterTest extends TypeConverterTests {
   }
 
   /**
-   * Tests creation of Integers using its constructors.
+   * Tests creation of Integer using its constructors.
    */
   @Test
   public void testJConstruct() {
@@ -190,7 +190,7 @@ public class IntegerXLNumberTypeConverterTest extends TypeConverterTests {
   }
 
   /**
-   * Tests creation of Shorts using its static constructors.
+   * Tests creation of Integer using its static constructors.
    */
   @Test
   public void testJMethod() {
