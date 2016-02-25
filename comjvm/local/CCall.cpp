@@ -9,6 +9,7 @@
 
 CCall::CCall (CJvm *pJvm) {
 	m_pJvm = pJvm;
+	m_pJniCache = new JniCache;
 	IncrementActiveObjectCount ();
 	m_pJvm->AddRef ();
 	InitializeCriticalSection (&m_cs);
@@ -18,6 +19,8 @@ CCall::~CCall () {
 	assert (m_lRefCount == 0);
 	DeleteCriticalSection (&m_cs);
 	m_pJvm->Release ();
+	delete m_pJniCache;
+	m_pJniCache = NULL;
 	DecrementActiveObjectCount ();
 }
 
@@ -41,7 +44,7 @@ static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
 HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
 	HRESULT hr;
 	try {
-		CCallExecutor *pExecutor = new CCallExecutor (this, result, iFunctionNum, args); // RC1
+		CCallExecutor *pExecutor = new CCallExecutor (this, m_pJniCache, result, iFunctionNum, args); // RC1
 		pExecutor->AddRef (); // RC2
 		TRACE ("CCall::call on safearray** about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);

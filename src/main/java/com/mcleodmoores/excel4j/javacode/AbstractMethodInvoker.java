@@ -66,15 +66,15 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
             args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
           }
         }
-        Object[] varArgs = createVarArgsArray(_method, args.length - (_argumentConverters.length - 1)); // so if converters == args, we have 1.
+        Object[] varArgs = createVarArgsArray(_method, arguments.length - (_argumentConverters.length - 1)); // so if converters == arguments, we have 1.
         for (int i = 0; i < varArgs.length; i++) {
-          if (arguments[i].getClass().isArray()) { // should test for an XLArray?
-            varArgs[i] = args[i];
-          } else {
+//          if (arguments[i + (_argumentConverters.length - 1)].getClass().isArray()) { // should test for an XLArray?
+//            varArgs[i] = args[i];
+//          } else {
             //AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) _argumentConverters[_argumentConverters.length - 1];
             //varArgs[i] = scalarTypeConverter.toJavaObject(null, arguments[i + (_argumentConverters.length - 1)]);
             varArgs[i] = arguments[i + (_argumentConverters.length - 1)]; // passthrough.
-          }
+//          }
         }
         args[_argumentConverters.length - 1] = varArgs; // non-empty varargs to pass on
       }

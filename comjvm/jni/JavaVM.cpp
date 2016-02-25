@@ -9,6 +9,7 @@
 #include "jni.h"
 #include "internal.h"
 #include "utils\Debug.h"
+#include "JniCache.h"
 
 enum VMState {
 	NOT_RUNNING,
@@ -78,7 +79,7 @@ public:
 			do {
 				TRACE ("(%p) EnterStartedState: Incrementing m_dwJvmRef, is %d", GetCurrentThreadId(), m_dwJvmRef);
 				m_dwJvmRef++;
-			} while (!m_dwJvmRef);
+			} while (!m_dwJvmRef); // is this code just to fuck with me?  All I can see this does is avoid m_dwJvmRef == 0 during an overflow?
 			*pdwJvmRef = m_dwJvmRef;
 			bResult = TRUE;
 			TRACE ("(%p) EnterStartedState: Entered started state successfully", GetCurrentThreadId());
@@ -241,7 +242,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 	CloseHandle (createJVM.hSemaphore);
 	if (SUCCEEDED (hr)) {
 		TRACE ("(%p) JNICreateJavaVMA: main thread signalled successfully", GetCurrentThreadId ());
-		if (!g_oVM.EnterStartedState (createJVM.pJvm, pdwJvmRef)) {
+		if (!g_oVM.EnterStartedState (createJVM.pJvm, createJVM.pJniCache, pdwJvmRef)) {
 			// The JVM thread terminated
 			TRACE ("(%p) JNICreateJavaVMA: VM Not in correct state, JVM thread terminated.", GetCurrentThreadId ());
 			hr = E_FAIL;

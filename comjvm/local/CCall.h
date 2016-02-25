@@ -2,6 +2,7 @@
 
 #include "core_h.h"
 #include "Jvm.h"
+#include "JniCache.h"
 
 class CCall;
 
@@ -14,6 +15,7 @@ private:
 	/// <summary>Lock for this object.</summary>
 	CRITICAL_SECTION m_cs;
 	CJvm *m_pJvm;
+	JniCache *m_pJniCache;
 	IJvmConnector *m_pConnector;
 public:
 	CCall (CJvm *pJvm);
@@ -26,4 +28,5 @@ public:
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject);
 	IJvm * STDMETHODCALLTYPE getJvm () { return m_pJvm; }
+	JniCache * STDMETHODCALLTYPE getJniCache () { return m_pJniCache; }
 };

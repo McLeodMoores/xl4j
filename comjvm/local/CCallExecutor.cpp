@@ -4,8 +4,8 @@
 #include "core/core.h"
 #include "utils/Debug.h"
 
-CCallExecutor::CCallExecutor (CCall *pOwner, /* [out] */ VARIANT *pResult, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args)
-	: m_lRefCount (1), m_pOwner (pOwner), m_pResult (pResult), m_iFunctionNum (iFunctionNum), m_pArgs (args) {
+CCallExecutor::CCallExecutor (CCall *pOwner, JniCache *pJniCache, /* [out] */ VARIANT *pResult, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args)
+	: m_lRefCount (1), m_pOwner (pOwner), m_pJniCache (pJniCache), m_pResult (pResult), m_iFunctionNum (iFunctionNum), m_pArgs (args) {
 	if (!pOwner) {
 		throw std::logic_error ("CScanExecutor called with null CScan");
 	}
