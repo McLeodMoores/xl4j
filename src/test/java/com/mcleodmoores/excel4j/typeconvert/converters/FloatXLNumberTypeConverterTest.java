@@ -107,9 +107,9 @@ public class FloatXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
     CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D));
   }
@@ -123,11 +123,11 @@ public class FloatXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1.F);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1F), XLNumber.of(1));
   }
 
   /**

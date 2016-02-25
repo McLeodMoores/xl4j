@@ -18,7 +18,6 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Tests constructions of Shorts from the function processor.
  */
 public class ShortConstructionTest extends TypeConstructionTests {
-  // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Short?
   /** XLNumber holding a short. */
   private static final XLNumber XL_NUMBER_SHORT = XLNumber.of((short) 10);
   /** Short. */
