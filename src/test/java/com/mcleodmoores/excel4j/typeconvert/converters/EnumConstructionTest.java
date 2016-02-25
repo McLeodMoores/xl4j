@@ -14,7 +14,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of enums from the function processor.
+ * Tests construction of enums from the function processor.
  */
 public class EnumConstructionTest extends TypeConstructionTests {
   /** Enum. */
@@ -22,6 +22,7 @@ public class EnumConstructionTest extends TypeConstructionTests {
     /** Test value. */
     TEST
   };
+  /** The class name */
   private static final String CLASSNAME = "java.lang.Enum";
 
   /**
@@ -45,6 +46,7 @@ public class EnumConstructionTest extends TypeConstructionTests {
   /**
    * Tests creation of an enum constant.
    */
+  @SuppressWarnings("unchecked")
   @Test
   public void testJMethod() {
     final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"),

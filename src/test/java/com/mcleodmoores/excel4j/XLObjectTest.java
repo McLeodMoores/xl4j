@@ -16,7 +16,7 @@ import com.mcleodmoores.excel4j.values.XLObject;
 /**
  * Units tests for {@link XLObject}.
  */
-public class XLObjectTests {
+public class XLObjectTest {
   /** A handle */
   private static final long LONG_123 = 123L;
   /** A handle */
