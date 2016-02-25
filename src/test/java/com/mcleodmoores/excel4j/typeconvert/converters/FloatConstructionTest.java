@@ -15,7 +15,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of Floats from the function processor.
+ * Tests construction of Floats from the function processor.
  */
 public class FloatConstructionTest extends TypeConstructionTests {
   /** XLNumber holding a float */

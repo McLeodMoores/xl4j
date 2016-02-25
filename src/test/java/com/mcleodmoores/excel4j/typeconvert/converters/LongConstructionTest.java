@@ -15,7 +15,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of Longs from the function processor.
+ * Tests construction of Longs from the function processor.
  */
 public class LongConstructionTest extends TypeConstructionTests {
   /** XLNumber holding a long */

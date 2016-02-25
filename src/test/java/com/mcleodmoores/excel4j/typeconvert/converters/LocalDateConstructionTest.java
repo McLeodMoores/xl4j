@@ -17,7 +17,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of LocalDates from the function processor.
+ * Tests construction of LocalDates from the function processor.
  */
 public class LocalDateConstructionTest extends TypeConstructionTests {
   private static final int TWO_THOUSAND = 2000;

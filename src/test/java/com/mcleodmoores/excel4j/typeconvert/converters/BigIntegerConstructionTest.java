@@ -17,7 +17,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of BigIntegers from the function processor.
+ * Tests construction of BigIntegers from the function processor.
  */
 public class BigIntegerConstructionTest extends TypeConstructionTests {
   /** XLNumber holding a double. */
