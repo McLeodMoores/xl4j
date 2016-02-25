@@ -40,6 +40,7 @@ class CCallExecutor {
 private:
 	volatile long m_lRefCount;
 	CCall *m_pOwner;
+	JniCache *m_pJniCache;
 	VARIANT *m_pResult;
 	int m_iFunctionNum;
 	SAFEARRAY *m_pArgs;
@@ -56,7 +57,7 @@ private:
 	VARIANT convert (JNIEnv *pEnv, jobject joXLValue);
 	jobject convert (JNIEnv *pEnv, VARIANT *oper);
 public:
-	CCallExecutor (CCall *pOwner, VARIANT *result, int iFunctionNum, SAFEARRAY * args);
+	CCallExecutor (CCall *pOwner, JniCache *pJniCache, VARIANT *result, int iFunctionNum, SAFEARRAY * args);
 	HRESULT Run (JNIEnv *pEnv);
 	HRESULT Wait ();
 	void AddRef ();
