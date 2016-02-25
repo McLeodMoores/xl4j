@@ -15,17 +15,14 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLNumber;
-import com.mcleodmoores.excel4j.values.XLObject;
-import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Unit tests for {@link LocalDateXLNumberTypeConverterTest}.
  */
 @Test
-public class LocalDateXLNumberTypeConverterTest extends TypeConverterTests {
+public class LocalDateXLNumberTypeConverterTest {
   private static final int TEN_I = 10;
   private static final int TWO_THOUSAND = 2000;
   private static final int EXCEL_EPOCH_YEAR = 1900;
@@ -40,8 +37,6 @@ public class LocalDateXLNumberTypeConverterTest extends TypeConverterTests {
   private static final LocalDate LOCAL_DATE = LocalDate.of(2000, 1, 1);
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new LocalDateXLNumberTypeConverter();
-  /** The class name */
-  private static final String CLASSNAME = "org.threeten.bp.LocalDate";
 
   /**
    * Tests that the java type is {@link LocalDate}.
@@ -153,19 +148,4 @@ public class LocalDateXLNumberTypeConverterTest extends TypeConverterTests {
     assertEquals(localDate, LOCAL_DATE);
   }
 
-  /**
-   * Tests the creation of LocalDates.
-   */
-  @Test
-  public void testJConstructAndJMethod() {
-    // no visible constructors
-    XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME));
-    assertTrue(xlValue instanceof XLError);
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("ofEpochDay"), XL_DATE);
-    assertTrue(xlValue instanceof XLObject);
-    final Object dateObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(dateObject instanceof LocalDate);
-    final LocalDate date = (LocalDate) dateObject;
-    assertEquals(date, LOCAL_DATE);
-  }
 }

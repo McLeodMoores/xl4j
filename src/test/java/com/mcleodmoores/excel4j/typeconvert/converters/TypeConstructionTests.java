@@ -10,7 +10,7 @@ import com.mcleodmoores.excel4j.simulator.MockFunctionProcessor;
 /**
  * Base class for type conversion tests containing the function processor and heap.
  */
-public abstract class TypeConverterTests {
+public abstract class TypeConstructionTests {
   /** Test function processor. */
   /* package */static final MockFunctionProcessor PROCESSOR;
   /** The heap. */

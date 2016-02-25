@@ -13,18 +13,15 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
-import com.mcleodmoores.excel4j.values.XLObject;
-import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Unit tests for {@link IntegerXLNumberTypeConverter}.
  */
 @Test
-public class IntegerXLNumberTypeConverterTest extends TypeConverterTests {
+public class IntegerXLNumberTypeConverterTest {
   /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
   /** Ten as an integer */
@@ -44,8 +41,6 @@ public class IntegerXLNumberTypeConverterTest extends TypeConverterTests {
   private static final Integer INTEGER = 10;
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
-  /** The class name */
-  private static final String CLASSNAME = "java.lang.Integer";
 
   /**
    * Tests that the java class is {@link Integer}.
@@ -165,55 +160,4 @@ public class IntegerXLNumberTypeConverterTest extends TypeConverterTests {
     assertEquals(integ, INTEGER);
   }
 
-  /**
-   * Tests creation of Integer using its constructors.
-   */
-  @Test
-  public void testJConstruct() {
-    // no no-args constructor for Integer
-    XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME));
-    assertTrue(xlValue instanceof XLError);
-    // integer constructor
-    xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_INT);
-    assertTrue(xlValue instanceof XLObject);
-    Object integerObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(integerObject instanceof Integer);
-    Integer integerVal = (Integer) integerObject;
-    assertEquals(integerVal.intValue(), INTEGER.intValue());
-    // String constructor
-    xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME), XLString.of("10"));
-    assertTrue(xlValue instanceof XLObject);
-    integerObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(integerObject instanceof Integer);
-    integerVal = (Integer) integerObject;
-    assertEquals(integerVal.intValue(), INTEGER.intValue());
-  }
-
-  /**
-   * Tests creation of Integer using its static constructors.
-   */
-  @Test
-  public void testJMethod() {
-    // Integer.valueOf(int)
-    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_INT);
-    assertTrue(xlValue instanceof XLObject);
-    Object integerObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(integerObject instanceof Integer);
-    Integer integerVal = (Integer) integerObject;
-    assertEquals(integerVal.intValue(), INTEGER.intValue());
-    // Integer.valueOf(string)
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
-    assertTrue(xlValue instanceof XLObject);
-    integerObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(integerObject instanceof Integer);
-    integerVal = (Integer) integerObject;
-    assertEquals(integerVal.intValue(), INTEGER.intValue());
-    // 10 in base 8
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("12"), XLNumber.of(8));
-    assertTrue(xlValue instanceof XLObject);
-    integerObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(integerObject instanceof Integer);
-    integerVal = (Integer) integerObject;
-    assertEquals(integerVal.intValue(), Integer.valueOf("12", 8).intValue());
-  }
 }

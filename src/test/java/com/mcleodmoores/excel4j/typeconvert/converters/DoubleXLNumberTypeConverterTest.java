@@ -15,18 +15,15 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
-import com.mcleodmoores.excel4j.values.XLObject;
-import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Unit tests for {@link DoubleXLNumberTypeConverter}.
  */
 @Test
-public class DoubleXLNumberTypeConverterTest extends TypeConverterTests {
+public class DoubleXLNumberTypeConverterTest {
   /** The expected priority */
   private static final int DEFAULT_PRIORITY = 10;
   /** Integer */
@@ -44,8 +41,6 @@ public class DoubleXLNumberTypeConverterTest extends TypeConverterTests {
   private static final Double DOUBLE = 10.;
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new DoubleXLNumberTypeConverter();
-  /** The class name */
-  private static final String CLASSNAME = "java.lang.Double";
 
   /**
    * Tests that the java type is {@link Double}.
@@ -165,48 +160,4 @@ public class DoubleXLNumberTypeConverterTest extends TypeConverterTests {
     assertEquals(doub, DOUBLE);
   }
 
-  /**
-   * Tests creation of Double using its constructors.
-   */
-  @Test
-  public void testJConstruct() {
-    // no no-args constructor for Double
-    XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME));
-    assertTrue(xlValue instanceof XLError);
-    // double constructor
-    xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_DOUBLE);
-    assertTrue(xlValue instanceof XLObject);
-    Object doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(doubleObject instanceof Double);
-    Double doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
-    // String constructor
-    xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME), XLString.of("10"));
-    assertTrue(xlValue instanceof XLObject);
-    doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(doubleObject instanceof Double);
-    doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
-  }
-
-  /**
-   * Tests creation of Double using its static constructors.
-   */
-  @Test
-  public void testJMethod() {
-    // Double.valueOf(double)
-    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_DOUBLE);
-    assertTrue(xlValue instanceof XLObject);
-    Object doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(doubleObject instanceof Double);
-    Double doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
-    // Double.valueOf(String)
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
-    assertTrue(xlValue instanceof XLObject);
-    doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
-    assertTrue(doubleObject instanceof Double);
-    doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
-  }
 }
