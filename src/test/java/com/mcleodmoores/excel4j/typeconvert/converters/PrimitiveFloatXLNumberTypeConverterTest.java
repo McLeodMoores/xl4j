@@ -127,7 +127,7 @@ public class PrimitiveFloatXLNumberTypeConverterTest {
    */
   @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1.F);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1F), XLNumber.of(1));
   }
 
   /**

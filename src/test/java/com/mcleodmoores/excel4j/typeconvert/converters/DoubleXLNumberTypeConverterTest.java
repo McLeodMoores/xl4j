@@ -201,7 +201,7 @@ public class DoubleXLNumberTypeConverterTest extends TypeConverterTests {
     assertTrue(doubleObject instanceof Double);
     Double doubleVal = (Double) doubleObject;
     assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
-    // Double.valueOf(string)
+    // Double.valueOf(String)
     xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
     assertTrue(xlValue instanceof XLObject);
     doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
