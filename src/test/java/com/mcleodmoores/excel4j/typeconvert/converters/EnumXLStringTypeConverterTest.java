@@ -21,7 +21,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class EnumXLStringTypeConverterTest {
+  /** The expected priority */
   private static final int EXPECTED_PRIORITY = 7;
+  /** A double */
   private static final double TEN_D = 10d;
   /** XLString. */
   private static final XLString XL_STRING = XLString.of("TEST");
@@ -102,7 +104,7 @@ public class EnumXLStringTypeConverterTest {
   /**
    * Tests for the exception when the expected class is wrong.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void testWrongExpectedClassToJavaConversion() {
     CONVERTER.toJavaObject(String.class, XL_STRING);
   }
@@ -116,11 +118,11 @@ public class EnumXLStringTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, "TEST");
+    CONVERTER.toXLValue(XLString.class, TestEnum.TEST);
   }
 
   /**
