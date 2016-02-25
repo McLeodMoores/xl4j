@@ -55,7 +55,7 @@ public class ShortConstructionTest extends TypeConstructionTests {
    * Tests creation of Shorts using its static constructors.
    */
   @Test
-  public void testJMethod() {
+  public void testJStaticMethodXShort() {
     // Short.valueOf(short)
     XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_SHORT);
     assertTrue(xlValue instanceof XLObject);
@@ -63,19 +63,27 @@ public class ShortConstructionTest extends TypeConstructionTests {
     assertTrue(shortObject instanceof Short);
     Short shortVal = (Short) shortObject;
     assertEquals(shortVal.shortValue(), SHORT.shortValue());
+  }
+  
+  @Test
+  public void testJStaticMethodXString() {  
     // Short.valueOf(string)
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
+    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
     assertTrue(xlValue instanceof XLObject);
-    shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(shortObject instanceof Short);
-    shortVal = (Short) shortObject;
+    Short shortVal = (Short) shortObject;
     assertEquals(shortVal.shortValue(), SHORT.shortValue());
+  }
+  
+  @Test
+  public void testJStaticMethodXStringNumber() {
     // 10 in base 8
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("12"), XLNumber.of(8));
+    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("12"), XLNumber.of(8));
     assertTrue(xlValue instanceof XLObject);
-    shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(shortObject instanceof Short);
-    shortVal = (Short) shortObject;
+    Short shortVal = (Short) shortObject;
     assertEquals(shortVal.shortValue(), Short.valueOf("12", 8).shortValue());
   }
 }
