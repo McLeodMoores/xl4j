@@ -6,16 +6,19 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -31,8 +34,10 @@ public class ObjectXLObjectTypeConverterTest {
   private static final XLObject XL_OBJECT = XLObject.of(List.class.getSimpleName(), 1L);
   /** Empty Object. */
   private static final Object OBJECT = new Object();
+  /** An Excel object */
+  private static final Excel EXCEL = ExcelFactory.getInstance();
   /** The converter */
-  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter(ExcelFactory.getInstance());
+  private static final AbstractTypeConverter CONVERTER = new ObjectXLObjectTypeConverter(EXCEL);
 
   // TODO need to set system property test.mode - how to do this?
   /**
@@ -60,9 +65,9 @@ public class ObjectXLObjectTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
+   * Tests that passing in a null expected XL class is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedXLValueClass() {
     CONVERTER.toXLValue(null, OBJECT);
   }
@@ -76,17 +81,20 @@ public class ObjectXLObjectTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected Java class gives the expected exception.
+   * Tests that passing in a null expected Java class is successful.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test
   public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XL_OBJECT);
+    final List<?> object = new ArrayList<>();
+    final long objectHandle = EXCEL.getHeap().getHandle(object);
+    final XLObject xlObject = XLObject.of(object.getClass().getSimpleName(), objectHandle);
+    CONVERTER.toJavaObject(null, xlObject);
   }
 
   /**
    * Tests that passing in a null object gives the expected exception.
    */
-  @Test(expectedExceptions = NullPointerException.class)
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
     CONVERTER.toJavaObject(Object.class, null);
   }
@@ -102,25 +110,31 @@ public class ObjectXLObjectTypeConverterTest {
   /**
    * Tests for the exception when the expected class is wrong.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Double.class, XL_OBJECT);
+    final List<?> object = new ArrayList<>();
+    final long objectHandle = EXCEL.getHeap().getHandle(object);
+    final XLObject xlObject = XLObject.of(object.getClass().getSimpleName(), objectHandle);
+    assertEquals(CONVERTER.toJavaObject(Double.class, xlObject), object);
   }
 
   /**
-   * Tests for the exception when {@link XLValue} to convert is the wrong type.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongTypeToXLConversion() {
     CONVERTER.toXLValue(XLObject.class, TEN_I);
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLObject.class, TEN_D);
+    final List<?> object = new ArrayList<>();
+    final long objectHandle = EXCEL.getHeap().getHandle(object);
+    final XLObject xlObject = XLObject.of(object.getClass().getSimpleName(), objectHandle);
+    assertEquals(CONVERTER.toXLValue(XLNumber.class, object), xlObject);
   }
 
   /**
@@ -128,10 +142,13 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test
   public void testConversionFromObject() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_OBJECT.getClass(), OBJECT);
+    final List<?> object = new ArrayList<>();
+    final long objectHandle = EXCEL.getHeap().getHandle(object);
+    final XLObject xlObject = XLObject.of(object.getClass().getSimpleName(), objectHandle);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(xlObject.getClass(), object);
     assertTrue(converted instanceof XLObject);
-    final XLObject xlObject = (XLObject) converted;
-    assertEquals(xlObject, XL_OBJECT);
+    final XLObject convertedXlObject = (XLObject) converted;
+    assertEquals(convertedXlObject, xlObject);
   }
 
   /**
@@ -139,8 +156,11 @@ public class ObjectXLObjectTypeConverterTest {
    */
   @Test
   public void testConversionFromXLObject() {
-    final Object converted = CONVERTER.toJavaObject(String.class, XL_OBJECT);
-    assertEquals(converted, OBJECT);
+    final List<?> object = new ArrayList<>();
+    final long objectHandle = EXCEL.getHeap().getHandle(object);
+    final XLObject xlObject = XLObject.of(object.getClass().getSimpleName(), objectHandle);
+    final Object converted = CONVERTER.toJavaObject(ArrayList.class, xlObject);
+    assertEquals(converted, object);
   }
 
 }
