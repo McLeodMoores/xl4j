@@ -107,11 +107,11 @@ public class PrimitiveDoubleXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D));
+    assertEquals(CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D)), DOUBLE);
   }
 
   /**
@@ -123,11 +123,11 @@ public class PrimitiveDoubleXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1.);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1.), XLNumber.of(1));
   }
 
   /**

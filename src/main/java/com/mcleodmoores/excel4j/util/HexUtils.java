@@ -11,42 +11,39 @@ import java.nio.charset.Charset;
  */
 public final class HexUtils {
   private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
-  
+
   private HexUtils() {
   }
-  
+
   /**
    * Convert an array of bytes to the equivalent string of Hex digits.
-   * Based on code from Stack Overflow. 
+   * Based on code from Stack Overflow.
    * @param bytes the byte array
-   * @return a String containing a sequence of hexadecimal digits with no padding 
+   * @return a String containing a sequence of hexadecimal digits with no padding
    */
-  // CHECKSTYLE:OFF -- we need to use some inline constants here!
   public static String bytesToHex(final byte[] bytes) {
     ArgumentChecker.notNull(bytes, "bytes");
-    char[] hexChars = new char[bytes.length * 2];
+    final char[] hexChars = new char[bytes.length * 2];
     for (int i = 0; i < bytes.length; i++) {
-        int v = bytes[i] & 0xFF;
-        hexChars[i * 2] = HEX_ARRAY[v >>> 4];
-        hexChars[i * 2 + 1] = HEX_ARRAY[v & 0x0F];
+      final int v = bytes[i] & 0xFF;
+      hexChars[i * 2] = HEX_ARRAY[v >>> 4];
+      hexChars[i * 2 + 1] = HEX_ARRAY[v & 0x0F];
     }
     return new String(hexChars);
   }
-  // CHECKSTYLE:ON
-  
+
   /**
    * Convert an array of bytes to the equivalent string of Hex digits, with each byte padded by
    * a space: e.g. 6A7434FF would be returned as "6A 74 34 FF".
-   * Based on code from Stack Overflow. 
+   * Based on code from Stack Overflow.
    * @param bytes the byte array, not null
-   * @return a String containing a sequence of hexadecimal digits with no padding 
+   * @return a String containing a sequence of hexadecimal digits with no padding
    */
-  // CHECKSTYLE:OFF -- we need to use some inline constants here!
   public static String bytesToPaddedHex(final byte[] bytes) {
     ArgumentChecker.notNull(bytes, "bytes");
-    char[] hexChars = new char[(bytes.length * 2) + Math.max(0, bytes.length - 1)];
+    final char[] hexChars = new char[(bytes.length * 2) + Math.max(0, bytes.length - 1)];
     for (int i = 0; i < bytes.length; i++) {
-      int v = bytes[i] & 0xFF;
+      final int v = bytes[i] & 0xFF;
       hexChars[i * 3] = HEX_ARRAY[v >>> 4];
       hexChars[i * 3 + 1] = HEX_ARRAY[v & 0x0F];
       if (i < bytes.length - 1) { // don't pad last pair
@@ -55,25 +52,23 @@ public final class HexUtils {
     }
     return new String(hexChars);
   }
-  // CHECKSTYLE:ON 
-  
+
   /**
    * Convert an array of bytes to the equivalent string of Hex digits, with each byte padded by
    * a space: e.g. 6A7434FF would be returned as "6A 74 34 FF".  This variant can limit the number
    * of bytes rendered to make e.g. toString() calls easier to read.
-   * Based on code from Stack Overflow. 
+   * Based on code from Stack Overflow.
    * @param bytes the byte array, not null
    * @param maxBytes the maximum number of bytes (positive) to render, okay if larger than bytes.length
-   * @return a String containing a sequence of hexadecimal digits with no padding 
+   * @return a String containing a sequence of hexadecimal digits with no padding
    */
-  // CHECKSTYLE:OFF -- we need to use some inline constants here!
   public static String bytesToTruncatedPaddedHex(final byte[] bytes, final int maxBytes) {
     ArgumentChecker.notNull(bytes, "bytes");
     ArgumentChecker.notNegative(maxBytes, "maxBytes");
-    int size = Math.min(maxBytes, bytes.length);
-    char[] hexChars = new char[(size * 2) + Math.max(0, size - 1)];
+    final int size = Math.min(maxBytes, bytes.length);
+    final char[] hexChars = new char[(size * 2) + Math.max(0, size - 1)];
     for (int i = 0; i < size; i++) {
-      int v = bytes[i] & 0xFF;
+      final int v = bytes[i] & 0xFF;
       hexChars[i * 3] = HEX_ARRAY[v >>> 4];
       hexChars[i * 3 + 1] = HEX_ARRAY[v & 0x0F];
       if (i < size - 1) { // don't pad last pair
@@ -82,8 +77,7 @@ public final class HexUtils {
     }
     return new String(hexChars);
   }
-  // CHECKSTYLE:ON
-  
+
   /**
    * Multi-line hex/character dump - similar to a hex editor layout.
    * @param bytes the buffer to dump
@@ -93,22 +87,22 @@ public final class HexUtils {
   public static String bytesToMultiLineDump(final byte[] bytes, final int bytesPerLine) {
     ArgumentChecker.notNull(bytes, "bytes");
     ArgumentChecker.notNegative(bytesPerLine, "bytesPerLine");
-    ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-    byte[] line = new byte[bytesPerLine];
-    StringBuffer sb = new StringBuffer();
+    final ByteArrayInputStream is = new ByteArrayInputStream(bytes);
+    final byte[] line = new byte[bytesPerLine];
+    final StringBuffer sb = new StringBuffer();
     while (is.available() > 0) {
-      int bytesRead = is.read(line, 0, bytesPerLine);
+      final int bytesRead = is.read(line, 0, bytesPerLine);
       if (bytesRead < bytesPerLine) {
-        byte[] shortLine = new byte[bytesRead];
+        final byte[] shortLine = new byte[bytesRead];
         System.arraycopy(line, 0, shortLine, 0, bytesRead);
-        String lineStr = bytesToPaddedHex(shortLine);
+        final String lineStr = bytesToPaddedHex(shortLine);
         sb.append(lineStr);
         final int remainingChars = (bytesPerLine - bytesRead) * 3;
         sb.append(new String(new char[remainingChars]).replace("\0", " ")); // repeated string of spaces
         sb.append("  ");
         sb.append(new String(shortLine, Charset.defaultCharset()).replaceAll("\\p{C}", "."));
       } else {
-        String lineStr = bytesToPaddedHex(line);
+        final String lineStr = bytesToPaddedHex(line);
         sb.append(lineStr);
         sb.append("  ");
         sb.append(new String(line, Charset.defaultCharset()).replaceAll("\\p{C}", "."));

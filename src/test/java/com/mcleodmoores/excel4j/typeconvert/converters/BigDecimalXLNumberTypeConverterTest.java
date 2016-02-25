@@ -8,21 +8,15 @@ import static org.testng.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.excel4j.ExcelFactory;
-import com.mcleodmoores.excel4j.heap.Heap;
-import com.mcleodmoores.excel4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
-import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
-import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -40,21 +34,6 @@ public class BigDecimalXLNumberTypeConverterTest {
   private static final BigDecimal BIG_DECIMAL = BigDecimal.valueOf(10d);
   /** The converter */
   private static final AbstractTypeConverter CONVERTER = new BigDecimalXLNumberTypeConverter();
-  /** The class name */
-  private static final String CLASSNAME = "java.math.BigDecimal";
-  /** Test function processor */
-  private MockFunctionProcessor _processor;
-  /** The heap */
-  private Heap _heap;
-
-  /**
-   * Initialization.
-   */
-  @BeforeTest
-  public void init() {
-    _processor = new MockFunctionProcessor();
-    _heap = ExcelFactory.getInstance().getHeap();
-  }
 
   /**
    * Tests that the java type is {@link BigDecimal}.
@@ -77,7 +56,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 11);
+    assertEquals(CONVERTER.getPriority(), 10);
   }
 
   /**
@@ -174,22 +153,4 @@ public class BigDecimalXLNumberTypeConverterTest {
     assertEquals(bigDecimal, BIG_DECIMAL);
   }
 
-  /**
-   * Tests construction of a BigDecimal from the function processor.
-   */
-  @Test
-  public void testJConstruct() {
-    // no no-args constructor for BigDecimal
-//    XLValue xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME));
-//    assertEquals(xlValue.getClass(), XLError.class);
-//    // constructors
-    XLValue xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_DOUBLE);
-    assertTrue(xlValue instanceof XLString);
-    XLNumber xlNumber = (XLNumber) xlValue;
-    assertEquals(xlNumber.getValue(), XL_NUMBER_DOUBLE.getValue(), 0);
-    xlValue = _processor.invoke("JConstruct", XLString.of(CLASSNAME), XL_NUMBER_INT);
-    assertTrue(xlValue instanceof XLNumber);
-    xlNumber = (XLNumber) xlValue;
-    assertEquals(xlNumber.getValue(), XL_NUMBER_INT.getValue(), 0);
-  }
 }

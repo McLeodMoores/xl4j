@@ -67,9 +67,9 @@ public class XLObjectTests {
   @Test
   public void testToString() {
     final XLObject xlStringArray = XLObject.of(String[].class, LONG_1234);
-    final String expected = "XLObject[class=class [Ljava.lang.String;, 1234]";
+    final String expected = "XLObject[class=String[], 1234]";
     assertEquals(xlStringArray.toString(), expected);
-    final String expectedXLString = '\u0026' + "XLString[value=" + '\u0026' + "String[]-1234]";
+    final String expectedXLString = "XLString[value=" + '\u001A' + "String[]-1234]";
     assertEquals(xlStringArray.toXLString(), expectedXLString);
   }
 }

@@ -40,7 +40,7 @@ public class XLValueVisitorTests {
 
   private static final List<String> EXPECTED = Lists.newArrayList(
       "XLBigData", "XLBoolean", "XLError", "XLInteger", "XLLocalReference", "XLMissing",
-      "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLValueRange", "XLObject"
+      "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLArray", "XLObject"
       );
 
   @Test
@@ -98,7 +98,7 @@ public class XLValueVisitorTests {
 
       @Override
       public String visitXLArray(final XLArray value) {
-        return "XLValueRange";
+        return "XLArray";
       }
 
       @Override
@@ -124,8 +124,7 @@ public class XLValueVisitorTests {
       try {
         value.accept(adapter);
       } catch (final Excel4JRuntimeException e4jre) {
-        System.out.println("expected: " + expected + ", was: " + e4jre.getMessage());
-        Assert.assertTrue(e4jre.getMessage().contains(expected));
+        Assert.assertTrue(e4jre.getMessage().contains(expected), "Error message \"" + e4jre.getMessage() + "\" should contain the string \"" + expected + "\":");
       }
     }
   }

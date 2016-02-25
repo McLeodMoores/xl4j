@@ -24,9 +24,12 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class BigIntegerXLNumberTypeConverterTest {
+  /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
-  private static final double TEN_D = 10d;
+  /** Ten as an integer */
   private static final int TEN_I = 10;
+  /** Ten as a double */
+  private static final double TEN_D = 10d;
   // REVIEW isn't it a bit odd that there's no complaint when a double is successfully converted?
   /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10d);
@@ -104,11 +107,11 @@ public class BigIntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLNumber.of(TEN_I));
+    assertEquals(CONVERTER.toJavaObject(Integer.class, XLNumber.of(TEN_I)), BIG_INTEGER);
   }
 
   /**
@@ -120,11 +123,11 @@ public class BigIntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, BigInteger.ONE);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, BigInteger.ONE), XLNumber.of(1));
   }
 
   /**

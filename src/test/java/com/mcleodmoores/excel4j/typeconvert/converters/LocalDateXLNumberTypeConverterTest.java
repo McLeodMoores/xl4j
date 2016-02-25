@@ -24,12 +24,11 @@ import com.mcleodmoores.excel4j.values.XLValue;
 @Test
 public class LocalDateXLNumberTypeConverterTest {
   private static final int TEN_I = 10;
-  private static final double TEN_D = 10d;
   private static final int TWO_THOUSAND = 2000;
   private static final int EXCEL_EPOCH_YEAR = 1900;
   /** The number of days from the Excel epoch */
-  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), 
-                                                                            LocalDate.ofEpochDay(0)) + 1;
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1),
+      LocalDate.ofEpochDay(0)) + 1;
   /** The number of days from Excel epoch to 2000-01-01 */
   private static final long DAYS = LocalDate.of(TWO_THOUSAND, 1, 1).toEpochDay() + DAYS_FROM_EXCEL_EPOCH;
   /** XLNumber holding a double representing 2000-01-01. */
@@ -104,11 +103,11 @@ public class LocalDateXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLNumber.of(TEN_D));
+    assertEquals(CONVERTER.toJavaObject(Integer.class, XLNumber.of(DAYS)), LOCAL_DATE);
   }
 
   /**
@@ -120,11 +119,11 @@ public class LocalDateXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, LOCAL_DATE);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, LOCAL_DATE), XLNumber.of(DAYS));
   }
 
   /**
@@ -148,4 +147,5 @@ public class LocalDateXLNumberTypeConverterTest {
     final LocalDate localDate = (LocalDate) converted;
     assertEquals(localDate, LOCAL_DATE);
   }
+
 }

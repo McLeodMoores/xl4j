@@ -43,7 +43,7 @@ public class IntegerXLNumberTypeConverterTest {
   private static final AbstractTypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
 
   /**
-   * Tests that the java class is {@link Integer#TYPE}.
+   * Tests that the java class is {@link Integer}.
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
@@ -107,11 +107,11 @@ public class IntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Long.class, XLNumber.of(TEN_D));
+    assertEquals(CONVERTER.toJavaObject(Long.class, XLNumber.of(TEN_D)), INTEGER);
   }
 
   /**
@@ -123,11 +123,11 @@ public class IntegerXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1), XLNumber.of(1));
   }
 
   /**
@@ -159,4 +159,5 @@ public class IntegerXLNumberTypeConverterTest {
     integ = (Integer) converted;
     assertEquals(integ, INTEGER);
   }
+
 }

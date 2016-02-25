@@ -10,6 +10,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
  * @param <T> the type of data returned by the visitor
  */
 public class XLValueVisitorAdapter<T> implements XLValueVisitor<T> {
+
   @Override
   public T visitXLString(final XLString value) {
     throw new Excel4JRuntimeException("XLString visitor not implemented");

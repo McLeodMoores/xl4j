@@ -6,7 +6,6 @@ import com.mcleodmoores.excel4j.Excel;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.values.XLObject;
-import com.mcleodmoores.excel4j.values.XLString;
 
 /**
  * Type converter for general objects into XLObject handles.  Note the lower priority,
@@ -19,7 +18,7 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   /**
    * Default constructor.
-   * @param excel  the excel object to allow heap access 
+   * @param excel  the excel object to allow heap access
    */
   public ObjectXLObjectTypeConverter(final Excel excel) {
     super(Object.class, XLObject.class, OBJECT_CONVERTER_PRIORITY);
@@ -33,7 +32,7 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
-    XLObject xlObj = (XLObject) from;
+    final XLObject xlObj = (XLObject) from;
     return _heap.getObject(xlObj.getHandle());
   }
 

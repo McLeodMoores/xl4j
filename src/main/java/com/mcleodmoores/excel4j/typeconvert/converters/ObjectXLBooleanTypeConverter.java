@@ -11,7 +11,7 @@ import com.mcleodmoores.excel4j.values.XLBoolean;
  * Type converter to convert from Objects to Excel Numbers and back again.
  */
 public final class ObjectXLBooleanTypeConverter extends AbstractTypeConverter {
-  private static final int PRIORITY = 	-7;
+  private static final int PRIORITY = -7;
 
   /**
    * Default constructor.
@@ -33,6 +33,6 @@ public final class ObjectXLBooleanTypeConverter extends AbstractTypeConverter {
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return (Boolean) ((XLBoolean) from).getValue();
+    return ((XLBoolean) from).getValue();
   }
 }
