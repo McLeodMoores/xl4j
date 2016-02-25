@@ -11,38 +11,40 @@ import com.mcleodmoores.excel4j.values.XLNil;
  * Unit tests for XLNil, XLMissing and a couple of comparisons with XLError.
  */
 public class XLNilErrorMissingTests {
-	// CHECKSTYLE:OFF
+
   @Test
   public void testNil() {
-  	XLNil nil = XLNil.INSTANCE;
-  	XLNil nil2 = XLNil.INSTANCE;
-  	Assert.assertEquals(nil, nil);
-  	Assert.assertEquals(nil.hashCode(), nil.hashCode());
-  	Assert.assertEquals(nil, nil2);
-  	Assert.assertEquals(nil.hashCode(), nil2.hashCode());
-  	
-  	Assert.assertNotEquals(null, nil);
-  	Assert.assertNotEquals(XLError.Div0, nil);
+    final XLNil nil = XLNil.INSTANCE;
+    final XLNil nil2 = XLNil.INSTANCE;
+    Assert.assertEquals(nil, nil);
+    Assert.assertEquals(nil.hashCode(), nil.hashCode());
+    Assert.assertEquals(nil, nil2);
+    Assert.assertEquals(nil.hashCode(), nil2.hashCode());
+
+    Assert.assertNotEquals(null, nil);
+    Assert.assertNotEquals(XLError.Div0, nil);
   }
-  
+
+  @Test
   public void testNilToString() {
-  	Assert.assertEquals(XLNil.INSTANCE.toString(), "XLNil");
+    Assert.assertEquals(XLNil.INSTANCE.toString(), "XLNil");
   }
-  
+
   @Test
   public void testMissing() {
-  	XLMissing missing = XLMissing.INSTANCE;
-  	XLMissing missing2 = XLMissing.INSTANCE;
-  	Assert.assertEquals(missing, missing);
-  	Assert.assertEquals(missing, missing2);
-  	Assert.assertEquals(missing.hashCode(), missing.hashCode());
-  	Assert.assertEquals(missing.hashCode(), missing2.hashCode());
-  	
-  	Assert.assertNotEquals(missing, null);
-  	Assert.assertNotEquals(missing, XLError.NA);
+    final XLMissing missing = XLMissing.INSTANCE;
+    final XLMissing missing2 = XLMissing.INSTANCE;
+    Assert.assertEquals(missing, missing);
+    Assert.assertEquals(missing, missing2);
+    Assert.assertEquals(missing.hashCode(), missing.hashCode());
+    Assert.assertEquals(missing.hashCode(), missing2.hashCode());
+
+    Assert.assertNotEquals(missing, null);
+    Assert.assertNotEquals(missing, XLError.NA);
   }
-  
+
+  @Test
   public void testMissingToString() {
-  	Assert.assertEquals(XLMissing.INSTANCE, "XLMissing");
+    Assert.assertEquals(XLMissing.INSTANCE.toString(), "XLMissing");
   }
 }
