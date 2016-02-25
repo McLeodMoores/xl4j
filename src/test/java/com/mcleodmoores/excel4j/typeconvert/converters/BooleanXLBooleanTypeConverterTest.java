@@ -94,11 +94,11 @@ public class BooleanXLBooleanTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Integer.class, XLBoolean.FALSE);
+    assertEquals(CONVERTER.toJavaObject(Integer.class, XLBoolean.FALSE), Boolean.FALSE);
   }
 
   /**
@@ -110,11 +110,11 @@ public class BooleanXLBooleanTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLInteger.class, Boolean.FALSE);
+    assertEquals(CONVERTER.toXLValue(XLInteger.class, Boolean.FALSE), XLBoolean.FALSE);
   }
 
   /**
