@@ -27,7 +27,7 @@ public class LongXLNumberTypeConverterTest {
   private static final int EXPECTED_PRIORITY = 10;
   private static final int TEN_I = 10;
   private static final double TEN_D = 10d;
-  
+
   // REVIEW isn't it a bit odd that there's no complaint when there's an upcast or downcast to Long?
   /** XLNumber holding a double. */
   private static final XLNumber XL_NUMBER_DOUBLE = XLNumber.of(10.);
@@ -105,11 +105,11 @@ public class LongXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D));
+    assertEquals(CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D)), LONG);
   }
 
   /**
@@ -121,11 +121,11 @@ public class LongXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, 1L);
+    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1L), XLNumber.of(1));
   }
 
   /**

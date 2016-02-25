@@ -77,7 +77,7 @@ public class ShortConstructionTest extends TypeConstructionTests {
   }
 
   /**
-   * Tests creation of Shorts using Short.valueOf(short, int).
+   * Tests creation of Shorts using Short.valueOf(String, int).
    */
   @Test
   public void testJStaticMethodXStringNumber() {
