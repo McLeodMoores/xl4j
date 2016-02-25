@@ -29,7 +29,7 @@ public class FunctionSimulatorTests {
 
   private MockFunctionProcessor _processor;
   private Heap _heap;
-  // CHECKSTYLE:OFF
+
   @BeforeTest
   public void initFunctionProcessor() {
     _processor = new MockFunctionProcessor();
@@ -46,12 +46,12 @@ public class FunctionSimulatorTests {
 
   @Test
   public void testGetElem() {
-    final XLValue result = _processor.invoke("MakeList", XLArray.of(new XLValue[][] { { XLString.of("One"), XLString.of("Two") } } ));
+    final XLValue result = _processor.invoke("MakeList", XLArray.of(new XLValue[][] { { XLString.of("One"), XLString.of("Two") } }));
     Assert.assertEquals(result.getClass(), XLObject.class);
     final XLObject arrayListObj = (XLObject) result;
     final Object arrayList = _heap.getObject(arrayListObj.getHandle());
     Assert.assertEquals(arrayList.getClass(), ArrayList.class);
-    Assert.assertEquals(((List<?>)arrayList).size(), 2);
+    Assert.assertEquals(((List<?>) arrayList).size(), 2);
     final XLValue result2 = _processor.invoke("ListElement",  result, XLNumber.of(1));
     Assert.assertEquals(result2.getClass(), XLString.class);
     Assert.assertEquals(((XLString) result2).getValue(), "Two");

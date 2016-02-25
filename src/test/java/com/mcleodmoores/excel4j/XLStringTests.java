@@ -17,7 +17,6 @@ import com.mcleodmoores.excel4j.values.XLString;
  * Unit tests for XLString.
  */
 public class XLStringTests {
-  // CHECKSTYLE:OFF
   private static final String HELLO_WORLD = "Hello World";
   private static final String HELLO_WORLD_1 = "Hello World";
   private static final String EMPTY = "";

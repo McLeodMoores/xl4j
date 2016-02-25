@@ -54,10 +54,8 @@ public class XLObjectTests {
         count++;
       }
     }
-    // CHECKSTYLE:OFF
     assertEquals(count, 3);
-    // CHECKSTYLE:ON
-    assertEquals(xlStringArray.getClazz(), String[].class);
+    assertEquals(xlStringArray.getClazz(), "String[]");
     assertEquals(xlStringArray.getHandle(), LONG_123);
   }
 
