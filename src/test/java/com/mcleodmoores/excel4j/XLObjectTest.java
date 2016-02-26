@@ -16,7 +16,7 @@ import com.mcleodmoores.excel4j.values.XLObject;
 /**
  * Units tests for {@link XLObject}.
  */
-public class XLObjectTests {
+public class XLObjectTest {
   /** A handle */
   private static final long LONG_123 = 123L;
   /** A handle */
@@ -54,10 +54,8 @@ public class XLObjectTests {
         count++;
       }
     }
-    // CHECKSTYLE:OFF
     assertEquals(count, 3);
-    // CHECKSTYLE:ON
-    assertEquals(xlStringArray.getClazz(), String[].class);
+    assertEquals(xlStringArray.getClazz(), "String[]");
     assertEquals(xlStringArray.getHandle(), LONG_123);
   }
 

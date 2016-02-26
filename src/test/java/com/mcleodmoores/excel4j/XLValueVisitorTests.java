@@ -1,9 +1,11 @@
 package com.mcleodmoores.excel4j;
 
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
 import java.util.Iterator;
 import java.util.List;
 
-import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.collections.Lists;
 
@@ -30,7 +32,6 @@ import com.mcleodmoores.excel4j.values.XLValueVisitorAdapter;
  * Unit test for XLValueVisitor[Adapter].
  */
 public class XLValueVisitorTests {
-  // CHECKSTYLE:OFF
   private static final List<XLValue> VALUES = Lists.newArrayList(
       XLBigData.of("Hello"), XLBoolean.from(true), XLError.Name, XLInteger.of(25),
       XLLocalReference.of(XLRange.ofCell(0, 0)), XLMissing.INSTANCE,
@@ -111,7 +112,7 @@ public class XLValueVisitorTests {
     for (final XLValue value : VALUES) {
       final String expected = iter.next();
       final String actual = value.accept(visitor);
-      Assert.assertEquals(actual, expected);
+      assertEquals(actual, expected);
     }
   }
 
@@ -124,7 +125,7 @@ public class XLValueVisitorTests {
       try {
         value.accept(adapter);
       } catch (final Excel4JRuntimeException e4jre) {
-        Assert.assertTrue(e4jre.getMessage().contains(expected), "Error message \"" + e4jre.getMessage() + "\" should contain the string \"" + expected + "\":");
+        assertTrue(e4jre.getMessage().contains(expected), "Error message \"" + e4jre.getMessage() + "\" should contain the string \"" + expected + "\":");
       }
     }
   }

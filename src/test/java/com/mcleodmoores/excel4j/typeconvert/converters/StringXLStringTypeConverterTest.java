@@ -96,11 +96,11 @@ public class StringXLStringTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversions to Java.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(Double.class, XL_STRING);
+    assertEquals(CONVERTER.toJavaObject(Double.class, XL_STRING), STRING);
   }
 
   /**
@@ -112,11 +112,11 @@ public class StringXLStringTypeConverterTest {
   }
 
   /**
-   * Tests for the exception when the expected class is wrong.
+   * Tests that the expected type is ignored during conversion to a XL class.
    */
-  @Test(expectedExceptions = ClassCastException.class)
+  @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, TEN_D);
+    assertEquals(CONVERTER.toXLValue(XLNumber.class, STRING), XL_STRING);
   }
 
   /**

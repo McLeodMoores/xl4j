@@ -15,10 +15,9 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of Shorts from the function processor.
+ * Tests construction of Shorts from the function processor.
  */
 public class ShortConstructionTest extends TypeConstructionTests {
-  // REVIEW isn't it a bit odd that there's no complaint when there's a downcast to Short?
   /** XLNumber holding a short. */
   private static final XLNumber XL_NUMBER_SHORT = XLNumber.of((short) 10);
   /** Short. */
@@ -52,38 +51,42 @@ public class ShortConstructionTest extends TypeConstructionTests {
   }
 
   /**
-   * Tests creation of Shorts using its static constructors.
+   * Tests creation of Shorts using Short.valueOf(short).
    */
   @Test
   public void testJStaticMethodXShort() {
-    // Short.valueOf(short)
-    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_SHORT);
+    final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_SHORT);
     assertTrue(xlValue instanceof XLObject);
-    Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    final Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(shortObject instanceof Short);
-    Short shortVal = (Short) shortObject;
+    final Short shortVal = (Short) shortObject;
     assertEquals(shortVal.shortValue(), SHORT.shortValue());
   }
-  
+
+  /**
+   * Test creation of Shorts using Short.valueOf(String).
+   */
   @Test
-  public void testJStaticMethodXString() {  
-    // Short.valueOf(string)
-    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
+  public void testJStaticMethodXString() {
+    final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
     assertTrue(xlValue instanceof XLObject);
-    Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    final Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(shortObject instanceof Short);
-    Short shortVal = (Short) shortObject;
+    final Short shortVal = (Short) shortObject;
     assertEquals(shortVal.shortValue(), SHORT.shortValue());
   }
-  
+
+  /**
+   * Tests creation of Shorts using Short.valueOf(String, int).
+   */
   @Test
   public void testJStaticMethodXStringNumber() {
     // 10 in base 8
-    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("12"), XLNumber.of(8));
+    final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("12"), XLNumber.of(8));
     assertTrue(xlValue instanceof XLObject);
-    Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    final Object shortObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(shortObject instanceof Short);
-    Short shortVal = (Short) shortObject;
+    final Short shortVal = (Short) shortObject;
     assertEquals(shortVal.shortValue(), Short.valueOf("12", 8).shortValue());
   }
 }

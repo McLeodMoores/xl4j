@@ -12,18 +12,17 @@ import com.mcleodmoores.excel4j.values.XLInteger;
  * Unit tests for XLInteger.
  */
 public final class XLIntegerTests {
-  // CHECKSTYLE:OFF
   private static final String EXPECTED_65536 = "XLInteger[value=65536]";
   private static final String EXPECTED_0 = "XLInteger[value=0]";
 
   @Test
   public void testXLIntegerEqualsAndHashCode() {
-    XLInteger integer65536 = XLInteger.of(65536);
-    XLInteger integer65536_1 = XLInteger.of(65536);
+    final XLInteger integer65536 = XLInteger.of(65536);
+    final XLInteger integer65536_1 = XLInteger.of(65536);
     Assert.assertEquals(integer65536.getValue(), 65536);
-    XLInteger integer0 = XLInteger.of(0);
+    final XLInteger integer0 = XLInteger.of(0);
     Assert.assertEquals(integer0.getValue(), 0);
-    XLInteger integer0_1 = XLInteger.of(0);
+    final XLInteger integer0_1 = XLInteger.of(0);
     Assert.assertEquals(integer65536, integer65536);
     Assert.assertEquals(integer65536.hashCode(), integer65536.hashCode());
     Assert.assertEquals(integer65536, integer65536_1);
@@ -42,8 +41,8 @@ public final class XLIntegerTests {
 
   @Test
   public void testXLIntegerToString() {
-    XLInteger integer65536 = XLInteger.of(65536);
-    XLInteger integer0 = XLInteger.of(0);
+    final XLInteger integer65536 = XLInteger.of(65536);
+    final XLInteger integer0 = XLInteger.of(0);
     Assert.assertEquals(integer65536.toString(), EXPECTED_65536);
     Assert.assertEquals(integer0.toString(), EXPECTED_0);
   }

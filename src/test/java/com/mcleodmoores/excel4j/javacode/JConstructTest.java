@@ -53,28 +53,28 @@ public class JConstructTest {
   }
 
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective1() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective1() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayList = (XLObject) method.invoke(null, XLString.of(CLASSNAME), XLNumber.of(6d));
     System.err.println(arrayList);
   }
 
   @Test
-  public void testJMethodReflective1_5() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective1_5() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayList = (XLObject) method.invoke(null, XLString.of(CLASSNAME), new XLValue[] { XLNumber.of(6d) });
     System.err.println(arrayList);
   }
 
   @Test
-  public void testJMethodReflective1_75() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective1_75() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayList = (XLObject) method.invoke(null, XLString.of(CLASSNAME), new XLValue[] { });
     System.err.println(arrayList);
   }
 
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective2() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective2() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Object[] args = new Object[] { XLString.of(CLASSNAME), XLNumber.of(6d) };
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayList = (XLObject) method.invoke(null, args);
@@ -82,7 +82,7 @@ public class JConstructTest {
   }
 
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective3() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective3() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Object[] args = new Object[] { XLString.of(CLASSNAME) };
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayList = (XLObject) method.invoke(null, args);
@@ -90,7 +90,7 @@ public class JConstructTest {
   }
 
   @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective4() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective4() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Object[] args = new Object[] { XLString.of(CLASSNAME), new Object[0] };
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayList = (XLObject) method.invoke(null, args);
@@ -98,7 +98,7 @@ public class JConstructTest {
   }
 
   @Test
-  public void testJMethodReflective5() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+  public void testJMethodReflective5() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
     final Object[] args = new Object[] { XLString.of(CLASSNAME), new XLValue[0] };
     System.err.println(Arrays.toString(args));
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);

@@ -26,7 +26,6 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Unit tests for XLArray.
  */
 public final class XLArrayTests {
-  // CHECKSTYLE:OFF
 
   private static final XLValue[][] SINGLE = new XLValue[][] { { XLBigData.of("Hello World") } };
   private static final XLValue[][] SINGLE_1 = new XLValue[][] { { XLBigData.of("Hello World") } };

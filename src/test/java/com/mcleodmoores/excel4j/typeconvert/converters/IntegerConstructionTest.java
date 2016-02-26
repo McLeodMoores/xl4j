@@ -15,7 +15,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of Integers from the function processor.
+ * Tests construction of Integers from the function processor.
  */
 public class IntegerConstructionTest extends TypeConstructionTests {
   /** XLNumber holding an int. */

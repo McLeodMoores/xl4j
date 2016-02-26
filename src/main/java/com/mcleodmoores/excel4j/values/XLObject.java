@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.excel4j.values;
 
+import java.util.Objects;
+
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
@@ -30,7 +32,7 @@ public final class XLObject implements XLValue {
     ArgumentChecker.notNull(clazz, "clazz");
     return new XLObject(clazz, handle);
   }
-  
+
   /**
    * Static factory method to create an instance of an XLString.
    * @param clazz the Class that this object points to
@@ -97,7 +99,7 @@ public final class XLObject implements XLValue {
     if (_handle != other._handle) {
       return false;
     }
-    if (_clazz != other._clazz) {
+    if (!Objects.equals(_clazz, other._clazz)) {
       return false;
     }
     return true;

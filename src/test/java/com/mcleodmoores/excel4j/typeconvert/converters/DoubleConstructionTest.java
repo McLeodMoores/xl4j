@@ -15,7 +15,7 @@ import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Tests constructions of Doubles from the function processor.
+ * Tests construction of Doubles from the function processor.
  */
 public class DoubleConstructionTest extends TypeConstructionTests {
   /** XLNumber holding a double. */

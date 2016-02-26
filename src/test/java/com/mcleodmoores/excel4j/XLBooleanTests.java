@@ -12,7 +12,6 @@ import com.mcleodmoores.excel4j.values.XLBoolean;
  * Unit tests for XLBoolean.
  */
 public final class XLBooleanTests {
-  // CHECKSTYLE:OFF
   private static final String EXPECTED_TRUE = "XLBoolean[TRUE]";
   private static final String EXPECTED_FALSE = "XLBoolean[FALSE]";
 
