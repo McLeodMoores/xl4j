@@ -5,6 +5,7 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
+import static org.testng.Assert.fail;
 
 import org.testng.annotations.Test;
 
@@ -37,6 +38,7 @@ public class StringConstructionTest extends TypeConstructionTests {
    */
   @Test
   public void testJConstructCharArray() {
+    fail();
     final char[] charArray = {'H', 'e', 'l', 'l', 'o' , ' ', 'W', 'o', 'r', 'l', 'd'};
     final XLValue[][] xlCharArray = new XLValue[1][charArray.length];
     for (int i = 0; i < charArray.length; i++) {
