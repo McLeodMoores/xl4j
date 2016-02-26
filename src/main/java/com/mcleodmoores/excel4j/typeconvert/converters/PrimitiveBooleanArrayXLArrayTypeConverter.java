@@ -80,7 +80,7 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
         
         XLValue val = arr[0][i];
         // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
-        if (!val.getClass().equals(lastClass)) {
+        if (lastConverter == null || (!val.getClass().equals(lastClass))) {
           lastClass = val.getClass();
           lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }
@@ -92,7 +92,7 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
       for (int i = 0; i < arr.length; i++) {
         XLValue val = arr[i][0];
         // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
-        if (!val.getClass().equals(lastClass)) {
+        if (lastConverter == null || (!val.getClass().equals(lastClass))) {
           lastClass = val.getClass();
           lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }
