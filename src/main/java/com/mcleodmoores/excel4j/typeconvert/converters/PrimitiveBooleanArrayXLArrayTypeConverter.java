@@ -19,7 +19,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * <code>XLString("true")</code>) and an attempt will be made to convert this value to a boolean.
  */
 public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTypeConverter {
-
+  /** The type converters */
   private final TypeConverterRegistry _typeConverterRegistry;
 
   /**
