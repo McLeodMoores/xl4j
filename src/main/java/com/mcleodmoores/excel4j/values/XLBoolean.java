@@ -25,9 +25,8 @@ public enum XLBoolean implements XLValue {
   public static XLBoolean from(final boolean value) {
     if (value) {
       return TRUE;
-    } else {
-      return FALSE;
     }
+    return FALSE;
   }
 
   /**

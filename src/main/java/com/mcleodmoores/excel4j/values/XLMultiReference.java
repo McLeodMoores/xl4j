@@ -66,7 +66,7 @@ public final class XLMultiReference implements XLValue {
   public List<XLRange> getRanges() {
     return _ranges;
   }
-  
+
   /**
    * @return the range, not null
    */
@@ -134,9 +134,8 @@ public final class XLMultiReference implements XLValue {
   public String toString() {
     if (isSingleRange()) {
       return "XLMultiReference[sheetId=" + _sheetId.getSheetId() + ", range=" + getSingleRange() + "]";
-    } else {
-      return "XLMultiReference[sheetId=" + _sheetId.getSheetId() + ", ranges=" + _ranges + "]";
     }
+    return "XLMultiReference[sheetId=" + _sheetId.getSheetId() + ", ranges=" + _ranges + "]";
   }
 
 }
