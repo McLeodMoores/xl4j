@@ -54,8 +54,8 @@ private:
 	HRESULT allocMultiReference (XL4JMULTIREFERENCE **result, jsize elems);
 	HRESULT allocReference (XL4JREFERENCE **result);
 	void allocArray (SAFEARRAY **result, jsize rows, jsize cols);
-	VARIANT convert (JNIEnv *pEnv, jobject joXLValue);
-	jobject convert (JNIEnv *pEnv, VARIANT *oper);
+	VARIANT convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLValue);
+	jobject convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper);
 public:
 	CCallExecutor (CCall *pOwner, JniCache *pJniCache, VARIANT *result, int iFunctionNum, SAFEARRAY * args);
 	HRESULT Run (JNIEnv *pEnv);

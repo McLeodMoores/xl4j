@@ -22,6 +22,7 @@ XCHAR g_szBuffer[20] = L"";
 FunctionRegistry *g_pFunctionRegistry;
 IRecordInfo *g_pOperRecordInfo;
 Jvm *g_pJvm = NULL;
+ICall *g_pCall;
 
 ///***************************************************************************
 // DllMain()
@@ -170,6 +171,11 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void)
 	// Free the XLL filename //
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 
+	if (FAILED (g_pJvm->getJvm ()->CreateCall (&g_pCall))) {
+		TRACE ("UDF stub: CreateCall failed on JVM");
+		return 0;
+	}
+	
 	return 1;
 }
 
@@ -369,6 +375,8 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 }
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
+	LARGE_INTEGER t1;
+	QueryPerformanceCounter (&t1);
 	// Find out how many parameters this function should expect.
 	FUNCTIONINFO functionInfo;
 	HRESULT hr = g_pFunctionRegistry->get (exportNumber, &functionInfo);
@@ -422,23 +430,23 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 		SafeArrayUnaccessData (saInputs);
 	}
 	VARIANT result;
-	ICall *pCall;
-	if (FAILED(hr = g_pJvm->getJvm ()->CreateCall (&pCall))) {
-		TRACE ("UDF stub: CreateCall failed on JVM");
-		goto error;
-	}
+
 	long szInputs;
 	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
 		TRACE ("UDF stub: SafeArrayGetUBound failed");
 		goto error;
 	}
 	szInputs++;
+	LARGE_INTEGER t2;
+	QueryPerformanceCounter (&t2);
 	TRACE ("UDF stub: Prior to invocation saInputs has %d elements (post trimming)", szInputs);
-	if (FAILED(hr = pCall->call (&result, exportNumber, saInputs))) {
+	if (FAILED(hr = g_pCall->call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
 		TRACE ("UDF stub: call failed %s.", err.ErrorMessage ());
 		goto error;
 	}
+	LARGE_INTEGER t3;
+	QueryPerformanceCounter (&t3);
 	// IT'S VERY IMPORTANT WE CLEAN THIS UP!
 	XLOPER12 *pResult = (XLOPER12 *) CoTaskMemAlloc (sizeof (XLOPER12));
 	hr = Converter::convert (&result, pResult);
@@ -459,6 +467,15 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 			TRACE ("Unrecognised xltype %d (0x%x)", arr->xltype, arr->xltype);
 		}
 	}
+	LARGE_INTEGER t4;
+	QueryPerformanceCounter (&t4);
+	LARGE_INTEGER TicksPerSec;
+	QueryPerformanceFrequency (&TicksPerSec);
+	double usecsTotal = ((double)(t4.QuadPart - t1.QuadPart) / ((double)TicksPerSec.QuadPart)) * 1000000;
+	double safeArray = ((double)(t2.QuadPart - t1.QuadPart) / ((double)TicksPerSec.QuadPart)) * 1000000;
+	double call = ((double)(t3.QuadPart - t2.QuadPart) / ((double)TicksPerSec.QuadPart)) * 1000000;
+	double resultConv = ((double)(t4.QuadPart - t3.QuadPart) / ((double)TicksPerSec.QuadPart)) * 1000000;
+	Debug::odprintf (TEXT ("total %f, SAFEARRAY %f, call %f, result conv %f\n"), usecsTotal, safeArray, call, resultConv);
 	return pResult;
 error:
 	if (saInputs) {

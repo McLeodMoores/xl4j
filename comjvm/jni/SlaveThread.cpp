@@ -10,14 +10,8 @@
 #include "stdafx.h"
 #include "internal.h"
 #include "utils/Debug.h"
-#include "JniCache.h"
 
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM);
-
-typedef struct _JvmAndCache {
-	JavaVM *pJVM;
-	JniCache *pJniCache;
-} JvmAndCache;
 
 class CCallbackRequests {
 private:
@@ -157,7 +151,7 @@ void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	}
 }
 
-HRESULT ScheduleSlave (JavaVM *pJVM, JniCache *pJniCache, JNICallbackProc pfnCallback, PVOID pData) {
+HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
 	// TODO: If this is already a slave thread, don't post to the queue, callback directory (JIM: should this read 'directly'?)
 	TRACE ("(%p) ScheduleSlave(pJVM=%p, pfnCallback=%p, pData=%p", GetCurrentThreadId (), pJVM, pfnCallback, pData);
 	return g_oRequests.Add (pJVM, pfnCallback, pData);

@@ -9,7 +9,7 @@
 
 CCall::CCall (CJvm *pJvm) {
 	m_pJvm = pJvm;
-	m_pJniCache = new JniCache;
+	m_pJniCache = new JniCache ();
 	IncrementActiveObjectCount ();
 	m_pJvm->AddRef ();
 	InitializeCriticalSection (&m_cs);

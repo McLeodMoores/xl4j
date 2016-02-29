@@ -7,6 +7,7 @@ package com.mcleodmoores.excel4j.values;
  * Java representation of the xloper type xltypeError.
  */
 public enum XLError implements XLValue {
+  // NOTE: if you re-order these fields, you will need to change code on the native side (in CCallExecutor::convert)
   /**
    * #NULL! errors occur when cell references are separated incorrectly within a formula.
    * A common cause is a space between references rather than an operator or a colon (for ranges)

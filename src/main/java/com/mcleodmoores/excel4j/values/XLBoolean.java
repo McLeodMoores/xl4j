@@ -7,6 +7,7 @@ package com.mcleodmoores.excel4j.values;
  * Java representation of the xloper type xltypeBool.
  */
 public enum XLBoolean implements XLValue {
+  // NOTE: if you re-order these fields, you will need to change code on the native side (in CCallExecutor::convert)
   /**
    * True value.
    */
