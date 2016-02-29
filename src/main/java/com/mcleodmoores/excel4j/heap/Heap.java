@@ -98,9 +98,7 @@ public class Heap {
     if (object != null) {
       return object;
     } else {
-      System.err.println(_handleToObj.toString());
       throw new Excel4JRuntimeException("Cannot find object with handle " + handle);
-
     }
   }
 

@@ -46,7 +46,6 @@ public class MockFunctionProcessor {
     final Object[] newArgs = new Object[args.length];
     System.arraycopy(args, 0, newArgs, 0, args.length);
     try {
-      System.err.println("invoking method " + functionName + " (" + exportNumber + ") with args " + Arrays.toString(args));
       return excelCallHandler.invoke(exportNumber, args);
       //return (XLValue) entryPointMethod.invoke(dllTable, new Object[] { args });
     } catch (IllegalArgumentException | ClassCastException e) {
