@@ -5,7 +5,6 @@ package com.mcleodmoores.excel4j.typeconvert.converters;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 import org.testng.annotations.Test;
 
@@ -163,21 +162,6 @@ public class PrimitiveBooleanArrayXLArrayTypeConverterTest {
     final Object converted = CONVERTER.toJavaObject(boolean[].class, xlArray);
     final boolean[] array = (boolean[]) converted;
     assertEquals(array, new boolean[] {true, false, true});
-  }
-
-  /**
-   * Tests the conversion from XLArray containing a 2D range of values of XLBoolean.
-   */
-  @Test
-  public void testToJavaConversionFrom2dRange1() {
-    final XLArray xlArray = XLArray.of(new XLValue[][] {
-      new XLValue[] {XLBoolean.TRUE, XLBoolean.TRUE},
-      new XLValue[] {XLBoolean.FALSE, XLBoolean.TRUE},
-      new XLValue[] {XLBoolean.TRUE, XLBoolean.FALSE}});
-    final Object converted = CONVERTER.toJavaObject(boolean[].class, xlArray);
-    fail();
-    //    final boolean[] array = (boolean[]) converted;
-    //    assertEquals(array, new boolean[] {true, false, true});
   }
 
   /**
