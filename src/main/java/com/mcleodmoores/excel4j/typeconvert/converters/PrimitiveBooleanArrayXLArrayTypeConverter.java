@@ -36,12 +36,13 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("from parameter must be an array");
+      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
     Type componentType = null;
     if (expectedType instanceof Class) {
       final Class<?> expectedClass = from.getClass();
       componentType = expectedClass.getComponentType();
+      // REVIEW: this will never fail because of the isArray() test
       if (componentType == null) {
         throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
       }
@@ -92,22 +93,20 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
         targetArr[i] = (boolean) lastConverter.toJavaObject(componentType, val);
       }
       return targetArr;
-    } else { // array is single column
-      final boolean[] targetArr = new boolean[arr.length];
-      for (int i = 0; i < arr.length; i++) {
-        final XLValue val = arr[i][0];
-        // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
-        if (lastConverter == null || !val.getClass().equals(lastClass)) {
-          lastClass = val.getClass();
-          lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
-        }
-        if (lastConverter == null) {
-          throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
-        }
-        targetArr[i] = (boolean) lastConverter.toJavaObject(componentType, val);
+    }  // array is single column //TODO should this check that it is a single column?
+    final boolean[] targetArr = new boolean[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      final XLValue val = arr[i][0];
+      // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
+      if (lastConverter == null || !val.getClass().equals(lastClass)) {
+        lastClass = val.getClass();
+        lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
       }
-      return targetArr;
+      if (lastConverter == null) {
+        throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
+      }
+      targetArr[i] = (boolean) lastConverter.toJavaObject(componentType, val);
     }
-
+    return targetArr;
   }
 }
