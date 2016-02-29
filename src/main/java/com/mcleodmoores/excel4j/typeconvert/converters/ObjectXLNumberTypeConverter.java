@@ -24,16 +24,18 @@ public final class ObjectXLNumberTypeConverter extends AbstractTypeConverter {
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (from instanceof Number) {
-      Number num = (Number) from;
+      final Number num = (Number) from;
       return XLNumber.of(num.doubleValue());
-    } else {
-      throw new Excel4JRuntimeException("could not convert from " + from.getClass() + " to XLNumber");
     }
+    throw new Excel4JRuntimeException("could not convert from " + from.getClass() + " to XLNumber");
   }
 
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return (Double) ((XLNumber) from).getValue();
+    if (from instanceof XLNumber) {
+      return ((XLNumber) from).getValue();
+    }
+    throw new Excel4JRuntimeException("Could not convert from " + from.getClass() + " to double");
   }
 }

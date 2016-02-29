@@ -1,4 +1,4 @@
-/*
+/**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.excel4j.values;
@@ -12,7 +12,7 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  * It can take the form of a two dimensional array of mixed types of xlopers.
  * REVIEW: should this be generic?
  */
-public final class XLArray implements XLValue, XLReference {
+public final class XLArray implements XLReference {
 
   private final XLValue[][] _array;
 

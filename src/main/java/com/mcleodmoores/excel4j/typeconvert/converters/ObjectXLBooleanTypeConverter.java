@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
 import java.lang.reflect.Type;
@@ -8,7 +11,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 
 /**
- * Type converter to convert from Objects to Excel Numbers and back again.
+ * Type converter to convert from Objects to Excel booleans and back again.
  */
 public final class ObjectXLBooleanTypeConverter extends AbstractTypeConverter {
   private static final int PRIORITY = -7;
@@ -25,14 +28,16 @@ public final class ObjectXLBooleanTypeConverter extends AbstractTypeConverter {
     ArgumentChecker.notNull(from, "from");
     if (from instanceof Boolean) {
       return XLBoolean.from((Boolean) from);
-    } else {
-      throw new Excel4JRuntimeException("could not convert from " + from.getClass() + " to XLNumber");
     }
+    throw new Excel4JRuntimeException("Could not convert from " + from.getClass() + " to XLBoolean");
   }
 
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return ((XLBoolean) from).getValue();
+    if (from instanceof XLBoolean) {
+      return ((XLBoolean) from).getValue();
+    }
+    throw new Excel4JRuntimeException("Could not convert from " + from.getClass() + " to boolean");
   }
 }
