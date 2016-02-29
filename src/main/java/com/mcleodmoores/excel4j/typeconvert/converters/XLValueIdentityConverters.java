@@ -21,7 +21,7 @@ import com.mcleodmoores.excel4j.values.XLString;
  * priority.  This will bind e.g. XLString to XLString if available rather than String.
  */
 public class XLValueIdentityConverters {
-  
+
   private static final int IDENTITY_CONVERTER_PRIORITY = 100;
   /**
    * Abstract base class to minimize boilerplate for Identity converters (that do a no-op conversion for Object types).
@@ -30,18 +30,18 @@ public class XLValueIdentityConverters {
     public AbstractXLValueIdentityConverter(final Class<?> xlType) {
       super(xlType, xlType, IDENTITY_CONVERTER_PRIORITY);
     }
-  
+
     @Override
     public Object toXLValue(final Type expectedType, final Object from) {
-      return (Object) from;
+      return from;
     }
-  
+
     @Override
     public Object toJavaObject(final Type expectedType, final Object from) {
       return from;
     }
   }
-  
+
   /** Identity converter for XLBigData. */
   public static class XLBigDataIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -49,15 +49,15 @@ public class XLValueIdentityConverters {
       super(XLBigData.class);
     }
   }
-  
+
   /** Identity converter for XLBoolean. */
   public static class XLBooleanIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
     public XLBooleanIdentityConverter() {
       super(XLBoolean.class);
     }
-  } 
-  
+  }
+
   /** Identity converter for XLError. */
   public static class XLErrorIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -65,7 +65,7 @@ public class XLValueIdentityConverters {
       super(XLError.class);
     }
   }
-  
+
   /** Identity converter for XLInteger. */
   public static class XLIntegerIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -73,7 +73,7 @@ public class XLValueIdentityConverters {
       super(XLInteger.class);
     }
   }
-  
+
   /** Identity converter for XLLocalReference. */
   public static class XLLocalReferenceIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -81,7 +81,7 @@ public class XLValueIdentityConverters {
       super(XLLocalReference.class);
     }
   }
- 
+
   /** Identity converter for XLMultiReference. */
   public static class XLMultiReferenceIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -89,7 +89,7 @@ public class XLValueIdentityConverters {
       super(XLMultiReference.class);
     }
   }
-  
+
   /** Identity converter for XLMissing. */
   public static class XLMissingIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -105,7 +105,7 @@ public class XLValueIdentityConverters {
       super(XLNumber.class);
     }
   }
-  
+
   /** Identity converter for XLNil. */
   public static class XLNilIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -113,7 +113,7 @@ public class XLValueIdentityConverters {
       super(XLNil.class);
     }
   }
-  
+
   /** Identity converter for XLObject. */
   public static class XLObjectIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -121,7 +121,7 @@ public class XLValueIdentityConverters {
       super(XLObject.class);
     }
   }
-  
+
   /** Identity converter for XLString. */
   public static class XLStringIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */
@@ -129,7 +129,7 @@ public class XLValueIdentityConverters {
       super(XLString.class);
     }
   }
-  
+
   /** Identity converter for ObjectRange. */
   public static class XLArrayIdentityConverter extends AbstractXLValueIdentityConverter {
     /** Default constructor. */

@@ -55,7 +55,6 @@ public class ObjectConstructionTest extends TypeConstructionTests {
   @Test
   public void testJConstructRandom() {
     final XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of("java.util.Random"), XLNumber.of(123456L));
-    assertTrue(xlValue instanceof Object);
     final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(object instanceof Random);
     final Random random = (Random) object;
@@ -86,7 +85,6 @@ public class ObjectConstructionTest extends TypeConstructionTests {
   @Test
   public void testJMethodSingletonList() {
     final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of("java.util.Collections"), XLString.of("singletonList"), XLNumber.of(1L));
-    assertTrue(xlValue instanceof Object);
     final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(object instanceof List);
     final List<?> list = (List<?>) object;

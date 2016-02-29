@@ -14,10 +14,12 @@ import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * Type converter to convert from Doubles to Excel Numbers and back again.
+ * Type converter to convert from arrays of longs to Excel arrays and back again. The input
+ * array from Excel can contain any type of {@link XLValue} (e.g. <code>XLNumber</code>,
+ * <code>XLString("1L")</code>) and an attempt will be made to convert this value to a long.
  */
 public final class PrimitiveLongArrayXLArrayTypeConverter extends AbstractTypeConverter {
-  
+  /** The type converters */
   private final TypeConverterRegistry _typeConverterRegistry;
 
   /**
@@ -26,6 +28,7 @@ public final class PrimitiveLongArrayXLArrayTypeConverter extends AbstractTypeCo
    */
   public PrimitiveLongArrayXLArrayTypeConverter(final Excel excel) {
     super(long[].class, XLArray.class);
+    ArgumentChecker.notNull(excel, "excel");
     _typeConverterRegistry = excel.getTypeConverterRegistry();
   }
 
@@ -33,24 +36,24 @@ public final class PrimitiveLongArrayXLArrayTypeConverter extends AbstractTypeCo
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("from parameter must be an array");
+      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
     Type componentType = null;
     if (expectedType instanceof Class) {
-      Class<?> expectedClass = (Class<?>) from.getClass();
+      final Class<?> expectedClass = from.getClass();
       componentType = expectedClass.getComponentType();
+      // REVIEW: this will never fail because of the isArray() test
       if (componentType == null) {
-        throw new Excel4JRuntimeException("component type of from parameter is null");
+        throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
       }
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-    System.err.println("ComponentType = " + componentType);
-    TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
-    long[] fromArr = (long[]) from;
-    XLValue[][] toArr = new XLValue[1][fromArr.length];
+    final TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
+    final long[] fromArr = (long[]) from;
+    final XLValue[][] toArr = new XLValue[1][fromArr.length];
     for (int i = 0; i < fromArr.length; i++) {
-      XLValue value = (XLValue) converter.toXLValue(componentType, fromArr[i]);
+      final XLValue value = (XLValue) converter.toXLValue(componentType, fromArr[i]);
       toArr[0][i] = value;
     }
     return XLArray.of(toArr);
@@ -59,46 +62,51 @@ public final class PrimitiveLongArrayXLArrayTypeConverter extends AbstractTypeCo
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    XLArray xlArr = (XLArray) from;
+    final XLArray xlArr = (XLArray) from;
     Type componentType = null;
     if (expectedType instanceof Class) {
-      Class<?> expectedClass = (Class<?>) expectedType;
+      final Class<?> expectedClass = (Class<?>) expectedType;
       componentType = expectedClass.getComponentType();
     } else if (expectedType instanceof GenericArrayType) {
-      GenericArrayType genericArrayType = (GenericArrayType) expectedType;
+      final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
       componentType = genericArrayType.getGenericComponentType();
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-    
-    XLValue[][] arr = xlArr.getArray();
+
+    final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     if (arr.length == 1) { // array is a single row
-      long[] targetArr = new long[arr[0].length];
+      final long[] targetArr = new long[arr[0].length];
       for (int i = 0; i < arr[0].length; i++) {
-        XLValue val = arr[0][i];
+        final XLValue val = arr[0][i];
         // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
         if (lastConverter == null || (!val.getClass().equals(lastClass))) {
           lastClass = val.getClass();
           lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }
-        targetArr[i] = (long) lastConverter.toJavaObject(componentType, val); 
-      }
-      return targetArr;
-    } else { // array is single column
-      long[] targetArr = new long[arr.length];
-      for (int i = 0; i < arr.length; i++) {
-        XLValue val = arr[i][0];
-        // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
-        if (lastConverter == null || (!val.getClass().equals(lastClass))) {
-          lastClass = val.getClass();
-          lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
+        if (lastConverter == null) {
+          throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
         }
-        targetArr[i] = (long) lastConverter.toJavaObject(componentType, val); 
+        targetArr[i] = (long) lastConverter.toJavaObject(componentType, val);
       }
       return targetArr;
     }
-    
+    // array is single column
+    final long[] targetArr = new long[arr.length];
+    for (int i = 0; i < arr.length; i++) {
+      final XLValue val = arr[i][0];
+      // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
+      if (lastConverter == null || (!val.getClass().equals(lastClass))) {
+        lastClass = val.getClass();
+        lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
+      }
+      if (lastConverter == null) {
+        throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
+      }
+      targetArr[i] = (long) lastConverter.toJavaObject(componentType, val);
+    }
+    return targetArr;
   }
 }
