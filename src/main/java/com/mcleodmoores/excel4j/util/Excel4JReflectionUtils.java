@@ -48,7 +48,7 @@ public final class Excel4JReflectionUtils {
   }
 
   @SuppressWarnings("unused")
-  private Class<?>[] getExpectedExcelTypes(final Excel excel, final Method method) {
+  private static Class<?>[] getExpectedExcelTypes(final Excel excel, final Method method) {
     final Type[] genericParameterTypes = method.getGenericParameterTypes();
     final Class<?>[] excelTypes = new Class[genericParameterTypes.length];
     final TypeConverterRegistry typeConverterRegistry = new ScanningTypeConverterRegistry(excel);

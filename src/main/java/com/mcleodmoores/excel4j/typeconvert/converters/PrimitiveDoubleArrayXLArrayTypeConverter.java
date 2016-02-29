@@ -16,7 +16,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * Type converter to convert from arrays of doubles to Excel arrays and back again. The input
  * array from Excel can contain any type of {@link XLValue} (e.g. <code>XLNumber</code>,
- * <code>XLDouble("1.0d")</code>) and an attempt will be made to convert this value to a double.
+ * <code>XLString("1.0d")</code>) and an attempt will be made to convert this value to a double.
  */
 public final class PrimitiveDoubleArrayXLArrayTypeConverter extends AbstractTypeConverter {
   /** The type converters */
@@ -49,7 +49,6 @@ public final class PrimitiveDoubleArrayXLArrayTypeConverter extends AbstractType
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-    System.err.println("ComponentType = " + componentType);
     final TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
     final double[] fromArr = (double[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];

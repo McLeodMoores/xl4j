@@ -49,7 +49,6 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType: have " + expectedType);
     }
-    System.err.println("ComponentType = " + componentType);
     final TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
     final boolean[] fromArr = (boolean[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
