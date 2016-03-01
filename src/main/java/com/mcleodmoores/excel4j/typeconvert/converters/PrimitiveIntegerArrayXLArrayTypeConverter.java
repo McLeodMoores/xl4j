@@ -37,7 +37,7 @@ public final class PrimitiveIntegerArrayXLArrayTypeConverter extends AbstractTyp
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("\"from \"parameter must be an array");
+      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
     Type componentType = null;
     if (expectedType instanceof Class) {
