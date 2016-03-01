@@ -279,9 +279,9 @@ public class ObjectArray2DXLArrayTypeConverterTest {
    */
   @Test
   public void testConversionFromXLArrayToObjectArrayMixedObjs() {
-    final XLArray booleanArray = XLArray.of(new XLValue[][] {{XLBoolean.TRUE, XLNumber.of(2), XLString.of("test2")}});
-    final Object converted = CONVERTER.toJavaObject(Object[].class, booleanArray);
-    final Object[][] results = new Object[][] { new Object[] {true, 2, "test2"}};
+    final XLArray array = XLArray.of(new XLValue[][] {{XLBoolean.TRUE, XLNumber.of(2), XLString.of("test2")}});
+    final Object converted = CONVERTER.toJavaObject(Object[][].class, array);
+    final Object[][] results = new Object[][] {new Object[] {true, 2., "test2"}};
     assertEquals(converted, results);
   }
 
@@ -290,9 +290,9 @@ public class ObjectArray2DXLArrayTypeConverterTest {
    */
   @Test
   public void testConversionFromXLArrayToObjectArrayMixedObjsVertical() {
-    final XLArray booleanArray = XLArray.of(new XLValue[][] {{XLBoolean.TRUE}, {XLNumber.of(3)}, {XLString.of("test3")}});
-    final Object converted = CONVERTER.toJavaObject(Object[].class, booleanArray);
-    final Object[][] results = new Object[][] { new Object[]{true, false, true}};
+    final XLArray array = XLArray.of(new XLValue[][] {{XLBoolean.TRUE}, {XLNumber.of(3)}, {XLString.of("test3")}});
+    final Object converted = CONVERTER.toJavaObject(Object[][].class, array);
+    final Object[][] results = new Object[][] { new Object[]{true}, new Object[]{3.}, new Object[]{"test3"}};
     assertEquals(converted, results);
   }
 }
