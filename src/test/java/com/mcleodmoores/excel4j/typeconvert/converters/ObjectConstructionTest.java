@@ -106,4 +106,5 @@ public class ObjectConstructionTest extends TypeConstructionTests {
     final List<Integer> list = (ArrayList<Integer>) object;
     assertEquals(list, Arrays.asList(1, 2));
   }
+
 }

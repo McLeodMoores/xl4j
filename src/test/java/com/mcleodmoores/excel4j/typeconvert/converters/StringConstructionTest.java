@@ -10,6 +10,7 @@ import static org.testng.Assert.fail;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.values.XLArray;
+import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -31,6 +32,20 @@ public class StringConstructionTest extends TypeConstructionTests {
     assertTrue(object instanceof String);
     final String string = (String) object;
     assertTrue(string.isEmpty());
+  }
+
+  /**
+   * Tests construction of a String using new String(int[], int, int).
+   */
+  @Test
+  public void testJConstructWithParameters() {
+    final XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of("java.lang.String"),
+        XLArray.of(new XLValue[][] {new XLValue[]{XLInteger.of(41), XLInteger.of(42), XLInteger.of(43)}}), XLInteger.of(0), XLInteger.of(2));
+    assertTrue(xlValue instanceof XLObject);
+    final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(object instanceof String);
+    final String expectedString = new String(new int[] {41, 42, 43}, 0, 2); // *) apparently
+    assertEquals(object, expectedString);
   }
 
   /**
