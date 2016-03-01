@@ -17,6 +17,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
+import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
@@ -118,6 +119,24 @@ public class PrimitiveBooleanArrayXLArrayTypeConverterTest {
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testExpectedTypeNotAnArray() {
     CONVERTER.toXLValue(XLInteger.class, new boolean[] {true, false});
+  }
+
+  /**
+   * Tests the behaviour when there is no available converter to a boolean.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testNoConverterToBooleanRow() {
+    final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(0), XLNumber.of(1)}});
+    CONVERTER.toJavaObject(boolean[].class, xlArray);
+  }
+
+  /**
+   * Tests the behaviour when there is no available converter to a boolean.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testNoConverterToBooleanColumn() {
+    final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(0)}, new XLValue[]{XLNumber.of(1)}});
+    CONVERTER.toJavaObject(boolean[].class, xlArray);
   }
 
   /**

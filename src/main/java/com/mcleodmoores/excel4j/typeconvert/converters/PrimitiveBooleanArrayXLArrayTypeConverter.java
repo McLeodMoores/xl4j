@@ -88,7 +88,7 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
           lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }
         if (lastConverter == null) {
-          throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
+          throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " to component type " + componentType);
         }
         targetArr[i] = (boolean) lastConverter.toJavaObject(componentType, val);
       }
@@ -104,7 +104,7 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
         lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
       }
       if (lastConverter == null) {
-        throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
+        throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " to component type " + componentType);
       }
       targetArr[i] = (boolean) lastConverter.toJavaObject(componentType, val);
     }
