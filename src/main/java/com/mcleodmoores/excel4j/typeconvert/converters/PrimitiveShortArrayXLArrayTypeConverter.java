@@ -29,6 +29,7 @@ public final class PrimitiveShortArrayXLArrayTypeConverter extends AbstractTypeC
   public PrimitiveShortArrayXLArrayTypeConverter(final Excel excel) {
     super(short[].class, XLArray.class);
     ArgumentChecker.notNull(excel, "excel");
+//    ArgumentChecker.notNull(excel.getTypeConverterRegistry(), "excel.getTypeConverterRegistry");
     _typeConverterRegistry = excel.getTypeConverterRegistry();
   }
 

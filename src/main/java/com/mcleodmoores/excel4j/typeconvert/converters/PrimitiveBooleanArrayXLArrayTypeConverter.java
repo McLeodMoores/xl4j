@@ -29,6 +29,7 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
   public PrimitiveBooleanArrayXLArrayTypeConverter(final Excel excel) {
     super(boolean[].class, XLArray.class);
     ArgumentChecker.notNull(excel, "excel");
+//    ArgumentChecker.notNull(excel.getTypeConverterRegistry(), "excel.getTypeConverterRegistry");
     _typeConverterRegistry = excel.getTypeConverterRegistry();
   }
 

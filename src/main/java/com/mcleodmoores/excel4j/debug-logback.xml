@@ -28,8 +28,8 @@
   
   <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" />
    
-  <root level="debug">
-    <appender-ref ref="FILE" />
+  <root level="error">
+    <!-- appender-ref ref="FILE" /-->
     <appender-ref ref="BRIDGE" />
   </root>
   

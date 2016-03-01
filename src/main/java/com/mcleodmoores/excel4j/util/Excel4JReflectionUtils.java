@@ -43,7 +43,7 @@ public final class Excel4JReflectionUtils {
     } else if (type instanceof WildcardType) {
       return Object.class; // Don't know what else to do here?
     } else {
-      throw new Excel4JRuntimeException("This shouldn't be reached.");
+      throw new Excel4JRuntimeException("This shouldn't be reached for type " + type);
     }
   }
 
