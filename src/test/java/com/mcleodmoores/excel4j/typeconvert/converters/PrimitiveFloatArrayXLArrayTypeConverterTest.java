@@ -125,7 +125,7 @@ public class PrimitiveFloatArrayXLArrayTypeConverterTest {
    * Tests the behaviour when there is no available converter to a float.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNoConverterToBooleanRow() {
+  public void testNoConverterToFloatRow() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE, XLBoolean.FALSE}});
     CONVERTER.toJavaObject(float[].class, xlArray);
   }
@@ -134,7 +134,7 @@ public class PrimitiveFloatArrayXLArrayTypeConverterTest {
    * Tests the behaviour when there is no available converter to a float.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNoConverterToBooleanColumn() {
+  public void testNoConverterToFloatColumn() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE}, new XLValue[]{XLBoolean.FALSE}});
     CONVERTER.toJavaObject(float[].class, xlArray);
   }
