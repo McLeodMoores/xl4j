@@ -17,8 +17,8 @@ public class ObjectArrayConvertersTest {
   @Test
   public void btestConvertToMostSpecificXlType() {
     final ObjectArrayXLArrayTypeConverter converter = new ObjectArrayXLArrayTypeConverter(ExcelFactory.getInstance());
-    final long hotspotWarmup = 0;
-    final long testRuns = 0;
+    final long hotspotWarmup = 10;
+    final long testRuns = 100;
     final Object[] toConvert = new Object[] {Boolean.FALSE, 1, 1.5d};
     for (long i = 0; i < hotspotWarmup; i++) {
       converter.toXLValue(Object.class, toConvert);
@@ -34,8 +34,8 @@ public class ObjectArrayConvertersTest {
   @Test
   public void atestConvertToXlObject() {
     final ObjectArrayXLArrayTypeConverter2 converter = new ObjectArrayXLArrayTypeConverter2(ExcelFactory.getInstance());
-    final long hotspotWarmup = 0;
-    final long testRuns = 0;
+    final long hotspotWarmup = 10;
+    final long testRuns = 100;
     final Object[] toConvert = new Object[] {Boolean.FALSE, 1, 1.5d};
     for (long i = 0; i < hotspotWarmup; i++) {
       converter.toXLValue(Object.class, toConvert);

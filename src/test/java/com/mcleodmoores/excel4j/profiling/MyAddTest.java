@@ -18,8 +18,8 @@ public class MyAddTest {
   @Test
   public void testMyAdd1() {
     final MockFunctionProcessor processor = new MockFunctionProcessor();
-    final long hotspotWarmup = 100000;
-    final long testRuns = 1000000;
+    final long hotspotWarmup = 100;
+    final long testRuns = 1000;
     final Random random = new Random(1231);
     double sum = 0;
     for (long i = 0; i < hotspotWarmup; i++) {
