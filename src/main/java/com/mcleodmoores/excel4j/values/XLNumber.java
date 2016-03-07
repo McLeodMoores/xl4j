@@ -9,10 +9,6 @@ package com.mcleodmoores.excel4j.values;
  * than IEEE-754 floating point (no Inf/NaN or denormal).
  */
 public final class XLNumber implements XLValue {
-  /**
-   *
-   */
-  private static final int HASHCODE_BITSHIFT = 32;
   private final double _value;
 
   private XLNumber(final double value) {
@@ -65,7 +61,7 @@ public final class XLNumber implements XLValue {
     int result = 1;
     long temp;
     temp = Double.doubleToLongBits(_value);
-    result = prime * result + (int) (temp ^ (temp >>> HASHCODE_BITSHIFT));
+    result = prime * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
 
