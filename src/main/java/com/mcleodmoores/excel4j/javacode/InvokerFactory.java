@@ -23,8 +23,8 @@ public interface InvokerFactory {
    * @return a ConstructorTypeConverter that can perform the necessary conversions each time the constructor is invoked
    * @throws ClassNotFoundException if the specified class cannot be found
    */
-  ConstructorInvoker getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
-                                                 @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) 
+  ConstructorInvoker[] getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
+                                                 @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes)
                                                  throws ClassNotFoundException;
 
   /**
@@ -32,13 +32,13 @@ public interface InvokerFactory {
    * @param clazz  the class the method belongs to
    * @param methodName  the name of the method as an XLString
    * @param typeConversionMode  whether the result should be an object, simplified if possible, or passed through
-   * @param argTypes a VarArg of the classes of the XLValues to be marshaled into Java types
+   * @param argTypes  a VarArg of the classes of the XLValues to be marshaled into Java types
    * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked
    * @throws ClassNotFoundException if the specified class cannot be found
    * throws Excel4JRuntimeException if a matching method cannot be found
    */
-  MethodInvoker getMethodTypeConverter(Class<?> clazz, XLString methodName, TypeConversionMode typeConversionMode,
-                                       @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) 
+  MethodInvoker[] getMethodTypeConverter(Class<?> clazz, XLString methodName, TypeConversionMode typeConversionMode,
+                                       @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes)
                                        throws ClassNotFoundException;
 
   /**
