@@ -1,5 +1,7 @@
 package com.mcleodmoores.excel4j.simulator;
 
+import static org.testng.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -84,5 +86,13 @@ public class FunctionSimulatorTests {
     final Map<Integer, List<Integer>> expectedMap = new HashMap<>();
     expectedMap.put(10, Arrays.asList(100));
     Assert.assertEquals(mapObj, expectedMap);
+  }
+
+  @Test
+  public void testArraysAsList() {
+    // empty list
+    final XLValue list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"));
+    System.err.println(list);
+    assertTrue(list instanceof XLObject);
   }
 }
