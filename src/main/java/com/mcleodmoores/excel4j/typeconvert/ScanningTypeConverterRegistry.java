@@ -106,11 +106,8 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
     for (final int priority : _converters.keySet()) {
       final List<TypeConverter> converters = _converters.get(priority);
       for (final TypeConverter typeConverter : converters) {
-        System.err.print("Comparing " + requiredMapping + " to " + typeConverter.getExcelToJavaTypeMapping());
-        //if (requiredMapping.isAssignableFrom(typeConverter.getExcelToJavaTypeMapping())) {
         if (typeConverter.getExcelToJavaTypeMapping().isAssignableFrom(requiredMapping)) {
           return typeConverter;
-        } else {
         }
       }
     }
