@@ -18,7 +18,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  *
  */
-public class JConstructTest {
+public class JMethodTest {
   private static final String CLASSNAME = "java.util.ArrayList";
   // private static final String CLASSNAME2 = "java.util.HashSet";
   private static final String CLASSNAME_INTEGER = "java.lang.Integer";
