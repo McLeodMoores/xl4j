@@ -25,8 +25,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * {@link ObjectArrayXLArrayTypeConverter2}, which only converts to XLObjects.
  */
 public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter {
-  /** The type converters */
-  private final TypeConverterRegistry _typeConverterRegistry;
+  private final Excel _excel;
+//  /** The type converters */
+//  private final TypeConverterRegistry _typeConverterRegistry;
 
   /**
    * Default constructor.
@@ -36,7 +37,8 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
     super(Object[].class, XLArray.class);
     ArgumentChecker.notNull(excel, "excel");
 //    ArgumentChecker.notNull(excel.getTypeConverterRegistry(), "excel.getTypeConverterRegistry");
-    _typeConverterRegistry = excel.getTypeConverterRegistry();
+//    _typeConverterRegistry = excel.getTypeConverterRegistry();
+    _excel = excel;
   }
 
   @Override
@@ -64,6 +66,7 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
     Class<?> lastClass = null;
     final Object[] fromArr = (Object[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
+    final TypeConverterRegistry _typeConverterRegistry = _excel.getTypeConverterRegistry();
     for (int i = 0; i < fromArr.length; i++) {
       final Object obj = fromArr[i];
       if (lastConverter == null || !obj.getClass().equals(lastClass)) {
@@ -101,6 +104,7 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
+    final TypeConverterRegistry _typeConverterRegistry = _excel.getTypeConverterRegistry();
     if (arr.length == 1) { // array is a single row
       final Object[] targetArr = (Object[]) Array.newInstance(Excel4JReflectionUtils.reduceToClass(componentType), arr[0].length);
       for (int i = 0; i < arr[0].length; i++) {
