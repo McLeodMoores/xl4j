@@ -19,8 +19,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * <code>XLString("1")</code>) and an attempt will be made to convert this value to a int.
  */
 public final class PrimitiveIntegerArrayXLArrayTypeConverter extends AbstractTypeConverter {
-  /** The type converters */
-  private final TypeConverterRegistry _typeConverterRegistry;
+  private final Excel _excel;
+//  /** The type converters */
+//  private final TypeConverterRegistry _typeConverterRegistry;
 
   /**
    * Default constructor.
@@ -30,7 +31,8 @@ public final class PrimitiveIntegerArrayXLArrayTypeConverter extends AbstractTyp
     super(int[].class, XLArray.class);
     ArgumentChecker.notNull(excel, "excel");
 //    ArgumentChecker.notNull(excel.getTypeConverterRegistry(), "excel.getTypeConverterRegistry");
-    _typeConverterRegistry = excel.getTypeConverterRegistry();
+//    _typeConverterRegistry = excel.getTypeConverterRegistry();
+    _excel = excel;
   }
 
   @Override
@@ -49,6 +51,7 @@ public final class PrimitiveIntegerArrayXLArrayTypeConverter extends AbstractTyp
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
+    final TypeConverterRegistry _typeConverterRegistry = _excel.getTypeConverterRegistry();
     final TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
     final int[] fromArr = (int[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
@@ -77,6 +80,7 @@ public final class PrimitiveIntegerArrayXLArrayTypeConverter extends AbstractTyp
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
+    final TypeConverterRegistry _typeConverterRegistry = _excel.getTypeConverterRegistry();
     if (arr.length == 1) { // array is a single row
       final int[] targetArr = new int[arr[0].length];
       for (int i = 0; i < arr[0].length; i++) {

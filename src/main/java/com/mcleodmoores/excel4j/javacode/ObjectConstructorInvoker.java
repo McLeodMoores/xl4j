@@ -41,6 +41,8 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
       final int varArgIndex = _constructor.getParameterCount() - 1;
       final int nVarArgs = arguments.length - varArgIndex;
       for (int i = 0; i < varArgIndex; i++) {
+        //TODO not sure about this logic - isArray() never seems to be true.
+        // what was the intended use?
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
         } else {
@@ -56,10 +58,13 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
     } else {
       args = new Object[arguments.length];
       for (int i = 0; i < _argumentConverters.length; i++) {
+        //TODO not sure about this logic - isArray() never seems to be true.
+        // what was the intended use?
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
         } else {
-          args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
+          final Type expectedClass = _constructor.getParameterTypes()[i];
+          args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
         }
       }
     }
