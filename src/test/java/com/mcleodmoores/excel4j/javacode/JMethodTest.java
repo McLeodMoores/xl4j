@@ -33,6 +33,17 @@ public class JMethodTest {
   }
 
   @Test
+  public void testReturnType() {
+    final XLValue stringReference = JConstruct.jconstruct(XLString.of("java.lang.StringBuilder"), XLString.of("builder"));
+    assertTrue(stringReference instanceof XLObject);
+    final Object methodResult1 = JMethod.jMethod((XLObject) stringReference, XLString.of("toString"), new XLValue[0]);
+    final Object methodResult2 = JMethod.jMethod((XLObject) stringReference, XLString.of("length"), new XLValue[0]);
+    // expect reduction to xl types
+    assertEquals(methodResult1, XLString.of("builder"));
+    assertEquals(methodResult2, XLNumber.of(7));
+  }
+
+  @Test
   public void testNonOverloadedGetters() {
     Object methodResult = JMethod.jMethod(_testObjectReference, XLString.of("getNumber"), new XLValue[0]);
     assertTrue(methodResult instanceof XLNumber);

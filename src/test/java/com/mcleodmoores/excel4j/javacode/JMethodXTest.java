@@ -33,6 +33,19 @@ public class JMethodXTest {
   }
 
   @Test
+  public void testReturnType() {
+    final XLValue stringReference = JConstruct.jconstruct(XLString.of("java.lang.StringBuilder"), XLString.of("builder"));
+    assertTrue(stringReference instanceof XLObject);
+    final Object methodResult1 = JMethod.jMethodX((XLObject) stringReference, XLString.of("toString"), new XLValue[0]);
+    final Object methodResult2 = JMethod.jMethodX((XLObject) stringReference, XLString.of("length"), new XLValue[0]);
+    // expect references
+    assertTrue(methodResult1 instanceof XLObject);
+    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult1).getHandle()), "builder");
+    assertTrue(methodResult2 instanceof XLObject);
+    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult2).getHandle()), 7);
+  }
+
+  @Test
   public void testNonOverloadedGetters() {
     Object methodResult = JMethod.jMethodX(_testObjectReference, XLString.of("getNumber"), new XLValue[0]);
     assertTrue(methodResult instanceof XLObject);
