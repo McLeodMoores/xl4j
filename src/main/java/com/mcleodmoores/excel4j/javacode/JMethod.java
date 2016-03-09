@@ -32,7 +32,7 @@ public final class JMethod {
   }
 
   /**
-   * Invoke a static method on a class, converting the result to an Excel type if possible.
+   * Invoke a method on a class, converting the result to an Excel type if possible.
    * @param objectReference the object reference
    * @param methodName the name of the method
    * @param args a vararg list of arguments

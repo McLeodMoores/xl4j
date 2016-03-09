@@ -12,6 +12,8 @@ public class TestObject {
   private final Double[] _doubles;
   private final String _name;
 
+  //TODO add static initializers to test JStaticMethod and JStaticMethodX
+
   public TestObject() {
     _number = -100;
     _doubles = new Double[0];
@@ -157,6 +159,10 @@ public class TestObject {
     return _doubles;
   }
 
+  public Double getDouble() {
+    return _doubles[0];
+  }
+
   public Double getDouble(final int index) {
     return _doubles[index];
   }
@@ -167,40 +173,69 @@ public class TestObject {
   }
 
   public Double getDouble(final Object indexObject) {
-    if (indexObject instanceof Integer) {
-      return _doubles[(Integer) indexObject];
+    if (indexObject instanceof Number) {
+      return _doubles[((Number) indexObject).intValue()];
     } else if (indexObject instanceof String) {
       return _doubles[Integer.parseInt((String) indexObject)];
     }
     throw new IllegalArgumentException();
   }
 
-  public Double[] getDoubles(final int... indices) {
-    final Double[] result = new Double[indices.length];
-    for (int i = 0; i < indices.length; i++) {
-      result[i] = _doubles[indices[i]];
+  public double getDoublesSum(final int offset, final String forHashCode, final int... indices) {
+    double result = _number + offset + forHashCode.hashCode();
+    for (final int index : indices) {
+      result += _doubles[index];
     }
     return result;
   }
 
-  public Double[] getDoubles(final String... indexStrings) {
-    final Double[] result = new Double[indexStrings.length];
-    for (int i = 0; i < indexStrings.length; i++) {
-      result[i] = _doubles[Integer.parseInt(indexStrings[i])];
+  public double getDoublesSum(final int offset, final String forHashCode, final String... indexStrings) {
+    double result = _number + offset + forHashCode.hashCode();
+    for (final String indexString : indexStrings) {
+      result += _doubles[Integer.parseInt(indexString)];
     }
     return result;
   }
 
-  public Double[] getDoubles(final Object... indexObjects) {
-    final Double[] result = new Double[indexObjects.length];
-    for (int i = 0; i < indexObjects.length; i++) {
-      final Object indexObject = indexObjects[i];
-      if (indexObject instanceof Integer) {
-        result[i] = _doubles[(Integer) indexObject];
+  public double getDoublesSum(final int offset, final String forHashCode, final Object... indexObjects) {
+    double result = _number + offset + forHashCode.hashCode();
+    for (final Object indexObject : indexObjects) {
+      if (indexObject instanceof Number) {
+        result += _doubles[((Number) indexObject).intValue()];
       } else if (indexObject instanceof String) {
-        result[i] = _doubles[Integer.parseInt((String) indexObject)];
+        result += _doubles[Integer.parseInt((String) indexObject)];
       } else {
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Unsupported type " + indexObject.getClass());
+      }
+    }
+    return result;
+  }
+
+  public double getDoublesSum(final int... indices) {
+    double result = _number;
+    for (final int index : indices) {
+      result += _doubles[index];
+    }
+    return result;
+  }
+
+  public double getDoublesSum(final String... indexStrings) {
+    double result = _number;
+    for (final String indexString : indexStrings) {
+      result += _doubles[Integer.parseInt(indexString)];
+    }
+    return result;
+  }
+
+  public double getDoublesSum(final Object... indexObjects) {
+    double result = _number;
+    for (final Object indexObject : indexObjects) {
+      if (indexObject instanceof Number) {
+        result += _doubles[((Number) indexObject).intValue()];
+      } else if (indexObject instanceof String) {
+        result += _doubles[Integer.parseInt((String) indexObject)];
+      } else {
+        throw new IllegalArgumentException("Unsupported type " + indexObject.getClass());
       }
     }
     return result;

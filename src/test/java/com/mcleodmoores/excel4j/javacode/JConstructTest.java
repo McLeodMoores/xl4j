@@ -23,8 +23,6 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 public class JConstructTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.excel4j.testutil.TestObject");
-  //TODO remove and test possible paths
-  private static final boolean TEST_STRONG_EQUALITY = true;
 
   @Test
   public void testNoArgsConstructor() {
@@ -54,11 +52,7 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(1);
-    if (TEST_STRONG_EQUALITY) {
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -69,12 +63,8 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject("2");
-    if (TEST_STRONG_EQUALITY) {
-      // could have gone through (Double)
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    // could have gone through (Double)
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -98,11 +88,7 @@ public class JConstructTest {
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(4, "40");
     // could go through (int, Object)
-    if (TEST_STRONG_EQUALITY) {
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -147,12 +133,8 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject("80", "81", "82");
-    if (TEST_STRONG_EQUALITY) {
-      // could have gone through (Object...) or (Double...)
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    // could have gone through (Object...) or (Double...)
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -163,12 +145,8 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(9, new String[] {"90", "91", "92"});
-    if (TEST_STRONG_EQUALITY) {
-      // could have gone through (Double...) or (int, Object...)
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    // could have gone through (Double...) or (int, Object...)
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -179,12 +157,8 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(100., 101., 102.);
-    if (TEST_STRONG_EQUALITY) {
-      // could have gone through (Object...)
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    // could have gone through (Object...)
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -198,11 +172,7 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(11, new Object[] {(short) 110, 111L, 112F});
-    if (TEST_STRONG_EQUALITY) {
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -213,12 +183,8 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(12, new Double[] {120., 121., 122.});
-    if (TEST_STRONG_EQUALITY) {
-      // could have gone through (int, Object...), (Double...) or (int, Double...)
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    // could have gone through (int, Object...), (Double...) or (int, Double...)
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
@@ -232,11 +198,7 @@ public class JConstructTest {
     final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
     assertTrue(constructedObject instanceof TestObject);
     final TestObject expectedObject = new TestObject(new Object[] {(short) 130, 131L, 132F});
-    if (TEST_STRONG_EQUALITY) {
-      assertEquals(constructedObject, expectedObject);
-    } else {
-      assertEquals(((TestObject) constructedObject).getDoubles(), expectedObject.getDoubles());
-    }
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
