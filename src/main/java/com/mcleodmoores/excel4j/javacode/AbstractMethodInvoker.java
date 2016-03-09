@@ -1,6 +1,5 @@
 package com.mcleodmoores.excel4j.javacode;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -72,56 +71,6 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
         }
       }
     }
-//    // note that the seemingly obvious invariant of arguments.length == _argumentConverters.length is not
-//    // always true because of a VarArgs might have no arguments to it's converter may be surplus to
-//    // requirements.  For this reason we base the conversion on the length of arguments.
-//
-//    final Object[] args = new Object[_argumentConverters.length];
-//    if (isVarArgs()) {
-//      if (arguments.length < _argumentConverters.length) { // var args is empty
-//        for (int i = 0; i < arguments.length; i++) {
-//          if (arguments[i].getClass().isArray()) {
-//            //AbstractArrayTypeConverter arrayTypeConverter = (AbstractArrayTypeConverter) _argumentConverters[i];
-//            //Object[] subArray = arrayTypeConverter.getExcelToJavaTypeMapping().getExcelClass().newInstance();
-//            args[i] = arguments[i];
-//          } else {
-//            final AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) _argumentConverters[i];
-//            args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
-//          }
-//
-//        }
-//        args[_argumentConverters.length - 1] = createVarArgsArray(_method, 0); // empty varargs to pass on
-//      } else { // args args non-empty
-//        for (int i = 0; i < _argumentConverters.length - 1; i++) {  // last arg converter used for var args.
-//          if (arguments[i].getClass().isArray()) {
-//            args[i] = arguments[i];
-//          } else {
-//            final AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) _argumentConverters[i];
-//            args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
-//          }
-//        }
-//        final Object[] varArgs = createVarArgsArray(_method, arguments.length - (_argumentConverters.length - 1)); // so if converters == arguments, we have 1.
-//        for (int i = 0; i < varArgs.length; i++) {
-////          if (arguments[i + (_argumentConverters.length - 1)].getClass().isArray()) { // should test for an XLArray?
-////            varArgs[i] = args[i];
-////          } else {
-//            //AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) _argumentConverters[_argumentConverters.length - 1];
-//            //varArgs[i] = scalarTypeConverter.toJavaObject(null, arguments[i + (_argumentConverters.length - 1)]);
-//            varArgs[i] = arguments[i + (_argumentConverters.length - 1)]; // passthrough.
-////          }
-//        }
-//        args[_argumentConverters.length - 1] = varArgs; // non-empty varargs to pass on
-//      }
-//    } else {
-//      for (int i = 0; i < arguments.length; i++) {
-//        if (arguments[i].getClass().isArray()) {
-//          args[i] = arguments[i];
-//        } else {
-//          final AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) _argumentConverters[i];
-//          args[i] = scalarTypeConverter.toJavaObject(null, arguments[i]);
-//        }
-//      }
-//    }
     try {
       LOGGER.info("invoking method {} on {} with {}", _method, object == null ? "null" : object.getClass().getSimpleName(), Arrays.toString(args));
       final Object result = _method.invoke(object, args);
@@ -130,11 +79,6 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       e.printStackTrace();
       throw new Excel4JRuntimeException("Error invoking method", e);
     }
-  }
-
-  private Object[] createVarArgsArray(final Method method, final int size) {
-    final Class<?>[] parameterTypes = method.getParameterTypes();
-    return (Object[]) Array.newInstance(parameterTypes[parameterTypes.length - 1].getComponentType(), size);
   }
 
   /**
