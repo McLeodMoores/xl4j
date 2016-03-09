@@ -35,7 +35,7 @@ public enum XLError implements XLValue {
    */
   Num,
   /**
-   * #N/A means some data in missing or that inappropriate arguments have been passed to loopup functions (vlookup, etc).
+   * #N/A means some data in missing or that inappropriate arguments have been passed to lookup functions (vlookup, etc).
    */
   NA;
 

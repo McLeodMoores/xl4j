@@ -53,11 +53,18 @@ public final class JMethod {
       final Class<?> clazz = object.getClass();
       final MethodInvoker[] methodTypeConverters =
           invokerFactory.getMethodTypeConverter(clazz, methodName, TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
-      for (final MethodInvoker methodTypeConverter : methodTypeConverters) {
+      int i = 0;
+      //TODO remove any method with Object or Object[] types and try them last?
+      for (; i < methodTypeConverters.length; i++) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
-          // have reached the end of the available methods
-          LOGGER.error("Could not invoke method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
-          return XLError.Null;
+          if (i == methodTypeConverters.length - 1) {
+            // have reached the end of the available methods without finding a match
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
+            return XLError.Null;
+          }
+          // go to where it will try any methods that are at the end of the array
+          break;
         }
         try {
           return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
@@ -65,11 +72,22 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      // should not reach here
-      LOGGER.error("Could not invoke method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
+      for (int j = methodTypeConverters.length - 1; j >= i; j--) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[j];
+        if (methodTypeConverter == null) {
+          // haven't found anything at the end either
+          break;
+        }
+        try {
+          return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          // keep trying until something works
+        }
+      }
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
-      LOGGER.error("Problem invoking method called {} with arguments {}: {}", methodName.getValue(), Arrays.toString(args), e.getMessage());
+      LOGGER.error("Could not find class called {}", objectReference.getClazz());
       return XLError.Null;
     }
   }
@@ -99,11 +117,18 @@ public final class JMethod {
       final Class<?> clazz = object.getClass();
       final MethodInvoker[] methodTypeConverters =
           invokerFactory.getMethodTypeConverter(clazz, methodName, TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
-      for (final MethodInvoker methodTypeConverter : methodTypeConverters) {
+      int i = 0;
+      //TODO remove any method with Object or Object[] types and try them last?
+      for (; i < methodTypeConverters.length; i++) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
-          // have reached the end of the available methods
-          LOGGER.error("Could not invoke method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
-          return XLError.Null;
+          if (i == methodTypeConverters.length - 1) {
+            // have reached the end of the available methods without finding a match
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
+            return XLError.Null;
+          }
+          // go to where it will try any methods that are at the end of the array
+          break;
         }
         try {
           return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
@@ -111,11 +136,22 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      // should not reach here
-      LOGGER.error("Could not invoke method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
+      for (int j = methodTypeConverters.length - 1; j >= i; j--) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[j];
+        if (methodTypeConverter == null) {
+          // haven't found anything at the end either
+          break;
+        }
+        try {
+          return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          // keep trying until something works
+        }
+      }
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
-      LOGGER.error("Problem invoking method called {} with arguments {}: {}", methodName.getValue(), Arrays.toString(args), e.getMessage());
+      LOGGER.error("Could not find class called {}", objectReference.getClazz());
       return XLError.Null;
     }
   }
@@ -138,15 +174,22 @@ public final class JMethod {
                            @XLArgument(name = "args", description = "the method arguments")
                            final XLValue... args) {
     try {
-      final Excel excelFactory = ExcelFactory.getInstance();
-      final InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName,
-          TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
-      for (final MethodInvoker methodTypeConverter : methodTypeConverters) {
+      final Excel excel = ExcelFactory.getInstance();
+      final InvokerFactory invokerFactory = excel.getInvokerFactory();
+      final MethodInvoker[] methodTypeConverters =
+          invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
+      int i = 0;
+      //TODO remove any method with Object or Object[] types and try them last?
+      for (; i < methodTypeConverters.length; i++) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
-          // have reached the end of the available methods
-          LOGGER.error("Could not invoke static method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
-          return XLError.Null;
+          if (i == methodTypeConverters.length - 1) {
+            // have reached the end of the available methods without finding a match
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(), Arrays.toString(args));
+            return XLError.Null;
+          }
+          // go to where it will try any methods that are at the end of the array
+          break;
         }
         try {
           return methodTypeConverter.invoke(null, args); // reduce return type to excel friendly type if possible.
@@ -154,11 +197,22 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      // should not reach here
-      LOGGER.error("Could not invoke static method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
+      for (int j = methodTypeConverters.length - 1; j >= i; j--) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[j];
+        if (methodTypeConverter == null) {
+          // haven't found anything at the end either
+          break;
+        }
+        try {
+          return methodTypeConverter.invoke(null, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          // keep trying until something works
+        }
+      }
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(), Arrays.toString(args));
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
-      LOGGER.error("Problem invoking static method called {} with arguments {}: {}", methodName.getValue(), Arrays.toString(args), e.getMessage());
+      LOGGER.error("Could not find class called {}", className.getValue());
       return XLError.Null;
     }
   }
@@ -181,15 +235,22 @@ public final class JMethod {
                            @XLArgument(name = "args", description = "the method arguments")
                            final XLValue... args) {
     try {
-      final Excel excelFactory = ExcelFactory.getInstance();
-      final InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName,
-          TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
-      for (final MethodInvoker methodTypeConverter : methodTypeConverters) {
+      final Excel excel = ExcelFactory.getInstance();
+      final InvokerFactory invokerFactory = excel.getInvokerFactory();
+      final MethodInvoker[] methodTypeConverters =
+          invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
+      int i = 0;
+      //TODO remove any method with Object or Object[] types and try them last?
+      for (; i < methodTypeConverters.length; i++) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
-          // have reached the end of the available methods
-          LOGGER.error("Could not invoke static method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
-          return XLError.Null;
+          if (i == methodTypeConverters.length - 1) {
+            // have reached the end of the available methods without finding a match
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(), Arrays.toString(args));
+            return XLError.Null;
+          }
+          // go to where it will try any methods that are at the end of the array
+          break;
         }
         try {
           return methodTypeConverter.invoke(null, args); // reduce return type to excel friendly type if possible.
@@ -197,11 +258,22 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      // should not reach here
-      LOGGER.error("Could not invoke static method called {} with arguments {}", methodName.getValue(), Arrays.toString(args));
+      for (int j = methodTypeConverters.length - 1; j >= i; j--) {
+        final MethodInvoker methodTypeConverter = methodTypeConverters[j];
+        if (methodTypeConverter == null) {
+          // haven't found anything at the end either
+          break;
+        }
+        try {
+          return methodTypeConverter.invoke(null, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          // keep trying until something works
+        }
+      }
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(), Arrays.toString(args));
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
-      LOGGER.error("Problem invoking static method called {} with arguments {}: {}", methodName.getValue(), Arrays.toString(args), e.getMessage());
+      LOGGER.error("Could not find class called {}", className.getValue());
       return XLError.Null;
     }
   }

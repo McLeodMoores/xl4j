@@ -47,7 +47,7 @@ public final class JConstruct {
       final ConstructorInvoker[] constructorTypeConverters =
           invokerFactory.getConstructorTypeConverter(resolveClass(className), TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       int i = 0;
-      //TODO remove any constructor with Object types and try them last?
+      //TODO remove any constructor with Object or Object[] types and try them last?
       for (; i < constructorTypeConverters.length; i++) {
         final ConstructorInvoker constructorTypeConverter = constructorTypeConverters[i];
         if (constructorTypeConverter == null) {

@@ -95,9 +95,9 @@ public class JMethodXTest {
 
   @Test
   public void testStringsSumMethod() {
-    final Object methodResult = JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), XLString.of("0"), XLString.of("4"));
+    final Object methodResult = JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), XLString.of("0"), XLString.of("3"));
     assertTrue(methodResult instanceof XLObject);
-    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()), _testObject.getDoublesSum("0", "4"));
+    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()), _testObject.getDoublesSum("0", "3"));
   }
 
   @Test
@@ -112,33 +112,34 @@ public class JMethodXTest {
   }
 
   @Test
-  public void testLongStringIntsSumMethod() {
-    final XLValue offset = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(1000));
+  public void testIntStringIntsSumMethod() {
+    final XLValue offset = JConstruct.jconstruct(XLString.of("java.lang.Integer"), XLNumber.of(1000));
     final Object methodResult =
         JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), offset, XLString.of("Test1"), XLNumber.of(0), XLNumber.of(3));
     assertTrue(methodResult instanceof XLObject);
-    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()), _testObject.getDoublesSum(1000L, "Test1", 0, 3));
+    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()),
+        _testObject.getDoublesSum(1000, "Test1", new int[] {0, 3}));
   }
 
   @Test
-  public void testLongStringStringsSumMethod() {
-    final XLValue offset = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(2000));
+  public void testIntStringStringsSumMethod() {
+    final XLValue offset = JConstruct.jconstruct(XLString.of("java.lang.Integer"), XLNumber.of(2000));
     final Object methodResult =
-        JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), offset, XLString.of("Test2"), XLNumber.of(1), XLNumber.of(4));
-    assertTrue(methodResult instanceof XLObject);
-    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()), _testObject.getDoublesSum(2000L, "Test2", 1, 4));
-  }
-
-  @Test
-  public void testLongStringObjectsSumMethod() {
-    final XLValue offset = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(3000));
-    final XLValue index1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(2));
-    final XLValue index2 = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(3));
-    final XLValue index3 = JConstruct.jconstruct(XLString.of("java.lang.Float"), XLNumber.of(0));
-    final Object methodResult =
-        JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), offset, XLString.of("Test3"), index1, index2, index3);
+        JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), offset, XLString.of("Test2"), XLNumber.of(1), XLNumber.of(3));
     assertTrue(methodResult instanceof XLObject);
     assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()),
-        _testObject.getDoublesSum(3000L, "Test3", Short.valueOf("2"), Long.valueOf(3L), Float.valueOf(1F)));
+        _testObject.getDoublesSum(2000, "Test2", new String[] {"1", "3"}));
+  }
+
+  @Test
+  public void testIntStringObjectsSumMethod() {
+    final XLValue offset = JConstruct.jconstruct(XLString.of("java.lang.Integer"), XLNumber.of(3000));
+    final XLValue index1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(2));
+    final XLValue index2 = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(3));
+    final Object methodResult =
+        JMethod.jMethodX(_testObjectReference, XLString.of("getDoublesSum"), offset, XLString.of("Test3"), index1, index2, XLString.of("1"));
+    assertTrue(methodResult instanceof XLObject);
+    assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()),
+        _testObject.getDoublesSum(3000, "Test3", new Object[] {Short.valueOf("2"), Long.valueOf(3L), "1"}));
   }
 }

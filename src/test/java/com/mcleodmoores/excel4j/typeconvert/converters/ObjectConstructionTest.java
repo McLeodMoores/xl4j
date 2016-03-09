@@ -103,8 +103,9 @@ public class ObjectConstructionTest extends TypeConstructionTests {
     assertTrue(xlValue instanceof XLObject);
     final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(object instanceof ArrayList);
-    final List<Integer> list = (ArrayList<Integer>) object;
-    assertEquals(list, Arrays.asList(1, 2));
+    final List<Double> list = (ArrayList<Double>) object;
+    // list will contain doubles rather than ints, as XLNumber stores everything as doubles
+    assertEquals(list, Arrays.asList(1.0, 2.0));
   }
 
 }
