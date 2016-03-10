@@ -26,18 +26,17 @@ import com.mcleodmoores.excel4j.values.XLValue;
 public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverter {
   /** The priority */
   private static final int PRIORITY = 6;
-  /** The type converters */
-  private final TypeConverterRegistry _typeConverterRegistry;
+  /** The Excel context */
+  private final Excel _excel;
 
   /**
    * Default constructor.
-   * @param excel  the excel context object, used to access the type converter registry.
+   * @param excel  the excel context object, used to access the type converter registry, not null
    */
   public ObjectArrayXLArrayTypeConverter2(final Excel excel) {
     super(Object[].class, XLArray.class, PRIORITY);
     ArgumentChecker.notNull(excel, "excel");
-//    ArgumentChecker.notNull(excel.getTypeConverterRegistry(), "excel.getTypeConverterRegistry");
-    _typeConverterRegistry = excel.getTypeConverterRegistry();
+    _excel = excel;
   }
 
   @Override
@@ -63,7 +62,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
     }
     final Object[] fromArr = (Object[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
-    final TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
+    final TypeConverter converter = _excel.getTypeConverterRegistry().findConverter(componentType);
     for (int i = 0; i < fromArr.length; i++) {
       final XLValue value = (XLValue) converter.toXLValue(componentType, fromArr[i]);
       toArr[0][i] = value;
@@ -89,6 +88,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
+    final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
     if (arr.length == 1) { // array is a single row
       final Object[] targetArr = (Object[]) Array.newInstance(Excel4JReflectionUtils.reduceToClass(componentType), arr[0].length);
       for (int i = 0; i < arr[0].length; i++) {
@@ -96,7 +96,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
         // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
         if (lastConverter == null || !val.getClass().equals(lastClass)) {
           lastClass = val.getClass();
-          lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
+          lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }
         if (lastConverter == null) {
           throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
@@ -112,7 +112,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
       // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
       if (lastConverter == null || !val.getClass().equals(lastClass)) {
         lastClass = val.getClass();
-        lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
+        lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
       }
       if (lastConverter == null) {
         throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);

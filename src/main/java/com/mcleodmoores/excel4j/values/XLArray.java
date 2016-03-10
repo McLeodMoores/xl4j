@@ -21,7 +21,7 @@ public final class XLArray implements XLReference {
   }
 
   /**
-   * Static factory method to create an instance of XLValueRange.
+   * Static factory method to create an instance of XLArray.
    * @param array a two dimensional array containing XLValues
    * @return an instance
    */

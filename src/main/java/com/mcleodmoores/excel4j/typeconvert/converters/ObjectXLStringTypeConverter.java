@@ -14,6 +14,7 @@ import com.mcleodmoores.excel4j.values.XLString;
  * Type converter to convert from Objects to Excel strings and back again.
  */
 public final class ObjectXLStringTypeConverter extends AbstractTypeConverter {
+  /** The priority */
   private static final int PRIORITY = -7;
 
   /**

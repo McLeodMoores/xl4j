@@ -19,18 +19,17 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * <code>XLString("1.0f")</code>) and an attempt will be made to convert this value to a float.
  */
 public final class PrimitiveFloatArrayXLArrayTypeConverter extends AbstractTypeConverter {
-  /** The type converters */
-  private final TypeConverterRegistry _typeConverterRegistry;
+  /** The Excel context */
+  private final Excel _excel;
 
   /**
    * Default constructor.
-   * @param excel  the excel context object, used to access the type converter registry.
+   * @param excel  the excel context object, used to access the type converter registry, not null
    */
   public PrimitiveFloatArrayXLArrayTypeConverter(final Excel excel) {
     super(float[].class, XLArray.class);
     ArgumentChecker.notNull(excel, "excel");
-//    ArgumentChecker.notNull(excel.getTypeConverterRegistry(), "excel.getTypeConverterRegistry");
-    _typeConverterRegistry = excel.getTypeConverterRegistry();
+    _excel = excel;
   }
 
   @Override
@@ -50,7 +49,7 @@ public final class PrimitiveFloatArrayXLArrayTypeConverter extends AbstractTypeC
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-    final TypeConverter converter = _typeConverterRegistry.findConverter(componentType);
+    final TypeConverter converter = _excel.getTypeConverterRegistry().findConverter(componentType);
     final float[] fromArr = (float[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
     for (int i = 0; i < fromArr.length; i++) {
@@ -78,6 +77,7 @@ public final class PrimitiveFloatArrayXLArrayTypeConverter extends AbstractTypeC
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
+    final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
     if (arr.length == 1) { // array is a single row
       final float[] targetArr = new float[arr[0].length];
       for (int i = 0; i < arr[0].length; i++) {
@@ -85,7 +85,7 @@ public final class PrimitiveFloatArrayXLArrayTypeConverter extends AbstractTypeC
         // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
         if (lastConverter == null || (!val.getClass().equals(lastClass))) {
           lastClass = val.getClass();
-          lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
+          lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }
         if (lastConverter == null) {
           throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
@@ -101,7 +101,7 @@ public final class PrimitiveFloatArrayXLArrayTypeConverter extends AbstractTypeC
       // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
       if (lastConverter == null || (!val.getClass().equals(lastClass))) {
         lastClass = val.getClass();
-        lastConverter = _typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
+        lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
       }
       if (lastConverter == null) {
         throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + componentType);
