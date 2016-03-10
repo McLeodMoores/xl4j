@@ -141,7 +141,7 @@ public class ObjectArrayXLArrayTypeConverter2Test {
     final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_ARRAY_OF_DOUBLE.getClass(), new Double[0]);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
-    assertEquals(xlArray.getArray(), new XLValue[0]);
+    assertEquals(xlArray.getArray(), new XLValue[1][1]);
   }
 
   /**

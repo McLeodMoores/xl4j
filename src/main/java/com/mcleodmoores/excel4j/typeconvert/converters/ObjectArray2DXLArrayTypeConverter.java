@@ -55,13 +55,22 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
     final Object[][] fromArr = (Object[][]) from;
-    final XLValue[][] toArr = new XLValue[fromArr.length][fromArr.length > 0 ? fromArr[0].length : 0];
+    if (fromArr.length == 0) { // empty array
+      return XLArray.of(new XLValue[1][1]);
+    }
+    // we know the length is > 0
+    int maxColumns = fromArr[0].length;
+    for (int i = 1; i < fromArr.length; i++) {
+      if (maxColumns < fromArr[i].length) {
+        maxColumns = fromArr[i].length;
+      }
+    }
+    final XLValue[][] toArr = new XLValue[fromArr.length][maxColumns];
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
     for (int i = 0; i < fromArr.length; i++) {
-      // assuming rectangular arrays
-      for (int j = 0; j < fromArr[0].length; j++) {
+      for (int j = 0; j < fromArr[i].length; j++) {
         final Object obj = fromArr[i][j];
         if (lastConverter == null || !obj.getClass().equals(lastClass)) {
           lastClass = obj.getClass();

@@ -101,7 +101,7 @@ public class PrimitiveShortArrayXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testWrongComponentTypeToJavaConversion() {
-    CONVERTER.toJavaObject(short[].class, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}));
+    CONVERTER.toJavaObject(int[].class, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}));
   }
 
   /**

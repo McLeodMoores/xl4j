@@ -144,7 +144,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
     final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_ARRAY_OF_DOUBLE.getClass(), new Double[0][0]);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
-    assertEquals(xlArray.getArray(), new XLValue[0][0]);
+    assertEquals(xlArray.getArray(), new XLValue[1][1]);
   }
 
   /**
@@ -199,7 +199,19 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
     assertEquals(xlArray, booleanArray);
   }
 
-  //TODO test non-rectangular arrays
+  /**
+   * Tests that non-rectangular arrays are padded with nulls when converting to Excel.
+   */
+  @Test
+  public void testNonRectangularJavaArray() {
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class,
+        new Boolean[][]{new Boolean[] {true, true}, new Boolean[] {false}, new Boolean[] {false, false, true}});
+    assertTrue(converted instanceof XLArray);
+    final XLArray xlArray = (XLArray) converted;
+    final XLArray booleanArray = XLArray.of(new XLValue[][]{new XLValue[]{XLBoolean.TRUE, XLBoolean.TRUE, null},
+      new XLValue[]{XLBoolean.FALSE, null, null}, new XLValue[]{XLBoolean.FALSE, XLBoolean.FALSE, XLBoolean.TRUE}});
+    assertEquals(xlArray, booleanArray);
+  }
 
   /**
    * Tests the conversion from a Boolean[][].

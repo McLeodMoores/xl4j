@@ -72,7 +72,10 @@ public final class PrimitiveShortArrayXLArrayTypeConverter extends AbstractTypeC
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-
+    // to prevent errors from downcasting to short
+    if (componentType != Short.TYPE) {
+      throw new Excel4JRuntimeException("Component type is not a short: have " + componentType);
+    }
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;

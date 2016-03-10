@@ -62,6 +62,9 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final Object[] fromArr = (Object[]) from;
+    if (fromArr.length == 0) {
+      return XLArray.of(new XLValue[1][1]);
+    }
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
     for (int i = 0; i < fromArr.length; i++) {
