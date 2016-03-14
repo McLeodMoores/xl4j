@@ -2,7 +2,6 @@ package com.mcleodmoores.excel4j.simulator;
 
 import static org.testng.Assert.assertTrue;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -91,10 +90,14 @@ public class FunctionSimulatorTests {
 
   @Test
   public void testArraysAsList() throws Exception {
-    final Object temp3 = Arrays.asList();
-    final Object temp5 = Arrays.asList(new Object[]{1, 2});
-    final Method temp = Arrays.class.getMethod("asList", Object[].class);
-    final Object temp2 = temp.invoke(null, new Object[] {1, 2, 3, 4});
+//    final Object temp1 = Arrays.asList();
+//    final Object temp2 = Arrays.asList(new Object[]{1, 2});
+//    final Object temp3 = Arrays.asList(1, 2, 3);
+//    final Method temp4 = Arrays.class.getMethod("asList", Object[].class);
+//    final Object temp8 = temp4.invoke(null, 1, 2, 3, 4);
+//    final Object temp5 = temp4.invoke(null, new Object[] {1, 2, 3, 4});
+//    final Object temp6 = temp4.invoke(null, new Object[0]);
+//    final Object temp7 = temp4.invoke(null, (Object[]) null);
     // empty list
     final XLValue list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"));
     assertTrue(list instanceof XLObject);

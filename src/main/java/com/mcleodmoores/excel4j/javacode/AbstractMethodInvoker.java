@@ -40,6 +40,17 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
   public XLValue invoke(final Object object, final XLValue[] arguments) {
     Object[] args;
     if (_method.isVarArgs()) {
+      if (arguments.length == 0) {
+        //TODO not sure if this is needed, but cannot currently get Arrays.asList() to work
+        try {
+          LOGGER.info("invoking method {} on {}", _method, object == null ? "null" : object.getClass().getSimpleName());
+          final Object result = _method.invoke(object, (Object[]) null);
+          return convertResult(result, _returnConverter);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+          e.printStackTrace();
+          throw new Excel4JRuntimeException("Error invoking method", e);
+        }
+      }
       args = new Object[_method.getParameterCount()];
       final int varArgIndex = _method.getParameterCount() - 1;
       final int nVarArgs = arguments.length - varArgIndex;
