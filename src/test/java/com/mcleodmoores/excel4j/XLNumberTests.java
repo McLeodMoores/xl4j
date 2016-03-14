@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.excel4j;
 
+import static org.testng.Assert.assertEquals;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -49,4 +51,19 @@ public final class XLNumberTests {
     Assert.assertEquals(number0.toString(), EXPECTED_0_0);
   }
 
+  @Test
+  public void testXLNumberAsType() {
+    XLNumber number = XLNumber.of(100);
+    assertEquals(number.getAsDouble(), 100d);
+    assertEquals(number.getAsFloat(), 100f);
+    assertEquals(number.getAsInt(), 100);
+    assertEquals(number.getAsLong(), 100L);
+    assertEquals(number.getAsShort(), (short) 100);
+    number = XLNumber.of(123.45);
+    assertEquals(number.getAsDouble(), 123.45d);
+    assertEquals(number.getAsFloat(), 123.45f);
+    assertEquals(number.getAsInt(), 123);
+    assertEquals(number.getAsLong(), 123L);
+    assertEquals(number.getAsShort(), (short) 123);
+  }
 }
