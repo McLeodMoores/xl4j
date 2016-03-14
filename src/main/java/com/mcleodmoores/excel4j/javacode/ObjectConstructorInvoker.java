@@ -2,9 +2,11 @@ package com.mcleodmoores.excel4j.javacode;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.excel4j.values.XLArray;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
@@ -33,21 +35,45 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
    */
   @Override
   public XLValue invoke(final XLValue[] arguments) {
-    final Object[] args = new Object[arguments.length];
-    for (int i = 0; i < _argumentConverters.length; i++) {
-      if (arguments[i].getClass().isArray()) {
-        args[i] = arguments[i];
-      } else {
-        args[i] = _argumentConverters[i].toJavaObject(null, arguments[i]);
+    Object[] args;
+    if (_constructor.isVarArgs()) {
+      args = new Object[_constructor.getParameterCount()];
+      final int varArgIndex = _constructor.getParameterCount() - 1;
+      final int nVarArgs = arguments.length - varArgIndex;
+      for (int i = 0; i < varArgIndex; i++) {
+        //TODO not sure about this logic - isArray() never seems to be true.
+        // what was the intended use?
+        if (arguments[i].getClass().isArray()) {
+          args[i] = arguments[i];
+        } else {
+          final Type expectedClass = _constructor.getParameterTypes()[i];
+          args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
+        }
+      }
+      final XLValue[] varArgs = new XLValue[nVarArgs];
+      System.arraycopy(arguments, varArgIndex, varArgs, 0, nVarArgs);
+      final XLValue[][] varArgsAsArray = new XLValue[][] {varArgs};
+      final Type expectedClass = _constructor.getParameterTypes()[varArgIndex];
+      args[args.length - 1] = _argumentConverters[_argumentConverters.length - 1].toJavaObject(expectedClass, XLArray.of(varArgsAsArray));
+    } else {
+      args = new Object[arguments.length];
+      for (int i = 0; i < _argumentConverters.length; i++) {
+        //TODO not sure about this logic - isArray() never seems to be true.
+        // what was the intended use?
+        if (arguments[i].getClass().isArray()) {
+          args[i] = arguments[i];
+        } else {
+          final Type expectedClass = _constructor.getParameterTypes()[i];
+          args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
+        }
       }
     }
     try {
       final Object result = _constructor.newInstance(args);
       if (result.getClass().isArray()) {
         throw new Excel4JRuntimeException("Return of array types not supported");
-      } else {
-        return (XLValue) _returnConverter.toXLValue(null, result);
       }
+      return (XLValue) _returnConverter.toXLValue(null, result);
     } catch (IllegalAccessException | IllegalArgumentException
         | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor: " + e.getMessage(), e);

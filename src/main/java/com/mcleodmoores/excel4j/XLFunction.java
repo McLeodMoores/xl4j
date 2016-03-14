@@ -25,11 +25,11 @@ public @interface XLFunction {
    */
   String name() default "";
   /**
-   * The category this function should be registered in. 
+   * The category this function should be registered in.
    * If this is not specified, it defaults to the class name.
-   * TODO see StandardCategories.
    * @return the category
    */
+  // TODO see StandardCategories.
   String category() default "";
   /**
    * The description of this function.
@@ -43,7 +43,7 @@ public @interface XLFunction {
   String helpTopic() default "";
   /**
    * Whether the function should be re-evaluated on any sheet changes.
-   * In other words, is it a volatile function.  If not specified, it is 
+   * In other words, is it a volatile function.  If not specified, it is
    * assumed the function is not volatile.
    * @return true, if this function is volatile
    */
@@ -56,7 +56,7 @@ public @interface XLFunction {
   /**
    * @return true, if this function needs access to macro-level features
    * Note this cannot be used in conjunction with isMultiThreadSafe, but is required if
-   * access to certain call-backs or range references (XLLocalReference or XLMultiReference) 
+   * access to certain call-backs or range references (XLLocalReference or XLMultiReference)
    * are needed.
    */
   boolean isMacroEquivalent() default false;

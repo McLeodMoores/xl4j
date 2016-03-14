@@ -21,7 +21,7 @@ import com.mcleodmoores.excel4j.values.XLMultiReference;
  */
 public class DefaultExcelCallback implements ExcelCallback {
   private static final int VARARGS_MAX_PARAMS = 32;
-  private LowLevelExcelCallback _rawCallback;
+  private final LowLevelExcelCallback _rawCallback;
 
   /**
    * Create a callback adapter.
@@ -30,24 +30,24 @@ public class DefaultExcelCallback implements ExcelCallback {
   public DefaultExcelCallback(final LowLevelExcelCallback rawCallback) {
     _rawCallback = rawCallback;
   }
-  
+
   @Override
   public LowLevelExcelCallback getLowLevelExcelCallback() {
     return _rawCallback;
   }
-  
+
   @Override
   public byte[] getBinaryName(final long handle, final long length) {
     return new byte[0];
   }
-  
+
   @Override
   public void registerFunction(final FunctionDefinition functionDefinition) {
-    FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
-    MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
-    XLNamespace namespaceAnnotation = functionMetadata.getNamespace();
-    XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
-    XLArgument[] argumentAnnotations = functionMetadata.getArguments();
+    final FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
+    final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
+    final XLNamespace namespaceAnnotation = functionMetadata.getNamespace();
+    final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
+    final XLArgument[] argumentAnnotations = functionMetadata.getArguments();
     final String exportName = functionDefinition.getExportName();
     final String functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
     final boolean isVarArgs = methodInvoker.isVarArgs();
@@ -58,12 +58,12 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String helpTopic = buildHelpTopic(functionAnnotation);
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
-    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs,  signature, functionName, argumentNames, 
+    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs,  signature, functionName, argumentNames,
                              functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
-  
-  private String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
-    String[] results = new String[argumentAnnotations.length];
+
+  private static String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
+    final String[] results = new String[argumentAnnotations.length];
     for (int i = 0; i < argumentAnnotations.length; i++) {
       if (argumentAnnotations[i] != null && !argumentAnnotations[i].description().isEmpty()) {
         results[i] = argumentAnnotations[i].description();
@@ -73,39 +73,37 @@ public class DefaultExcelCallback implements ExcelCallback {
     }
     return results;
   }
-  
-  private String buildDescription(final XLFunction functionAnnotation) {
+
+  private static String buildDescription(final XLFunction functionAnnotation) {
     if (functionAnnotation != null && !functionAnnotation.description().isEmpty()) {
       return functionAnnotation.description();
-    } else {
-      return null;
     }
+    return null;
   }
-  
-  private String buildHelpTopic(final XLFunction functionAnnotation) {
+
+  private static String buildHelpTopic(final XLFunction functionAnnotation) {
     if (functionAnnotation != null && !functionAnnotation.helpTopic().isEmpty()) {
       return functionAnnotation.helpTopic();
-    } else {
-      return null;
     }
+    return null;
   }
-  private String buildFunctionCategory(final XLFunction functionAnnotation, final MethodInvoker methodInvoker) {
+
+  private static String buildFunctionCategory(final XLFunction functionAnnotation, final MethodInvoker methodInvoker) {
     if (functionAnnotation != null && !functionAnnotation.category().isEmpty()) {
       return functionAnnotation.category();
-    } else {
-      return methodInvoker.getMethodDeclaringClass().getSimpleName();
-    }    
+    }
+    return methodInvoker.getMethodDeclaringClass().getSimpleName();
   }
-  
-  private String buildFunctionSignature(final XLFunction functionAnnotation, final XLArgument[] argumentAnnotations, final MethodInvoker methodInvoker) {
-    StringBuilder signature = new StringBuilder();
-    Class<?> excelReturnType = methodInvoker.getExcelReturnType();
-    Class<?>[] parameterTypes = methodInvoker.getExcelParameterTypes();
-    boolean isVolatile = (functionAnnotation != null) ? functionAnnotation.isVolatile() : false; // default
-    boolean isMTSafe = (functionAnnotation != null) ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
-    boolean isMacroEquivalent = (functionAnnotation != null) ? functionAnnotation.isMacroEquivalent() : false; // default
-    boolean isAsynchronous = (functionAnnotation != null) ? functionAnnotation.isAsynchronous() : false; // default
-    FunctionType functionType = (functionAnnotation != null) ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
+
+  private static String buildFunctionSignature(final XLFunction functionAnnotation, final XLArgument[] argumentAnnotations, final MethodInvoker methodInvoker) {
+    final StringBuilder signature = new StringBuilder();
+    final Class<?> excelReturnType = methodInvoker.getExcelReturnType();
+    final Class<?>[] parameterTypes = methodInvoker.getExcelParameterTypes();
+    final boolean isVolatile = (functionAnnotation != null) ? functionAnnotation.isVolatile() : false; // default
+    final boolean isMTSafe = (functionAnnotation != null) ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
+    final boolean isMacroEquivalent = (functionAnnotation != null) ? functionAnnotation.isMacroEquivalent() : false; // default
+    final boolean isAsynchronous = (functionAnnotation != null) ? functionAnnotation.isAsynchronous() : false; // default
+    final FunctionType functionType = (functionAnnotation != null) ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
     if ((isVolatile && isMTSafe) || (isMTSafe && isMacroEquivalent)) {
       throw new Excel4JRuntimeException("Illegal combination of XLFunction attributes, cannot be volatile & thread-safe or macro-equivalent & thread-safe");
     }
@@ -124,13 +122,13 @@ public class DefaultExcelCallback implements ExcelCallback {
           // REVIEW: Not sure if this is a valid thing to do.
           signature.append("U"); // XLOPER12 range/ref/array. I've not idea if this is even valid. Not clear in docs.
         } else {
-          signature.append("Q"); // XLOPER12 
+          signature.append("Q"); // XLOPER12
         }
       }
     }
     // Parameters
     for (int i = 0; i < parameterTypes.length; i++) {
-      XLArgument argumentAnnotation = argumentAnnotations[i];
+      final XLArgument argumentAnnotation = argumentAnnotations[i];
       if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
         if (!isMacroEquivalent) {
           throw new Excel4JRuntimeException("Cannot register reference type parameters if not a macro equivalent: "
@@ -145,7 +143,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       if (parameterTypes.length == 0) {
         throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
       }
-      boolean isLastTypeReferenceType = argumentAnnotations[parameterTypes.length - 1].referenceType();
+      final boolean isLastTypeReferenceType = argumentAnnotations[parameterTypes.length - 1].referenceType();
       for (int i = 0; i < VARARGS_MAX_PARAMS - parameterTypes.length; i++) {
         if (isLastTypeReferenceType) {
           signature.append("U"); // XLOPER12 byref
@@ -169,11 +167,11 @@ public class DefaultExcelCallback implements ExcelCallback {
    * Build the function name string using the namespace if specified.
    * @param methodInvoker  the method invoker for this function, not null
    * @param namespaceAnnotation  the namespace annotation if there is one, or null if there isn't.
-   * @param functionAnnotation  the function annoation is there is one, or null if there isn't.
+   * @param functionAnnotation  the function annotation is there is one, or null if there isn't.
    * @return the name of the function to register with Excel
    */
-  private String buildFunctionName(final MethodInvoker methodInvoker, final XLNamespace namespaceAnnotation, final XLFunction functionAnnotation) {
-    StringBuilder functionName = new StringBuilder();
+  private static String buildFunctionName(final MethodInvoker methodInvoker, final XLNamespace namespaceAnnotation, final XLFunction functionAnnotation) {
+    final StringBuilder functionName = new StringBuilder();
     if (namespaceAnnotation != null) {
       functionName.append(namespaceAnnotation.value());
     }
@@ -190,22 +188,23 @@ public class DefaultExcelCallback implements ExcelCallback {
   /**
    * Build the string containing a list of argument annotations.
    * @param argumentAnnotations  array of argument annotations, can contain nulls
+   * @return  the argument annotations separated by a comma
    */
-  private String buildArgNames(final XLArgument[] argumentAnnotations) {
-    StringBuilder argumentNames = new StringBuilder();
+  private static String buildArgNames(final XLArgument[] argumentAnnotations) {
+    final StringBuilder argumentNames = new StringBuilder();
     int argCounter = 1;
-    
+
     for (int i = 0; i < argumentAnnotations.length; i++) {
-      XLArgument argumentAnnotation = argumentAnnotations[i];
+      final XLArgument argumentAnnotation = argumentAnnotations[i];
       if (argumentAnnotation != null) {
         if (!argumentAnnotation.name().isEmpty()) {
           argumentNames.append(argumentAnnotation.name());
         } else {
-          // TODO: try paranamer/JavaDocs?
+          // TODO: try paranamer/JavaDocs? #46
           argumentNames.append(Integer.toString(argCounter));
         }
       } else {
-        // TODO: try paranamer/JavaDocs?
+        // TODO: try paranamer/JavaDocs? #46
         argumentNames.append(Integer.toString(argCounter));
       }
       if (i < argumentAnnotations.length - 1) {
@@ -215,18 +214,17 @@ public class DefaultExcelCallback implements ExcelCallback {
     }
     return argumentNames.toString();
   }
-  
+
   /**
    * Get the type of the function
    * @param functionAnnotation the function annotation if there is one, null otherwise
    * @return the type, defaults to 1 (FUNCTION)
    */
-  private int getFunctionType(final XLFunction functionAnnotation) {
+  private static int getFunctionType(final XLFunction functionAnnotation) {
     if (functionAnnotation != null) {
       return functionAnnotation.functionType().getExcelValue();
-    } else {
-      return FunctionType.FUNCTION.getExcelValue();
     }
+    return FunctionType.FUNCTION.getExcelValue();
   }
 
 }

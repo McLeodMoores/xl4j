@@ -9,12 +9,12 @@ package com.mcleodmoores.excel4j.values;
  * than IEEE-754 floating point (no Inf/NaN or denormal).
  */
 public final class XLNumber implements XLValue {
-  /**
-   *
-   */
-  private static final int HASHCODE_BITSHIFT = 32;
+  /** The value as a double */
   private final double _value;
 
+  /**
+   * @param value  the value
+   */
   private XLNumber(final double value) {
     _value = value;
   }
@@ -48,9 +48,50 @@ public final class XLNumber implements XLValue {
   }
 
   /**
+   * Gets the value as stored.
    * @return the value
    */
   public double getValue() {
+    return _value;
+  }
+
+  /**
+   * Casts the value to a short.
+   * @return  the value as a short
+   */
+  public short getAsShort() {
+    return (short) _value;
+  }
+
+  /**
+   * Casts the value to an int.
+   * @return  the value as an int
+   */
+  public int getAsInt() {
+    return (int) _value;
+  }
+
+  /**
+   * Casts the value to a long.
+   * @return  the value as a long
+   */
+  public long getAsLong() {
+    return (long) _value;
+  }
+
+  /**
+   * Casts the value to a float.
+   * @return  the value as a float
+   */
+  public float getAsFloat() {
+    return (float) _value;
+  }
+
+  /**
+   * Gets the value as a double.
+   * @return  the value as a double
+   */
+  public double getAsDouble() {
     return _value;
   }
 
@@ -65,7 +106,7 @@ public final class XLNumber implements XLValue {
     int result = 1;
     long temp;
     temp = Double.doubleToLongBits(_value);
-    result = prime * result + (int) (temp ^ (temp >>> HASHCODE_BITSHIFT));
+    result = prime * result + (int) (temp ^ (temp >>> 32));
     return result;
   }
 

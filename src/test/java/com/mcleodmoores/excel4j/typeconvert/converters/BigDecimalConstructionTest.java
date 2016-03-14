@@ -67,15 +67,22 @@ public class BigDecimalConstructionTest extends TypeConstructionTests {
    */
   @Test
   public void testJMethod() {
-    // no BigDecimal.valueOf(String)
-    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
+    // no no-args method for BigDecimal
+    XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"));
     assertTrue(xlValue instanceof XLError);
-    // BigDecimal.valueOf(double)
-    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_DOUBLE);
+    // XLString is converted to Double, so BigDecimal.valueOf(Double is used)
+    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
     assertTrue(xlValue instanceof XLObject);
     Object bigDecimalObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(bigDecimalObject instanceof BigDecimal);
     BigDecimal bigDecimal = (BigDecimal) bigDecimalObject;
+    assertEquals(bigDecimal.doubleValue(), BIG_DECIMAL.doubleValue(), 0);
+    // BigDecimal.valueOf(double)
+    xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_DOUBLE);
+    assertTrue(xlValue instanceof XLObject);
+    bigDecimalObject = HEAP.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(bigDecimalObject instanceof BigDecimal);
+    bigDecimal = (BigDecimal) bigDecimalObject;
     assertEquals(bigDecimal.doubleValue(), BIG_DECIMAL.doubleValue(), 0);
     // BigDecimal.valueOf(long)
     xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XL_NUMBER_LONG);

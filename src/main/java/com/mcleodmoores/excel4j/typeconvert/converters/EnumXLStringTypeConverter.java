@@ -12,7 +12,7 @@ import com.mcleodmoores.excel4j.values.XLString;
  * which means all the other converters get a crack at doing something nicer first.
  */
 public class EnumXLStringTypeConverter extends AbstractTypeConverter {
-
+  /** The converter priority */
   private static final int ENUM_CONVERTER_PRIORITY = 7;
 
   /**

@@ -1,15 +1,18 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ *
  */
 package com.mcleodmoores.excel4j.javacode;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Arrays;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.ExcelFactory;
+import com.mcleodmoores.excel4j.testutil.TestObject;
+import com.mcleodmoores.excel4j.values.XLArray;
+import com.mcleodmoores.excel4j.values.XLError;
+import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -19,90 +22,194 @@ import com.mcleodmoores.excel4j.values.XLValue;
  *
  */
 public class JConstructTest {
-  private static final String CLASSNAME = "java.util.ArrayList";
-  // private static final String CLASSNAME2 = "java.util.HashSet";
-  private static final String CLASSNAME_INTEGER = "java.lang.Integer";
-
-  //  @Test
-  //  public void testIsAssignableFrom() {
-  //    Integer x = 8;
-  //    ExcelToJavaTypeMapping mapping1 = ExcelToJavaTypeMapping.of(XLNumber.class, x.getClass());
-  //    ExcelToJavaTypeMapping mapping2 = ExcelToJavaTypeMapping.of(XLNumber.class, XLNumber.class);
-  //    Assert.assertFalse(mapping1.isAssignableFrom(mapping2));
-  //    Assert.assertFalse(mapping2.isAssignableFrom(mapping1));
-  //  }
-  //  @Test
-  //  public void testJConstruct() {
-  //    XLValue jconstruct = JConstruct.jconstruct(XLString.of(CLASSNAME), XLNumber.of(6d));
-  //    Assert.assertEquals(jconstruct.getClass(), XLObject.class);
-  //    System.err.println(jconstruct.toString());
-  //    XLObject arrayList = (XLObject) jconstruct;
-  //    XLValue jconstruct2 = JConstruct.jconstruct(XLString.of(CLASSNAME2), arrayList);
-  //    System.err.println(jconstruct2.toString());
-  //    XLObject hashSet = (XLObject) jconstruct2;
-  //    Assert.assertEquals(jconstruct2.getClass(), XLObject.class);
-  //  }
+  private static final XLString CLASS = XLString.of("com.mcleodmoores.excel4j.testutil.TestObject");
 
   @Test
-  public void testJMethod() {
-    final XLObject arrayList = (XLObject) JConstruct.jconstruct(XLString.of(CLASSNAME), XLNumber.of(6d));
-    final XLObject integer = (XLObject) JConstruct.jconstruct(XLString.of(CLASSNAME_INTEGER), XLNumber.of(3d));
-    JMethod.jMethod(arrayList, XLString.of("add"), integer);
-    final Object arrList2 = ExcelFactory.getInstance().getHeap().getObject(arrayList.getHandle());
-    System.err.println(arrList2);
+  public void testNoArgsConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, new XLValue[0]);
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject();
+    assertEquals(constructedObject, expectedObject);
   }
 
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective1() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, XLString.of(CLASSNAME), XLNumber.of(6d));
-    System.err.println(arrayList);
+  /**
+   * No converters for XLInteger.
+   */
+  @Test
+  public void testExpectedFailureIntConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLInteger.of(1));
+    assertTrue(constructed instanceof XLError);
   }
 
   @Test
-  public void testJMethodReflective1_5() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, XLString.of(CLASSNAME), new XLValue[] { XLNumber.of(6d) });
-    System.err.println(arrayList);
+  public void testIntConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(1));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(1);
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
-  public void testJMethodReflective1_75() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, XLString.of(CLASSNAME), new XLValue[] { });
-    System.err.println(arrayList);
-  }
-
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective2() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Object[] args = new Object[] { XLString.of(CLASSNAME), XLNumber.of(6d) };
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, args);
-    System.err.println(arrayList);
-  }
-
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective3() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Object[] args = new Object[] { XLString.of(CLASSNAME) };
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, args);
-    System.err.println(arrayList);
-  }
-
-  @Test(expectedExceptions = IllegalArgumentException.class)
-  public void testJMethodReflective4() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Object[] args = new Object[] { XLString.of(CLASSNAME), new Object[0] };
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, args);
-    System.err.println(arrayList);
+  public void testStringConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLString.of("2"));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject("2");
+    // could have gone through (Double)
+    assertEquals(constructedObject, expectedObject);
   }
 
   @Test
-  public void testJMethodReflective5() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-    final Object[] args = new Object[] { XLString.of(CLASSNAME), new XLValue[0] };
-    System.err.println(Arrays.toString(args));
-    final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
-    final XLObject arrayList = (XLObject) method.invoke(null, args);
-    System.err.println(arrayList);
+  public void testObjectConstructor() {
+    final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(3));
+    final XLValue constructed = JConstruct.jconstruct(CLASS, number);
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(Short.valueOf("3"));
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testIntStringConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(4), XLString.of("40"));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(4, "40");
+    // could go through (int, Object)
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testIntDoubleConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(5), XLNumber.of(50));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(5, 50);
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testDoubleConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(6.));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(6.);
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testIntObjectConstructor() {
+    final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(70));
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(7), number);
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(7, Short.valueOf("70"));
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testStringsConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLString.of("80"), XLString.of("81"), XLString.of("82"));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject("80", "81", "82");
+    // could have gone through (Object...) or (Double...)
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testIntStringsConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(9), XLString.of("90"), XLString.of("91"), XLString.of("92"));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(9, new String[] {"90", "91", "92"});
+    // could have gone through (Double...) or (int, Object...)
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testDoublesConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(100.), XLNumber.of(101.), XLNumber.of(102.));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(100., 101., 102.);
+    // could have gone through (Object...)
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testIntObjectsConstructor() {
+    final XLValue number1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(110));
+    final XLValue number2 = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(111));
+    final XLValue number3 = JConstruct.jconstruct(XLString.of("java.lang.Float"), XLNumber.of(112));
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(11), number1, number2, number3);
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(11, new Object[] {(short) 110, 111L, 112F});
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testIntDoublesConstructor() {
+    final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(12), XLNumber.of(120.), XLNumber.of(121.), XLNumber.of(122.));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(12, new Double[] {120., 121., 122.});
+    // could have gone through (int, Object...), (Double...) or (int, Double...)
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testObjectsConstructor() {
+    final XLValue number1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(130));
+    final XLValue number2 = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(131));
+    final XLValue number3 = JConstruct.jconstruct(XLString.of("java.lang.Float"), XLNumber.of(132));
+    final XLValue constructed = JConstruct.jconstruct(CLASS, number1, number2, number3);
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(new Object[] {(short) 130, 131L, 132F});
+    assertEquals(constructedObject, expectedObject);
+  }
+
+  @Test
+  public void testStringArrayStringsConstructor() {
+    final XLValue constructed =
+        JConstruct.jconstruct(CLASS, XLArray.of(new XLValue[][] {new XLValue[] {XLString.of("14")}}), XLString.of("140"), XLString.of("141"));
+    assertTrue(constructed instanceof XLObject);
+    final XLObject constructedXlObject = (XLObject) constructed;
+    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
+    assertTrue(constructedObject instanceof TestObject);
+    final TestObject expectedObject = new TestObject(new String[] {"14"}, new String[] {"140", "141"});
+    assertEquals(constructedObject, expectedObject);
   }
 }

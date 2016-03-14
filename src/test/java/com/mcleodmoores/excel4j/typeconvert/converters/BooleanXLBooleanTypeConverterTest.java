@@ -23,9 +23,6 @@ import com.mcleodmoores.excel4j.values.XLValue;
  */
 @Test
 public class BooleanXLBooleanTypeConverterTest {
-  private static final int EXPECTED_PRIORITY = 10;
-  private static final double TEN_D = 10d;
-  private static final int TEN_I = 10;
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new BooleanXLBooleanTypeConverter();
 
@@ -50,7 +47,7 @@ public class BooleanXLBooleanTypeConverterTest {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), EXPECTED_PRIORITY);
+    assertEquals(CONVERTER.getPriority(), 10);
   }
 
   /**
@@ -90,7 +87,7 @@ public class BooleanXLBooleanTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(Boolean.class, XLNumber.of(TEN_D));
+    CONVERTER.toJavaObject(Boolean.class, XLNumber.of(10.));
   }
 
   /**
@@ -106,7 +103,7 @@ public class BooleanXLBooleanTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, Integer.valueOf(TEN_I));
+    CONVERTER.toXLValue(XLBoolean.class, Integer.valueOf(10));
   }
 
   /**

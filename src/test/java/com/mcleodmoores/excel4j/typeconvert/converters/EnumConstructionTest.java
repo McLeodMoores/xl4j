@@ -7,6 +7,7 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.excel4j.testutil.TestEnum;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
@@ -17,16 +18,11 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Tests construction of enums from the function processor.
  */
 public class EnumConstructionTest extends TypeConstructionTests {
-  /** Enum. */
-  public static enum TestEnum {
-    /** Test value. */
-    TEST
-  };
   /** The class name */
-  private static final String CLASSNAME = "java.lang.Enum";
+  private static final String CLASSNAME = "com.mcleodmoores.excel4j.testutil.TestEnum";
 
   /**
-   * Attempts to create an enum using new Enum().
+   * Attempts to create an enum using new TestEnum().
    */
   @Test
   public void testJConstructNoArgs() {
@@ -35,7 +31,7 @@ public class EnumConstructionTest extends TypeConstructionTests {
   }
 
   /**
-   * Attempts to create an enum using new Enum(String, int).
+   * Attempts to create an enum using new TestEnum(String, int).
    */
   @Test
   public void testJConstructNoVisibleConstructor() {
@@ -49,8 +45,7 @@ public class EnumConstructionTest extends TypeConstructionTests {
   @SuppressWarnings("unchecked")
   @Test
   public void testJMethod() {
-    final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"),
-        XLString.of("com.mcleodmoores.excel4j.typeconvert.converters.EnumConstructionTest.TestEnum"), XLString.of(TestEnum.TEST.name()));
+    final XLValue xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of(TestEnum.TEST.name()));
     assertTrue(xlValue instanceof XLObject);
     final Object enumObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(enumObject instanceof Enum);

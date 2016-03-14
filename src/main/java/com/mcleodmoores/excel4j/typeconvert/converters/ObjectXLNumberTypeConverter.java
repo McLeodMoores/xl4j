@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.excel4j.typeconvert.converters;
 
 import java.lang.reflect.Type;
@@ -11,6 +14,7 @@ import com.mcleodmoores.excel4j.values.XLNumber;
  * Type converter to convert from Objects to Excel Numbers and back again.
  */
 public final class ObjectXLNumberTypeConverter extends AbstractTypeConverter {
+  /** The priority */
   private static final int PRIORITY = -7;
 
   /**

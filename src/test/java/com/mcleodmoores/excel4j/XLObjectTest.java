@@ -12,6 +12,7 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLObject;
+import com.mcleodmoores.excel4j.values.XLString;
 
 /**
  * Units tests for {@link XLObject}.
@@ -67,7 +68,7 @@ public class XLObjectTest {
     final XLObject xlStringArray = XLObject.of(String[].class, LONG_1234);
     final String expected = "XLObject[class=String[], 1234]";
     assertEquals(xlStringArray.toString(), expected);
-    final String expectedXLString = "XLString[value=" + '\u001A' + "String[]-1234]";
+    final XLString expectedXLString = XLString.of('\u001A' + "String[]-1234");
     assertEquals(xlStringArray.toXLString(), expectedXLString);
   }
 }

@@ -26,11 +26,11 @@
     </encoder>
   </appender>
   
-  <!-- appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /-->
+  <!--appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /-->
    
-  <root level="OFF">
+  <root level="error">
+    <!-- appender-ref ref="FILE" /-->
     <appender-ref ref="FILE" />
-    <!-- appender-ref ref="STDOUT" /-->
   </root>
   
   <!-- <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /> -->

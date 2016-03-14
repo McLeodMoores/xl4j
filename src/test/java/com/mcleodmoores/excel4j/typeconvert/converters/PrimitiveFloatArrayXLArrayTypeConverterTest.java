@@ -15,6 +15,7 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLArray;
+import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLString;
@@ -101,7 +102,7 @@ public class PrimitiveFloatArrayXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testWrongComponentTypeToJavaConversion() {
-    CONVERTER.toJavaObject(int[].class, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}));
+    CONVERTER.toJavaObject(boolean[].class, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}));
   }
 
   /**
@@ -118,6 +119,24 @@ public class PrimitiveFloatArrayXLArrayTypeConverterTest {
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testExpectedTypeNotAnArray() {
     CONVERTER.toXLValue(XLInteger.class, new float[] {10, 20});
+  }
+
+  /**
+   * Tests the behaviour when there is no available converter to a float.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testNoConverterToFloatRow() {
+    final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE, XLBoolean.FALSE}});
+    CONVERTER.toJavaObject(float[].class, xlArray);
+  }
+
+  /**
+   * Tests the behaviour when there is no available converter to a float.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testNoConverterToFloatColumn() {
+    final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE}, new XLValue[]{XLBoolean.FALSE}});
+    CONVERTER.toJavaObject(float[].class, xlArray);
   }
 
   /**

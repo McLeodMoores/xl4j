@@ -17,7 +17,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * The default Excel call handler.
  */
 public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler {
-  private static final Logger s_logger = LoggerFactory.getLogger(DefaultExcelFunctionCallHandler.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExcelFunctionCallHandler.class);
   private final FunctionRegistry _functionRegistry;
   private final Heap _heap;
 
@@ -33,34 +33,32 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
 
   @Override
   public XLValue invoke(final int exportNumber, final XLValue... args) {
-    s_logger.info("invoke called with {}", exportNumber);
+    LOGGER.info("invoke called with {}", exportNumber);
     for (int i = 0; i < args.length; i++) {
-      s_logger.info("arg = {}", args[i]);
+      LOGGER.info("arg = {}", args[i]);
       if (args[i] instanceof XLString) {
         final XLString xlString = (XLString) args[i];
         if (xlString.isXLObject()) {
           args[i] = xlString.toXLObject();
-          s_logger.info("converted arg to XLObject");
+          LOGGER.info("converted arg to XLObject");
         }
       }
     }
     final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
-    s_logger.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getFunctionSpec().name());
+    LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getFunctionSpec().name());
     final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
-    s_logger.info("method invoker = {}", methodInvoker.getMethodName());
+    LOGGER.info("method invoker = {}", methodInvoker.getMethodName());
     try {
       if (methodInvoker.isStatic()) {
         return methodInvoker.invoke(null, args);
-      } else {
-        final XLObject object = (XLObject) args[0];
-        final Object obj = _heap.getObject(object.getHandle());
-        final XLValue[] newArgs = new XLValue[args.length - 1];
-        System.arraycopy(args, 1, newArgs, 0, args.length - 1);
-        return methodInvoker.invoke(obj, newArgs);
       }
+      final XLObject object = (XLObject) args[0];
+      final Object obj = _heap.getObject(object.getHandle());
+      final XLValue[] newArgs = new XLValue[args.length - 1];
+      System.arraycopy(args, 1, newArgs, 0, args.length - 1);
+      return methodInvoker.invoke(obj, newArgs);
     } catch (final Exception e) {
-      s_logger.info("Exception occurred while invoking method, returning XLError: {}", e.getMessage());
-      e.printStackTrace();
+      LOGGER.info("Exception occurred while invoking method, returning XLError: {}", e.getMessage());
       return XLError.Null;
     }
   }

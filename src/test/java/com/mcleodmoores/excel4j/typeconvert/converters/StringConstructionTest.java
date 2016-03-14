@@ -34,6 +34,20 @@ public class StringConstructionTest extends TypeConstructionTests {
   }
 
   /**
+   * Tests construction of a String using new String(int[], int, int).
+   */
+  @Test
+  public void testJConstructWithParameters() {
+    final XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of("java.lang.String"),
+        XLArray.of(new XLValue[][] {new XLValue[]{XLNumber.of(41), XLNumber.of(42), XLNumber.of(43)}}), XLNumber.of(0), XLNumber.of(2));
+    assertTrue(xlValue instanceof XLObject);
+    final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(object instanceof String);
+    final String expectedString = new String(new int[] {41, 42, 43}, 0, 2); // *) apparently
+    assertEquals(object, expectedString);
+  }
+
+  /**
    * Tests construction of a String using new String(char[]).
    */
   @Test

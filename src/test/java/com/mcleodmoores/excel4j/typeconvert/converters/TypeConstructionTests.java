@@ -17,7 +17,7 @@ public abstract class TypeConstructionTests {
   /* package */static final Heap HEAP;
 
   static {
-    PROCESSOR = new MockFunctionProcessor();
+    PROCESSOR = MockFunctionProcessor.getInstance();
     HEAP = ExcelFactory.getInstance().getHeap();
   }
 

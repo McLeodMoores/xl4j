@@ -16,8 +16,9 @@ import com.mcleodmoores.excel4j.values.XLObject;
  * which means all the other converters get a crack at doing something nicer first.
  */
 public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
-
+  /** The priority */
   private static final int OBJECT_CONVERTER_PRIORITY = 5;
+  /** Heap containing XLObjects */
   private final Heap _heap;
 
   /**
