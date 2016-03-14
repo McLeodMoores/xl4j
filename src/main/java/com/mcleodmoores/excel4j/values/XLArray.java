@@ -10,14 +10,38 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 /**
  * Java representation of the xloper type xltypeMulti
  * It can take the form of a two dimensional array of mixed types of xlopers.
- * REVIEW: should this be generic?
  */
 public final class XLArray implements XLReference {
-
+  // REVIEW: should this be generic? #49
+  /** The underlying array */
   private final XLValue[][] _array;
+  /** True if the array is a row */
+  private boolean _isRow;
+  /** True if the array is a column */
+  private boolean _isColumn;
+  /** True if the array is an area */
+  private boolean _isArea;
 
+  /**
+   * @param valueRange  the value range
+   */
   private XLArray(final XLValue[][] valueRange) {
     _array = valueRange;
+    if (valueRange.length == 1) {
+      _isRow = true;
+      _isColumn = false;
+      _isArea = false;
+    } else {
+      _isRow = false;
+      _isColumn = true;
+      for (final XLValue[] array : valueRange) {
+        if (array.length > 1) {
+          _isColumn = false;
+          break;
+        }
+      }
+      _isArea = !_isColumn;
+    }
   }
 
   /**
@@ -35,6 +59,30 @@ public final class XLArray implements XLReference {
    */
   public XLValue[][] getArray() {
     return _array;
+  }
+
+  /**
+   * Returns true if this array represents a row.
+   * @return  true if the array is a row
+   */
+  public boolean isRow() {
+    return _isRow;
+  }
+
+  /**
+   * Returns true if this array represents a column.
+   * @return  true if the array is a column
+   */
+  public boolean isColumn() {
+    return _isColumn;
+  }
+
+  /**
+   * Returns true if this array is neither a row nor column.
+   * @return  true if the array is an area
+   */
+  public boolean isArea() {
+    return _isArea;
   }
 
   @Override

@@ -3,6 +3,9 @@
  */
 package com.mcleodmoores.excel4j;
 
+import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertTrue;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -25,7 +28,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 /**
  * Unit tests for XLArray.
  */
-public final class XLArrayTests {
+public class XLArrayTest {
 
   private static final XLValue[][] SINGLE = new XLValue[][] { { XLBigData.of("Hello World") } };
   private static final XLValue[][] SINGLE_1 = new XLValue[][] { { XLBigData.of("Hello World") } };
@@ -103,10 +106,10 @@ public final class XLArrayTests {
   }
 
   private static final String SINGLE_TO_STRING = "XLArray[[[XLBigData[len=18, buffer=[AC ED 00 05 74 00 0B 48 65 6C 6C 6F 20 57 6F 72 6C 64]]]]]";
-  private static final String MULTI_TO_STRING = "XLArray[[[XLBoolean[TRUE], NA, XLInteger[value=65536]], " +
-      "[XLLocalReference[range=XLRange[Single Row row=1, columns=3 to 5]], XLMissing, XLNil], " +
-      "[XLMultiReference[sheetId=1234, ranges=[XLRange[Range rows=1 to 2, columns=3 to 4], " +
-      "XLRange[Single Cell row=4, column=5]]], XLNumber[value=43.234]], [XLString[value=Hello World], Null, Ref]]]";
+  private static final String MULTI_TO_STRING = "XLArray[[[XLBoolean[TRUE], NA, XLInteger[value=65536]], "
+      + "[XLLocalReference[range=XLRange[Single Row row=1, columns=3 to 5]], XLMissing, XLNil], "
+      + "[XLMultiReference[sheetId=1234, ranges=[XLRange[Range rows=1 to 2, columns=3 to 4], "
+      + "XLRange[Single Cell row=4, column=5]]], XLNumber[value=43.234]], [XLString[value=Hello World], Null, Ref]]]";
 
   @Test
   public void testToString() {
@@ -114,5 +117,26 @@ public final class XLArrayTests {
     Assert.assertEquals(single.toString(), SINGLE_TO_STRING);
     final XLArray multi = XLArray.of(MULTI);
     Assert.assertEquals(multi.toString(), MULTI_TO_STRING);
+  }
+
+  /**
+   * Tests the logic for determining if the array is a row, column or area.
+   */
+  @Test
+  public void testRowColumnArea() {
+    final XLArray row = XLArray.of(new XLValue[][] {{XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4)}});
+    assertTrue(row.isRow());
+    assertFalse(row.isColumn());
+    assertFalse(row.isArea());
+    final XLArray column = XLArray.of(new XLValue[][] {new XLValue[]{XLNumber.of(1)}, new XLValue[] {XLNumber.of(2)}, new XLValue[]{XLNumber.of(3)},
+      new XLValue[]{XLNumber.of(4)}});
+    assertFalse(column.isRow());
+    assertTrue(column.isColumn());
+    assertFalse(column.isArea());
+    final XLArray area = XLArray.of(new XLValue[][] {new XLValue[]{XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4)},
+      new XLValue[]{XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4)}});
+    assertFalse(area.isRow());
+    assertFalse(area.isColumn());
+    assertTrue(area.isArea());
   }
 }
