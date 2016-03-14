@@ -93,7 +93,7 @@ public class FunctionRegistry {
   }
 
   private void scanAndCreateFunctions(final InvokerFactory invokerFactory) {
-    // TODO: don't limit to our package.
+    //TODO: don't limit to our package when scanning for functions. #45
     final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
         .addScanners(new MethodAnnotationsScanner(),
             new MethodParameterScanner(),
