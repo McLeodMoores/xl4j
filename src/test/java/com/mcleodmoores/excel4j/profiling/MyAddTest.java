@@ -18,8 +18,8 @@ public class MyAddTest {
   @Test
   public void testMyAdd() {
     final MockFunctionProcessor processor = new MockFunctionProcessor();
-    final int hotspotWarmup = 100;
-    final int testRuns = 10000;
+    final int hotspotWarmup = 10000;
+    final int testRuns = 1000000;
     final Random random = new Random(1231);
     double sum = 0;
     for (int i = 0; i < hotspotWarmup; i++) {
@@ -30,7 +30,7 @@ public class MyAddTest {
       sum += ((XLNumber) processor.invoke("MyAdd", XLNumber.of(random.nextDouble()), XLNumber.of(random.nextDouble()))).getValue();
     }
     final long endTime = System.nanoTime();
-    System.out.println("Time for " + testRuns + " runs was " + (endTime - startTime) / 1000000 + "ms");
+    System.out.println("Time for " + testRuns + " runs was " + ((double)(endTime - startTime) / (double)(testRuns)) / 1000d + "us/loop");
     System.err.println(sum);
   }
 }

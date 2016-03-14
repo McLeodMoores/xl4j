@@ -18,14 +18,16 @@ private:
 	CRITICAL_SECTION m_cs;
 	HANDLE m_hNotify;
 	DWORD m_dwThreads;
-	std::list<JNICallbackProc> m_apfnCallback;
-	std::list<PVOID> m_apData;
+	std::deque<JNICallbackProc> m_apfnCallback;
+	std::deque<PVOID> m_apData;
+	int m_iSize;
 public:
 	CCallbackRequests () {
 		TRACE ("(%p) CCallbackRequests constructor", GetCurrentThreadId ()); 
 		InitializeCriticalSection (&m_cs);
 		m_hNotify = NULL;
 		m_dwThreads = 0;
+		m_iSize = 0;
 	}
 	~CCallbackRequests () {
 		TRACE ("(%p) CCallbackRequests destructor called, closing Semaphore", GetCurrentThreadId ());
@@ -36,7 +38,7 @@ public:
 	BOOL WaitForRequest (DWORD dwTimeout, JNICallbackProc *ppfnCallback, PVOID *ppData) {
 		TRACE ("(%p) CCallbackRequests::WaitForRequest (timeout=%d, ppfnCallback=%p, ppData=%p", GetCurrentThreadId (), dwTimeout, ppfnCallback, ppData);
 		EnterCriticalSection (&m_cs);
-		if (m_apfnCallback.size () == 0) {
+		if (m_iSize == 0) {//m_apfnCallback.size () == 0) {
 			// Nothing in the queue - wait for something
 			TRACE ("(%p) CCallbackRequests::WaitForRequest: Nothing in the queue, wait for something", GetCurrentThreadId());
 			if (!m_hNotify) {
@@ -47,19 +49,24 @@ public:
 			LeaveCriticalSection (&m_cs);
 			TRACE ("(%p) CCallbackRequests::WaitForRequest: m_dwThreads = %d, calling WaitForSingleObject", m_dwThreads, GetCurrentThreadId ());
 			WaitForSingleObject (m_hNotify, dwTimeout);
+			//LARGE_INTEGER t1, freq;
+			//QueryPerformanceCounter (&t1);
+			//QueryPerformanceFrequency (&freq);
+			//Debug::odprintf (TEXT ("Woken at %lld (freq = %lld)\n"), t1, freq);
 			TRACE ("(%p) CCallbackRequests::WaitForRequest: semaphore released", GetCurrentThreadId ());
 			EnterCriticalSection (&m_cs);
-			if (m_apfnCallback.size () == 0) {
+			if (m_iSize == 0) {
 				TRACE ("(%p) CCallbackRequests::WaitForRequest: callback list empty, decrementing thread count, returning FALSE", GetCurrentThreadId ());
 				m_dwThreads--;
 				LeaveCriticalSection (&m_cs);
 				return FALSE;
 			}
 		}
-		*ppfnCallback = *m_apfnCallback.begin ();
+		*ppfnCallback = m_apfnCallback.front ();// begin ();
 		m_apfnCallback.pop_front ();
-		*ppData = *m_apData.begin ();
+		*ppData = m_apData.front ();// begin ();
 		m_apData.pop_front ();
+		m_iSize--;
 		if (*ppfnCallback) {
 			TRACE ("(%p) CCallbackRequests::WaitForRequest: returning callback %p, with data %p", GetCurrentThreadId (), *ppfnCallback, *ppData);
 			LeaveCriticalSection (&m_cs);
@@ -68,6 +75,7 @@ public:
 			TRACE ("(%p) CCallbackRequests::WaitForRequest: got null callback, pushing back.", GetCurrentThreadId ());
 			m_apfnCallback.push_back (NULL);
 			m_apData.push_back (NULL);
+			m_iSize++;
 			LeaveCriticalSection (&m_cs);
 			return FALSE;
 		}
@@ -83,22 +91,27 @@ public:
 			bCallback = true;
 			m_apData.push_back (pData);
 			bData = true;
+			m_iSize++;
 			if (m_dwThreads) {
 				TRACE ("(%p) CCallbackRequests::Add pushed the callback and data onto queue, decrementing thread count (currently %d b4) and releasing semaphore", GetCurrentThreadId (), m_dwThreads);
 				m_dwThreads--;
+				//LARGE_INTEGER t1;
+				//QueryPerformanceCounter (&t1);
 				ReleaseSemaphore (m_hNotify, 1, NULL);
+				//Debug::odprintf (TEXT ("Released at %lld\n"), t1);
 				hr = S_OK;
 			} else {
 				// TODO: No spare threads; spawn one and attach to the JVM
 				TRACE ("(%p) CCallbackRequests::Add pushed the callback and data onto queue, creating new thread and releasing semaphore", GetCurrentThreadId (), m_dwThreads);
-				CreateThread (NULL, 0, JNISlaveThreadProc, pJVM, 0, NULL);
-				ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
+				//CreateThread (NULL, 0, JNISlaveThreadProc, pJVM, 0, NULL);
+				//ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
 				hr = S_OK;
 				//hr = E_NOTIMPL;
 			}
 		} catch (std::bad_alloc) {
 			if (bCallback) m_apfnCallback.pop_back ();
 			if (bData) m_apData.pop_back ();
+			m_iSize--;
 			hr = E_OUTOFMEMORY;
 			TRACE ("(%p) CCallbackRequests::Add memory allocation exception", GetCurrentThreadId ());
 		}
@@ -113,6 +126,7 @@ public:
 			TRACE ("(%p) CCallbackRequests::Poison poisoning queues with NULLs", GetCurrentThreadId ());
 			m_apfnCallback.push_back (NULL);
 			m_apData.push_back (NULL);
+			m_iSize++;
 			hr = S_OK;
 		} catch (std::bad_alloc) {
 			TRACE ("(%p) CCallbackRequests::Poison memory allocation exception", GetCurrentThreadId ());

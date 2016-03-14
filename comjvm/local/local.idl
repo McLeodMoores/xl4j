@@ -10,7 +10,7 @@
 	helpstring ("Local JVM Support 1.0 Type Library"),
 	version (1.0)
 ] library ComJvmLocal {
-	importlib ("core.tlb");
+	importlib ("..\core\core.tlb");
 	[
 		uuid (8a3ec9e1-22b1-471a-acc6-c03849608a2e),
 		helpstring ("In-process JVM"),

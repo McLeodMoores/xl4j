@@ -238,7 +238,7 @@ void JniCache::destroy (JNIEnv *pEnv) {
 }
 
 jobject JniCache::invokeCallHandler (JNIEnv *pEnv, jint iFunctionNum, jobjectArray joaArgs) {
-	TRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
+	//TRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
 	return pEnv->CallObjectMethod (m_joCallHandler, m_jmExcelFunctionCallHandler_invoke, iFunctionNum, joaArgs);
 }
 

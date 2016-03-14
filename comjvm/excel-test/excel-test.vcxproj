@@ -106,6 +106,7 @@
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -203,6 +204,9 @@
     </ProjectReference>
     <ProjectReference Include="..\helper\helper.vcxproj">
       <Project>{58075407-c624-49e9-9776-6a2831db8152}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\jni\jni.vcxproj">
+      <Project>{7007c71a-7b07-489e-b1b8-5b760252a6f7}</Project>
     </ProjectReference>
     <ProjectReference Include="..\local\local.vcxproj">
       <Project>{c0d7a35b-7195-4541-bb35-6cd51ea739bd}</Project>

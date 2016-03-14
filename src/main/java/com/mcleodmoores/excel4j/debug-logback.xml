@@ -1,15 +1,15 @@
 <!-- If you want to make things really noisy, use this file like -Dlogback.configurationFile=com/opengamma/util/debug-logback.xml -->
 <configuration>
 
-<!--   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender"> -->
-<!--     <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder"> -->
-<!--       <layout class="ch.qos.logback.classic.PatternLayout"> -->
-<!--         <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern> -->
-<!--       </layout> -->
-<!--     </encoder> -->
-<!--   </appender> -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+      <layout class="ch.qos.logback.classic.PatternLayout">
+        <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+      </layout>
+    </encoder>
+  </appender>
   
-   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <file>engine.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>excel4j.%i.log.gz</fileNamePattern>
@@ -26,18 +26,18 @@
     </encoder>
   </appender>
   
-  <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" />
+  <!-- appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /-->
    
-  <root level="debug">
+  <root level="OFF">
     <appender-ref ref="FILE" />
-    <appender-ref ref="BRIDGE" />
+    <!-- appender-ref ref="STDOUT" /-->
   </root>
   
-<!--   <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /> -->
+  <!-- <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /> -->
 
-<!--   <root level="debug"> -->
-<!--     <appender-ref ref="STDOUT" /> -->
-<!--     <appender-ref ref="BRIDGE" /> -->
-<!--   </root> -->
+  <!-- <root level="debug"> -->
+  <!--   <appender-ref ref="STDOUT" /> -->
+  <!--   <appender-ref ref="BRIDGE" /> -->
+  <!-- </root> -->
   
 </configuration>

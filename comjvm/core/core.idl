@@ -410,21 +410,24 @@ const long xl4jerrNum = 36;
 const long xl4jerrNA = 42;
 const long xl4jerrGettingData = 43;
 
-typedef
-[uuid (470dd302-0bd5-4e23-9f82-a425b73af0da)]
-struct _XL4JREFERENCE {
+
+
+
+
+struct XL4JREFERENCE {
 	RW rwFirst;
 	RW rwLast;
 	COL colFirst;
 	COL colLast;
-} XL4JREFERENCE;
+} ;
+//typedef struct XL4JREFERENCE XL4JREFERENCE;
 
-typedef
-[uuid (5c20fd94-3101-475f-8036-bed8ec47a061)]
-struct _XL4JMULTIREFERENCE {
+
+struct XL4JMULTIREFERENCE {
 	IDSHEET idSheet;
-	SAFEARRAY (XL4JREFERENCE) refs;
-} XL4JMULTIREFERENCE;
+	SAFEARRAY (struct XL4JREFERENCE) refs;
+};
+//typedef struct XL4JMULTIREFERENCE XL4JMULTIREFERENCE;
 
 
 
@@ -756,6 +759,8 @@ interface ICall : IUnknown {
 	helpstring ("Core JVM Support 1.0 Type Library"),
 	version (1.0)
 ] library ComJvmCore {
+	typedef [uuid (470dd302-0bd5-4e23-9f82-a425b73af0da)] struct XL4JREFERENCE XL4JREFERENCE;
+	typedef [uuid (5c20fd94-3101-475f-8036-bed8ec47a061)] struct XL4JMULTIREFERENCE XL4JMULTIREFERENCE;
 	interface IClassFolder;
 	interface IClasspath;
 	interface IClasspathEntries;

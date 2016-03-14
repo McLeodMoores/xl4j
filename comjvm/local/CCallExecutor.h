@@ -57,7 +57,8 @@ private:
 	VARIANT convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLValue);
 	jobject convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper);
 public:
-	CCallExecutor (CCall *pOwner, JniCache *pJniCache, VARIANT *result, int iFunctionNum, SAFEARRAY * args);
+	CCallExecutor (CCall *pOwner, JniCache *pJniCache);
+	void SetArguments (VARIANT *result, int iFunctionNum, SAFEARRAY * args);
 	HRESULT Run (JNIEnv *pEnv);
 	HRESULT Wait ();
 	void AddRef ();

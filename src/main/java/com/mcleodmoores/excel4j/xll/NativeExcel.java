@@ -38,21 +38,21 @@ public class NativeExcel implements Excel {
    * Create an instance of the Excel interface suitable for testing.
    */
   public NativeExcel() {
-    Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-    FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
-    fileAppender.setContext((Context) LoggerFactory.getILoggerFactory());
-    fileAppender.setName("timestamp");
-    // set the file name
-    fileAppender.setFile("log" + System.currentTimeMillis() + ".log");
-
-    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-    encoder.setContext((Context) LoggerFactory.getILoggerFactory());
-    encoder.setPattern("%r %thread %level - %msg%n");
-    encoder.start();
-
-    fileAppender.setEncoder(encoder);
-    fileAppender.start();
-    root.addAppender(fileAppender);
+//    Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
+//    FileAppender<ILoggingEvent> fileAppender = new FileAppender<>();
+//    fileAppender.setContext((Context) LoggerFactory.getILoggerFactory());
+//    fileAppender.setName("timestamp");
+//    // set the file name
+//    fileAppender.setFile("log" + System.currentTimeMillis() + ".log");
+//
+//    PatternLayoutEncoder encoder = new PatternLayoutEncoder();
+//    encoder.setContext((Context) LoggerFactory.getILoggerFactory());
+//    encoder.setPattern("%r %thread %level - %msg%n");
+//    encoder.start();
+//
+//    fileAppender.setEncoder(encoder);
+//    fileAppender.start();
+//    root.addAppender(fileAppender);
     
     _heap = new Heap();
     _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this));

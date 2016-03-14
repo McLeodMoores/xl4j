@@ -12,6 +12,8 @@ EXPORTS
 	xlAutoAdd
 	xlAutoRemove
 	xlAddInManagerInfo12
+	xlAutoFree12
+	GarbageCollect
 	UDF
 	UDF_0
 	UDF_1
