@@ -16,7 +16,18 @@ import com.mcleodmoores.excel4j.xll.XLLAccumulatingFunctionRegistry.LowLevelEntr
 /**
  *
  */
-public class MockFunctionProcessor {
+public final class MockFunctionProcessor {
+  /** A static instance */
+  private static final MockFunctionProcessor INSTANCE = new MockFunctionProcessor();
+
+  /**
+   * Gets an instance.
+   * @return  an instance
+   */
+  public static MockFunctionProcessor getInstance() {
+    return INSTANCE;
+  }
+
   private final Excel _excel = ExcelFactory.getInstance();
   private final LowLevelEntry[] _entries;
   private final ExcelFunctionCallHandler _excelCallHandler;
@@ -24,7 +35,7 @@ public class MockFunctionProcessor {
   /**
    * Create a function processor.
    */
-  public MockFunctionProcessor() {
+  private MockFunctionProcessor() {
     _excel.getFunctionRegistry().registerFunctions(_excel.getExcelCallback());
     final XLLAccumulatingFunctionRegistry excelFunctionRegistry = (XLLAccumulatingFunctionRegistry) _excel.getExcelCallback().getLowLevelExcelCallback();
     _entries = excelFunctionRegistry.getEntries();
