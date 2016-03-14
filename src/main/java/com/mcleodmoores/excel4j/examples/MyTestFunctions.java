@@ -40,8 +40,8 @@ public final class MyTestFunctions {
               description = "Concat 2 strings",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLString myadd(@XLArgument(name = "string 1", description = "The first string") final XLString one,
-                               @XLArgument(name = "string 2", description = "The second string") final XLString two) {
+  public static XLString myStringCat(@XLArgument(name = "string 1", description = "The first string") final XLString one,
+                                     @XLArgument(name = "string 2", description = "The second string") final XLString two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLString.of("Hello" + one.getValue() + two.getValue());
