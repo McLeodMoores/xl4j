@@ -25,9 +25,9 @@ public class Heap {
   private final AtomicLong _sequence;
   private HashSet<Long> _keySnap;
 
+  //TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
   /**
    * Construct a heap.
-   * TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations.
    */
   public Heap() {
     _handleToObj = new ConcurrentHashMap<>();
