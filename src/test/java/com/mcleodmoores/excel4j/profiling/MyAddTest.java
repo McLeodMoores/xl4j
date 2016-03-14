@@ -1,5 +1,5 @@
 /**
- *
+ * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.excel4j.profiling;
 
@@ -15,11 +15,14 @@ import com.mcleodmoores.excel4j.values.XLNumber;
  */
 public class MyAddTest {
 
+  /**
+   *
+   */
   @Test
   public void testMyAdd1() {
-    final MockFunctionProcessor processor = new MockFunctionProcessor();
-    final long hotspotWarmup = 100;
-    final long testRuns = 1000;
+    final MockFunctionProcessor processor = MockFunctionProcessor.getInstance();
+    final long hotspotWarmup = 1;
+    final long testRuns = 10;
     final Random random = new Random(1231);
     double sum = 0;
     for (long i = 0; i < hotspotWarmup; i++) {
