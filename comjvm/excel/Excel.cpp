@@ -75,6 +75,10 @@ void printXLOPER (XLOPER12 *oper) {
 	} break;
 	case xltypeRef: {
 		TRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
+		if (oper->val.mref.lpmref == NULL) {
+			TRACE ("  lpmref = NULL");
+			break;
+		}
 		for (int i = 0; i < oper->val.mref.lpmref->count; i++) {
 			TRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 				oper->val.mref.lpmref->reftbl[i].rwFirst,
@@ -478,10 +482,68 @@ RW g_rw;
 COL g_col;
 IDSHEET g_sheet;
 
+void ScanCell (XLOPER12 *cell) {
+	printXLOPER (cell);
+	if ((cell->xltype == xltypeStr) &&
+		(cell->val.str[0] > 0) &&
+		(cell->val.str[1] == L'\x1A')) {
+		TRACE ("Found an object ref!");
+		printXLOPER (cell);
+	}
+}
+
+void ScanCells (int cols, int rows, XLOPER12 *arr) {
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			ScanCell (arr++);
+		}
+	}
+}
+
 
 void ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
-
+	XLOPER12 firstRow;
+	XLOPER12 lastRow;
+	XLOPER12 firstCol;
+	XLOPER12 lastCol;
+	Excel12f (xlfGetDocument, &firstRow, 2, TempInt12 (9), pSheetName);
+	Excel12f (xlfGetDocument, &lastRow, 2, TempInt12 (10), pSheetName);
+	Excel12f (xlfGetDocument, &firstCol, 2, TempInt12 (11), pSheetName);
+	Excel12f (xlfGetDocument, &lastCol, 2, TempInt12 (12), pSheetName);
+	if (firstRow.val.num == 0) {
+		TRACE ("sheet was empty");
+		return; // sheet empty.
+	}
+	XLOPER12 sheetId;
+	Excel12f (xlSheetId, &sheetId, 1, pSheetName);
+	if (sheetId.xltype == xltypeErr) {
+		TRACE ("Could not get sheet ID");
+		return;
+	}
+	XLOPER12 wholeRow;
+	XLMREF12 xlmRef;
+	wholeRow.xltype = xltypeRef;
+	wholeRow.val.mref.idSheet = sheetId.val.mref.idSheet;
+	wholeRow.val.mref.lpmref = &xlmRef;
+    xlmRef.count = 1;
+	xlmRef.reftbl[0].colFirst = (COL) firstCol.val.num - 1;
+	xlmRef.reftbl[0].colLast = (COL) lastCol.val.num - 1;
+	
+	for (int i = (RW) firstRow.val.num - 1; i <= (RW) lastRow.val.num - 1; i++) {
+		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
+		wholeRow.val.mref.lpmref->reftbl[0].rwFirst = i;
+		wholeRow.val.mref.lpmref->reftbl[0].rwLast = i;
+		XLOPER12 row;
+		Excel12f (xlCoerce, &row, 2, &wholeRow, pMulti);
+		ScanCells (row.val.array.columns, row.val.array.rows, row.val.array.lparray);
+		Excel12f (xlFree, 0, 1, &row);
+	}
+	Excel12f (xlFree, 0, 1, &firstRow);
+	Excel12f (xlFree, 0, 1, &lastRow);
+	Excel12f (xlFree, 0, 1, &firstCol);
+	Excel12f (xlFree, 0, 1, &lastCol);
 }
+
 
 void ScanWorkbook (XLOPER12 *pWorkbookName) {
 	XLOPER12 sheets;
@@ -512,6 +574,7 @@ __declspec(dllexport) int GarbageCollect () {
 		ScanWorkbook (pWorkbookName);
 	}
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&documents);
+	registerTimedGC ();
 	return 1;
 }
 
