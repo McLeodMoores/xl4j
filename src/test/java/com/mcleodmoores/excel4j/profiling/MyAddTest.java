@@ -33,7 +33,7 @@ public class MyAddTest {
       sum += ((XLNumber) processor.invoke("MyAdd", XLNumber.of(random.nextDouble()), XLNumber.of(random.nextDouble()))).getValue();
     }
     final long endTime = System.nanoTime();
-    System.out.println("Time for " + testRuns + " runs was " + (endTime - startTime) / 1000000 + "ms");
+    System.out.println("Time for " + testRuns + " runs was " + ((double)(endTime - startTime) / (double)(testRuns)) / 1000d + "us/loop");
     System.err.println(sum);
   }
 

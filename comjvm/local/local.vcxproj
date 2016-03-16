@@ -111,6 +111,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Local.def</ModuleDefinitionFile>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -149,6 +150,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Local.def</ModuleDefinitionFile>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -264,6 +266,7 @@
     <ClInclude Include="DirectoryWriter.h" />
     <ClInclude Include="FileWriter.h" />
     <ClInclude Include="Internal.h" />
+    <ClInclude Include="JniCache.h" />
     <ClInclude Include="JniValue.h" />
     <ClInclude Include="Jvm.h" />
     <ClInclude Include="JvmConnector.h" />
@@ -292,6 +295,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="DirectoryWriter.cpp" />
     <ClCompile Include="FileWriter.cpp" />
+    <ClCompile Include="JniCache.cpp" />
     <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="JvmConnector.cpp" />
     <ClCompile Include="local.cpp" />

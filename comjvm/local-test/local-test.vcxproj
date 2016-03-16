@@ -108,11 +108,13 @@
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -132,6 +134,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <Profile>true</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -189,8 +192,10 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CCallTest.cpp" />
     <ClCompile Include="classpath.cpp" />
     <ClCompile Include="Connect.cpp" />
+    <ClCompile Include="ContextSwitchTest.cpp" />
     <ClCompile Include="CScanTest.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="ExternalJarsTest.cpp" />
@@ -212,6 +217,11 @@
     </ProjectReference>
     <ProjectReference Include="..\helper\helper.vcxproj">
       <Project>{58075407-c624-49e9-9776-6a2831db8152}</Project>
+      <Private>true</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
     <ProjectReference Include="..\local\local.vcxproj">
       <Project>{c0d7a35b-7195-4541-bb35-6cd51ea739bd}</Project>

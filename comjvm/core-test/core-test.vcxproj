@@ -102,6 +102,7 @@
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;$(VCInstallDir)UnitTest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

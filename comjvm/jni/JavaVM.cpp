@@ -9,7 +9,6 @@
 #include "jni.h"
 #include "internal.h"
 #include "utils\Debug.h"
-#include "JniCache.h"
 
 enum VMState {
 	NOT_RUNNING,
@@ -242,7 +241,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 	CloseHandle (createJVM.hSemaphore);
 	if (SUCCEEDED (hr)) {
 		TRACE ("(%p) JNICreateJavaVMA: main thread signalled successfully", GetCurrentThreadId ());
-		if (!g_oVM.EnterStartedState (createJVM.pJvm, createJVM.pJniCache, pdwJvmRef)) {
+		if (!g_oVM.EnterStartedState (createJVM.pJvm,  pdwJvmRef)) {
 			// The JVM thread terminated
 			TRACE ("(%p) JNICreateJavaVMA: VM Not in correct state, JVM thread terminated.", GetCurrentThreadId ());
 			hr = E_FAIL;

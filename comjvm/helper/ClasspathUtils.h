@@ -1,5 +1,5 @@
 #pragma once
-
+//#undef COMJVM_CORE_API
 #include "stdafx.h"
 #include "comjvm/local.h"
 #include "comjvm/core.h"

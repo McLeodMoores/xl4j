@@ -130,9 +130,25 @@ public:
 				0xb5
 			}
 		};
+		const IID IID_XL4JREFERENCE = { 0x470dd302, 0x0bd5, 0x4e23, { 0x9f, 0x82, 0xa4, 0x25, 0xb7, 0x3a, 0xf0, 0xda } };
+		const IID IID_XL4JMULTIREFERENCE = { 0x5c20fd94, 0x3101, 0x475f, { 0x80, 0x36, 0xbe, 0xd8, 0xec, 0x47, 0xa0, 0x61 } };
 		HRESULT hr;
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
 		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
+			_com_error err (hr);
+			LPCTSTR errMsg = err.ErrorMessage ();
+			TRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
+			Assert::Fail ();
+		}
+		IRecordInfo *pXL4JREFERENCERecordInfo = NULL;
+		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, IID_XL4JREFERENCE, &pXL4JREFERENCERecordInfo))) {
+			_com_error err (hr);
+			LPCTSTR errMsg = err.ErrorMessage ();
+			TRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
+			Assert::Fail ();
+		}
+		IRecordInfo *pXL4JMULTIREFERENCERecordInfo = NULL;
+		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pXL4JMULTIREFERENCERecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
 			TRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);

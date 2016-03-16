@@ -11,13 +11,15 @@ class CCall;
 class CCall : public ICall {
 private:
 	volatile ULONG m_lRefCount;
-
+	
 	/// <summary>Lock for this object.</summary>
 	CRITICAL_SECTION m_cs;
 	CJvm *m_pJvm;
 	JniCache *m_pJniCache;
+	CCallExecutor *m_pExecutor;
 	IJvmConnector *m_pConnector;
 public:
+//	std::list<long long> m_timings;
 	CCall (CJvm *pJvm);
 	~CCall ();
 	HRESULT STDMETHODCALLTYPE call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);

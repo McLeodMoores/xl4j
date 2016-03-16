@@ -9,7 +9,9 @@
 
 CCall::CCall (CJvm *pJvm) {
 	m_pJvm = pJvm;
-	m_pJniCache = new JniCache;
+	m_pJniCache = new JniCache ();
+	m_pExecutor = new CCallExecutor (this, m_pJniCache);
+	m_pExecutor->AddRef (); // RC2
 	IncrementActiveObjectCount ();
 	m_pJvm->AddRef ();
 	InitializeCriticalSection (&m_cs);
@@ -19,6 +21,7 @@ CCall::~CCall () {
 	assert (m_lRefCount == 0);
 	DeleteCriticalSection (&m_cs);
 	m_pJvm->Release ();
+	m_pExecutor->Release ();
 	delete m_pJniCache;
 	m_pJniCache = NULL;
 	DecrementActiveObjectCount ();
@@ -28,31 +31,47 @@ static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
 	TRACE ("Entering static callback function _call");
 	CCallExecutor *pExecutor = (CCallExecutor*)lpData;
 	HRESULT hr = pExecutor->Run (pEnv);
-	if (SUCCEEDED (hr)) {
-		TRACE ("_call: Run returned success");
-		hr = pExecutor->Wait ();
-		TRACE ("pExecutor->Wait() returned");
-		Debug::print_HRESULT (hr);
-	} else {
-		TRACE ("_call: Run returned failure");
-		Debug::print_HRESULT (hr);
-		pExecutor->Release ();
-	}
+	//if (SUCCEEDED (hr)) {
+	//	TRACE ("_call: Run returned success");
+	//	hr = pExecutor->Wait ();
+	//	TRACE ("pExecutor->Wait() returned");
+	//	Debug::print_HRESULT (hr);
+	//} else {
+	//	TRACE ("_call: Run returned failure");
+	//	Debug::print_HRESULT (hr);
+	//	pExecutor->Release ();
+	//}
 	return hr;
 }
 
 HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
 	HRESULT hr;
+	//LARGE_INTEGER t1, t2, t3, t4, t5, freq;
+	//long long constr;
+	//long long exec;
+	//long long wait;
+	//long long release;
 	try {
-		CCallExecutor *pExecutor = new CCallExecutor (this, m_pJniCache, result, iFunctionNum, args); // RC1
-		pExecutor->AddRef (); // RC2
+#if 0
+		CCallExecutor *pExecutor = new CCallExecutor (this, m_pJniCache);// RC1
+#else
+		CCallExecutor *pExecutor = m_pExecutor;
+		pExecutor->AddRef ();
+#endif
+		pExecutor->AddRef ();
+		pExecutor->SetArguments (result, iFunctionNum, args); //
+		//QueryPerformanceCounter (&t1);
+	
+		//QueryPerformanceCounter (&t2);
 		TRACE ("CCall::call on safearray** about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);
 		if (SUCCEEDED (hr)) {
+			//QueryPerformanceCounter (&t3);
 			TRACE ("CCall::call vm execute succeeded");
 			// The executor will release RC2
 			hr = pExecutor->Wait ();
-			TRACE ("hr = %x after Wait()", hr);
+			//QueryPerformanceCounter (&t4);
+			TRACE ("CCall::call hr = %x after Wait()", hr);
 		} else {
 			TRACE ("CCall::call vm execute failed");
 			// Release RC2
@@ -63,7 +82,14 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ i
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
-	TRACE ("Returning hr = %x", hr);
+	TRACE ("CCall::call Returning hr = %x", hr);
+	//QueryPerformanceCounter (&t5);
+	//QueryPerformanceFrequency (&freq);
+	//constr = ((t2.QuadPart - t1.QuadPart) * 1000000) / freq.QuadPart;
+	//exec = ((t3.QuadPart - t2.QuadPart) * 1000000) / freq.QuadPart;
+	//wait = ((t4.QuadPart - t3.QuadPart) * 1000000) / freq.QuadPart;
+	//release = ((t5.QuadPart - t4.QuadPart) * 1000000) / freq.QuadPart;
+	//Debug::odprintf (TEXT ("constr = %lldms, execute = %lldms, wait = %lldms, release = %lldms"), constr, exec, wait, release);
 	return hr;
 }
 

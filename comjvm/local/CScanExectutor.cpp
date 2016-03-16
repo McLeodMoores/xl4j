@@ -8,6 +8,7 @@ CScanExecutor::CScanExecutor (CScan *pOwner, SAFEARRAY **pResults)
 		throw std::logic_error ("CScanExecutor called with null CScan");
 	}
 	m_hSemaphore = CreateSemaphore (NULL, 0, 1, NULL);//pOwner->BeginExecution ();
+	m_hRunResult = E_NOT_SET;
 	pOwner->AddRef ();
 }
 
@@ -18,7 +19,7 @@ CScanExecutor::~CScanExecutor () {
 
 
 HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
-	HRESULT hResult;
+	HRESULT hResult = S_OK;
 	try {
 		TRACE ("In CScanExecutor::Run");
 		jclass jcExcelFactory = pEnv->FindClass ("com/mcleodmoores/excel4j/ExcelFactory");
@@ -61,24 +62,25 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jfieldID jfDescription = pEnv->GetFieldID (jcLowLevelEntry, "_description", "Ljava/lang/String;");
 		jfieldID jfArgsHelp = pEnv->GetFieldID (jcLowLevelEntry, "_argsHelp", "[Ljava/lang/String;");
 
-		HRESULT hr;
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
-		if (FAILED (hr = ::GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
+		if (FAILED (hResult = ::GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
 			TRACE ("Couldn't get IRecotrdInfo");
-			return hr;
+			goto fail;
 		}
 		
 		SAFEARRAYBOUND bounds;
 		bounds.cElements = cEntries;
 		bounds.lLbound = 0;
-		if (FAILED (hr = ::SafeArraySetRecordInfo (*m_pResults, pFunctionInfoRecordInfo))) {
-			return hr;
+		if (FAILED (hResult = ::SafeArraySetRecordInfo (*m_pResults, pFunctionInfoRecordInfo))) {
+			TRACE ("CScanExecutor::Run: couldn't set record info");
+			goto fail;
 		}
-		if (FAILED (hr = ::SafeArrayRedim (*m_pResults, &bounds))) {
-			return hr;
+		if (FAILED (hResult = ::SafeArrayRedim (*m_pResults, &bounds))) {
+			TRACE ("CScanExecutor::Run: Couldn't redim");
+			goto fail;
 		}
 		FUNCTIONINFO *pFunctionInfos;
-		hr = SafeArrayAccessData (*m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos));
+		hResult = SafeArrayAccessData (*m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos));
 		for (jsize i = 0; i < cEntries; i++) {
 			jobject joElement = pEnv->GetObjectArrayElement (jaEntries, i);
 			pFunctionInfos[i].exportNumber = pEnv->GetIntField (joElement, jfExportNumber);
@@ -117,12 +119,23 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		}
 		SafeArrayUnaccessData (*m_pResults);
 	} catch (std::bad_alloc) {
+		TRACE ("CScanExecutor::Run: out of memory");
 		hResult = E_OUTOFMEMORY;
+		goto fail;
 	} catch (_com_error &e) {
+		TRACE ("CScanExecutor::Run: com error %s", e.ErrorMessage());
 		hResult = e.Error ();
+		goto fail;
 	}
+	TRACE ("CScanExecutor::Run: Releasing semaphore");
+	m_hRunResult = S_OK;
 	ReleaseSemaphore (m_hSemaphore, 1, NULL);
 	return S_OK;
+fail:
+	TRACE ("CScanExecutor::Run: Releasing semaphore (failure mode)");
+	m_hRunResult = hResult;
+	ReleaseSemaphore (m_hSemaphore, 1, NULL);
+	return hResult;
 }
 
 void CScanExecutor::allocSAFEARRAY_BSTR (SAFEARRAY **ppsa, size_t cElem) {
