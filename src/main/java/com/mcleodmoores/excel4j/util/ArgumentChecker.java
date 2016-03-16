@@ -160,4 +160,16 @@ public final class ArgumentChecker {
       throw new Excel4JRuntimeException(message);
     }
   }
+
+  /**
+   * Throws an exception if the condition is not false.
+   * @param condition  the condition to check
+   * @param message  the message if the condition is true
+   */
+  public static void isFalse(final boolean condition, final String message) {
+    if (condition) {
+      LOGGER.error(message);
+      throw new Excel4JRuntimeException(message);
+    }
+  }
 }

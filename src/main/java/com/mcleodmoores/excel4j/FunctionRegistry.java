@@ -32,7 +32,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
  * Class to scan for @XLFunction annotations and register each function with Excel.
  */
 public class FunctionRegistry {
-  private static Logger s_logger = LoggerFactory.getLogger(FunctionRegistry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(FunctionRegistry.class);
   // REVIEW: is this the best structure to use?
   private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
   private final AtomicInteger _exportCounter = new AtomicInteger();
@@ -61,7 +61,7 @@ public class FunctionRegistry {
     @Override
     public void run() {
       scanAndCreateFunctions(_invokerFactory);
-      s_logger.info("Scan and create finished, putting to Blocking Queue");
+      LOGGER.info("Scan and create finished, putting to Blocking Queue");
       try {
         _finishedScan.put(_functionDefinitions);
       } catch (final InterruptedException e) {
@@ -75,18 +75,18 @@ public class FunctionRegistry {
    * @param callback the Excel callback interface
    */
   public void registerFunctions(final ExcelCallback callback) {
-    s_logger.info("registerFunctions called with {}", callback);
+    LOGGER.info("registerFunctions called with {}", callback);
     try {
       final Collection<FunctionDefinition> take = _finishedScan.take();
-      s_logger.info("got colleciton from finishedScan queue, iterating over them...");
+      LOGGER.info("got colleciton from finishedScan queue, iterating over them...");
       for (final FunctionDefinition functionDefinition : take) {
         try {
           callback.registerFunction(functionDefinition);
         } catch (final Excel4JRuntimeException xl4jre) {
-          s_logger.error("Problem registering function, skipping", xl4jre);
+          LOGGER.error("Problem registering function, skipping", xl4jre);
         }
       }
-      s_logger.info("finished registering functions");
+      LOGGER.info("finished registering functions");
     } catch (final InterruptedException e) {
       throw new Excel4JRuntimeException("Unexpected interrupt while waiting for function definitions from queue");
     }
@@ -122,11 +122,11 @@ public class FunctionRegistry {
         final int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);
         final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
         // put the definition in some look-up tables.
-        s_logger.info("Allocating export number {} function {}", allocatedExportNumber, methodInvoker.getMethodName());
+        LOGGER.info("Allocating export number {} function {}", allocatedExportNumber, methodInvoker.getMethodName());
         _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
         _functionDefinitions.add(functionDefinition);
       } catch (final Exception e) {
-        s_logger.error("Exception while scanning annotated method", e);
+        LOGGER.error("Exception while scanning annotated method", e);
       }
     }
   }
@@ -169,12 +169,8 @@ public class FunctionRegistry {
     final FunctionDefinition functionDefinition = _functionDefinitionLookup.get(exportNumber);
     if (functionDefinition != null) {
       return functionDefinition;
-    } else {
-      throw new Excel4JRuntimeException("Cannot find function definition with export number"
-          + exportNumber);
     }
+    throw new Excel4JRuntimeException("Cannot find function definition with export number " + exportNumber);
   }
-
-
 
 }

@@ -27,7 +27,7 @@ public class TimeSeriesTest {
   public void testSortingUnsortedData() {
     final int n = 100;
     final List<LocalDate> dateList = new ArrayList<>();
-    final double[] values = new double[n];
+    final Double[] values = new Double[n];
     for (int i = 0; i < n; i++) {
       dateList.add(LocalDate.now().plusDays(i));
       values[i] = Math.random();
@@ -36,7 +36,7 @@ public class TimeSeriesTest {
     final LocalDate[] dates = dateList.toArray(new LocalDate[n]);
     // copies of original
     final LocalDate[] datesCopy = new LocalDate[n];
-    final double[] valuesCopy = new double[n];
+    final Double[] valuesCopy = new Double[n];
     System.arraycopy(dates, 0, datesCopy, 0, n);
     System.arraycopy(values, 0, valuesCopy, 0, n);
     final TimeSeries ts = TimeSeries.of(dates, values);
@@ -59,7 +59,7 @@ public class TimeSeriesTest {
   public void testSortingSortedData() {
     final int n = 100;
     final LocalDate[] dates = new LocalDate[n];
-    final double[] values = new double[n];
+    final Double[] values = new Double[n];
     for (int i = 0; i < n; i++) {
       dates[i] = LocalDate.now().plusDays(i);
       values[i] = Math.random();
@@ -77,7 +77,7 @@ public class TimeSeriesTest {
   public void testSortingReversedData() {
     final int n = 100;
     final LocalDate[] dates = new LocalDate[n];
-    final double[] values = new double[n];
+    final Double[] values = new Double[n];
     for (int i = n - 1; i >= 0; i--) {
       dates[n - 1 - i] = LocalDate.now().plusDays(i);
       values[n - 1 - i] = Math.random();
@@ -98,7 +98,7 @@ public class TimeSeriesTest {
   public void testDuplicates() {
     final int n = 101;
     final LocalDate[] dates = new LocalDate[n];
-    final double[] values = new double[n];
+    final Double[] values = new Double[n];
     for (int i = 0; i < n - 1; i++) {
       dates[i] = LocalDate.now().plusDays(i);
       values[i] = Math.random();
@@ -115,7 +115,7 @@ public class TimeSeriesTest {
   public void testMethods() {
     final int n = 100;
     final LocalDate[] dates = new LocalDate[n];
-    final double[] values = new double[n];
+    final Double[] values = new Double[n];
     for (int i = 0; i < n; i++) {
       dates[i] = LocalDate.now().plusDays(i);
       values[i] = Math.random();
@@ -123,6 +123,7 @@ public class TimeSeriesTest {
     final TimeSeries ts = TimeSeries.of(dates, values);
     assertEquals(ts.getDates(), dates);
     assertEquals(ts.getValues(), values);
+    assertEquals(ts.getValue(dates[n / 2]), values[n / 2]);
     assertEquals(ts.getDate(10), LocalDate.now().plusDays(10));
     assertEquals(ts.getValue(10), values[10]);
     assertEquals(ts.indexOf(LocalDate.now().plusDays(50)), 50);
@@ -138,7 +139,7 @@ public class TimeSeriesTest {
   public void testDateWithMissingValue() {
     final int n = 100;
     final LocalDate[] dates = new LocalDate[n];
-    final double[] values = new double[n];
+    final Double[] values = new Double[n];
     for (int i = 0; i < n; i++) {
       dates[i] = LocalDate.now().plusDays(i);
       values[i] = Math.random();
