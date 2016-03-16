@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
  * Utility class for checking arguments.
  */
 public final class ArgumentChecker {
-  private static Logger s_logger = LoggerFactory.getLogger(ArgumentChecker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ArgumentChecker.class);
 
   private ArgumentChecker() {
   }
@@ -22,7 +22,7 @@ public final class ArgumentChecker {
    */
   public static void notNegative(final int argument, final String name) {
     if (argument < 0) {
-      s_logger.error("Argument {} was negative", name);
+      LOGGER.error("Argument {} was negative", name);
       throw new Excel4JRuntimeException("Value " + name + " was negative");
     }
   }
@@ -34,7 +34,7 @@ public final class ArgumentChecker {
    */
   public static void notNegative(final long argument, final String name) {
     if (argument < 0L) {
-      s_logger.error("Argument {} was negative", name);
+      LOGGER.error("Argument {} was negative", name);
       throw new Excel4JRuntimeException("Value " + name + " was negative");
     }
   }
@@ -46,7 +46,7 @@ public final class ArgumentChecker {
    */
   public static void notNegative(final double argument, final String name) {
     if (argument < 0d) {
-      s_logger.error("Argument {} was negative", name);
+      LOGGER.error("Argument {} was negative", name);
       throw new Excel4JRuntimeException("Value " + name + " was negative");
     }
   }
@@ -58,7 +58,7 @@ public final class ArgumentChecker {
    */
   public static void notNull(final Object argument, final String name) {
     if (argument == null) {
-      s_logger.error("Argument {} was null", name);
+      LOGGER.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was null");
     }
   }
@@ -71,10 +71,10 @@ public final class ArgumentChecker {
    */
   public static <E> void notNullOrEmpty(final E[] argument, final String name) {
     if (argument == null) {
-      s_logger.error("Argument {} was null", name);
+      LOGGER.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was null");
     } else if (argument.length == 0) {
-      s_logger.error("Argument {} was empty array", name);
+      LOGGER.error("Argument {} was empty array", name);
       throw new Excel4JRuntimeException("Value " + name + " was empty array");
     }
   }
@@ -87,10 +87,10 @@ public final class ArgumentChecker {
    */
   public static <E> void notNullOrEmpty(final Collection<E> argument, final String name) {
     if (argument == null) {
-      s_logger.error("Argument {} was null", name);
+      LOGGER.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was null");
     } else if (argument.isEmpty()) {
-      s_logger.error("Argument {} was empty collection", name);
+      LOGGER.error("Argument {} was empty collection", name);
       throw new Excel4JRuntimeException("Value " + name + " was empty collection");
     }
   }
@@ -102,50 +102,62 @@ public final class ArgumentChecker {
    */
   public static void notNullOrEmpty(final String argument, final String name) {
     if (argument == null) {
-      s_logger.error("Argument {} was null", name);
+      LOGGER.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was null");
     } else if (argument.length() == 0) {
-      s_logger.error("Argument {} was empty string", name);
+      LOGGER.error("Argument {} was empty string", name);
       throw new Excel4JRuntimeException("Value " + name + " was empty string");
     }
   }
 
   /**
-   * Throws an exception if the array argument is null or any of it's elements are null.
+   * Throws an exception if the array argument is null or any of its elements are null.
    * @param <E> type of array
    * @param argument the object to check
    * @param name the name of the parameter
    */
   public static <E> void notNullArray(final E[] argument, final String name) {
     if (argument == null) {
-      s_logger.error("Argument {} was null", name);
+      LOGGER.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was null");
     }
     for (int i = 0; i < argument.length; i++) {
       if (argument[i] == null) {
-        s_logger.error("Argument {} was has null element at position {}", name, i);
+        LOGGER.error("Argument {} was has null element at position {}", name, i);
         throw new Excel4JRuntimeException("Argument " + name + " has null element at position " + i);
       }
     }
   }
 
   /**
-   * Throws an exception if the array argument is null or any of it's elements are null.
+   * Throws an exception if the array argument is null or any of its elements are null.
    * @param <E> type of array
    * @param argument the object to check
    * @param name the name of the parameter
    */
   public static <E> void notNullCollection(final Collection<E> argument, final String name) {
     if (argument == null) {
-      s_logger.error("Argument {} was null", name);
+      LOGGER.error("Argument {} was null", name);
       throw new Excel4JRuntimeException("Value " + name + " was null");
     }
     final Iterator<E> iter = argument.iterator();
     for (int i = 0; i < argument.size(); i++) {
       if (iter.next() == null) {
-        s_logger.error("Argument {} was has null element at position {}", name, i);
+        LOGGER.error("Argument {} was has null element at position {}", name, i);
         throw new Excel4JRuntimeException("Argument " + name + " has null element at position " + i);
       }
+    }
+  }
+
+  /**
+   * Throws an exception if the condition is not true.
+   * @param condition  the condition to check
+   * @param message  the message if the condition is false
+   */
+  public static void isTrue(final boolean condition, final String message) {
+    if (!condition) {
+      LOGGER.error(message);
+      throw new Excel4JRuntimeException(message);
     }
   }
 }
