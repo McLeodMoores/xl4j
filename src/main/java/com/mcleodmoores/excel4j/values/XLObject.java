@@ -12,11 +12,17 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  * at the start that encodes an object handle.
  */
 public final class XLObject implements XLValue {
-
+  /** The object prefix */
   private static final char OBJECT_PREFIX = '\u001A';
+  /** The simple name */
   private final String _clazz;
+  /** The handle */
   private final long _handle;
 
+  /**
+   * @param clazz  the simple name
+   * @param handle  the handle
+   */
   private XLObject(final String clazz, final long handle) {
     _clazz = clazz;
     _handle = handle;

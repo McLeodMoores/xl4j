@@ -275,7 +275,7 @@ public final class TimeSeries {
       sb.append(_dates[i]);
       sb.append(", ");
       sb.append(_values[i]);
-      sb.append(")");
+      sb.append("), ");
     }
     sb.append("]");
     return sb.toString();
