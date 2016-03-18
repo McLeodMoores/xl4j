@@ -3,7 +3,9 @@
  */
 package com.mcleodmoores.excel4j.examples;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.threeten.bp.LocalDate;
 
@@ -23,12 +25,12 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * A simple implementation of a time series, defined as a list of LocalDate, double pairs that
  * is increasing in time. This class is immutable.
  */
-public final class TimeSeries {
+public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * An empty time series.
    */
-  public static final TimeSeries EMPTY = new TimeSeries(new LocalDate[0], new Double[0]);
+  public static final TimeSeries EMPTY = new TimeSeries(new LocalDate[0], new Double[0], false);
 
   /**
    * Excel function that creates a time series from date, value pairs. The array can be either two rows
@@ -71,7 +73,7 @@ public final class TimeSeries {
     } else {
       throw new Excel4JRuntimeException("Could not create time series");
     }
-    return new TimeSeries(dates, values);
+    return new TimeSeries(dates, values, true);
   }
 
   /**
@@ -128,7 +130,7 @@ public final class TimeSeries {
         values[i] = xlValue == null ? null : (Double) doubleConverter.toJavaObject(Double.class, xlValue);
       }
     }
-    return new TimeSeries(dates, values);
+    return new TimeSeries(dates, values, true);
   }
 
   /**
@@ -138,7 +140,17 @@ public final class TimeSeries {
    * @return  the time series
    */
   public static TimeSeries of(final LocalDate[] dates, final Double[] values) {
-    return new TimeSeries(dates, values);
+    return new TimeSeries(dates, values, true);
+  }
+
+  /**
+   * Creates a time series. The inputs are copied and then sorted. The values can contain nulls.
+   * @param dates  the dates, not null, cannot contain any null values, can be empty
+   * @param values  the values, not null, can be empty
+   * @return  the time series
+   */
+  public static TimeSeries of(final List<LocalDate> dates, final List<Double> values) {
+    return new TimeSeries(dates.toArray(new LocalDate[dates.size()]), values.toArray(new Double[values.size()]), true);
   }
 
   /** The dates */
@@ -150,8 +162,10 @@ public final class TimeSeries {
    * Creates a time series.
    * @param dates  the dates
    * @param values  the values
+   * @param sort  should be true if the dates are not guaranteed to be sorted. Note that not sorting also assumes
+   * that there are no duplicate dates in the series
    */
-  private TimeSeries(final LocalDate[] dates, final Double[] values) {
+  private TimeSeries(final LocalDate[] dates, final Double[] values, final boolean sort) {
     ArgumentChecker.notNullArray(dates, "dates");
     ArgumentChecker.notNull(values, "values");
     ArgumentChecker.isTrue(dates.length == values.length, "Must have one value per date");
@@ -160,17 +174,8 @@ public final class TimeSeries {
     System.arraycopy(dates, 0, _dates, 0, n);
     _values = new Double[n];
     System.arraycopy(values, 0, _values, 0, n);
-    sort(_dates, _values, 0, n - 1);
-    // could probably check for duplicates in sorting code but this is just for examples
-    if (_dates.length > 1) {
-      LocalDate previous = _dates[0];
-      for (int i = 1; i < _dates.length; i++) {
-        final LocalDate next = dates[i];
-        if (previous.equals(next)) {
-          throw new Excel4JRuntimeException("Duplicate dates in time series");
-        }
-        previous = next;
-      }
+    if (sort) {
+      sort(_dates, _values, 0, n - 1);
     }
   }
 
@@ -238,6 +243,109 @@ public final class TimeSeries {
    */
   public int size() {
     return _dates.length;
+  }
+
+  @Override
+  public TimeSeries add(final TimeSeries other) {
+    ArgumentChecker.notNull(other, "other");
+    return operate(other, 1);
+  }
+
+  @Override
+  public TimeSeries subtract(final TimeSeries other) {
+    ArgumentChecker.notNull(other, "other");
+    return operate(other, 2);
+  }
+
+  @Override
+  public TimeSeries multiply(final TimeSeries other) {
+    ArgumentChecker.notNull(other, "other");
+    return operate(other, 3);
+  }
+
+  @Override
+  public TimeSeries divide(final TimeSeries other) {
+    ArgumentChecker.notNull(other, "other");
+    return operate(other, 4);
+  }
+
+  @Override
+  public TimeSeries scale(final double scale) {
+    final Double[] scaled = new Double[size()];
+    for (int i = 0; i < size(); i++) {
+      scaled[i] = _values[i] * scale;
+    }
+    return new TimeSeries(_dates, scaled, false);
+  }
+
+  @Override
+  public TimeSeries abs() {
+    final Double[] abs = new Double[size()];
+    for (int i = 0; i < size(); i++) {
+      abs[i] = Math.abs(_values[i]);
+    }
+    return new TimeSeries(_dates, abs, false);
+  }
+
+  @Override
+  public TimeSeries reciprocal() {
+    final Double[] reciprocal = new Double[size()];
+    for (int i = 0; i < size(); i++) {
+      reciprocal[i] = 1. / _values[i];
+    }
+    return new TimeSeries(_dates, reciprocal, false);
+  }
+
+  /**
+   * Performs the operation.
+   * @param other  the other series
+   * @param operation  operation switch: 1 = add, 2 = subtract, 3 = multiply, 4 = divide
+   * @return  the series
+   */
+  private TimeSeries operate(final TimeSeries other, final int operation) {
+    final List<LocalDate> resultDates = new ArrayList<>(other.size() + size());
+    final List<Double> result = new ArrayList<>(other.size() + size());
+    final LocalDate[] otherDates = other.getDates();
+    int count = 0;
+    int otherCount = 0;
+    while (count < size() || otherCount < other.size()) {
+      final LocalDate date = count < size() ? _dates[count] : null;
+      final LocalDate otherDate = otherCount < other.size() ? otherDates[otherCount] : null;
+      if (date != null && (otherDate == null || date.isBefore(otherDate))) { // catching up to other series or off its end
+        resultDates.add(date);
+        result.add(_values[count++]);
+      } else if (otherDate != null && (date == null || otherDate.isBefore(date))) { // catching up to this series or off its end
+        resultDates.add(otherDate);
+        result.add(other.getValue(otherCount++));
+      } else { // two values on the same date, so add
+        resultDates.add(date);
+        final Double value1 = _values[count++];
+        final Double value2 = other.getValue(otherCount++);
+        if (value1 == null) {
+          result.add(value2);
+        } else if (value2 == null) {
+          result.add(value1);
+        } else {
+          switch (operation) {
+            case 1:
+              result.add(value1 + value2);
+              break;
+            case 2:
+              result.add(value1 - value2);
+              break;
+            case 3:
+              result.add(value1 * value2);
+              break;
+            case 4:
+              result.add(value1 / value2);
+              break;
+            default:
+              throw new Excel4JRuntimeException("Unrecognised operation");
+          }
+        }
+      }
+    }
+    return new TimeSeries(resultDates.toArray(new LocalDate[resultDates.size()]), result.toArray(new Double[resultDates.size()]), false);
   }
 
   @Override
@@ -311,6 +419,9 @@ public final class TimeSeries {
     swap(dates, values, pivot, right);
     int index = left;
     for (int i = left; i < right; i++) {
+      if (dates[i].equals(pivotDate)) {
+        throw new Excel4JRuntimeException("Duplicate dates in time series");
+      }
       if (!dates[i].isAfter(pivotDate)) {
         swap(dates, values, i, index);
         index++;
