@@ -5,11 +5,15 @@ package com.mcleodmoores.excel4j.examples;
 
 import java.util.function.Function;
 
+import com.mcleodmoores.excel4j.XLClass;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
- *
+ * Calculates the arithmetic mean of a time series of values.
  */
+@XLClass(name = "Mean",
+         description = "Calculates the mena of a time series",
+         category = "Time series")
 public class MeanCalculator implements Function<TimeSeries, Double> {
 
   @Override
@@ -17,7 +21,7 @@ public class MeanCalculator implements Function<TimeSeries, Double> {
     ArgumentChecker.notNull(ts, "ts");
     ArgumentChecker.notNullArray(ts.getValues(), "ts.values");
     double sum = 0;
-    for (final double value : ts.getValues()) {
+    for (final Double value : ts.getValues()) {
       sum += value;
     }
     return sum / ts.size();

@@ -245,53 +245,81 @@ public final class TimeSeries implements Operation<TimeSeries> {
     return _dates.length;
   }
 
+  @XLFunction(name = "add",
+      description = "Element-by-element addition of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries add(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
     return operate(other, 1);
   }
 
+  @XLFunction(name = "subtract",
+      description = "Element-by-element substraction of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries subtract(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
     return operate(other, 2);
   }
 
+  @XLFunction(name = "multiply",
+      description = "Element-by-element multiplication of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries multiply(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
     return operate(other, 3);
   }
 
+  @XLFunction(name = "divide",
+      description = "Element-by-element division of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries divide(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
     return operate(other, 4);
   }
 
+  @XLFunction(name = "scale",
+      description = "Scale the time series by a constant value",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries scale(final double scale) {
     final Double[] scaled = new Double[size()];
     for (int i = 0; i < size(); i++) {
-      scaled[i] = _values[i] * scale;
+      scaled[i] = _values[i] == null ? null : _values[i] * scale;
     }
     return new TimeSeries(_dates, scaled, false);
   }
 
+  @XLFunction(name = "abs",
+      description = "Absolute values of entries in the time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries abs() {
     final Double[] abs = new Double[size()];
     for (int i = 0; i < size(); i++) {
-      abs[i] = Math.abs(_values[i]);
+      abs[i] = _values[i] == null ? null : Math.abs(_values[i]);
     }
     return new TimeSeries(_dates, abs, false);
   }
 
+  @XLFunction(name = "reciprocal",
+      description = "Reciprocal values of entries in the time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries reciprocal() {
     final Double[] reciprocal = new Double[size()];
     for (int i = 0; i < size(); i++) {
-      reciprocal[i] = 1. / _values[i];
+      reciprocal[i] = _values[i] == null ? null : 1. / _values[i];
     }
     return new TimeSeries(_dates, reciprocal, false);
   }
@@ -361,6 +389,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   public boolean equals(final Object obj) {
     if (this == obj) {
       return true;
+    }
+    if (obj == null) {
+      return false;
     }
     if (getClass() != obj.getClass()) {
       return false;

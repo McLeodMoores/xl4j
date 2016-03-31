@@ -5,11 +5,15 @@ package com.mcleodmoores.excel4j.examples;
 
 import java.util.function.Function;
 
+import com.mcleodmoores.excel4j.XLClass;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
  *
  */
+@XLClass(name = "Variance",
+         description = "Calculates the sample variance of a time series",
+         category = "Time series")
 public class VarianceCalculator implements Function<TimeSeries, Double> {
 
   @Override
@@ -19,7 +23,7 @@ public class VarianceCalculator implements Function<TimeSeries, Double> {
     ArgumentChecker.isTrue(ts.size() > 1, "Cannot calculate variance for series with " + ts.size() + " values");
     int n = 1;
     double m = 0, m2 = 0;
-    for (final double value : ts.getValues()) {
+    for (final Double value : ts.getValues()) {
       final double delta = value - m;
       m += delta / n;
       m2 += delta * (value - m);

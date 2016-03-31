@@ -8,7 +8,7 @@ import java.util.function.BiFunction;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
- *
+ * Calculates the sample covariance of two time series.
  */
 public class CovarianceCalculator implements BiFunction<TimeSeries, TimeSeries, Double> {
 
