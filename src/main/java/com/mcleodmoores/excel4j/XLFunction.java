@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for method to be exposed as an Excel user-defined function (UDF).
+ * Annotation for methods to be exposed as an Excel user-defined function (UDF).
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
@@ -18,9 +18,9 @@ import java.lang.annotation.Target;
 public @interface XLFunction {
   // CHECKSTYLE:OFF  - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
   /**
-   * The name of the user defined function as used on the worksheet.
+   * The name of the user-defined function as used on the worksheet.
    * If this is not specified, the method name is used, with the name processed into
-   * leading capital camel case.  E.g. myMethod() becomes MyMethod().
+   * leading capital camel case, e.g. myMethod() becomes MyMethod().
    * @return the name
    */
   String name() default "";
@@ -37,7 +37,7 @@ public @interface XLFunction {
    */
   String description() default "";
   /**
-   * The help topic
+   * The help topic.
    * @return the help topic
    */
   String helpTopic() default "";

@@ -214,7 +214,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       }
     }
     if (frontIndex == 0 && backIndex == invokers.length - 1) {
-      throw new Excel4JRuntimeException("Could not find matching method called " + methodName + " with args "
+      throw new Excel4JRuntimeException("Could not find matching method called " + methodName.getValue() + " with args "
           + Arrays.toString(argTypes) + " for class " + clazz);
     }
     return invokers;
@@ -249,7 +249,6 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     return argumentConverters;
   }
 
-
   @Override
   public MethodInvoker getMethodTypeConverter(final Method method, final TypeConversionMode resultType) {
     final Class<?>[] genericParameterTypes = method.getParameterTypes();
@@ -267,6 +266,16 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       // here we chain on the exception that details the parameter name that doesn't match.
       throw new Excel4JRuntimeException("Could not find matching method " + method, e);
     }
+  }
 
+  @Override
+  public ConstructorInvoker getConstructorTypeConverter(final Constructor constructor) {
+    final Class<?>[] genericParameterTypes = constructor.getParameterTypes();
+    try {
+      final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
+      return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
+    } catch (final Excel4JRuntimeException e) {
+      throw new Excel4JRuntimeException("Could not find matching method " + constructor, e);
+    }
   }
 }

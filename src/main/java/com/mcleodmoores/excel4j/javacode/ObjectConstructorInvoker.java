@@ -34,7 +34,7 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
    * @see com.mcleodmoores.excel4j.javacode.ConstructorInvokerI#invoke(com.mcleodmoores.excel4j.values.XLValue[])
    */
   @Override
-  public XLValue invoke(final XLValue[] arguments) {
+  public XLValue newInstance(final XLValue[] arguments) {
     Object[] args;
     if (_constructor.isVarArgs()) {
       args = new Object[_constructor.getParameterCount()];
@@ -101,4 +101,13 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
     return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
   }
 
+  @Override
+  public boolean isVarArgs() {
+    return _constructor.isVarArgs();
+  }
+
+  @Override
+  public Class<?> getDeclaringClass() {
+    return _constructor.getDeclaringClass();
+  }
 }

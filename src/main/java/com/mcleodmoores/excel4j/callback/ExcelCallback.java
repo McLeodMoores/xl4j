@@ -3,6 +3,7 @@
  */
 package com.mcleodmoores.excel4j.callback;
 
+import com.mcleodmoores.excel4j.ConstructorDefinition;
 import com.mcleodmoores.excel4j.FunctionDefinition;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 
@@ -16,6 +17,8 @@ public interface ExcelCallback {
    * @param functionDefinition  the function definition, not null
    */
   void registerFunction(final FunctionDefinition functionDefinition);
+
+  void registerConstructor(ConstructorDefinition classDefinition);
 
   /**
    * Look up a binary blob given the Windows HANDLE type and length.  As HANDLE

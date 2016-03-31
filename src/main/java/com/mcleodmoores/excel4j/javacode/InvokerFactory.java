@@ -3,6 +3,7 @@
  */
 package com.mcleodmoores.excel4j.javacode;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import com.mcleodmoores.excel4j.TypeConversionMode;
@@ -41,8 +42,11 @@ public interface InvokerFactory {
                                        @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes)
                                        throws ClassNotFoundException;
 
+
+  ConstructorInvoker getConstructorTypeConverter(Constructor<?> constructor);
+
   /**
-   * Return a method type converter read to process calls for a given static method.
+   * Return a method type converter read to process calls for a given method.
    * This method is used when you already know the correct method to bind, such is when scanning annotated methods.
    * @param method  the method to be bound to
    * @param typeConversionMode  whether the result should be an object, simplified if possible or passed through unchanged

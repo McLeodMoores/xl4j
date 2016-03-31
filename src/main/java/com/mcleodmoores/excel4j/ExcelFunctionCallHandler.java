@@ -9,8 +9,9 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * Interface to be invoked from Excel.
  */
 public interface ExcelFunctionCallHandler {
+
   /**
-   * Invocation of a static method.
+   * Invocation of a method.
    * @param exportNumber  the number of the export in this block with the same number of parameters
    * @param args  the arguments to pass to the method
    * @return the value to pass back to Excel
