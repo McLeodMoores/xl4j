@@ -38,7 +38,7 @@ public:
 	static void printException (JNIEnv *pEnv, jthrowable exception);
 	//static void printXLOPER (XLOPER12 *oper);
 };
-#if 0 //def _DEBUG
+#if 1 //def _DEBUG
 #define TRACE(x, ...) 
 #else
 #define TRACE(x, ...) do { Debug::odprintf(TEXT(x) TEXT("\n"), __VA_ARGS__); } while (0)

@@ -24,6 +24,7 @@ interface IJvmSupport;
 interface IJvmTemplate;
 interface IScan;
 interface ICall;
+interface ICollect;
 
 /// <summary>Folder, on disk, containing Java class files.</summary>
 ///
@@ -483,6 +484,7 @@ struct XL4JMULTIREFERENCE {
 
 	HRESULT CreateScan ([out, retval] IScan **ppScan);
 	HRESULT CreateCall ([out, retval] ICall **ppCall);
+	HRESULT CreateCollect ([out, retval] ICollect **ppCollect);
 	//HRESULT scan ([out, retval] SAFEARRAY (FUNCTIONINFO) *result);
 }
 
@@ -755,6 +757,14 @@ interface ICall : IUnknown {
 }
 
 [
+	object,
+	uuid(1b60bc5e-8aff-4746-8d3d-5e0a9cf4694a)
+]
+interface ICollect : IUnknown {
+	HRESULT Collect ([in] SAFEARRAY (hyper) saFoundIds, [retval, out] hyper *piAllocations); // hyper is 64-bit integer.
+}
+
+[
 	uuid (0e07a0b8-0fa3-4497-bc66-6d2af2a0b9c8),
 	helpstring ("Core JVM Support 1.0 Type Library"),
 	version (1.0)
@@ -777,6 +787,7 @@ interface ICall : IUnknown {
 	interface IJvmTemplate;
 	interface IScan;
 	interface ICall;
+	interface ICollect;
 	[
 		uuid (34b9de97-d756-4d18-a65c-e7a688cdf3e7),
 		helpstring ("Library entry point"),

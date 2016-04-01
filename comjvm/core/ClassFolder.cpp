@@ -18,7 +18,7 @@ static const _bstr_t Expand (const _bstr_t &bstrRelative) {
 			pszBuffer = new TCHAR[cchBuffer];
 			DWORD cchResult = GetFullPathName (bstrRelative, cchBuffer, pszBuffer, NULL);
 			if (cchResult > cchBuffer) {
-				delete pszBuffer;
+				delete[] pszBuffer;
 				pszBuffer = NULL;
 				cchBuffer = cchResult;
 				continue;
@@ -29,7 +29,9 @@ static const _bstr_t Expand (const _bstr_t &bstrRelative) {
 	} catch (...) {
 		// Ignore
 	}
-	delete pszBuffer;
+	if (pszBuffer != NULL) {
+		delete[] pszBuffer;
+	}
 	return bstrResult;
 }
 

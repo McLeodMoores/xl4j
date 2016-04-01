@@ -41,7 +41,7 @@ public:
 		if (m_iSize == 0) {//m_apfnCallback.size () == 0) {
 			// Nothing in the queue - wait for something
 			TRACE ("(%p) CCallbackRequests::WaitForRequest: Nothing in the queue, wait for something", GetCurrentThreadId());
-			if (!m_hNotify) {
+			if (m_hNotify == NULL) {
 				TRACE ("(%p) CCallbackRequests::WaitForRequest: Creating Semaphore", GetCurrentThreadId ());
 				m_hNotify = CreateSemaphore (NULL, 0, MAXINT, NULL);
 			}

@@ -5,6 +5,7 @@
 #include "local/CCallExecutor.h"
 #include "FunctionRegistry.h"
 #include "Converter.h"
+#include "GarbageCollector.h"
 
 const IID XL4JOPER12_IID2 = {
 	0x053798d7,
@@ -55,6 +56,7 @@ FunctionRegistry *g_pFunctionRegistry;
 Converter *g_pConverter;
 Jvm *g_pJvm = NULL;
 DWORD g_dwTlsIndex;
+GarbageCollector *g_pCollector;
 
 
 void printXLOPER (XLOPER12 *oper) {
@@ -201,23 +203,36 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 
 void registerTimedGC () {
 	XLOPER12 now;
+	TRACE ("xlfNow");
 	Excel12f (xlfNow, &now, 0);
-	now.val.num += 20. / (3600. * 24.);
+	now.val.num += 2. / (3600. * 24.);
 	XLOPER12 retVal;
+	TRACE ("xlcOnTime");
 	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (TEXT("GarbageCollect")));
+	TRACE ("xlcFree");
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
 }
 
 void registerGCCommand (XLOPER12 *xDLL) {
+	FreeAllTempMemory ();
 	XLOPER12 retVal;
+	LPXLOPER12 exportName = TempStr12 (TEXT ("GarbageCollect"));
+	//((LPXLOPER12)NULL)->val;
+	LPXLOPER12 returnType = TempStr12 (TEXT ("J"));
+	LPXLOPER12 commandName = TempStr12 (TEXT ("GarbageCollect"));
+	LPXLOPER12 args = TempMissing12 ();
+	LPXLOPER12 functionType = TempInt12 (2);
+	TRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
+	
 	Excel12f (
 		xlfRegister, &retVal, 6, xDLL,
-		TempStr12 (TEXT ("GarbageCollect")), // export name
-		TempStr12 (TEXT ("J")), // return type, always J for commands
-		TempStr12 (TEXT ("GarbageCollect")), // command name
-		TempMissing12 (), // args
-		TempInt12 (2) // function type 2 = Command
+		exportName, // export name
+		returnType, // return type, always J for commands
+		commandName, // command name
+		args, // args
+		functionType // function type 2 = Command
 		);
+	TRACE ("After xlfRegister");
 }
 
 ///***************************************************************************
@@ -265,6 +280,7 @@ void registerGCCommand (XLOPER12 *xDLL) {
 // History:  Date       Author        Reason
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
+	InitFramework ();
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
 	g_pConverter = new Converter ();
@@ -276,8 +292,18 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	g_pFunctionRegistry->scan (); 
 	TRACE ("Finished scan");
 	g_pFunctionRegistry->registerFunctions (xDLL);
+	TRACE ("Creating ICollect");
+	ICollect *pCollect;
+	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
+	if (FAILED (hr)) {
+		_com_error err (hr);
+		TRACE ("Can't create ICollect instance: %s", err.ErrorMessage());
+	}
+	TRACE ("Creating GarbageCollector");
+	g_pCollector = new GarbageCollector (pCollect);
 	TRACE ("Registering GC Command");
 	registerGCCommand (&xDLL);
+	TRACE ("Registered, booking GC call");
 	registerTimedGC ();
 	TRACE ("Finished registration");
 	// Free the XLL filename //
@@ -478,102 +504,104 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
 	return(LPXLOPER12)&xInfo;
 }
-RW g_rw;
-COL g_col;
-IDSHEET g_sheet;
-
-void ScanCell (XLOPER12 *cell) {
-	printXLOPER (cell);
-	if ((cell->xltype == xltypeStr) &&
-		(cell->val.str[0] > 0) &&
-		(cell->val.str[1] == L'\x1A')) {
-		TRACE ("Found an object ref!");
-		printXLOPER (cell);
-	}
-}
-
-void ScanCells (int cols, int rows, XLOPER12 *arr) {
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			ScanCell (arr++);
-		}
-	}
-}
-
-
-void ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
-	XLOPER12 firstRow;
-	XLOPER12 lastRow;
-	XLOPER12 firstCol;
-	XLOPER12 lastCol;
-	Excel12f (xlfGetDocument, &firstRow, 2, TempInt12 (9), pSheetName);
-	Excel12f (xlfGetDocument, &lastRow, 2, TempInt12 (10), pSheetName);
-	Excel12f (xlfGetDocument, &firstCol, 2, TempInt12 (11), pSheetName);
-	Excel12f (xlfGetDocument, &lastCol, 2, TempInt12 (12), pSheetName);
-	if (firstRow.val.num == 0) {
-		TRACE ("sheet was empty");
-		return; // sheet empty.
-	}
-	XLOPER12 sheetId;
-	Excel12f (xlSheetId, &sheetId, 1, pSheetName);
-	if (sheetId.xltype == xltypeErr) {
-		TRACE ("Could not get sheet ID");
-		return;
-	}
-	XLOPER12 wholeRow;
-	XLMREF12 xlmRef;
-	wholeRow.xltype = xltypeRef;
-	wholeRow.val.mref.idSheet = sheetId.val.mref.idSheet;
-	wholeRow.val.mref.lpmref = &xlmRef;
-    xlmRef.count = 1;
-	xlmRef.reftbl[0].colFirst = (COL) firstCol.val.num - 1;
-	xlmRef.reftbl[0].colLast = (COL) lastCol.val.num - 1;
-	
-	for (int i = (RW) firstRow.val.num - 1; i <= (RW) lastRow.val.num - 1; i++) {
-		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
-		wholeRow.val.mref.lpmref->reftbl[0].rwFirst = i;
-		wholeRow.val.mref.lpmref->reftbl[0].rwLast = i;
-		XLOPER12 row;
-		Excel12f (xlCoerce, &row, 2, &wholeRow, pMulti);
-		ScanCells (row.val.array.columns, row.val.array.rows, row.val.array.lparray);
-		Excel12f (xlFree, 0, 1, &row);
-	}
-	Excel12f (xlFree, 0, 1, &firstRow);
-	Excel12f (xlFree, 0, 1, &lastRow);
-	Excel12f (xlFree, 0, 1, &firstCol);
-	Excel12f (xlFree, 0, 1, &lastCol);
-}
-
-
-void ScanWorkbook (XLOPER12 *pWorkbookName) {
-	XLOPER12 sheets;
-	XLOPER12 *pArgNum = TempInt12 (1); // horiz array of all sheets in workbook
-	Excel12f (xlfGetWorkbook, &sheets, 2, pArgNum, pWorkbookName);
-	int cSheets = sheets.val.array.columns;
-	XLOPER12 *pSheetName;
-	int i;
-	for (pSheetName = sheets.val.array.lparray, i = 0; i < cSheets; pSheetName++, i++) {
-		TRACE ("Sheet=");
-		printXLOPER (pSheetName);
-		ScanSheet (pWorkbookName, pSheetName);
-	}
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&sheets);
-	FreeAllTempMemory ();
-}
+//RW g_rw;
+//COL g_col;
+//IDSHEET g_sheet;
+//
+//void ScanCell (XLOPER12 *cell) {
+//	printXLOPER (cell);
+//	if ((cell->xltype == xltypeStr) &&
+//		(cell->val.str[0] > 0) &&
+//		(cell->val.str[1] == L'\x1A')) {
+//		TRACE ("Found an object ref!");
+//		printXLOPER (cell);
+//	}
+//}
+//
+//void ScanCells (int cols, int rows, XLOPER12 *arr) {
+//	for (int i = 0; i < rows; i++) {
+//		for (int j = 0; j < cols; j++) {
+//			ScanCell (arr++);
+//		}
+//	}
+//}
+//
+//
+//void ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
+//	XLOPER12 firstRow;
+//	XLOPER12 lastRow;
+//	XLOPER12 firstCol;
+//	XLOPER12 lastCol;
+//	Excel12f (xlfGetDocument, &firstRow, 2, TempInt12 (9), pSheetName);
+//	Excel12f (xlfGetDocument, &lastRow, 2, TempInt12 (10), pSheetName);
+//	Excel12f (xlfGetDocument, &firstCol, 2, TempInt12 (11), pSheetName);
+//	Excel12f (xlfGetDocument, &lastCol, 2, TempInt12 (12), pSheetName);
+//	if (firstRow.val.num == 0) {
+//		TRACE ("sheet was empty");
+//		return; // sheet empty.
+//	}
+//	XLOPER12 sheetId;
+//	Excel12f (xlSheetId, &sheetId, 1, pSheetName);
+//	if (sheetId.xltype == xltypeErr) {
+//		TRACE ("Could not get sheet ID");
+//		return;
+//	}
+//	XLOPER12 wholeRow;
+//	XLMREF12 xlmRef;
+//	wholeRow.xltype = xltypeRef;
+//	wholeRow.val.mref.idSheet = sheetId.val.mref.idSheet;
+//	wholeRow.val.mref.lpmref = &xlmRef;
+//    xlmRef.count = 1;
+//	xlmRef.reftbl[0].colFirst = (COL) firstCol.val.num - 1;
+//	xlmRef.reftbl[0].colLast = (COL) lastCol.val.num - 1;
+//	
+//	for (int i = (RW) firstRow.val.num - 1; i <= (RW) lastRow.val.num - 1; i++) {
+//		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
+//		wholeRow.val.mref.lpmref->reftbl[0].rwFirst = i;
+//		wholeRow.val.mref.lpmref->reftbl[0].rwLast = i;
+//		XLOPER12 row;
+//		Excel12f (xlCoerce, &row, 2, &wholeRow, pMulti);
+//		ScanCells (row.val.array.columns, row.val.array.rows, row.val.array.lparray);
+//		Excel12f (xlFree, 0, 1, &row);
+//	}
+//	Excel12f (xlFree, 0, 1, &firstRow);
+//	Excel12f (xlFree, 0, 1, &lastRow);
+//	Excel12f (xlFree, 0, 1, &firstCol);
+//	Excel12f (xlFree, 0, 1, &lastCol);
+//}
+//
+//XLOPER12 *pDocuments;
+//
+//void ScanWorkbook (XLOPER12 *pWorkbookName) {
+//	XLOPER12 sheets;
+//	XLOPER12 *pArgNum = TempInt12 (1); // horiz array of all sheets in workbook
+//	Excel12f (xlfGetWorkbook, &sheets, 2, pArgNum, pWorkbookName);
+//	int cSheets = sheets.val.array.columns;
+//	XLOPER12 *pSheetName;
+//	int i;
+//	for (pSheetName = sheets.val.array.lparray, i = 0; i < cSheets; pSheetName++, i++) {
+//		TRACE ("Sheet=");
+//		printXLOPER (pSheetName);
+//		ScanSheet (pWorkbookName, pSheetName);
+//	}
+//	Excel12f (xlFree, 0, 1, (LPXLOPER12)&sheets);
+//	FreeAllTempMemory ();
+//}
 
 __declspec(dllexport) int GarbageCollect () {
 	TRACE ("GarbageCollect() called.");
-	XLOPER12 documents;
-	Excel12f (xlfDocuments, &documents, 0);
-	int cDocs = documents.val.array.columns;
-	int i;
-	XLOPER12 *pWorkbookName;
-	for (pWorkbookName = documents.val.array.lparray, i = 0; i < cDocs; pWorkbookName++, i++) {
-		TRACE ("WorkbookName=");
-		printXLOPER (pWorkbookName);
-		ScanWorkbook (pWorkbookName);
-	}
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&documents);
+	//XLOPER12 documents;
+	//Excel12f (xlfDocuments, &documents, 0);
+	//int cDocs = documents.val.array.columns;
+	//int i;
+	//XLOPER12 *pWorkbookName;
+	//for (pWorkbookName = documents.val.array.lparray, i = 0; i < cDocs; pWorkbookName++, i++) {
+	//	TRACE ("WorkbookName=");
+	//	printXLOPER (pWorkbookName);
+	//	ScanWorkbook (pWorkbookName);
+	//}
+	//Excel12f (xlFree, 0, 1, (LPXLOPER12)&documents);
+	g_pCollector->Collect ();
 	registerTimedGC ();
 	return 1;
 }
@@ -614,7 +642,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
 		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		LARGE_INTEGER ta1, ta2, freq;
+		//LARGE_INTEGER ta1, ta2, freq;
 		//QueryPerformanceCounter (&ta1);
 		g_pConverter->convert (arg, pInputs++);
 		//QueryPerformanceCounter (&ta2);
@@ -642,7 +670,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 		}
 		QueryPerformanceCounter (&tva2);
 		QueryPerformanceFrequency (&freq);
-		Debug::odprintf (TEXT ("varargs section took %lld"), i, ((tva2.QuadPart - tva1.QuadPart) * 1000000) / freq.QuadPart);
+		//Debug::odprintf (TEXT ("varargs section took %lld"), i, ((tva2.QuadPart - tva1.QuadPart) * 1000000) / freq.QuadPart);
 	} else {
 		SafeArrayUnaccessData (saInputs);
 	}

@@ -28,7 +28,8 @@ public:
 		InitializeCriticalSection (&m_cs);
 		m_eState = NOT_RUNNING;
 		m_pJvm = NULL;
-		m_dwJvmRef = GetTickCount ();
+		#pragma warning(suppress: 28159)
+		m_dwJvmRef = GetTickCount (); // suppress warning suggesting GetTickCount64
 		TRACE ("(%p) CVMHolder constructor called.  m_dwJvmRef initialized to %d", GetCurrentThreadId (), m_dwJvmRef);
 	}
 	~CVMHolder () {

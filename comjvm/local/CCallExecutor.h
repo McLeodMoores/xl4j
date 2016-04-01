@@ -19,22 +19,6 @@ const IID XL4JOPER12_IID = {
 		0xb5
 	}
 };
-//
-//const IID ComJvmCore_LIBID = {
-//	0x0e07a0b8,
-//	0x0fa3,
-//	0x4497,
-//	{
-//		0xbc,
-//		0x66,
-//		0x6d,
-//		0x2a,
-//		0xf2,
-//		0xa0,
-//		0xb9,
-//		0xc8
-//	}
-//};
 
 class CCallExecutor {
 private:

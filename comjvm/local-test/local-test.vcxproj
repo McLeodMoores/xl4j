@@ -76,7 +76,7 @@
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
-    <LibraryPath>C:\Program Files (x86)\Java\jdk1.8.0_20\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);C:\Program Files (x86)\Java\jdk1.8.0_20\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -109,17 +109,21 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -193,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CCallTest.cpp" />
+    <ClCompile Include="CCollectTest.cpp" />
     <ClCompile Include="classpath.cpp" />
     <ClCompile Include="Connect.cpp" />
     <ClCompile Include="ContextSwitchTest.cpp" />

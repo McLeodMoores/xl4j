@@ -55,13 +55,15 @@ JniCache::JniCache () {
 	m_jmXLArray_getArray = NULL;
 	m_joCallHandler = NULL;
 	m_jmExcelFunctionCallHandler_invoke = NULL;
+	m_joHeap = NULL;
+	m_jmHeap_cycleGC = NULL;
 }
 
 JniCache::~JniCache () {
-	destroy (m_initializerEnv);
+	Destroy (m_initializerEnv);
 }
 
-void JniCache::init (JNIEnv *pEnv) {
+void JniCache::Init (JNIEnv *pEnv) {
 	if (m_initializerEnv != NULL) {
 		return;
 	}
@@ -143,13 +145,17 @@ void JniCache::init (JNIEnv *pEnv) {
 	TRACE ("Getting function call handler (excel instance = %p", joExcel);
 	m_joCallHandler = pEnv->NewGlobalRef(pEnv->CallObjectMethod (joExcel, jmExcel_getExcelCallHandler));
 
-	validateHandles ();
+	jclass jcHeap = pEnv->FindClass ("com/mcleodmoores/excel4j/heap/Heap");
+	jmethodID jmExcel_getHeap = pEnv->GetMethodID (jcExcel, "getHeap", "()Lcom/mcleodmoores/excel4j/heap/Heap;");
+    m_joHeap = pEnv->NewGlobalRef(pEnv->CallObjectMethod (joExcel, jmExcel_getHeap));
+	m_jmHeap_cycleGC = pEnv->GetMethodID (jcHeap, "cycleGC", "([J)J");
+
+	ValidateHandles ();
 	TRACE ("JCache::init() done");
 	m_initializerEnv = pEnv;
-
 }
 
-void JniCache::validateHandles () {
+void JniCache::ValidateHandles () {
 	assert(m_jcXLNumber != NULL);
 	assert(m_jmXLNumber_of != NULL);
 	assert(m_jcXLString != NULL);
@@ -202,9 +208,11 @@ void JniCache::validateHandles () {
 	assert(m_jmXLArray_getArray != NULL);
 	assert(m_joCallHandler != NULL);
 	assert(m_jmExcelFunctionCallHandler_invoke != NULL);
+	assert(m_joHeap != NULL);
+	assert(m_jmHeap_cycleGC != NULL);
 }
 
-void JniCache::destroy (JNIEnv *pEnv) {
+void JniCache::Destroy (JNIEnv *pEnv) {
 	if (pEnv == NULL) {
 		// init never called so no need to delete refs
 		return;
@@ -235,34 +243,41 @@ void JniCache::destroy (JNIEnv *pEnv) {
 	pEnv->DeleteGlobalRef (m_jcXLBigData);
 	pEnv->DeleteGlobalRef (m_jcXLObject);
 	pEnv->DeleteGlobalRef (m_joCallHandler);
+	pEnv->DeleteGlobalRef (m_joHeap);
 }
 
-jobject JniCache::invokeCallHandler (JNIEnv *pEnv, jint iFunctionNum, jobjectArray joaArgs) {
+jobject JniCache::InvokeCallHandler (JNIEnv *pEnv, jint iFunctionNum, jobjectArray joaArgs) {
 	//TRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
 	return pEnv->CallObjectMethod (m_joCallHandler, m_jmExcelFunctionCallHandler_invoke, iFunctionNum, joaArgs);
 }
 
-jobjectArray JniCache::allocArgumentArray (JNIEnv *pEnv, jsize szArgs) {
+jlong JniCache::CycleGC (JNIEnv *pEnv, jlongArray jlaValidIds) {
+	//TRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
+	EnsureInit (pEnv);
+	return pEnv->CallLongMethod (m_joHeap, m_jmHeap_cycleGC, jlaValidIds);
+}
+
+jobjectArray JniCache::AllocArgumentArray (JNIEnv *pEnv, jsize szArgs) {
 	return pEnv->NewObjectArray (szArgs, m_jcXLValue, NULL);
 }
 
 jobject JniCache::XLNumber_of (JNIEnv *pEnv, jdouble value) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallStaticObjectMethod (m_jcXLNumber, m_jmXLNumber_of, value);
 }
 
 jobject JniCache::XLString_of (JNIEnv *pEnv, jstring value) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallStaticObjectMethod (m_jcXLString, m_jmXLString_of, value);
 }
 
 jobject JniCache::XLBoolean_from (JNIEnv *pEnv, jboolean value) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallStaticObjectMethod (m_jcXLBoolean, m_jmXLBoolean_from, value); // hope this deals with TRUE == -1 crap
 }
 
 jobject JniCache::XLMultiReference_of (JNIEnv *pEnv, jint sheetId, XL4JREFERENCE *pRefs, size_t cRefs) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	jobject joSheetId = pEnv->CallStaticObjectMethod (m_jcXLSheetId, m_jmXLSheetId_of, sheetId);
 	jobjectArray joaXLRanges = pEnv->NewObjectArray (cRefs, m_jcXLRange, NULL);
 	for (size_t i = 0; i < cRefs; i++) {
@@ -277,7 +292,7 @@ jobject JniCache::XLMultiReference_of (JNIEnv *pEnv, jint sheetId, XL4JREFERENCE
 }
 
 jobject JniCache::XLLocalReference_of (JNIEnv *pEnv, XL4JREFERENCE *pRef) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	RW rwFirst = pRef->rwFirst;
 	RW rwLast = pRef->rwLast;
 	COL colFirst = pRef->colFirst;
@@ -287,7 +302,7 @@ jobject JniCache::XLLocalReference_of (JNIEnv *pEnv, XL4JREFERENCE *pRef) {
 }
 
 jobject JniCache::XLError_from (JNIEnv *pEnv, jint err) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	switch (err) {
 	case xl4jerrNull: 
 		return m_joXLError_Null;
@@ -311,59 +326,59 @@ jobject JniCache::XLError_from (JNIEnv *pEnv, jint err) {
 }
 
 jobject JniCache::XLArray_of (JNIEnv *pEnv, jobjectArray arr) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallStaticObjectMethod (m_jcXLArray, m_jmXLArray_of, arr);
 }
 
-jobjectArray JniCache::allocXLValueArrayOfArrays (JNIEnv *pEnv, jsize cElements) {
-	ensureInit (pEnv);
+jobjectArray JniCache::AllocXLValueArrayOfArrays (JNIEnv *pEnv, jsize cElements) {
+	EnsureInit (pEnv);
 	return pEnv->NewObjectArray (cElements, m_jcaXLValue, NULL);
 }
 
-jobjectArray JniCache::allocXLValueArray (JNIEnv *pEnv, jsize cElements) {
-	ensureInit (pEnv);
+jobjectArray JniCache::AllocXLValueArray (JNIEnv *pEnv, jsize cElements) {
+	EnsureInit (pEnv);
 	return pEnv->NewObjectArray (cElements, m_jcXLValue, NULL);
 }
 
 jobject JniCache::XLNil (JNIEnv *pEnv) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return m_joXLNil;
 }
 
 jobject JniCache::XLMissing (JNIEnv *pEnv) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return m_joXLMissing;
 }
 
 jobject JniCache::XLInteger_of (JNIEnv *pEnv, jint value) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallStaticObjectMethod (m_jcXLInteger, m_jmXLInteger_of, value);
 }
 
 jstring JniCache::XLObject_getValue (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	jobject joXLString = pEnv->CallObjectMethod (obj, m_jmXLObject_toXLString);
 	return (jstring)pEnv->CallObjectMethod (joXLString, m_jmXLString_getValue);
 }
 jstring JniCache::XLString_getValue (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return (jstring)pEnv->CallObjectMethod (obj, m_jmXLString_getValue);
 }
 double JniCache::XLNumber_getValue (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallDoubleMethod (obj, m_jmXLNumber_getValue);
 }
 jobjectArray JniCache::XLMultiReference_getRangesArray (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return (jobjectArray)pEnv->CallObjectMethod (obj, m_jmXLMultiReference_getRangesArray);
 }
 int JniCache::XLMultiReference_getSheetId (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	jobject joSheetId = pEnv->CallObjectMethod (obj, m_jmXLMultiReference_getSheetId);
 	return pEnv->CallIntMethod (joSheetId, m_jmXLSheetId_getSheetId);
 }
 void JniCache::XlMultiReference_getValues (JNIEnv *pEnv, jobjectArray range, XL4JREFERENCE *rangesOut, jsize cElems) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	for (jsize i = 0; i < cElems; i++) {
 		jobject joXLRange = pEnv->GetObjectArrayElement (range, i);
 		jint jiRowFirst = pEnv->CallIntMethod (joXLRange, m_jmXLRange_getRowFirst);
@@ -377,7 +392,7 @@ void JniCache::XlMultiReference_getValues (JNIEnv *pEnv, jobjectArray range, XL4
 	}
 }
 void JniCache::XLLocalReference_getValue (JNIEnv *pEnv, jobject obj, XL4JREFERENCE *rangeOut) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	jobject joXLRange = pEnv->CallObjectMethod (obj, m_jmXLLocalReference_getRange);
 	jint jiRowFirst = pEnv->CallIntMethod (joXLRange, m_jmXLRange_getRowFirst);
 	jint jiRowLast = pEnv->CallIntMethod (joXLRange, m_jmXLRange_getRowLast);
@@ -389,68 +404,68 @@ void JniCache::XLLocalReference_getValue (JNIEnv *pEnv, jobject obj, XL4JREFEREN
 	rangeOut->colLast = jiColLast;
 }
 int JniCache::XLInteger_getValue (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallIntMethod (obj, m_jmXLInteger_getValue);
 }
 jint JniCache::XLError_ordinal (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallIntMethod (obj, m_jmXLError_ordinal);
 }
 
 jint JniCache::XLBoolean_ordinal (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return pEnv->CallIntMethod (obj, m_jmXLBoolean_ordinal);
 }
 jobjectArray JniCache::XLArray_getArray (JNIEnv *pEnv, jobject obj) {
-	ensureInit (pEnv);
+	EnsureInit (pEnv);
 	return (jobjectArray) pEnv->CallObjectMethod (obj, m_jmXLArray_getArray);
 }
 
-jboolean JniCache::isXLObject (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLObject (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLObject);
 }
-jboolean JniCache::isXLString (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLString (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLString);
 }
-jboolean JniCache::isXLNumber (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLNumber (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLNumber);
 }
-jboolean JniCache::isXLNil (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLNil (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLNil);
 }
-jboolean JniCache::isXLMultiReference (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLMultiReference (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLMultiReference);
 }
-jboolean JniCache::isXLMissing (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLMissing (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLMissing);
 }
-jboolean JniCache::isXLLocalReference (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLLocalReference (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLLocalReference);
 }
-jboolean JniCache::isXLInteger (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLInteger (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLInteger);
 }
-jboolean JniCache::isXLError (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLError (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLError);
 }
-jboolean JniCache::isXLBoolean (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLBoolean (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLBoolean);
 }
-jboolean JniCache::isXLBigData (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLBigData (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLBigData);
 }
-jboolean JniCache::isXLArray (JNIEnv *pEnv, jclass clazz) {
-	ensureInit (pEnv);
+jboolean JniCache::IsXLArray (JNIEnv *pEnv, jclass clazz) {
+	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLArray);
 }

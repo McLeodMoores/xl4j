@@ -71,28 +71,28 @@
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>C:\2013 Office System Developer Resources\Excel2013XLLSDK\INCLUDE;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -105,12 +105,13 @@
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -133,6 +134,9 @@
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

@@ -76,6 +76,7 @@
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <LibraryPath>$(OutDir);C:\Program Files (x86)\Java\jdk1.8.0_20\lib;C:\2013 Office System Developer Resources\Excel2013XLLSDK\LIB;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -83,6 +84,7 @@
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <LibraryPath>$(OutDir);C:\Program Files\Java\jdk1.8.0_20\lib;C:\2013 Office System Developer Resources\Excel2013XLLSDK\LIB\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -90,6 +92,7 @@
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <LibraryPath>$(OutDir);C:\Program Files (x86)\Java\jdk1.8.0_20\lib;C:\2013 Office System Developer Resources\Excel2013XLLSDK\LIB;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -97,6 +100,7 @@
     <IntDir>$(OutDir)$(ProjectName)\</IntDir>
     <IncludePath>$(SolutionDir);$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);$(IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>false</PostBuildEventUseInBuild>
+    <LibraryPath>$(OutDir);C:\Program Files\Java\jdk1.8.0_20\lib;C:\2013 Office System Developer Resources\Excel2013XLLSDK\LIB\x64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -107,6 +111,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -117,6 +122,9 @@
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

@@ -20,7 +20,7 @@ import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
  * Type converter to convert from arrays of Objects to Excel arrays and back again. When converting
- * back to Java, the most specific converter that can be found is used (e.g. Boolean -> XLBoolean,
+ * back to Java, the most specific converter that can be found is used (e.g. Boolean -&gt; XLBoolean,
  * rather than an XLObject wrapping a boolean).This converter is higher priority than
  * {@link ObjectArrayXLArrayTypeConverter2}, which only converts to XLObjects.
  */

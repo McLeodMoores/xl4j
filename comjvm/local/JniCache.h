@@ -1,3 +1,5 @@
+#pragma once
+
 #include "stdafx.h"
 #include "Jvm.h"
 #include <assert.h>
@@ -57,19 +59,22 @@ private:
 	jmethodID m_jmXLArray_getArray;
 	jobject m_joCallHandler;
 	jmethodID m_jmExcelFunctionCallHandler_invoke;
+	jobject m_joHeap;
+	jmethodID m_jmHeap_cycleGC;
 	// environment used for very first call saved so we can free global handles
 	JNIEnv *m_initializerEnv;
-	void init (JNIEnv *pEnv);
-	void destroy (JNIEnv *pEnv);
-	void validateHandles ();
+	void Init (JNIEnv *pEnv);
+	void Destroy (JNIEnv *pEnv);
+	void ValidateHandles ();
 	// inlined for performance as called often, may be unnecessary as compiler might inline test itself.
-	inline void ensureInit (JNIEnv *pEnv) { if (m_initializerEnv == NULL) { init (pEnv); } }
+	inline void EnsureInit (JNIEnv *pEnv) { if (m_initializerEnv == NULL) { Init (pEnv); } }
 public:
 	// we don't store JNIEnv once in constr as may be different on different threads.
 	JniCache ();
 	~JniCache ();
-	jobject invokeCallHandler (JNIEnv *pEnv, jint iFunctionNum, jobjectArray joaArgs);
-	jobjectArray allocArgumentArray (JNIEnv *pEnv, jsize szArgs);
+	jobject InvokeCallHandler (JNIEnv *pEnv, jint iFunctionNum, jobjectArray joaArgs);
+	jlong CycleGC (JNIEnv *pEnv, jlongArray jlaValidIds);
+	jobjectArray AllocArgumentArray (JNIEnv *pEnv, jsize szArgs);
 	// methods for XLOPER->XLValue conversion
 	jobject XLNumber_of (JNIEnv *pEnv, jdouble value);
 	jobject XLString_of (JNIEnv *pEnv, jstring value);
@@ -78,8 +83,8 @@ public:
 	jobject XLLocalReference_of (JNIEnv *pEnv, XL4JREFERENCE *pRef);
 	jobject XLError_from (JNIEnv *pEnv, jint err);
 	jobject XLArray_of (JNIEnv *pEnv, jobjectArray arr);
-	jobjectArray allocXLValueArrayOfArrays (JNIEnv *pEnv, jsize cElements);
-	jobjectArray allocXLValueArray (JNIEnv *pEnv, jsize cElements);
+	jobjectArray AllocXLValueArrayOfArrays (JNIEnv *pEnv, jsize cElements);
+	jobjectArray AllocXLValueArray (JNIEnv *pEnv, jsize cElements);
 	jobject XLNil (JNIEnv *pEnv);
 	jobject XLMissing (JNIEnv *pEnv);
 	jobject XLInteger_of (JNIEnv *pEnv, jint value);
@@ -97,16 +102,16 @@ public:
 	jint XLBoolean_ordinal (JNIEnv *pEnv, jobject obj);
 	jobjectArray XLArray_getArray (JNIEnv *pEnv, jobject obj);
 
-	jboolean isXLObject (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLString (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLNumber (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLNil (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLMultiReference (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLMissing (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLLocalReference (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLInteger (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLError (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLBoolean (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLBigData (JNIEnv *pEnv, jclass clazz);
-	jboolean isXLArray (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLObject (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLString (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLNumber (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLNil (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLMultiReference (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLMissing (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLLocalReference (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLInteger (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLError (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLBoolean (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLBigData (JNIEnv *pEnv, jclass clazz);
+	jboolean IsXLArray (JNIEnv *pEnv, jclass clazz);
 };

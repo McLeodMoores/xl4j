@@ -29,9 +29,17 @@ HRESULT STDMETHODCALLTYPE CAbstractJvm::QueryInterface (
 	/* [in] */ REFIID riid,
 	/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject
 	) {
-	// TODO
-//	TRACE ("Query interface not implemented");
-	return E_NOTIMPL;
+	if (!ppvObject) return E_POINTER;
+	if (riid == IID_IUnknown) {
+		*ppvObject = static_cast<IUnknown*> (this);
+	} else if (riid == _uuidof(IJvm)) {
+		*ppvObject = static_cast<IJvm*> (this);
+	} else {
+		*ppvObject = NULL;
+		return E_NOINTERFACE;
+	}
+	AddRef ();
+	return S_OK;
 }
 
 ULONG STDMETHODCALLTYPE CAbstractJvm::AddRef () {

@@ -3,21 +3,21 @@
 //#include "utils/Debug.h"
 //#include "helper/JniSequenceHelper.h"
 //#include "helper/ClasspathUtils.h"
-#include "CCall.h"
+#include "CCollect.h"
 #include "Internal.h"
 
 
-CCall::CCall (CJvm *pJvm) {
+CCollect::CCollect (CJvm *pJvm) {
 	m_pJvm = pJvm;
 	m_pJniCache = new JniCache ();
-	m_pExecutor = new CCallExecutor (this, m_pJniCache);
+	m_pExecutor = new CCollectExecutor (this, m_pJniCache);
 	m_pExecutor->AddRef (); // RC2
 	IncrementActiveObjectCount ();
 	m_pJvm->AddRef ();
 	InitializeCriticalSection (&m_cs);
-
 }
-CCall::~CCall () {
+
+CCollect::~CCollect () {
 	assert (m_lRefCount == 0);
 	DeleteCriticalSection (&m_cs);
 	m_pJvm->Release ();
@@ -29,22 +29,12 @@ CCall::~CCall () {
 
 static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
 	TRACE ("Entering static callback function _call");
-	CCallExecutor *pExecutor = (CCallExecutor*)lpData;
+	CCollectExecutor *pExecutor = (CCollectExecutor*)lpData;
 	HRESULT hr = pExecutor->Run (pEnv);
-	//if (SUCCEEDED (hr)) {
-	//	TRACE ("_call: Run returned success");
-	//	hr = pExecutor->Wait ();
-	//	TRACE ("pExecutor->Wait() returned");
-	//	Debug::print_HRESULT (hr);
-	//} else {
-	//	TRACE ("_call: Run returned failure");
-	//	Debug::print_HRESULT (hr);
-	//	pExecutor->Release ();
-	//}
 	return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
+HRESULT STDMETHODCALLTYPE CCollect::Collect (/* [in] */ SAFEARRAY * psaValidIds, /* [out, retval] */ hyper *piAllocations) {
 	HRESULT hr;
 	//LARGE_INTEGER t1, t2, t3, t4, t5, freq;
 	//long long constr;
@@ -53,27 +43,27 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ i
 	//long long release;
 	try {
 #if 0
-		CCallExecutor *pExecutor = new CCallExecutor (this, m_pJniCache);// RC1
+		CCollectExecutor *pExecutor = new CCollectorxecutor (this, m_pJniCache);// RC1
 #else
-		CCallExecutor *pExecutor = m_pExecutor;
+		CCollectExecutor *pExecutor = m_pExecutor;
 		pExecutor->AddRef ();
 #endif
 		pExecutor->AddRef ();
-		pExecutor->SetArguments (result, iFunctionNum, args); //
+		pExecutor->SetArguments (psaValidIds, piAllocations); //
 		//QueryPerformanceCounter (&t1);
-	
+
 		//QueryPerformanceCounter (&t2);
-		TRACE ("CCall::call on safearray** about to call Execute on vm");
+		TRACE ("CCollect::Collect about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);
 		if (SUCCEEDED (hr)) {
 			//QueryPerformanceCounter (&t3);
-			TRACE ("CCall::call vm execute succeeded");
+			TRACE ("CCollect::Collect vm execute succeeded");
 			// The executor will release RC2
 			hr = pExecutor->Wait ();
 			//QueryPerformanceCounter (&t4);
-			TRACE ("CCall::call hr = %x after Wait()", hr);
+			TRACE ("CCollect::Collect hr = %x after Wait()", hr);
 		} else {
-			TRACE ("CCall::call vm execute failed");
+			TRACE ("CCollect::Collect vm execute failed");
 			// Release RC2
 			pExecutor->Release ();
 		}
@@ -82,7 +72,7 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ i
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
-	TRACE ("CCall::call Returning hr = %x", hr);
+	TRACE ("CCollect::call Returning hr = %x", hr);
 	//QueryPerformanceCounter (&t5);
 	//QueryPerformanceFrequency (&freq);
 	//constr = ((t2.QuadPart - t1.QuadPart) * 1000000) / freq.QuadPart;
@@ -93,7 +83,7 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ i
 	return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CCall::QueryInterface (
+HRESULT STDMETHODCALLTYPE CCollect::QueryInterface (
 	/* [in] */ REFIID riid,
 	/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject
 	) {
@@ -101,7 +91,7 @@ HRESULT STDMETHODCALLTYPE CCall::QueryInterface (
 	if (riid == IID_IUnknown) {
 		*ppvObject = static_cast<IUnknown*> (this);
 	} else if (riid == IID_IScan) {
-		*ppvObject = static_cast<ICall*> (this);
+		*ppvObject = static_cast<ICollect*> (this);
 	} else {
 		*ppvObject = NULL;
 		return E_NOINTERFACE;
@@ -110,11 +100,11 @@ HRESULT STDMETHODCALLTYPE CCall::QueryInterface (
 	return S_OK;
 }
 
-ULONG CCall::AddRef () {
+ULONG CCollect::AddRef () {
 	return InterlockedIncrement (&m_lRefCount);
 }
 
-ULONG STDMETHODCALLTYPE CCall::Release () {
+ULONG STDMETHODCALLTYPE CCollect::Release () {
 	ULONG lResult = InterlockedDecrement (&m_lRefCount);
 	if (!lResult) delete this;
 	return lResult;
