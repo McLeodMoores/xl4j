@@ -4,6 +4,7 @@
 package com.mcleodmoores.excel4j;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.callback.ExcelCallback;
+import com.mcleodmoores.excel4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.excel4j.javacode.InvokerFactory;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
@@ -35,9 +37,12 @@ public class FunctionRegistry {
   private static final Logger LOGGER = LoggerFactory.getLogger(FunctionRegistry.class);
   // REVIEW: is this the best structure to use?
   private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
+  private final Set<ConstructorDefinition> _constructorDefinitions = Collections.synchronizedSet(new HashSet<ConstructorDefinition>());
   private final AtomicInteger _exportCounter = new AtomicInteger();
   private final ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
   private final BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
+  private final ConcurrentMap<Integer, ConstructorDefinition> _constructorDefinitionLookup = new ConcurrentHashMap<>();
+  private final BlockingQueue<Collection<ConstructorDefinition>> _finishedConstructorScan = new ArrayBlockingQueue<>(1);
   /**
    * Default constructor.
    * @param invokerFactory  invoker factory used to create method and constructor invokers to perform type conversions
@@ -64,6 +69,7 @@ public class FunctionRegistry {
       LOGGER.info("Scan and create finished, putting to Blocking Queue");
       try {
         _finishedScan.put(_functionDefinitions);
+        _finishedConstructorScan.put(_constructorDefinitions);
       } catch (final InterruptedException e) {
         throw new Excel4JRuntimeException("Unexpected interrupt while sending function definitions over queue");
       }
@@ -71,14 +77,14 @@ public class FunctionRegistry {
   }
 
   /**
-   * Register functions.
+   * Register functions and constructors.
    * @param callback the Excel callback interface
    */
   public void registerFunctions(final ExcelCallback callback) {
     LOGGER.info("registerFunctions called with {}", callback);
     try {
       final Collection<FunctionDefinition> take = _finishedScan.take();
-      LOGGER.info("got colleciton from finishedScan queue, iterating over them...");
+      LOGGER.info("got collection from finishedScan queue, iterating over them...");
       for (final FunctionDefinition functionDefinition : take) {
         try {
           callback.registerFunction(functionDefinition);
@@ -87,8 +93,18 @@ public class FunctionRegistry {
         }
       }
       LOGGER.info("finished registering functions");
+      final Collection<ConstructorDefinition> takeConstructors = _finishedConstructorScan.take();
+      LOGGER.info("got collection from finishedConstructorScan queue, iterating over them...");
+      for (final ConstructorDefinition classDefinition : takeConstructors) {
+        try {
+          callback.registerConstructor(classDefinition);
+        } catch (final Excel4JRuntimeException xl4jre) {
+          LOGGER.error("Problem registering constructor, skipping", xl4jre);
+        }
+      }
+      LOGGER.info("finished registering constructors");
     } catch (final InterruptedException e) {
-      throw new Excel4JRuntimeException("Unexpected interrupt while waiting for function definitions from queue");
+      throw new Excel4JRuntimeException("Unexpected interrupt while waiting for constructor definitions from queue");
     }
   }
 
@@ -96,9 +112,12 @@ public class FunctionRegistry {
     //TODO: don't limit to our package when scanning for functions. #45
     final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
         .addScanners(new MethodAnnotationsScanner(),
-            new MethodParameterScanner(),
-            new TypeAnnotationsScanner()));
+                     new MethodParameterScanner(),
+                     new TypeAnnotationsScanner()));
     final Set<Method> methodsAnnotatedWith = reflections.getMethodsAnnotatedWith(XLFunction.class);
+    @SuppressWarnings("rawtypes")
+    final Set<Constructor> constructorsAnnotatedWith = reflections.getConstructorsAnnotatedWith(XLConstructor.class);
+    // deal with methods
     for (final Method method : methodsAnnotatedWith) {
       final XLFunction functionAnnotation = method.getAnnotation(XLFunction.class);
       XLNamespace namespaceAnnotation = null;
@@ -119,20 +138,50 @@ public class FunctionRegistry {
         final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
         // build the meta-data data structure and store it all in a FunctionDefinition
         final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, xlArgumentAnnotations);
-        final int allocatedExportNumber = allocateExport(methodInvoker, functionAnnotation);
+        final int allocatedExportNumber = allocateExport();
         final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
         // put the definition in some look-up tables.
-        LOGGER.info("Allocating export number {} function {}", allocatedExportNumber, methodInvoker.getMethodName());
+        LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, methodInvoker.getMethodName());
         _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
         _functionDefinitions.add(functionDefinition);
       } catch (final Exception e) {
         LOGGER.error("Exception while scanning annotated method", e);
       }
     }
+    // deal with constructors
+    for (final Constructor<?> constructor : constructorsAnnotatedWith) {
+      final XLConstructor constructorAnnotation = constructor.getAnnotation(XLConstructor.class);
+      XLNamespace namespaceAnnotation = null;
+      if (constructor.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
+        namespaceAnnotation = constructor.getDeclaringClass().getAnnotation(XLNamespace.class);
+      }
+      final XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(constructor);
+      // build a constructor invoker
+      try {
+        final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
+        // build the meta-data data structure and store it all in a FunctionDefinition
+        final ConstructorMetadata classMetadata = ConstructorMetadata.of(namespaceAnnotation, constructorAnnotation, xlArgumentAnnotations);
+        final int allocatedExportNumber = allocateExport();
+        final ConstructorDefinition classDefinition = ConstructorDefinition.of(classMetadata, constructorInvoker, allocatedExportNumber);
+        // put the definition in some look-up tables.
+        LOGGER.info("Allocating export number {} to ", allocatedExportNumber, constructorInvoker.getClass().getSimpleName());
+        _constructorDefinitionLookup.put(allocatedExportNumber, classDefinition);
+        _constructorDefinitions.add(classDefinition);
+      } catch (final Exception e) {
+        LOGGER.error("Exception while scanning annotated constructor", e);
+      }
+    }
   }
 
-  private XLArgument[] getXLArgumentAnnotations(final Method method) {
-    final Annotation[][] allParameterAnnotations = method.getParameterAnnotations();
+  private static XLArgument[] getXLArgumentAnnotations(final Method method) {
+    return getXLArgumentAnnotations(method.getParameterAnnotations());
+  }
+
+  private static XLArgument[] getXLArgumentAnnotations(final Constructor constructor) {
+    return getXLArgumentAnnotations(constructor.getParameterAnnotations());
+  }
+
+  private static XLArgument[] getXLArgumentAnnotations(final Annotation[][] allParameterAnnotations) {
     final XLArgument[] xlArgumentAnnotations = new XLArgument[allParameterAnnotations.length];
     // we rely here on the array being initialized to null
     for (int i = 0; i < allParameterAnnotations.length; i++) {
@@ -149,12 +198,10 @@ public class FunctionRegistry {
   }
 
   /**
-   * This allocates an export number for the number of parameters required.
-   * @param invoker  the method invoker, not null
-   * @param functionAnnotation  the function annotation, can be null
+   * This allocates an export number.
    * @return the allocated export number
    */
-  private int allocateExport(final MethodInvoker invoker, final XLFunction functionAnnotation) {
+  private int allocateExport() {
     final int exportNumber = _exportCounter.getAndIncrement();
     return exportNumber;
   }
@@ -173,4 +220,11 @@ public class FunctionRegistry {
     throw new Excel4JRuntimeException("Cannot find function definition with export number " + exportNumber);
   }
 
+  public ConstructorDefinition getConstructorDefinition(final int exportNumber) {
+    final ConstructorDefinition constructorDefinition = _constructorDefinitionLookup.get(exportNumber);
+    if (constructorDefinition != null) {
+      return constructorDefinition;
+    }
+    throw new Excel4JRuntimeException("Cannot find constructor definition with export number " + exportNumber);
+  }
 }

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.Excel;
+import com.mcleodmoores.excel4j.ExcelConstructorCallHandler;
 import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.ExcelFunctionCallHandler;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
@@ -39,6 +40,7 @@ public final class MockFunctionProcessor {
   private final Excel _excel = ExcelFactory.getInstance();
   private final LowLevelEntry[] _entries;
   private final ExcelFunctionCallHandler _excelCallHandler;
+  private final ExcelConstructorCallHandler _excelConstructorCallHandler;
 
   /**
    * Create a function processor.
@@ -48,6 +50,42 @@ public final class MockFunctionProcessor {
     final XLLAccumulatingFunctionRegistry excelFunctionRegistry = (XLLAccumulatingFunctionRegistry) _excel.getExcelCallback().getLowLevelExcelCallback();
     _entries = excelFunctionRegistry.getEntries();
     _excelCallHandler = _excel.getExcelCallHandler();
+    _excelConstructorCallHandler = _excel.getExcelConstructorCallHandler();
+  }
+
+  public XLValue newInstance(final String objectName, final XLValue... args) {
+    final List<Integer> exportNumbers = new ArrayList<>();
+    // might have more than one constructor called the same thing
+    for (final LowLevelEntry entry : _entries) {
+      if (entry._functionWorksheetName.equals(objectName)) {
+        exportNumbers.add(entry._exportNumber);
+      }
+    }
+    if (exportNumbers.isEmpty()) {
+      throw new Excel4JRuntimeException("Could not find class called " + objectName);
+    }
+    final Object[] newArgs = new Object[args.length];
+    System.arraycopy(args, 0, newArgs, 0, args.length);
+    XLValue lastError = null;
+    for (final int exportNumber : exportNumbers) {
+      try {
+        final XLValue result = _excelConstructorCallHandler.newInstance(exportNumber, args);
+        if (result instanceof XLError) {
+          lastError = result;
+          LOGGER.info("Error returned instantiating {} with args {}", objectName, Arrays.toString(newArgs));
+          continue;
+        }
+        return result;
+      } catch (final IllegalArgumentException | ClassCastException e) {
+        LOGGER.error("Problem instantiating {} with args {}: {}", objectName, Arrays.toString(newArgs), e.getMessage());
+        // try the next one
+      }
+    }
+    if (lastError == null) {
+      throw new Excel4JRuntimeException("Problem instantiating " + objectName + " with args " + Arrays.toString(newArgs));
+    }
+    // horrible, but what else can be done?
+    return lastError;
   }
 
   /**

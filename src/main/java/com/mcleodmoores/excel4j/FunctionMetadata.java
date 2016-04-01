@@ -9,11 +9,19 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  * Stores meta-data about an Excel function for the purposes of argument checking and function registration.
  */
 public final class FunctionMetadata {
-
+  /** The prefix for function names */
   private final XLNamespace _namespace;
+  /** Information about the function */
   private final XLFunction _functionSpec;
+  /** The arguments of the method */
   private final XLArgument[] _arguments;
 
+  /**
+   * Creates an instance.
+   * @param namespace  the namespace
+   * @param functionSpec  the function specification
+   * @param arguments  the arguments to the function
+   */
   private FunctionMetadata(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
     _namespace = namespace;
     _functionSpec = functionSpec;
@@ -25,7 +33,7 @@ public final class FunctionMetadata {
    * @param namespace  an XLNamespace annotation or null if no name space
    * @param functionSpec  an XLFunction annotation, not null
    * @param arguments  a non-null array of XLArgument annotations, must be same length as method parameter list.
-   *                   the array itself may contain nulls to signify missing XLArgument annotations.
+   *                   The array itself may contain nulls to signify missing XLArgument annotations.
    * @return an instance of a FunctionSpec
    */
   public static FunctionMetadata of(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
@@ -38,7 +46,7 @@ public final class FunctionMetadata {
    * Create an instance when no namespace is declared given a functionSpec and arguments.
    * @param functionSpec  an XLFunction annotation, not null
    * @param arguments  a non-null array of XLArgument annotations, must be same length as method parameter list.
-   *                   the array itself may contain nulls to signify missing XLArgument annotations.
+   *                   The array itself may contain nulls to signify missing XLArgument annotations.
    * @return an instance of a FunctionSpec
    */
   public static FunctionMetadata of(final XLFunction functionSpec, final XLArgument[] arguments) {

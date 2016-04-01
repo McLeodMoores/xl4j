@@ -60,7 +60,7 @@ public final class JConstruct {
           break;
         }
         try {
-          return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.
+          return constructorTypeConverter.newInstance(args); // reduce return type to excel friendly type if possible.
         } catch (final Exception e) {
           // keep trying until something works
         }
@@ -72,7 +72,7 @@ public final class JConstruct {
           break;
         }
         try {
-          return constructorTypeConverter.invoke(args); // reduce return type to excel friendly type if possible.
+          return constructorTypeConverter.newInstance(args); // reduce return type to excel friendly type if possible.
         } catch (final Exception e) {
           // keep trying until something works
         }

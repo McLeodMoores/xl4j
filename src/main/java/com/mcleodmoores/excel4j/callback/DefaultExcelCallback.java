@@ -3,12 +3,16 @@
  */
 package com.mcleodmoores.excel4j.callback;
 
+import com.mcleodmoores.excel4j.ConstructorDefinition;
+import com.mcleodmoores.excel4j.ConstructorMetadata;
 import com.mcleodmoores.excel4j.FunctionDefinition;
 import com.mcleodmoores.excel4j.FunctionMetadata;
 import com.mcleodmoores.excel4j.FunctionType;
 import com.mcleodmoores.excel4j.XLArgument;
+import com.mcleodmoores.excel4j.XLConstructor;
 import com.mcleodmoores.excel4j.XLFunction;
 import com.mcleodmoores.excel4j.XLNamespace;
+import com.mcleodmoores.excel4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
 import com.mcleodmoores.excel4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
@@ -62,6 +66,27 @@ public class DefaultExcelCallback implements ExcelCallback {
                              functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
+  @Override
+  public void registerConstructor(final ConstructorDefinition classDefinition) {
+    final ConstructorMetadata constructorMetadata = classDefinition.getConstructorMetadata();
+    final ConstructorInvoker constructorInvoker = classDefinition.getConstructorInvoker();
+    final XLNamespace namespaceAnnotation = constructorMetadata.getNamespace();
+    final XLConstructor constructorAnnotation = constructorMetadata.getConstructorSpec();
+    final XLArgument[] argumentAnnotations = constructorMetadata.getArguments();
+    final String exportName = classDefinition.getExportName();
+    final String className = buildConstructorName(constructorInvoker, namespaceAnnotation, constructorAnnotation);
+    final boolean isVarArgs = constructorInvoker.isVarArgs();
+    final String argumentNames = buildArgNames(argumentAnnotations);
+    final Integer functionTypeInt = getConstructorType();
+    final String signature = buildConstructorSignature(constructorAnnotation, argumentAnnotations, constructorInvoker);
+    final String functionCategory = buildConstructorCategory(constructorAnnotation, constructorInvoker);
+    final String helpTopic = buildHelpTopic(constructorAnnotation);
+    final String description = buildDescription(constructorAnnotation);
+    final String[] argsHelp = buildArgsHelp(argumentAnnotations);
+    _rawCallback.xlfRegister(classDefinition.getExportNumber(), exportName, isVarArgs,  signature, className, argumentNames,
+                             functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
+  }
+
   private static String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
     final String[] results = new String[argumentAnnotations.length];
     for (int i = 0; i < argumentAnnotations.length; i++) {
@@ -81,9 +106,23 @@ public class DefaultExcelCallback implements ExcelCallback {
     return null;
   }
 
+  private static String buildDescription(final XLConstructor constructorAnnotation) {
+    if (constructorAnnotation != null && !constructorAnnotation.description().isEmpty()) {
+      return constructorAnnotation.description();
+    }
+    return null;
+  }
+
   private static String buildHelpTopic(final XLFunction functionAnnotation) {
     if (functionAnnotation != null && !functionAnnotation.helpTopic().isEmpty()) {
       return functionAnnotation.helpTopic();
+    }
+    return null;
+  }
+
+  private static String buildHelpTopic(final XLConstructor constructorAnnotation) {
+    if (constructorAnnotation != null && !constructorAnnotation.helpTopic().isEmpty()) {
+      return constructorAnnotation.helpTopic();
     }
     return null;
   }
@@ -93,6 +132,13 @@ public class DefaultExcelCallback implements ExcelCallback {
       return functionAnnotation.category();
     }
     return methodInvoker.getMethodDeclaringClass().getSimpleName();
+  }
+
+  private static String buildConstructorCategory(final XLConstructor constructorAnnotation, final ConstructorInvoker constructorInvoker) {
+    if (constructorAnnotation != null && !constructorAnnotation.category().isEmpty()) {
+      return constructorAnnotation.category();
+    }
+    return constructorInvoker.getDeclaringClass().getSimpleName();
   }
 
   private static String buildFunctionSignature(final XLFunction functionAnnotation, final XLArgument[] argumentAnnotations, final MethodInvoker methodInvoker) {
@@ -163,6 +209,37 @@ public class DefaultExcelCallback implements ExcelCallback {
     return signature.toString();
   }
 
+  private static String buildConstructorSignature(final XLConstructor constructorAnnotation, final XLArgument[] argumentAnnotations, final ConstructorInvoker constructorInvoker) {
+    final StringBuilder signature = new StringBuilder();
+    final Class<?> excelReturnType = constructorInvoker.getExcelReturnType();
+    final Class<?>[] parameterTypes = constructorInvoker.getExcelParameterTypes();
+    final FunctionType functionType = FunctionType.FUNCTION;
+    // Parameters
+    for (int i = 0; i < parameterTypes.length; i++) {
+      final XLArgument argumentAnnotation = argumentAnnotations[i];
+      if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
+        signature.append("U"); // XLOPER12 byref
+      } else {
+        signature.append("Q"); // XLOPER12 byval
+      }
+    }
+    if (constructorInvoker.isVarArgs()) {
+      if (parameterTypes.length == 0) {
+        throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
+      }
+      final boolean isLastTypeReferenceType = argumentAnnotations[parameterTypes.length - 1].referenceType();
+      for (int i = 0; i < VARARGS_MAX_PARAMS - parameterTypes.length; i++) {
+        if (isLastTypeReferenceType) {
+          signature.append("U"); // XLOPER12 byref
+        } else {
+          signature.append("Q"); // XLOPER12 byval
+        }
+      }
+    }
+    // Characters on the end -- we checked some invalid states at the start.
+    return signature.toString();
+  }
+
   /**
    * Build the function name string using the namespace if specified.
    * @param methodInvoker  the method invoker for this function, not null
@@ -180,6 +257,21 @@ public class DefaultExcelCallback implements ExcelCallback {
         functionName.append(functionAnnotation.name());
       } else {
         functionName.append(methodInvoker.getMethodName());
+      }
+    }
+    return functionName.toString();
+  }
+
+  private static String buildConstructorName(final ConstructorInvoker constructorInvoker, final XLNamespace namespaceAnnotation, final XLConstructor constructorAnnotation) {
+    final StringBuilder functionName = new StringBuilder();
+    if (namespaceAnnotation != null) {
+      functionName.append(namespaceAnnotation.value());
+    }
+    if (constructorAnnotation != null) {
+      if (!constructorAnnotation.name().isEmpty()) {
+        functionName.append(constructorAnnotation.name());
+      } else {
+        functionName.append(constructorInvoker.getClass().getSimpleName());
       }
     }
     return functionName.toString();
@@ -224,6 +316,10 @@ public class DefaultExcelCallback implements ExcelCallback {
     if (functionAnnotation != null) {
       return functionAnnotation.functionType().getExcelValue();
     }
+    return FunctionType.FUNCTION.getExcelValue();
+  }
+
+  private static int getConstructorType() {
     return FunctionType.FUNCTION.getExcelValue();
   }
 

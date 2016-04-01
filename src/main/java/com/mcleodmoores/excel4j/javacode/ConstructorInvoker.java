@@ -12,7 +12,7 @@ public interface ConstructorInvoker {
    * @param arguments the arguments to pass to the method
    * @return the value to return to Excel
    */
-  XLValue invoke(XLValue[] arguments);
+  XLValue newInstance(XLValue[] arguments);
 
   /**
    * @return an array containing the Excel class of each parameter to this constructor
@@ -24,4 +24,7 @@ public interface ConstructorInvoker {
    */
   Class<?> getExcelReturnType();
 
+  boolean isVarArgs();
+
+  Class<?> getDeclaringClass();
 }

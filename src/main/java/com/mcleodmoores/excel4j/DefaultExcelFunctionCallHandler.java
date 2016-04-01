@@ -8,25 +8,31 @@ import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.javacode.MethodInvoker;
+import com.mcleodmoores.excel4j.util.ArgumentChecker;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- * The default Excel call handler.
+ * The default Excel call handler for functions.
  */
 public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler {
+  /** The logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExcelFunctionCallHandler.class);
+  /** The registry */
   private final FunctionRegistry _functionRegistry;
+  /** The heap */
   private final Heap _heap;
 
   /**
    * Create a default call handler.
-   * @param functionRegistry  the function registry
-   * @param heap  the heap
+   * @param functionRegistry  the function registry, not null
+   * @param heap  the heap, not null
    */
   public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final Heap heap) {
+    ArgumentChecker.notNull(functionRegistry, "functionRegistry");
+    ArgumentChecker.notNull(heap, "heap");
     _functionRegistry = functionRegistry;
     _heap = heap;
   }
