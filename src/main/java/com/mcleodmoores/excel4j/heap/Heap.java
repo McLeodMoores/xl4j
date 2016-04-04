@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcleodmoores.excel4j.util.ConcurrentIdentityHashMap;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 
@@ -19,6 +22,7 @@ import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
  * Class to store objects and allocate handles for objects.
  */
 public class Heap {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Heap.class);
 
   private static final int MILLIS_PER_SECOND = 1000;
   private static final int BYTES_IN_64BITS = 8;
@@ -118,6 +122,7 @@ public class Heap {
   private void endGC(long[] activeHandles) {
     Arrays.sort(activeHandles);
     Iterator<Entry<Long, Object>> iterator = _handleToObj.entrySet().iterator();
+    long removed = 0;
     while (iterator.hasNext()) {
       Entry<Long, Object> next = iterator.next();
       if (next.getKey() >= _snapHandle) {
@@ -126,8 +131,10 @@ public class Heap {
       if (Arrays.binarySearch(activeHandles, next.getKey()) < 0) {
         iterator.remove(); // didn't find handle, meaning it's not active, gc.
         _objToHandle.remove(next.getValue());
+        removed++;
       }
     }
+    LOGGER.info(removed + " objects removed during GC pass");
   }
   
   /**
