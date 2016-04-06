@@ -22,7 +22,7 @@ Building
    Note this is not the same as just running cmd.exe from the search/run menu as it sets up more environment variables.
 2. Clone the helper plug-in and install in the local maven repo
 
-        git clone git@github.com:beerdragon/helper.git
+        git clone git@github.com:beerdragon/helpers.git
         cd helper
         mvn install
         cd ..
