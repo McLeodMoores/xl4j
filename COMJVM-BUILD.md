@@ -4,7 +4,7 @@ Prerequisites
 1. Visual Studio (e.g. x86 2013).  Don't need .NET or Web tools.
 2. Java (JDK1.8.0_11)
 3. Maven (put in e.g. `C:\Program Files\apache-maven-3.2.2`)
-4. Change some enviroment variables:
+4. Change some environment variables:
     1. Start Menu, right-click `Computer`, select Properties.
        Click *Advanced System Settings* then
        *Environment Variables* and in the *System Variables* block
