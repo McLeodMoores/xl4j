@@ -5,16 +5,17 @@ Prerequisites
 2. Java (JDK1.8.0_11)
 3. Maven (put in e.g. `C:\Program Files\apache-maven-3.2.2`)
 4. Change some environment variables:
-    1. Start Menu, right-click `Computer`, select Properties.
-       Click *Advanced System Settings* then
-       *Environment Variables* and in the *System Variables* block
-        (Windows 10: Control Panel -> System and Security -> System -> Advanced system settings -> Environment variables)
+    1. 
+        - Windows 7: Start Menu, right-click `Computer`, select Properties.
+           Click *Advanced System Settings* then *Environment Variables* and in the *System Variables* block
+        - Windows 10: Control Panel -> System and Security -> System -> Advanced system settings -> Environment variables
     2. add `C:\Program Files\apache-maven-3.2.2\bin` to `PATH`
     3. Check there is a `JAVA_HOME` system environment variable.  If there is, skip 4.
     4. set `JAVA_HOME` to e.g. `C:\Program Files\Java\jdk1.8.0_11`.  Note it's not the bin directory in this case.
 5. Install git from http://git-scm.com/
 6. Either copy your .ssh from your existing machine or generate new key pairs and upload to github.  
    See https://help.github.com/articles/set-up-git#setting-up-git .
+7. XLL SDK
 
 Building
 ========
@@ -28,19 +29,31 @@ Building
         cd ..
         
     **(current test failure for maven build in ThreadTest.java)**
-3. Clone the maven-native-packaging plug-in and install in the local maven repo
+3. **Build the framewrk library**
+
+        Open Framework in Visual Studio (2013 Office System Developer Resources -> Excel2013XLLSDK -> SAMPLES -> FRAMEWRK)
+        Build Framewrk.c
+        Copy frmwrk32 into LIB directory
+
+4. Clone the maven-native-packaging plug-in and install in the local maven repo
 
         git clone git@github.com:beerdragon/maven-native-packaging.git
         cd maven-native-packaging
         mvn install
         
    **(need to update pom to point to 0.1.2 for helpers)**
-4. Build and install the native JDK artifact in the local maven repo (assuming you're in the maven-native-packaging dir)
+5. Build and install the native JDK artifact in the local maven repo (assuming you're in the maven-native-packaging dir). Check that xllsdk.xml is present in the examples directory and then run:
 
         cd examples
         mvn -f jdk.xml install
+        mvn -f xllsdk.xml install
         cd ../..
-5. If this step fails, it may be because the jdk.xml file needs editing to use the snapshot version of the plug-in.  If so
+        
+    **the java version properties (java.i386.build, java.x64.build) in the `properties` section of djk.xml should be the same as the version number(s) of the JDK on the system)**
+    
+    **have to make sure the target/win32 directory contains include, lib-i386 and lib-x64 directories - currently must be created by hand**
+
+6. If this step fails, it may be because the jdk.xml file needs editing to use the snapshot version of the plug-in.  If so
    go to the section that looks like this (run `write jdk.xml` to edit).
 
         <maven-native-packing.version>0.2.0</maven-native-packing.version>
@@ -51,15 +64,20 @@ Building
     **(definitely need to update jdk.xml to use 0.2.1-SNAPSHOT for maven-native-packaging)**
     
     **needed to change the version number to 1.8.0 to get mvn install working in comjvm**
-6. Now go back to your clone of Excel4J and build and install. 
+7. Now go back to your clone of Excel4J and build and install. 
         
         mvn install 
-7. Go into the `comjvm` directory.
+8.  **Check that the helpers version in comjvm/jstub/pom.xml matches that generated and build**
+        
+        cd comjvm
+        cd jstub
+        mvn install
+9. Go into the `comjvm` directory.
 
         mvn install
         
     **(definitely need to update pom to use 0.2.1-SNAPSHOT for maven-native-packaging)**
-8. If that doesn't work, try editing the `pom.xml` file and changing the version of maven native packaging in the same way 
-    as described above, and then repeat step 7.
+10. If that doesn't work, try editing the `pom.xml` file and changing the version of maven native packaging in the same way 
+    as described above, and then repeat step 9.
 
   
