@@ -23,10 +23,10 @@ Building
 2. Clone the helper plug-in and install in the local maven repo
 
         git clone git@github.com:beerdragon/helpers.git
-        cd helper
+        cd helpers
         mvn install
         cd ..
-
+    **(current test failure for maven build in ThreadTest.java)**
 3. Clone the maven-native-packaging plug-in and install in the local maven repo
 
         git clone git@github.com:beerdragon/maven-native-packaging.git
