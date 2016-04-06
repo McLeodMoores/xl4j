@@ -26,19 +26,20 @@ Building
         cd helpers
         mvn install
         cd ..
+        
     **(current test failure for maven build in ThreadTest.java)**
 3. Clone the maven-native-packaging plug-in and install in the local maven repo
 
         git clone git@github.com:beerdragon/maven-native-packaging.git
         cd maven-native-packaging
         mvn install
-
+        
+   **(need to update pom to point to 0.1.2 for helpers)**
 4. Build and install the native JDK artifact in the local maven repo (assuming you're in the maven-native-packaging dir)
 
         cd examples
         mvn -f jdk.xml install
         cd ../..
-
 5. If this step fails, it may be because the jdk.xml file needs editing to use the snapshot version of the plug-in.  If so
    go to the section that looks like this (run `write jdk.xml` to edit).
 
@@ -46,11 +47,18 @@ Building
 
    and change it to e.g. `0.2.1-SNAPSHOT`.  If you're not sure what version you have installed, have a dig around in
    `.m2/repository/uk/co/beerdragon/` and find a directory that actually has jars in it.
-6. Now go back to your clone of Excel4J and go into the `comjvm` directory.
-7. Build and install
+    
+    **(definitely need to update jdk.xml to use 0.2.1-SNAPSHOT for maven-native-packaging)**
+    
+    **needed to change the version number to 1.8.0 to get mvn install working in comjvm**
+6. Now go back to your clone of Excel4J and build and install. 
+        
+        mvn install 
+7. Go into the `comjvm` directory.
 
         mvn install
-
+        
+    **(definitely need to update pom to use 0.2.1-SNAPSHOT for maven-native-packaging)**
 8. If that doesn't work, try editing the `pom.xml` file and changing the version of maven native packaging in the same way 
     as described above, and then repeat step 7.
 
