@@ -8,6 +8,7 @@ Prerequisites
     1. Start Menu, right-click `Computer`, select Properties.
        Click *Advanced System Settings* then
        *Environment Variables* and in the *System Variables* block
+        (Windows 10: Control Panel -> System and Security -> System -> Advanced system settings -> Environment variables)
     2. add `C:\Program Files\apache-maven-3.2.2\bin` to `PATH`
     3. Check there is a `JAVA_HOME` system environment variable.  If there is, skip 4.
     4. set `JAVA_HOME` to e.g. `C:\Program Files\Java\jdk1.8.0_11`.  Note it's not the bin directory in this case.
