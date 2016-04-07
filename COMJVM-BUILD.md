@@ -44,6 +44,7 @@ Building
             
    Make a note of the version number (e.g. `maven-native-packaging-0.2.1-SNAPSHOT`).
 5. Check that:
+
         - `xllsdk.xml` is present in the examples directory
         - the `target/win32` directory contains `include`, `lib-i386` and `lib-x64` directories
         - the java version properties (`java.i386.build` and `java.x64.build`) in the `properties` section of `jdk.xml` are the same as the version number of the JDK on the system, e.g. `77` for `jdk1.8.0_77`
