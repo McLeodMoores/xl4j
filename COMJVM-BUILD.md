@@ -31,9 +31,9 @@ Building
     **(current test failure for maven build in ThreadTest.java)**
 3. **Build the framewrk library**
 
-        Open Framework in Visual Studio (2013 Office System Developer Resources -> Excel2013XLLSDK -> SAMPLES -> FRAMEWRK)
-        Build Framewrk.c
-        Copy frmwrk32 into LIB directory
+        **Open Framework in Visual Studio (2013 Office System Developer Resources -> Excel2013XLLSDK -> SAMPLES -> FRAMEWRK)**
+        **Build Framewrk.c**
+        **Copy frmwrk32 into LIB directory**
 
 4. Clone the maven-native-packaging plug-in and install in the local maven repo
 
