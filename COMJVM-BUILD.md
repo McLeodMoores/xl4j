@@ -50,12 +50,11 @@ Building
     - the version number for the `maven-native-packing.version` property matches that in (4)
     - the `version` property matches the JDK version (e.g. `1.8.0`) 
         
-    Then build and install the native JDK artifact in the local maven repo (assuming you're in the maven-native-packaging dir):
+    Then build and install the native JDK artifact in the local maven repo:
 
         cd examples
         mvn -f jdk.xml install
         mvn -f xllsdk.xml install
-        cd ../..
 6. Now go back to your clone of Excel4J and build and install. 
         
         mvn install 
