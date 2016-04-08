@@ -83,26 +83,26 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		hResult = SafeArrayAccessData (*m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos));
 		for (jsize i = 0; i < cEntries; i++) {
 			jobject joElement = pEnv->GetObjectArrayElement (jaEntries, i);
-			pFunctionInfos[i].exportNumber = pEnv->GetIntField (joElement, jfExportNumber);
+			pFunctionInfos[i].iExportNumber = pEnv->GetIntField (joElement, jfExportNumber);
 			jstring jsFunctionExportName = (jstring) pEnv->GetObjectField (joElement, jfFunctionExportName);
-			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].functionExportName);
+			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].bsFunctionExportName);
 			jboolean jsIsVarArgs = pEnv->GetBooleanField (joElement, jfIsVarArgs);
-			pFunctionInfos[i].isVarArgs = jsIsVarArgs;
+			pFunctionInfos[i].bIsVarArgs = jsIsVarArgs;
 			jstring jsFunctionSignature = (jstring)pEnv->GetObjectField (joElement, jfFunctionSignature);
-			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].functionSignature);
+			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].bsFunctionSignature);
 			jstring jsFunctionWorksheetname = (jstring)pEnv->GetObjectField (joElement, jfFunctionWorksheetname);
-			storeBSTR (pEnv, jsFunctionWorksheetname, &pFunctionInfos[i].functionWorksheetName);
+			storeBSTR (pEnv, jsFunctionWorksheetname, &pFunctionInfos[i].bsFunctionWorksheetName);
 			jstring jsArgumentNames = (jstring)pEnv->GetObjectField (joElement, jfArgumentNames);
-			storeBSTR (pEnv, jsArgumentNames, &pFunctionInfos[i].argumentNames);
-			pFunctionInfos[i].functionType = pEnv->GetIntField (joElement, jfFunctionType);
+			storeBSTR (pEnv, jsArgumentNames, &pFunctionInfos[i].bsArgumentNames);
+			pFunctionInfos[i].iFunctionType = pEnv->GetIntField (joElement, jfFunctionType);
 			jstring jsFunctionCategory = (jstring)pEnv->GetObjectField (joElement, jfFunctionCategory);
-			storeBSTR (pEnv, jsFunctionCategory, &pFunctionInfos[i].functionCategory);
+			storeBSTR (pEnv, jsFunctionCategory, &pFunctionInfos[i].bsFunctionCategory);
 			jstring jsAcceleratorKey = (jstring)pEnv->GetObjectField (joElement, jfAcceleratorKey);
-			storeBSTR (pEnv, jsAcceleratorKey, &pFunctionInfos[i].acceleratorKey);
+			storeBSTR (pEnv, jsAcceleratorKey, &pFunctionInfos[i].bsAcceleratorKey);
 			jstring jsHelpTopic = (jstring)pEnv->GetObjectField (joElement, jfHelpTopic);
-			storeBSTR (pEnv, jsHelpTopic, &pFunctionInfos[i].helpTopic);
+			storeBSTR (pEnv, jsHelpTopic, &pFunctionInfos[i].bsHelpTopic);
 			jstring jsDescription = (jstring)pEnv->GetObjectField (joElement, jfDescription);
-			storeBSTR (pEnv, jsDescription, &pFunctionInfos[i].description);
+			storeBSTR (pEnv, jsDescription, &pFunctionInfos[i].bsDescription);
 			jobjectArray jaArgsHelp = (jobjectArray) pEnv->GetObjectField (joElement, jfArgsHelp);
 			jsize cArgsHelp = pEnv->GetArrayLength (jaArgsHelp);
 			SAFEARRAY *psaArgsHelp;
@@ -115,7 +115,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 				//freeBSTR (vArgHelp.bstrVal); // SafeArrayPutElement makes copy apparently. https://msdn.microsoft.com/en-us/library/windows/desktop/ms221283(v=vs.85).aspx
 			}
 			SafeArrayUnaccessData (psaArgsHelp);
-			pFunctionInfos[i].argsHelp = psaArgsHelp;
+			pFunctionInfos[i].saArgsHelp = psaArgsHelp;
 		}
 		SafeArrayUnaccessData (*m_pResults);
 	} catch (std::bad_alloc) {

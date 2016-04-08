@@ -4,11 +4,10 @@
 #include "core/core.h"
 #include "utils/Debug.h"
 
-
 CCallExecutor::CCallExecutor (CCall *pOwner, JniCache *pJniCache)
 	: m_lRefCount (1), m_pOwner (pOwner), m_pJniCache (pJniCache) {
 	if (!pOwner) {
-		throw std::logic_error ("CCallExecutor called with null CScan");
+		throw std::logic_error ("called with null CScan");
 	}
 	m_hSemaphore = CreateSemaphore (NULL, 0, MAXINT, NULL);
 	pOwner->AddRef ();
@@ -25,9 +24,9 @@ void CCallExecutor::SetArguments (/* [out] */ VARIANT *pResult, /* [in] */ int i
 }
 
 jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper) {
-	TRACE ("CCallExecutor::convert(pJniCache=%p", pJniCache);
-	TRACE ("CCallExecutor::convert(VARIANT %p)", oper);
-	TRACE ("CCallExecutor::convert type = %d", oper->vt);
+	TRACE ("pJniCache=%p", pJniCache);
+	TRACE ("VARIANT %p", oper);
+	TRACE ("convert type = %d", oper->vt);
 	switch (oper->vt) {
 	case VT_R8:
 		return pJniCache->XLNumber_of (pEnv, oper->dblVal);
@@ -45,7 +44,7 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper
 		HRESULT hr = V_RECORDINFO (oper)->GetGuid (&guid);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("CCallConverter::convert::recordinfo->GetGuid returned: %s", err.ErrorMessage ());
+			ERROR_MSG ("recordinfo->GetGuid returned: %s", err.ErrorMessage ());
 			return NULL;
 		}
 		if (guid == IID_XL4JMULTIREFERENCE) { // if the IRecordInfo type is an XL4JMULTIREFERENCE
@@ -65,7 +64,7 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper
 			// Create a Java XLLocalReference from it
 			return pJniCache->XLLocalReference_of (pEnv, pRef);
 		} else {
-			TRACE ("CCallExecutor::convert unrecognised RECORDINFO guid %x", guid);
+			ERROR_MSG ("unrecognised RECORDINFO guid %x", guid);
 			return NULL;
 		}
 	} break;
@@ -74,7 +73,7 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper
 	case VT_ARRAY: {
 		SAFEARRAY *psa = V_ARRAY (oper);
 		if (SafeArrayGetDim (psa) != 2) {
-			TRACE ("CCallExecutor::convert: VT_ARRAY not a 2D array");
+			ERROR_MSG ("VT_ARRAY not a 2D array");
 			return NULL;
 		}
 		long cRows;
@@ -83,13 +82,13 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper
 		long cColumns;
 		SafeArrayGetUBound (psa, 2, &cColumns);
 		cColumns++; // size = upper bound + 1
-		TRACE ("CCallExecutor::convert processing (%d x %d) array", cColumns, cRows);
+		TRACE ("processing (%d x %d) array", cColumns, cRows);
 		jobjectArray jaValues = pJniCache->AllocXLValueArrayOfArrays (pEnv, cRows);
 		VARIANT *pArray;
 		HRESULT hr = SafeArrayAccessData (psa, (PVOID *)&pArray);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("CCallExecutor::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
+			ERROR_MSG ("SafeArrayAccessData failed: %s", err.ErrorMessage ());
 			return NULL;
 		}
 		for (int j = 0; j < cRows; j++) {
@@ -112,7 +111,7 @@ jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper
 	case VT_INT:
 		return pJniCache->XLInteger_of(pEnv, V_INT (oper));
 	default: {
-		TRACE ("Unrecognised VARIANT type %d", oper->vt);
+		ERROR_MSG ("Unrecognised VARIANT type %d", oper->vt);
 		return NULL;
 	} break;
 	}
@@ -150,7 +149,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		HRESULT hr = GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &pRecInfo);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
+			ERROR_MSG ("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't get RecordInfo for XL4JMULTIREFERENCE");
 		}
 		V_RECORDINFO (&result) = pRecInfo;
@@ -161,7 +160,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		hr = allocMultiReference (&pMultiReference, jsXLRanges);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
+			ERROR_MSG ("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't allocate XL4JMULTIREFERENCE");
 		}
 		V_RECORD (&result) = pMultiReference;
@@ -175,7 +174,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		hr = SafeArrayAccessData (pMultiReference->refs, (PVOID *)&pRefs);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not access XL4JMULTIREFERENCE array: %s", err.ErrorMessage ());
+			ERROR_MSG ("Could not access XL4JMULTIREFERENCE array: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't access XL4JMULTIREFERENCE array");
 		}
 		pJniCache->XlMultiReference_getValues (pEnv, joaXLRanges, pRefs, jsXLRanges);
@@ -192,7 +191,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		HRESULT hr = GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &pRecInfo);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
+			ERROR_MSG ("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't get RecordInfo for XL4JREFERENCE");
 		}
 		V_RECORDINFO (&result) = pRecInfo;
@@ -200,7 +199,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		hr = allocReference (&pReference);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage ());
+			ERROR_MSG ("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't allocate XL4JREFERENCE");
 		}
 		V_RECORD (&result) = pReference;
@@ -259,7 +258,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 			SAFEARRAYBOUND bounds[2] = { { 0, 0 }, { 0, 0 } };
 			psa = SafeArrayCreateEx (VT_VARIANT, 2, bounds, NULL);
 			if (psa == NULL) {
-				TRACE ("CCallExecutor::convert Out of memory when allocating SAFEARRAY for XLArray");
+				ERROR_MSG ("Out of memory when allocating SAFEARRAY for XLArray");
 				throw std::exception ("Can't allocate SAFEARRAY for XLArray");
 			}
 		} else {
@@ -268,7 +267,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 			SAFEARRAYBOUND bounds[2] = { { jsValuesRows, 0 }, { jsValuesColumns, 0 } };
 			psa = SafeArrayCreateEx (VT_VARIANT, 2, bounds, NULL);
 			if (psa == NULL) {
-				TRACE ("CCallExecutor::convert Out of memory when allocating SAFEARRAY for XLArray");
+				ERROR_MSG ("Out of memory when allocating SAFEARRAY for XLArray");
 				throw std::exception ("Can't allocate SAFEARRAY for XLArray");
 			}
 			VARIANT *pVariant;
@@ -302,38 +301,29 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 	HRESULT hr;
 	try {
-#ifndef TEST_OVERHEAD
-		//LARGE_INTEGER t1, t2, t3, t4, t5, freq;
-		//QueryPerformanceCounter (&t1);
 		long szArgs;
 		if (FAILED (hr = ::SafeArrayGetUBound (m_pArgs, 1, &szArgs))) {
-			TRACE ("SafeArrayGetUBound failed");
+			ERROR_MSG ("SafeArrayGetUBound failed");
 			goto error;
 		}
 		szArgs++; // ubound not count, returns -1 for zero length array.
-		//TRACE ("Received %d arguments", szArgs);
 		jobjectArray joaArgs = m_pJniCache->AllocXLValueArray (pEnv, szArgs);
-		//TRACE ("Created object array");
-		//QueryPerformanceCounter (&t2);
 		VARIANT *args;
 		if (FAILED (hr = SafeArrayAccessData (m_pArgs, reinterpret_cast<PVOID *>(&args)))) {
-			TRACE ("SafeArrayAccessData failed");
+			ERROR_MSG ("SafeArrayAccessData failed");
 			goto error;
 		}
 		for (int i = 0; i < szArgs; i++) {
 			jobject joArg = convert (pEnv, m_pJniCache, &(args[i]));
-			//TRACE ("Converted argument %d", i);
 			pEnv->SetObjectArrayElement (joaArgs, i, joArg);
 		}
 		SafeArrayUnaccessData (m_pArgs);
-		//QueryPerformanceCounter (&t3);
 		
-		jobject joResult = //m_pJniCache->XLError_from (pEnv, xl4jerrNull);
+		jobject joResult =
 			m_pJniCache->InvokeCallHandler (pEnv, m_iFunctionNum, joaArgs);
-		//QueryPerformanceCounter (&t4);
 		
 		if (pEnv->ExceptionCheck ()) {
-			TRACE ("Exception occurred");
+			ERROR_MSG ("Exception occurred");
 			jthrowable joThrowable = pEnv->ExceptionOccurred ();
 			pEnv->ExceptionClear ();
 			Debug::printException (pEnv, joThrowable);
@@ -343,33 +333,13 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 		//TRACE ("About to convert result");
 
 		*m_pResult = convert (pEnv, m_pJniCache, joResult);
-		/*TRACE ("Resulting VARIANT is %p", m_pResult);
-		if (m_pResult) {
-			TRACE ("Resulting VARIANT vt = %d", m_pResult->vt);
-		}
-		TRACE ("Converted result");
-		QueryPerformanceCounter (&t5);
-		QueryPerformanceFrequency (&freq);
-		long long usecsArrayAlloc = ((t2.QuadPart - t1.QuadPart) * 1000000) / freq.QuadPart;
-		long long usecsArgsConv = ((t3.QuadPart - t2.QuadPart) * 1000000) / freq.QuadPart;
-		long long usecsCall = ((t4.QuadPart - t3.QuadPart) * 1000000) / freq.QuadPart;
-		long long usecsRetConv = ((t5.QuadPart - t4.QuadPart) * 1000000) / freq.QuadPart;
-		Debug::odprintf (TEXT ("Java args array alloc %lld usecs\n"), usecsArrayAlloc);
-		Debug::odprintf (TEXT ("Java args conversion took %lld usecs\n"), usecsArgsConv);
-		Debug::odprintf (TEXT ("Java invoke took %lld usecs\n"), usecsCall);
-		Debug::odprintf (TEXT ("Java return conv took %lld usecs\n"), usecsRetConv);*/
-#else
-		m_pResult = (VARIANT *)CoTaskMemAlloc (sizeof VARIANT);
-		m_pResult->vt = VT_R8;
-		m_pResult->dblVal = 1.0;
-#endif
 		hr = S_OK;
 
 	} catch (std::bad_alloc) {
-		TRACE ("bad_alloc exception thrown");
+		ERROR_MSG ("bad_alloc exception thrown");
 		hr = E_OUTOFMEMORY;
 	} catch (_com_error &e) {
-		TRACE ("Com error %s", e.ErrorMessage ());
+		ERROR_MSG ("Com error %s", e.ErrorMessage ());
 		hr = e.Error ();
 	}
 error:
@@ -413,12 +383,12 @@ HRESULT CCallExecutor::allocMultiReference (XL4JMULTIREFERENCE **result, jsize e
 	}
 	*result = (XL4JMULTIREFERENCE *) ::CoTaskMemAlloc (sizeof XL4JMULTIREFERENCE);
 	if (*result == NULL) {
-		TRACE ("XL4JMULTIREFERENCE allocation failed.");
+		ERROR_MSG ("XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
 	}
 	(*result)->refs = SafeArrayCreateVectorEx (VT_RECORD, 0, elems, pRefRecInfo);
 	if ((*result)->refs == NULL) {
-		TRACE ("SAFEARRAY in XL4JMULTIREFERENCE allocation failed.");
+		ERROR_MSG ("SAFEARRAY in XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
 	}
 	return S_OK;
@@ -432,7 +402,7 @@ HRESULT CCallExecutor::allocReference (XL4JREFERENCE **result) {
 	}
 	*result = (XL4JREFERENCE *) ::CoTaskMemAlloc (sizeof XL4JREFERENCE);
 	if (*result == NULL) {
-		TRACE ("XL4JMULTIREFERENCE allocation failed.");
+		ERROR_MSG ("XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
 	}
 	return S_OK;

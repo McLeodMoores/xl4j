@@ -22,7 +22,7 @@ public:
 //	std::list<long long> m_timings;
 	CCall (CJvm *pJvm);
 	~CCall ();
-	HRESULT STDMETHODCALLTYPE call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
+	HRESULT STDMETHODCALLTYPE Call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
 	ULONG STDMETHODCALLTYPE AddRef ();
 	ULONG STDMETHODCALLTYPE Release ();
 	// IUnknown

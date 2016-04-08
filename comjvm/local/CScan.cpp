@@ -33,7 +33,7 @@ static HRESULT APIENTRY _scan (LPVOID lpData, JNIEnv *pEnv) {
 	return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CScan::scan (SAFEARRAY * *result) {
+HRESULT STDMETHODCALLTYPE CScan::Scan (SAFEARRAY * *result) {
 	HRESULT hr;
 	try {
 		CScanExecutor *pExecutor = new CScanExecutor (this, result); // RC1
@@ -84,33 +84,3 @@ ULONG STDMETHODCALLTYPE CScan::Release () {
 	if (!lResult) delete this;
 	return lResult;
 }
-///// <summary>Marks the start of an execution</summary>
-/////
-///// <returns>Notification semaphore</returns>
-//HANDLE CScan::BeginExecution () {
-//	EnterCriticalSection (&m_cs);
-//	m_cExecuting++;
-//	HANDLE hSemaphore;
-//	if (m_ahSemaphore.size () > 0) {
-//		hSemaphore = m_ahSemaphore[m_ahSemaphore.size () - 1];
-//		m_ahSemaphore.pop_back ();
-//	} else {
-//		hSemaphore = CreateSemaphore (NULL, 0, 1, NULL);
-//	}
-//	LeaveCriticalSection (&m_cs);
-//	return hSemaphore;
-//}
-//
-///// <summary>Marks the end of an execution</summary>
-/////
-///// <param name="hSemaphore">Notification semaphore returned by BeginExecution</param>
-//void CScan::EndExecution (HANDLE hSemaphore) {
-//	EnterCriticalSection (&m_cs);
-//	m_cExecuting--;
-//	try {
-//		m_ahSemaphore.push_back (hSemaphore);
-//	} catch (std::bad_alloc) {
-//		CloseHandle (hSemaphore);
-//	}
-//	LeaveCriticalSection (&m_cs);
-//}

@@ -64,7 +64,7 @@ void printXLOPER (XLOPER12 *oper) {
 	case xltypeStr: {
 		size_t sz = oper->val.str[0]; // the first 16-bit word is the length in chars (not inclusing any zero terminator)
 		wchar_t *zeroTerminated = (wchar_t *)malloc ((sz + 1) * sizeof (wchar_t)); // + 1 for zero terminator
-		wcsncpy (zeroTerminated, (const wchar_t *) oper->val.str + 1, sz); // +1 to ptr to skip length 16 bit word.
+		wcsncpy_s (zeroTerminated, sz + 1, (const wchar_t *) oper->val.str + 1, sz); // +1 to ptr to skip length 16 bit word.
 		zeroTerminated[sz] = '\0'; // add a NULL terminator
 		TRACE ("XLOPER12: xltypeStr: %s", zeroTerminated);
 		free (zeroTerminated);
@@ -201,29 +201,29 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	return TRUE;
 }
 
-void registerTimedGC () {
+void ScheduleCommand (wchar_t *commandName, double seconds) {
 	XLOPER12 now;
 	TRACE ("xlfNow");
 	Excel12f (xlfNow, &now, 0);
 	now.val.num += 2. / (3600. * 24.);
 	XLOPER12 retVal;
 	TRACE ("xlcOnTime");
-	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (TEXT("GarbageCollect")));
+	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (commandName));
 	TRACE ("xlcFree");
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
 }
 
-void registerGCCommand (XLOPER12 *xDLL) {
+void RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 	FreeAllTempMemory ();
 	XLOPER12 retVal;
-	LPXLOPER12 exportName = TempStr12 (TEXT ("GarbageCollect"));
+	LPXLOPER12 exportName = TempStr12 (wsCommandName);
 	//((LPXLOPER12)NULL)->val;
 	LPXLOPER12 returnType = TempStr12 (TEXT ("J"));
-	LPXLOPER12 commandName = TempStr12 (TEXT ("GarbageCollect"));
+	LPXLOPER12 commandName = TempStr12 (wsCommandName);
 	LPXLOPER12 args = TempMissing12 ();
 	LPXLOPER12 functionType = TempInt12 (2);
 	TRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
-	
+
 	Excel12f (
 		xlfRegister, &retVal, 6, xDLL,
 		exportName, // export name
@@ -233,6 +233,32 @@ void registerGCCommand (XLOPER12 *xDLL) {
 		functionType // function type 2 = Command
 		);
 	TRACE ("After xlfRegister");
+}
+
+DWORD WINAPI RegistryThreadFunction (LPVOID param) {
+	//XLOPER12 *pxDLL = (XLOPER12 *)param;
+	TRACE ("Registry thread alloc tls %d", );
+	LPVOID *tlsBlock = (LPVOID *)param;
+	for (int i = 0; i < (int) g_dwTlsIndex; i++) {
+		if (TlsGetValue (i) != NULL) {
+			TlsSetValue (i, tlsBlock[i]);
+		}
+	}
+	XLOPER12 xDLL;
+	Excel12f (xlGetName, &xDLL, 0);
+	TRACE ("Result of xlGetName (RegistryThread)");
+	printXLOPER (&xDLL);
+	/*TRACE ("Calling scan from registry thread");
+	if (FAILED (g_pFunctionRegistry->scan ())) {
+		TRACE ("scan failed");
+	}
+	TRACE ("Calling register functions from registry thread");
+	if (FAILED (g_pFunctionRegistry->registerFunctions (*pxDLL))) {
+		TRACE ("registerFunctions failed");
+	}
+	TRACE ("Finished register functions");*/
+	//Excel12f (xlFree, 0, 1, pxDLL);
+	return 0;
 }
 
 ///***************************************************************************
@@ -289,28 +315,34 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		TRACE ("JVM global pointer is NULL");
 	}
 	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm());
-	g_pFunctionRegistry->scan (); 
+//	DWORD dwThreadId;
+	//CreateThread (NULL, 0, RegistryThreadFunction, NULL, 0, &dwThreadId); 
+	g_pFunctionRegistry->Scan (); 
 	TRACE ("Finished scan");
-	g_pFunctionRegistry->registerFunctions (xDLL);
+	g_pFunctionRegistry->RegisterFunctions (xDLL);
 	TRACE ("Creating ICollect");
 	ICollect *pCollect;
 	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
 	if (FAILED (hr)) {
 		_com_error err (hr);
-		TRACE ("Can't create ICollect instance: %s", err.ErrorMessage());
+		TRACE ("Can't create ICollect instance: %s", err.ErrorMessage ());
 	}
 	TRACE ("Creating GarbageCollector");
 	g_pCollector = new GarbageCollector (pCollect);
 	TRACE ("Registering GC Command");
-	registerGCCommand (&xDLL);
+	RegisterCommand (&xDLL, TEXT("GarbageCollect"));
 	TRACE ("Registered, booking GC call");
-	registerTimedGC ();
+	ScheduleCommand (TEXT("GarbageCollect"), 2.0);
 	TRACE ("Finished registration");
 	// Free the XLL filename //
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
+	//Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 	FreeAllTempMemory ();
 	return 1;
 }
+
+
+
+
 
 ///***************************************************************************
 // xlAutoClose()
@@ -504,118 +536,28 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
 	return(LPXLOPER12)&xInfo;
 }
-//RW g_rw;
-//COL g_col;
-//IDSHEET g_sheet;
-//
-//void ScanCell (XLOPER12 *cell) {
-//	printXLOPER (cell);
-//	if ((cell->xltype == xltypeStr) &&
-//		(cell->val.str[0] > 0) &&
-//		(cell->val.str[1] == L'\x1A')) {
-//		TRACE ("Found an object ref!");
-//		printXLOPER (cell);
-//	}
-//}
-//
-//void ScanCells (int cols, int rows, XLOPER12 *arr) {
-//	for (int i = 0; i < rows; i++) {
-//		for (int j = 0; j < cols; j++) {
-//			ScanCell (arr++);
-//		}
-//	}
-//}
-//
-//
-//void ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
-//	XLOPER12 firstRow;
-//	XLOPER12 lastRow;
-//	XLOPER12 firstCol;
-//	XLOPER12 lastCol;
-//	Excel12f (xlfGetDocument, &firstRow, 2, TempInt12 (9), pSheetName);
-//	Excel12f (xlfGetDocument, &lastRow, 2, TempInt12 (10), pSheetName);
-//	Excel12f (xlfGetDocument, &firstCol, 2, TempInt12 (11), pSheetName);
-//	Excel12f (xlfGetDocument, &lastCol, 2, TempInt12 (12), pSheetName);
-//	if (firstRow.val.num == 0) {
-//		TRACE ("sheet was empty");
-//		return; // sheet empty.
-//	}
-//	XLOPER12 sheetId;
-//	Excel12f (xlSheetId, &sheetId, 1, pSheetName);
-//	if (sheetId.xltype == xltypeErr) {
-//		TRACE ("Could not get sheet ID");
-//		return;
-//	}
-//	XLOPER12 wholeRow;
-//	XLMREF12 xlmRef;
-//	wholeRow.xltype = xltypeRef;
-//	wholeRow.val.mref.idSheet = sheetId.val.mref.idSheet;
-//	wholeRow.val.mref.lpmref = &xlmRef;
-//    xlmRef.count = 1;
-//	xlmRef.reftbl[0].colFirst = (COL) firstCol.val.num - 1;
-//	xlmRef.reftbl[0].colLast = (COL) lastCol.val.num - 1;
-//	
-//	for (int i = (RW) firstRow.val.num - 1; i <= (RW) lastRow.val.num - 1; i++) {
-//		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
-//		wholeRow.val.mref.lpmref->reftbl[0].rwFirst = i;
-//		wholeRow.val.mref.lpmref->reftbl[0].rwLast = i;
-//		XLOPER12 row;
-//		Excel12f (xlCoerce, &row, 2, &wholeRow, pMulti);
-//		ScanCells (row.val.array.columns, row.val.array.rows, row.val.array.lparray);
-//		Excel12f (xlFree, 0, 1, &row);
-//	}
-//	Excel12f (xlFree, 0, 1, &firstRow);
-//	Excel12f (xlFree, 0, 1, &lastRow);
-//	Excel12f (xlFree, 0, 1, &firstCol);
-//	Excel12f (xlFree, 0, 1, &lastCol);
-//}
-//
-//XLOPER12 *pDocuments;
-//
-//void ScanWorkbook (XLOPER12 *pWorkbookName) {
-//	XLOPER12 sheets;
-//	XLOPER12 *pArgNum = TempInt12 (1); // horiz array of all sheets in workbook
-//	Excel12f (xlfGetWorkbook, &sheets, 2, pArgNum, pWorkbookName);
-//	int cSheets = sheets.val.array.columns;
-//	XLOPER12 *pSheetName;
-//	int i;
-//	for (pSheetName = sheets.val.array.lparray, i = 0; i < cSheets; pSheetName++, i++) {
-//		TRACE ("Sheet=");
-//		printXLOPER (pSheetName);
-//		ScanSheet (pWorkbookName, pSheetName);
-//	}
-//	Excel12f (xlFree, 0, 1, (LPXLOPER12)&sheets);
-//	FreeAllTempMemory ();
-//}
 
 __declspec(dllexport) int GarbageCollect () {
 	TRACE ("GarbageCollect() called.");
-	//XLOPER12 documents;
-	//Excel12f (xlfDocuments, &documents, 0);
-	//int cDocs = documents.val.array.columns;
-	//int i;
-	//XLOPER12 *pWorkbookName;
-	//for (pWorkbookName = documents.val.array.lparray, i = 0; i < cDocs; pWorkbookName++, i++) {
-	//	TRACE ("WorkbookName=");
-	//	printXLOPER (pWorkbookName);
-	//	ScanWorkbook (pWorkbookName);
-	//}
-	//Excel12f (xlFree, 0, 1, (LPXLOPER12)&documents);
 	g_pCollector->Collect ();
-	registerTimedGC ();
+	ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
 }
 
-
-
+__declspec(dllexport) int RegisterFunctions () {
+	static XLOPER12 xDLL;
+	Excel12f (xlGetName, &xDLL, 0);
+	g_pFunctionRegistry->RegisterFunctions (xDLL);
+	return 1;
+}
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
 	LARGE_INTEGER t1;
 	QueryPerformanceCounter (&t1);
 	// Find out how many parameters this function should expect.
 	FUNCTIONINFO functionInfo;
-	HRESULT hr = g_pFunctionRegistry->get (exportNumber, &functionInfo);
-	long nArgs = wcslen (functionInfo.functionSignature) - 2;
+	HRESULT hr = g_pFunctionRegistry->Get (exportNumber, &functionInfo);
+	long nArgs = wcslen (functionInfo.bsFunctionSignature) - 2;
 	//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
 	TRACE ("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
 	
@@ -652,7 +594,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	}
 	va_end (ap);
 	// trim off any VT_NULLs if it's a varargs function.
-	if (functionInfo.isVarArgs) {
+	if (functionInfo.bIsVarArgs) {
 		LARGE_INTEGER tva1, tva2, freq;
 		QueryPerformanceCounter (&tva1);
 		TRACE ("Detected VarArgs, trying to trim");
@@ -694,7 +636,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 		TlsSetValue (g_dwTlsIndex, pCall);
 	}
 	//TRACE ("UDF stub: Prior to invocation saInputs has %d elements (post trimming)", szInputs);
-	if (FAILED(hr = pCall->call (&result, exportNumber, saInputs))) {
+	if (FAILED(hr = pCall->Call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
 		TRACE ("UDF stub: call failed %s.", err.ErrorMessage ());
 		goto error;

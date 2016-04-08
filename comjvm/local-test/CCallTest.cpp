@@ -89,7 +89,7 @@ public:
 		bounds.cElements = 100;
 		bounds.lLbound = 0;
 		results = SafeArrayCreateEx (VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
-		hr = pScan->scan (&results);
+		hr = pScan->Scan (&results);
 
 		if (FAILED (hr)) {
 			_com_error err (hr);
@@ -103,10 +103,10 @@ public:
 		SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
 		bstr_t myAdd ("MyAdd");
 		for (int i = 0; i < count; i++) {
-			if (::VarBstrCmp (pFunctionInfos[i].functionWorksheetName, myAdd, NULL, NULL) == VARCMP_EQ) {
-				m_iMyAdd = pFunctionInfos[i].exportNumber;
+			if (::VarBstrCmp (pFunctionInfos[i].bsFunctionWorksheetName, myAdd, NULL, NULL) == VARCMP_EQ) {
+				m_iMyAdd = pFunctionInfos[i].iExportNumber;
 			}
-			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].functionExportName, pFunctionInfos[i].functionSignature, pFunctionInfos[i].description);
+			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
 		}
 		SafeArrayUnaccessData (results);
 		Assert::AreNotEqual ((long)100, count);
@@ -135,7 +135,7 @@ public:
 		for (int i = 0; i < 100000; i++) {
 			LARGE_INTEGER t1;
 			QueryPerformanceCounter (&t1);
-			HRESULT hr = pCall->call (&result, m_iMyAdd, args);
+			HRESULT hr = pCall->Call (&result, m_iMyAdd, args);
 			VariantClear (&result);
 			//std::list<long long> list = dynamic_cast<CCall *>(pCall)->m_timings;
 			//for (std::list<long long>::const_iterator iterator = list.begin (), end = list.end (); iterator != end; ++iterator) {

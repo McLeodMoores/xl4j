@@ -82,16 +82,15 @@ public:
 		bounds.cElements = 100;
 		bounds.lLbound = 0;
 		results = SafeArrayCreateEx (VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
-		hr = pScan->scan (&results);
+		hr = pScan->Scan (&results);
 		FUNCTIONINFO *pFunctionInfos;
 
-		//Assert::AreEqual (S_OK, hr);
 		long count;
 		SafeArrayGetUBound (results, 1, &count);
 		count++;
 		SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
 		for (int i = 0; i < count; i++) {
-			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].functionExportName, pFunctionInfos[i].functionSignature, pFunctionInfos[i].description);
+			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
 		}
 		SafeArrayUnaccessData (results);
 		Assert::AreNotEqual ((long) 100, count);

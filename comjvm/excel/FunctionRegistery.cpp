@@ -2,9 +2,12 @@
 #include "FunctionRegistry.h"
 
 FunctionRegistry::FunctionRegistry (IJvm *pJvm) : m_pJvm (pJvm) {
+	InitFramework ();
+	m_iIndex = 0;
+	m_bComplete = false;
 }
 
-HRESULT FunctionRegistry::scan () {
+HRESULT FunctionRegistry::Scan () {
 	HRESULT hr;
 	IJvm *pJvm = m_pJvm;
 	IScan *pScan;
@@ -28,11 +31,16 @@ HRESULT FunctionRegistry::scan () {
 		TRACE ("scan::Failed to create safe array");
 		return E_OUTOFMEMORY;
 	}
-	hr = pScan->scan (&m_pResults);
+	hr = pScan->Scan (&m_pResults);
+	m_bComplete = true;
 	return S_OK;
 }
 
-HRESULT FunctionRegistry::get (int functionNumber, FUNCTIONINFO *pFunctionInfo) {
+bool FunctionRegistry::IsScanComplete () {
+	return m_bComplete;
+}
+
+HRESULT FunctionRegistry::Get (int functionNumber, FUNCTIONINFO *pFunctionInfo) {
 	if (m_pResults == NULL) {
 		TRACE ("scan not called first");
 		return E_POINTER;
@@ -50,7 +58,7 @@ HRESULT FunctionRegistry::get (int functionNumber, FUNCTIONINFO *pFunctionInfo) 
 		return hr;
 	}
 	for (int i = 0; i < count; i++) {
-		if (pFunctionInfos[i].exportNumber == functionNumber) {
+		if (pFunctionInfos[i].iExportNumber == functionNumber) {
 			*pFunctionInfo = pFunctionInfos[i];
 			::SafeArrayUnaccessData (m_pResults);
 			return S_OK;
@@ -60,10 +68,20 @@ HRESULT FunctionRegistry::get (int functionNumber, FUNCTIONINFO *pFunctionInfo) 
 	return E_FAIL;
 }
 
-void FunctionRegistry::registerFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
+void FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
 	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp) {
-	TRACE ("functionExportNumber=%d,\nfunctionExportName=%s\nfunctionSignature=%s\nworksheetName=%s\nargumentNames=%s\nfunctionType=%d\nfunctionCategory=%s\nacceleratorKey=%s\nhelpTopic=%s\ndescription=%s\nargsHelpSz=%d",
-		functionExportNumber, (wchar_t *)functionExportName, (wchar_t *)functionSignature, (wchar_t *)worksheetName, (wchar_t *)argumentNames, (wchar_t *)functionType, (wchar_t *)functionCategory, (wchar_t *)acceleratorKey, (wchar_t *)helpTopic, (wchar_t *)description, (wchar_t *)argsHelpSz);
+	TRACE ("-----------------------------------");
+	TRACE ("functionExportNumber = %d", functionExportNumber);
+	TRACE ("functionExportName = %s", (wchar_t *)functionExportName);
+	TRACE ("functionSignature = %s", (wchar_t *)functionSignature);
+	TRACE ("worksheetName = %s", (wchar_t *)worksheetName);
+	TRACE ("argumentNames = %s", (wchar_t *)argumentNames);
+	TRACE ("functionType = %d", (wchar_t *)functionType);
+	TRACE ("functionCategory = %s", (wchar_t *)functionCategory);
+	TRACE ("acceleratorKey = %s", (wchar_t *)acceleratorKey);
+	TRACE ("helpTopic = %s", (wchar_t *)helpTopic);
+	TRACE ("description = %s", (wchar_t *)description);
+	TRACE ("argsHelpSz = %d", (wchar_t *)argsHelpSz);
 	LPXLOPER12 *args = new LPXLOPER12[10 + argsHelpSz];
 	args[0] = (LPXLOPER12)&xDll;
 	args[1] = (LPXLOPER12)TempStr12 (functionExportName);
@@ -78,27 +96,32 @@ void FunctionRegistry::registerFunction (XLOPER12 xDll, int functionExportNumber
 	for (int i = 0; i < argsHelpSz; i++) {
 		args[10 + i] = (LPXLOPER12)TempStr12 (argsHelp[i]);
 	}
+	XLOPER12 result;
 	//m_numArgsForExport[functionExportNumber] = argsHelpSz; // num args
-	Excel12v (xlfRegister, 0, 10 + argsHelpSz, args);
+	int err = Excel12v (xlfRegister, &result, 10 + argsHelpSz, args);
+	if (result.xltype == xltypeErr) {
+		ERROR_MSG ("Could not register function, Excel12v error was %d, xlfRegister error was %d", err, result.val.err);
+	}
 	delete[] args;
+	FreeAllTempMemory ();
 }
 
-HRESULT FunctionRegistry::registerFunctions (XLOPER12 xDll) {
+HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 	if (m_pResults == NULL) {
-		TRACE ("scan not called first");
+		ERROR_MSG ("scan not called first");
 		return E_POINTER;
 	}
 	long count;
 	HRESULT hr;
 	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &count))) {
 		_com_error err (hr);
-		TRACE ("registerFunctions::SafeArrayGetUBound failed: %s", err.ErrorMessage());
+		ERROR_MSG ("registerFunctions::SafeArrayGetUBound failed: %s", err.ErrorMessage());
 		return hr;
 	}
 	count++;
 	FUNCTIONINFO *pFunctionInfos;
 	if (FAILED (hr = ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
-		TRACE ("registerFunctions::SafeArrayAccessData failed");
+		ERROR_MSG ("registerFunctions::SafeArrayAccessData failed");
 		return hr;
 	}
 	
@@ -106,20 +129,66 @@ HRESULT FunctionRegistry::registerFunctions (XLOPER12 xDll) {
 		FUNCTIONINFO fi = pFunctionInfos[i];
 		bstr_t *psArgsHelp;
 		long cArgsHelp;
-		if (FAILED (hr = ::SafeArrayAccessData (fi.argsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
-			TRACE ("registerFunctions::SafeArrayAccessData (argshelp %d) failed", fi.exportNumber);
+		if (FAILED (hr = ::SafeArrayAccessData (fi.saArgsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
+			ERROR_MSG ("registerFunctions::SafeArrayAccessData (argshelp %d) failed", fi.iExportNumber);
 			return hr;
 		}
-		if (FAILED (hr = ::SafeArrayGetUBound (fi.argsHelp, 1, &cArgsHelp))) {
-			TRACE ("registerFunctions::SafeArrayGetUBound (argshelp %d) failed", fi.exportNumber);
+		if (FAILED (hr = ::SafeArrayGetUBound (fi.saArgsHelp, 1, &cArgsHelp))) {
+			ERROR_MSG ("registerFunctions::SafeArrayGetUBound (argshelp %d) failed", fi.iExportNumber);
 			return hr;
 		}
+		TRACE ("--------------------------------");
+		TRACE ("Registering function %d", i);
 		cArgsHelp++; // upper bound is not same as count
-		registerFunction (xDll, fi.exportNumber, fi.functionExportName, fi.functionSignature,
-			fi.functionWorksheetName, fi.argumentNames, fi.functionType,
-			fi.functionCategory, fi.acceleratorKey, fi.helpTopic, fi.description,
+		RegisterFunction (xDll, fi.iExportNumber, fi.bsFunctionExportName, fi.bsFunctionSignature,
+			fi.bsFunctionWorksheetName, fi.bsArgumentNames, fi.iFunctionType,
+			fi.bsFunctionCategory, fi.bsAcceleratorKey, fi.bsHelpTopic, fi.bsDescription,
 			cArgsHelp, psArgsHelp);
-		::SafeArrayUnaccessData (fi.argsHelp);
+		::SafeArrayUnaccessData (fi.saArgsHelp);
+	}
+	::SafeArrayUnaccessData (m_pResults);
+	return S_OK;
+}
+
+HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, int iChunkSize) {
+	if (m_pResults == NULL) {
+		ERROR_MSG ("RegisterFunctions called before Scan");
+		return E_POINTER;
+	}
+	long cElems;
+	HRESULT hr;
+	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &cElems))) {
+		_com_error err (hr);
+		ERROR_MSG ("registerFunctions::SafeArrayGetUBound failed: %s", err.ErrorMessage ());
+		return hr;
+	}
+	cElems++;
+	FUNCTIONINFO *pFunctionInfos;
+	if (FAILED (hr = ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
+		ERROR_MSG ("registerFunctions::SafeArrayAccessData failed");
+		return hr;
+	}
+
+	for (int count = 0; m_iIndex < cElems && count < iChunkSize; m_iIndex++, count++) {
+		FUNCTIONINFO fi = pFunctionInfos[m_iIndex];
+		bstr_t *psArgsHelp;
+		long cArgsHelp;
+		if (FAILED (hr = ::SafeArrayAccessData (fi.saArgsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
+			ERROR_MSG ("registerFunctions::SafeArrayAccessData (argshelp %d) failed", fi.iExportNumber);
+			return hr;
+		}
+		if (FAILED (hr = ::SafeArrayGetUBound (fi.saArgsHelp, 1, &cArgsHelp))) {
+			ERROR_MSG ("registerFunctions::SafeArrayGetUBound (argshelp %d) failed", fi.iExportNumber);
+			return hr;
+		}
+		TRACE ("--------------------------------");
+		TRACE ("Registering function %d", m_iIndex);
+		cArgsHelp++; // upper bound is not same as size
+		RegisterFunction (xDll, fi.iExportNumber, fi.bsFunctionExportName, fi.bsFunctionSignature,
+			fi.bsFunctionWorksheetName, fi.bsArgumentNames, fi.iFunctionType,
+			fi.bsFunctionCategory, fi.bsAcceleratorKey, fi.bsHelpTopic, fi.bsDescription,
+			cArgsHelp, psArgsHelp);
+		::SafeArrayUnaccessData (fi.saArgsHelp);
 	}
 	::SafeArrayUnaccessData (m_pResults);
 	return S_OK;

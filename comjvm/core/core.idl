@@ -411,10 +411,6 @@ const long xl4jerrNum = 36;
 const long xl4jerrNA = 42;
 const long xl4jerrGettingData = 43;
 
-
-
-
-
 struct XL4JREFERENCE {
 	RW rwFirst;
 	RW rwLast;
@@ -727,25 +723,25 @@ typedef
 	helpstring("Information about a UDF")
 ]
 struct FUNCTIONINFO {
-	int exportNumber;
-	BSTR functionExportName;
-	boolean isVarArgs;
-	BSTR functionSignature;
-	BSTR functionWorksheetName;
-	BSTR argumentNames;
-	int functionType;
-	BSTR functionCategory;
-	BSTR acceleratorKey;
-	BSTR helpTopic;
-	BSTR description;
-	SAFEARRAY (BSTR) argsHelp;
+	int iExportNumber;
+	BSTR bsFunctionExportName;
+	boolean bIsVarArgs;
+	BSTR bsFunctionSignature;
+	BSTR bsFunctionWorksheetName;
+	BSTR bsArgumentNames;
+	int iFunctionType;
+	BSTR bsFunctionCategory;
+	BSTR bsAcceleratorKey;
+	BSTR bsHelpTopic;
+	BSTR bsDescription;
+	SAFEARRAY (BSTR) saArgsHelp;
 } FUNCTIONINFO;
 
 [
 	object,
 	uuid (c9e3e9e1-a28e-4ce3-8bd2-6d72fba2b7c1)
 ] interface IScan : IUnknown {
-	HRESULT scan ([retval, out] SAFEARRAY (FUNCTIONINFO) *result);
+	HRESULT Scan ([retval, out] SAFEARRAY (FUNCTIONINFO) *psaResult);
 };
 
 [
@@ -753,7 +749,7 @@ struct FUNCTIONINFO {
 	uuid(1edb5111-1544-4a2c-b99e-b65e5813a48a)
 ]
 interface ICall : IUnknown {
-	HRESULT call ([out] VARIANT *result, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) args);
+	HRESULT Call ([out] VARIANT *pvResult, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) saArgs);
 }
 
 [

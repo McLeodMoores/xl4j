@@ -18,15 +18,12 @@ private:
 public:
 	CScan (CJvm *pJvm);
 	~CScan ();
-	//HRESULT call (/* [out] */ XL4JOPER12 *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
-	HRESULT STDMETHODCALLTYPE scan (/* [retval][out] */ SAFEARRAY * *result);
+	HRESULT STDMETHODCALLTYPE Scan (/* [retval][out] */ SAFEARRAY * *result);
 	ULONG STDMETHODCALLTYPE AddRef ();
 	ULONG STDMETHODCALLTYPE Release ();
-	//HANDLE STDMETHODCALLTYPE BeginExecution ();
 	// IUnknown
 	HRESULT STDMETHODCALLTYPE QueryInterface (
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject);
-	//void STDMETHODCALLTYPE EndExecution (HANDLE hSemaphore);
-	IJvm * STDMETHODCALLTYPE getJvm () { return m_pJvm; }
+	IJvm * STDMETHODCALLTYPE GetJvm () { return m_pJvm; }
 };

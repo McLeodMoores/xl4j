@@ -3,17 +3,14 @@
 #include "local/CScanExecutor.h"
 #include <vector>
 
-//#ifdef COMJVM_EXCEL_EXPORT
-//# define COMJVM_EXCEL_API __declspec(dllexport)
-//#else
-//# define COMJVM_EXCEL_API __declspec(dllimport)
-//#endif /* ifndef COMJVM_DEBUG_API */
-
-class /*COMJVM_EXCEL_API*/ FunctionRegistry {
+class FunctionRegistry {
 private:
 	IJvm *m_pJvm;
 	SAFEARRAY *m_pResults;
-	void registerFunction (XLOPER12 xDll, int functionExportNumber, 
+	bool m_bComplete;
+	int m_iIndex;
+
+	void RegisterFunction (XLOPER12 xDll, int functionExportNumber, 
 		bstr_t functionExportName, bstr_t functionSignature, 
 		bstr_t worksheetName, bstr_t argumentNames, int functionType,
 		bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, 
@@ -21,7 +18,9 @@ private:
 public:
 	FunctionRegistry (IJvm *pJvm);
 	~FunctionRegistry ();
-	HRESULT scan ();
-	HRESULT get (int functionNumber, FUNCTIONINFO *pFunctionInfo);
-	HRESULT registerFunctions (XLOPER12 xDll);
+	HRESULT Scan ();
+	HRESULT Get (int functionNumber, FUNCTIONINFO *pFunctionInfo);
+	bool IsScanComplete ();
+	HRESULT RegisterFunctions (XLOPER12 xDll);
+	HRESULT RegisterFunctions (XLOPER12 xDll, int iChunkSize);
 };

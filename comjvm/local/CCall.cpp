@@ -1,8 +1,5 @@
 #include "stdafx.h"
 
-//#include "utils/Debug.h"
-//#include "helper/JniSequenceHelper.h"
-//#include "helper/ClasspathUtils.h"
 #include "CCall.h"
 #include "Internal.h"
 
@@ -15,8 +12,8 @@ CCall::CCall (CJvm *pJvm) {
 	IncrementActiveObjectCount ();
 	m_pJvm->AddRef ();
 	InitializeCriticalSection (&m_cs);
-
 }
+
 CCall::~CCall () {
 	assert (m_lRefCount == 0);
 	DeleteCriticalSection (&m_cs);
@@ -44,13 +41,8 @@ static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
 	return hr;
 }
 
-HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
+HRESULT STDMETHODCALLTYPE CCall::Call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
 	HRESULT hr;
-	//LARGE_INTEGER t1, t2, t3, t4, t5, freq;
-	//long long constr;
-	//long long exec;
-	//long long wait;
-	//long long release;
 	try {
 #if 0
 		CCallExecutor *pExecutor = new CCallExecutor (this, m_pJniCache);// RC1
@@ -60,20 +52,15 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ i
 #endif
 		pExecutor->AddRef ();
 		pExecutor->SetArguments (result, iFunctionNum, args); //
-		//QueryPerformanceCounter (&t1);
-	
-		//QueryPerformanceCounter (&t2);
-		TRACE ("CCall::call on safearray** about to call Execute on vm");
+		TRACE ("call on safearray** about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);
 		if (SUCCEEDED (hr)) {
-			//QueryPerformanceCounter (&t3);
-			TRACE ("CCall::call vm execute succeeded");
+			TRACE ("vm execute succeeded");
 			// The executor will release RC2
 			hr = pExecutor->Wait ();
-			//QueryPerformanceCounter (&t4);
-			TRACE ("CCall::call hr = %x after Wait()", hr);
+			TRACE ("hr = %x after Wait()", hr);
 		} else {
-			TRACE ("CCall::call vm execute failed");
+			TRACE ("vm execute failed");
 			// Release RC2
 			pExecutor->Release ();
 		}
@@ -82,14 +69,7 @@ HRESULT STDMETHODCALLTYPE CCall::call (/* [out] */ VARIANT *result, /* [in] */ i
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
-	TRACE ("CCall::call Returning hr = %x", hr);
-	//QueryPerformanceCounter (&t5);
-	//QueryPerformanceFrequency (&freq);
-	//constr = ((t2.QuadPart - t1.QuadPart) * 1000000) / freq.QuadPart;
-	//exec = ((t3.QuadPart - t2.QuadPart) * 1000000) / freq.QuadPart;
-	//wait = ((t4.QuadPart - t3.QuadPart) * 1000000) / freq.QuadPart;
-	//release = ((t5.QuadPart - t4.QuadPart) * 1000000) / freq.QuadPart;
-	//Debug::odprintf (TEXT ("constr = %lldms, execute = %lldms, wait = %lldms, release = %lldms"), constr, exec, wait, release);
+	TRACE ("Returning hr = %x", hr);
 	return hr;
 }
 

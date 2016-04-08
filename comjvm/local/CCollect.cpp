@@ -28,7 +28,7 @@ CCollect::~CCollect () {
 }
 
 static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
-	TRACE ("Entering static callback function _call");
+	//TRACE ("Entering static callback function _call");
 	CCollectExecutor *pExecutor = (CCollectExecutor*)lpData;
 	HRESULT hr = pExecutor->Run (pEnv);
 	return hr;
@@ -53,17 +53,17 @@ HRESULT STDMETHODCALLTYPE CCollect::Collect (/* [in] */ SAFEARRAY * psaValidIds,
 		//QueryPerformanceCounter (&t1);
 
 		//QueryPerformanceCounter (&t2);
-		TRACE ("CCollect::Collect about to call Execute on vm");
+		//TRACE ("CCollect::Collect about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);
 		if (SUCCEEDED (hr)) {
 			//QueryPerformanceCounter (&t3);
-			TRACE ("CCollect::Collect vm execute succeeded");
+			//TRACE ("CCollect::Collect vm execute succeeded");
 			// The executor will release RC2
 			hr = pExecutor->Wait ();
 			//QueryPerformanceCounter (&t4);
-			TRACE ("CCollect::Collect hr = %x after Wait()", hr);
+			//TRACE ("CCollect::Collect hr = %x after Wait()", hr);
 		} else {
-			TRACE ("CCollect::Collect vm execute failed");
+			//TRACE ("CCollect::Collect vm execute failed");
 			// Release RC2
 			pExecutor->Release ();
 		}
@@ -72,7 +72,7 @@ HRESULT STDMETHODCALLTYPE CCollect::Collect (/* [in] */ SAFEARRAY * psaValidIds,
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
-	TRACE ("CCollect::call Returning hr = %x", hr);
+	//TRACE ("CCollect::call Returning hr = %x", hr);
 	//QueryPerformanceCounter (&t5);
 	//QueryPerformanceFrequency (&freq);
 	//constr = ((t2.QuadPart - t1.QuadPart) * 1000000) / freq.QuadPart;
