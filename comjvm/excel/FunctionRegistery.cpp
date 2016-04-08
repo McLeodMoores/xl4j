@@ -2,9 +2,30 @@
 #include "FunctionRegistry.h"
 
 FunctionRegistry::FunctionRegistry (IJvm *pJvm) : m_pJvm (pJvm) {
+	pJvm->AddRef ();
 	InitFramework ();
 	m_iIndex = 0;
 	m_bComplete = false;
+	QueryPerformanceFrequency (&m_liFreq);
+}
+
+FunctionRegistry::~FunctionRegistry () {
+	// Release refs, free stuff and zero out pointers.
+	if (m_pJvm != NULL) {
+		m_pJvm->Release ();
+		m_pJvm = NULL;
+	}
+	if (m_pResults != NULL) {
+		SafeArrayDestroy (m_pResults);
+		m_pResults = NULL;
+	}
+	if (m_pFunctions != NULL) {
+		delete[] m_pFunctions;
+		m_pFunctions = NULL;
+	}
+	m_bComplete = false;
+	m_iIndex = 0;
+	m_cFunctions = 0;
 }
 
 HRESULT FunctionRegistry::Scan () {
@@ -32,6 +53,30 @@ HRESULT FunctionRegistry::Scan () {
 		return E_OUTOFMEMORY;
 	}
 	hr = pScan->Scan (&m_pResults);
+	long cFunctions;
+	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &cFunctions))) {
+		ERROR_MSG ("SafeArrayGetUBound failed");
+		return hr;
+	}
+	cFunctions++;
+	m_cFunctions = cFunctions;
+	// copy them into an array indexed by export number for fast lookup.
+	m_pFunctions = new FUNCTIONINFO[cFunctions];
+	FUNCTIONINFO *pFunctionInfos;
+	if (FAILED (hr = ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
+		ERROR_MSG ("registerFunctions::SafeArrayAccessData failed");
+		return hr;
+	}
+
+	for (int i = 0; i < cFunctions; i++) {
+		FUNCTIONINFO fi = pFunctionInfos[i];
+		if (fi.iExportNumber >= cFunctions) {
+			ERROR_MSG ("unexpectedly large export number, this shouldn't happen and is a code assumption error");
+			return E_ABORT;
+		}
+		m_pFunctions[fi.iExportNumber] = fi;
+	}
+	::SafeArrayUnaccessData (m_pResults);
 	m_bComplete = true;
 	return S_OK;
 }
@@ -42,30 +87,16 @@ bool FunctionRegistry::IsScanComplete () {
 
 HRESULT FunctionRegistry::Get (int functionNumber, FUNCTIONINFO *pFunctionInfo) {
 	if (m_pResults == NULL) {
-		TRACE ("scan not called first");
+		ERROR_MSG ("scan not called first");
 		return E_POINTER;
 	}
-	long count;
-	HRESULT hr;
-	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &count))) {
-		TRACE ("get::SafeArrayGetUBound failed");
-		return hr;
+	if (functionNumber < m_cFunctions) {
+		*pFunctionInfo = m_pFunctions[functionNumber];
+		return S_OK;
+	} else {
+		ERROR_MSG ("functionNumber %d is out of bounds for lookup array", functionNumber);
+		return E_BOUNDS;
 	}
-	count++;
-	FUNCTIONINFO *pFunctionInfos;
-	if (FAILED (hr == ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
-		TRACE ("get::SafeArrayAccessData failed");
-		return hr;
-	}
-	for (int i = 0; i < count; i++) {
-		if (pFunctionInfos[i].iExportNumber == functionNumber) {
-			*pFunctionInfo = pFunctionInfos[i];
-			::SafeArrayUnaccessData (m_pResults);
-			return S_OK;
-		}
-	}
-	::SafeArrayUnaccessData (m_pResults);
-	return E_FAIL;
 }
 
 void FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
@@ -107,26 +138,14 @@ void FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNumber
 }
 
 HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
-	if (m_pResults == NULL) {
+	if (m_pResults == NULL || m_pFunctions == NULL) {
 		ERROR_MSG ("scan not called first");
 		return E_POINTER;
 	}
-	long count;
-	HRESULT hr;
-	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &count))) {
-		_com_error err (hr);
-		ERROR_MSG ("registerFunctions::SafeArrayGetUBound failed: %s", err.ErrorMessage());
-		return hr;
-	}
-	count++;
-	FUNCTIONINFO *pFunctionInfos;
-	if (FAILED (hr = ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
-		ERROR_MSG ("registerFunctions::SafeArrayAccessData failed");
-		return hr;
-	}
-	
-	for (int i = 0; i < count; i++) {
-		FUNCTIONINFO fi = pFunctionInfos[i];
+
+	for (int i = 0; i < m_cFunctions; i++) {
+		HRESULT hr;
+		FUNCTIONINFO fi = m_pFunctions[i];
 		bstr_t *psArgsHelp;
 		long cArgsHelp;
 		if (FAILED (hr = ::SafeArrayAccessData (fi.saArgsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
@@ -146,31 +165,19 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 			cArgsHelp, psArgsHelp);
 		::SafeArrayUnaccessData (fi.saArgsHelp);
 	}
-	::SafeArrayUnaccessData (m_pResults);
 	return S_OK;
 }
 
-HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, int iChunkSize) {
-	if (m_pResults == NULL) {
+HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis) {
+	if (m_pResults == NULL || m_pFunctions == NULL) {
 		ERROR_MSG ("RegisterFunctions called before Scan");
 		return E_POINTER;
 	}
-	long cElems;
-	HRESULT hr;
-	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &cElems))) {
-		_com_error err (hr);
-		ERROR_MSG ("registerFunctions::SafeArrayGetUBound failed: %s", err.ErrorMessage ());
-		return hr;
-	}
-	cElems++;
-	FUNCTIONINFO *pFunctionInfos;
-	if (FAILED (hr = ::SafeArrayAccessData (m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos)))) {
-		ERROR_MSG ("registerFunctions::SafeArrayAccessData failed");
-		return hr;
-	}
-
-	for (int count = 0; m_iIndex < cElems && count < iChunkSize; m_iIndex++, count++) {
-		FUNCTIONINFO fi = pFunctionInfos[m_iIndex];
+	LARGE_INTEGER liStartTime;
+	QueryPerformanceCounter (&liStartTime);
+	for (int count = 0; m_iIndex < m_cFunctions; m_iIndex++, count++) {
+		HRESULT hr;
+		FUNCTIONINFO fi = m_pFunctions[m_iIndex];
 		bstr_t *psArgsHelp;
 		long cArgsHelp;
 		if (FAILED (hr = ::SafeArrayAccessData (fi.saArgsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
@@ -189,8 +196,14 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, int iChunkSize) {
 			fi.bsFunctionCategory, fi.bsAcceleratorKey, fi.bsHelpTopic, fi.bsDescription,
 			cArgsHelp, psArgsHelp);
 		::SafeArrayUnaccessData (fi.saArgsHelp);
+		// see if we've been running too long and bomb out if we have.
+		LARGE_INTEGER liNow;
+		QueryPerformanceCounter (&liNow);
+		if ((((liNow.QuadPart - liStartTime.QuadPart) * 1000) / m_liFreq.QuadPart) > llMaxMillis) {
+			return S_FALSE;
+		}
 	}
-	::SafeArrayUnaccessData (m_pResults);
+
 	return S_OK;
 }
 

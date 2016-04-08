@@ -46,6 +46,9 @@ public:
 	static void printException (JNIEnv *pEnv, jthrowable exception);
 	//static void printXLOPER (XLOPER12 *oper);
 };
+
+#define TRACE_OFF __pragma(push_macro(TRACE))
+#define TRACE_ON __pragme(pop_macro(TRACE))
 #if 0 //def _DEBUG
 #define TRACE(x, ...) 
 #else

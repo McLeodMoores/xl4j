@@ -220,6 +220,8 @@
     <ClInclude Include="Debug.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TraceOff.h" />
+    <ClInclude Include="TraceOn.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debug.cpp" />

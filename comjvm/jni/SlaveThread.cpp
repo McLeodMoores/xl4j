@@ -11,6 +11,8 @@
 #include "internal.h"
 #include "utils/Debug.h"
 
+#include "utils/TraceOff.h"
+
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM);
 
 class CCallbackRequests {
@@ -175,3 +177,5 @@ HRESULT PoisonJNISlaveThreads () {
 	TRACE ("(%p) called", GetCurrentThreadId ());
 	return g_oRequests.Poison ();
 }
+
+#include "utils/TraceOn.h"
