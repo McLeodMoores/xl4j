@@ -12,7 +12,6 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
  * It can take the form of a two dimensional array of mixed types of xlopers.
  */
 public final class XLArray implements XLReference {
-  // REVIEW: should this be generic? #49
   /** The underlying array */
   private final XLValue[][] _array;
   /** True if the array is a row */
