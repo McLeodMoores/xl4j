@@ -4,29 +4,38 @@
 #include "helper/ClasspathUtils.h"
 
 Jvm::Jvm () {
+
 	HRESULT hr = ComJvmCreateLocalConnector (&m_pConnector);
 	if (FAILED (hr)) {
-		TRACE ("CreateLocalConnector failed");
+		ERROR_MSG ("CreateLocalConnector failed");
 		_com_raise_error (hr);
+	} else {
+		TRACE ("CreateLocalConnector succeeded");
 	}
 	hr = m_pConnector->Lock ();
 	if (FAILED (hr)) {
-		TRACE ("connector Lock could not be aquired");
+		ERROR_MSG ("connector Lock could not be aquired");
 		_com_raise_error (hr);
+	} else {
+		TRACE ("Connector lock aquired");
 	}
 
 	IJvmTemplate *pTemplate;
 
 	hr = ComJvmCreateTemplate (NULL, &pTemplate);
 	if (FAILED (hr)) {
-		TRACE ("could not create template");
+		ERROR_MSG ("could not create template");
 		_com_raise_error (hr);
+	} else {
+		TRACE ("Created template");
 	}
 	IClasspathEntries *entries;
 	hr = pTemplate->get_Classpath (&entries);
 	if (FAILED (hr)) {
-		TRACE ("could not get template classpath");
+		ERROR_MSG ("could not get template classpath");
 		_com_raise_error (hr);
+	} else {
+		TRACE ("Got classpath entries");
 	}
 
 	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
@@ -45,8 +54,10 @@ Jvm::Jvm () {
 
 	hr = pTemplate->Release ();
 	if (FAILED (hr)) {
-		TRACE ("Could not release template");
+		ERROR_MSG ("Could not release template");
 		_com_raise_error (hr);
+	} else {
+		TRACE ("Released template");
 	}
 }
 

@@ -22,7 +22,10 @@ public:
 	~FunctionRegistry ();
 	HRESULT Scan ();
 	HRESULT Get (int functionNumber, FUNCTIONINFO *pFunctionInfo);
+	HRESULT Size (int *piSize);
+	HRESULT GetNumberRegistered (int *piRegistered);
 	bool IsScanComplete ();
+	bool IsRegistrationComplete ();
 	HRESULT RegisterFunctions (XLOPER12 xDll);
 	HRESULT RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis);
 };

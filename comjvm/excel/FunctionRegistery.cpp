@@ -99,6 +99,23 @@ HRESULT FunctionRegistry::Get (int functionNumber, FUNCTIONINFO *pFunctionInfo) 
 	}
 }
 
+HRESULT FunctionRegistry::Size (int *piSize) {
+	if (IsScanComplete ()) {
+		*piSize = m_cFunctions;
+		return S_OK;
+	} else {
+		return E_FAIL;
+	}
+}
+
+HRESULT FunctionRegistry::GetNumberRegistered (int *piRegistered) {
+	if (IsScanComplete ()) {
+		*piRegistered = m_iIndex;
+		return S_OK;
+	} else {
+		return E_FAIL;
+	}
+}
 void FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
 	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp) {
 	TRACE ("-----------------------------------");
@@ -203,8 +220,11 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis)
 			return S_FALSE;
 		}
 	}
-
 	return S_OK;
+}
+
+bool FunctionRegistry::IsRegistrationComplete () {
+	return m_cFunctions == m_iIndex;
 }
 
 

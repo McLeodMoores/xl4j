@@ -6,38 +6,12 @@
 #include "FunctionRegistry.h"
 #include "Converter.h"
 #include "GarbageCollector.h"
+#include "ExcelUtils.h"
+#include "Progress.h"
 
-const IID XL4JOPER12_IID2 = {
-	0x053798d7,
-	0xeef0,
-	0x4ac5,
-	{
-		0x8e,
-		0xb8,
-		0x4d,
-		0x51,
-		0x5e,
-		0x7c,
-		0x5d,
-		0xb5
-	}
-};
+const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
-const IID ComJvmCore_LIBID2 = {
-	0x0e07a0b8,
-	0x0fa3,
-	0x4497,
-	{
-		0xbc,
-		0x66,
-		0x6d,
-		0x2a,
-		0xf2,
-		0xa0,
-		0xb9,
-		0xc8
-	}
-};
+const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 0x2a, 0xf2, 0xa0, 0xb9, 0xc8 }};
 //
 // Later, the instance handle is required to create dialog boxes.
 // g_hInst holds the instance handle passed in by DllMain so that it is
@@ -55,83 +29,11 @@ XCHAR g_szBuffer[20] = L"";
 FunctionRegistry *g_pFunctionRegistry;
 Converter *g_pConverter;
 Jvm *g_pJvm = NULL;
-DWORD g_dwTlsIndex;
+DWORD g_dwTlsIndex = 0;
 GarbageCollector *g_pCollector;
+Progress *g_pProgress;
 
 
-void printXLOPER (XLOPER12 *oper) {
-	switch (oper->xltype) {
-	case xltypeStr: {
-		size_t sz = oper->val.str[0]; // the first 16-bit word is the length in chars (not inclusing any zero terminator)
-		wchar_t *zeroTerminated = (wchar_t *)malloc ((sz + 1) * sizeof (wchar_t)); // + 1 for zero terminator
-		wcsncpy_s (zeroTerminated, sz + 1, (const wchar_t *) oper->val.str + 1, sz); // +1 to ptr to skip length 16 bit word.
-		zeroTerminated[sz] = '\0'; // add a NULL terminator
-		TRACE ("XLOPER12: xltypeStr: %s", zeroTerminated);
-		free (zeroTerminated);
-	} break;
-	case xltypeNum: {
-		TRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
-	} break;
-	case xltypeNil: {
-		TRACE ("XLOPER12: xltypeNil");
-	} break;
-	case xltypeRef: {
-		TRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
-		if (oper->val.mref.lpmref == NULL) {
-			TRACE ("  lpmref = NULL");
-			break;
-		}
-		for (int i = 0; i < oper->val.mref.lpmref->count; i++) {
-			TRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
-				oper->val.mref.lpmref->reftbl[i].rwFirst,
-				oper->val.mref.lpmref->reftbl[i].rwLast,
-				oper->val.mref.lpmref->reftbl[i].colFirst,
-				oper->val.mref.lpmref->reftbl[i].colLast);
-		}
-	} break;
-	case xltypeMissing: {
-		TRACE ("XLOPER12: xltypeMissing");
-	} break;
-	case xltypeSRef: {
-		TRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
-				oper->val.sref.ref.rwFirst,
-				oper->val.sref.ref.rwLast,
-				oper->val.sref.ref.colFirst,
-				oper->val.sref.ref.colLast);
-	} break;
-	case xltypeInt: {
-		TRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
-	} break;
-	case xltypeErr: {
-		TRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
-	} break;
-	case xltypeBool: {
-		if (oper->val.xbool == FALSE) {
-			TRACE ("XLOPER12: xltypeBool: FALSE");
-		} else {
-			TRACE ("XLOPER12: xltypeBool: TRUE");
-		}
-	} break;
-	case xltypeBigData: {
-		TRACE ("XLOPER12: xltypeBigData");
-	} break;
-	case xltypeMulti: {
-		RW cRows = oper->val.array.rows;
-		COL cCols = oper->val.array.columns;
-		TRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
-		XLOPER12 *pXLOPER = oper->val.array.lparray;
-		for (RW j = 0; j < cRows; j++) {
-			for (COL i = 0; i < cCols; i++) {
-				printXLOPER (pXLOPER++);
-			}
-		}
-	} break;
-	default: {
-		TRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
-	}
-
-	}
-}
 
 ///***************************************************************************
 // DllMain()
@@ -172,94 +74,75 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 		// The instance handle passed into DllMain is saved
 		// in the global variable g_hInst for later use.
 		g_hInst = hDLL;
-		if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
+		/*if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
+			ERROR_MSG ("TlsAlloc returned TLS_OUT_OF_INDEXES");
 			return FALSE;
-		}
+		}*/
 		TRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
 
 		break;
 	case DLL_THREAD_ATTACH: {
 		TRACE ("DLL_THREAD_ATTACH called");
-		TRACE ("Thread attached, created ICall instance"); 
-		TlsSetValue (g_dwTlsIndex, NULL);
+		//TlsSetValue (g_dwTlsIndex, NULL);
 	} break;
 	case DLL_THREAD_DETACH: {
-		ICall *pCall = (ICall *)TlsGetValue (g_dwTlsIndex);
-		if (pCall) {
-			pCall->Release ();
-			TlsSetValue (g_dwTlsIndex, NULL);
-		}
+		TRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
+		//ICall *pCall = (ICall *)TlsGetValue (g_dwTlsIndex);
+		//if (pCall) {
+		//	TRACE ("Calling Release on pCall and setting TLS entry to NULL");
+		//	pCall->Release ();
+		//	TlsSetValue (g_dwTlsIndex, NULL);
+		//}
 	} break;
 	case DLL_PROCESS_DETACH: {
-		if (g_pJvm) {
-			g_pJvm->Release ();
-		}
+		TRACE ("DLL_PROCESS_DETACH");
+		//TlsFree (g_dwTlsIndex);
+		//if (g_pJvm) {
+		//	TRACE ("Calling Release on Jvm");
+		//	g_pJvm->Release ();
+		//}
 	}
 	default:
 		break;
 	}
+	TRACE ("Existing DllMain");
 	return TRUE;
 }
 
-void ScheduleCommand (wchar_t *commandName, double seconds) {
-	XLOPER12 now;
-	TRACE ("xlfNow");
-	Excel12f (xlfNow, &now, 0);
-	now.val.num += 2. / (3600. * 24.);
-	XLOPER12 retVal;
-	TRACE ("xlcOnTime");
-	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (commandName));
-	TRACE ("xlcFree");
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
-}
-
-void RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
-	FreeAllTempMemory ();
-	XLOPER12 retVal;
-	LPXLOPER12 exportName = TempStr12 (wsCommandName);
-	//((LPXLOPER12)NULL)->val;
-	LPXLOPER12 returnType = TempStr12 (TEXT ("J"));
-	LPXLOPER12 commandName = TempStr12 (wsCommandName);
-	LPXLOPER12 args = TempMissing12 ();
-	LPXLOPER12 functionType = TempInt12 (2);
-	TRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
-
-	Excel12f (
-		xlfRegister, &retVal, 6, xDLL,
-		exportName, // export name
-		returnType, // return type, always J for commands
-		commandName, // command name
-		args, // args
-		functionType // function type 2 = Command
-		);
-	TRACE ("After xlfRegister");
+DWORD WINAPI MarqueeTickThread (LPVOID param) {
+	Progress *pProgress = (Progress *)param;
+	pProgress->AddRef ();
+	while (!g_pFunctionRegistry->IsScanComplete ()) {
+		Sleep (300);
+		pProgress->Increment ();
+	}
+	int iNumberRegistered;
+	g_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
+	pProgress->SetMax (iNumberRegistered);
+	pProgress->Release ();
+	return 0;
 }
 
 DWORD WINAPI RegistryThreadFunction (LPVOID param) {
-	//XLOPER12 *pxDLL = (XLOPER12 *)param;
-	TRACE ("Registry thread alloc tls %d", );
-	LPVOID *tlsBlock = (LPVOID *)param;
-	for (int i = 0; i < (int) g_dwTlsIndex; i++) {
-		if (TlsGetValue (i) != NULL) {
-			TlsSetValue (i, tlsBlock[i]);
-		}
+	TRACE ("Registry thread");
+	g_pJvm = new Jvm ();
+	if (!g_pJvm) {
+		ERROR_MSG ("JVM global pointer is NULL");
 	}
-	XLOPER12 xDLL;
-	Excel12f (xlGetName, &xDLL, 0);
-	TRACE ("Result of xlGetName (RegistryThread)");
-	printXLOPER (&xDLL);
-	/*TRACE ("Calling scan from registry thread");
-	if (FAILED (g_pFunctionRegistry->scan ())) {
-		TRACE ("scan failed");
+	g_pConverter = new Converter ();
+
+	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm ());
+	HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
+	if (hThread == NULL) {
+		TRACE ("CreateThread failed %d", GetLastError ());
 	}
-	TRACE ("Calling register functions from registry thread");
-	if (FAILED (g_pFunctionRegistry->registerFunctions (*pxDLL))) {
-		TRACE ("registerFunctions failed");
+	TRACE ("Calling scan from registry thread");
+	if (FAILED (g_pFunctionRegistry->Scan ())) {
+		ERROR_MSG ("scan failed");
 	}
-	TRACE ("Finished register functions");*/
-	//Excel12f (xlFree, 0, 1, pxDLL);
 	return 0;
 }
+
 
 ///***************************************************************************
 // xlAutoOpen()
@@ -306,37 +189,39 @@ DWORD WINAPI RegistryThreadFunction (LPVOID param) {
 // History:  Date       Author        Reason
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
-	InitFramework ();
+	////InitFramework ();
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
-	g_pConverter = new Converter ();
-	g_pJvm = new Jvm ();
-	if (!g_pJvm) {
-		TRACE ("JVM global pointer is NULL");
+	XLOPER12 xWnd;
+	Excel12f (xlGetHwnd, &xWnd, 0);
+	g_pProgress = new Progress (); // addref
+	g_pProgress->Open((HWND)xWnd.val.w, (HINSTANCE)g_hInst);
+	//g_pProgress->SetMarquee ();
+	//Sleep (2000);
+	//g_pJvm = new Jvm ();
+	//if (!g_pJvm) {
+	//	ERROR_MSG ("JVM global pointer is NULL");
+	//}
+	//
+	//TRACE ("Jvm created");
+	DWORD dwThreadId;
+	//TRACE ("Calling CreateThread");
+	////HANDLE hStartup = CreateSemaphoreW (NULL, 0, 1, TEXT ("Initial"));
+
+	HANDLE hThread = CreateThread (NULL, 2048*1024, RegistryThreadFunction, (LPVOID)xWnd.val.w, 0, &dwThreadId); 
+	if (hThread == NULL) {
+		TRACE ("CreateThread failed %d", GetLastError());
 	}
-	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm());
-//	DWORD dwThreadId;
-	//CreateThread (NULL, 0, RegistryThreadFunction, NULL, 0, &dwThreadId); 
-	g_pFunctionRegistry->Scan (); 
-	TRACE ("Finished scan");
-	g_pFunctionRegistry->RegisterFunctions (xDLL);
-	TRACE ("Creating ICollect");
-	ICollect *pCollect;
-	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		TRACE ("Can't create ICollect instance: %s", err.ErrorMessage ());
-	}
-	TRACE ("Creating GarbageCollector");
-	g_pCollector = new GarbageCollector (pCollect);
-	TRACE ("Registering GC Command");
-	RegisterCommand (&xDLL, TEXT("GarbageCollect"));
-	TRACE ("Registered, booking GC call");
-	ScheduleCommand (TEXT("GarbageCollect"), 2.0);
-	TRACE ("Finished registration");
+	ExcelUtils::RegisterCommand (&xDLL, TEXT ("RegisterSomeFunctions"));
+	//Sleep (5000);
+	//WaitForSingleObject (hStartup, INFINITE);
+	//TRACE ("Thread is is %x", dwThreadId);
+	//RegistryThreadFunction (NULL);
+	TRACE ("Not Calling ScheduleCommand");
+	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
 	// Free the XLL filename //
 	//Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
-	FreeAllTempMemory ();
+	//FreeAllTempMemory ();
 	return 1;
 }
 
@@ -414,26 +299,6 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 
 	return 1;
 }
-
-///***************************************************************************
-// xlAutoAdd()
-//
-// Purpose:
-//
-//      This function is called by the Add-in Manager only. When you add a
-//      DLL to the list of active add-ins, the Add-in Manager calls xlAutoAdd()
-//      and then opens the XLL, which in turn calls xlAutoOpen.
-//
-// Parameters:
-//
-// Returns: 
-//
-//      int         1
-//
-// Comments:
-//
-// History:  Date       Author        Reason
-///***************************************************************************
 
 __declspec(dllexport) int WINAPI xlAutoAdd (void)
 {
@@ -540,20 +405,65 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 __declspec(dllexport) int GarbageCollect () {
 	TRACE ("GarbageCollect() called.");
 	g_pCollector->Collect ();
-	ScheduleCommand (TEXT("GarbageCollect"), 2);
+	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
 }
 
-__declspec(dllexport) int RegisterFunctions () {
+__declspec(dllexport) void StartGC (XLOPER12 *pxDLL) {
+	TRACE ("Creating ICollect");
+	ICollect *pCollect;
+	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
+	if (FAILED (hr)) {
+		_com_error err (hr);
+		TRACE ("Can't create ICollect instance: %s", err.ErrorMessage ());
+	}
+	TRACE ("Creating GarbageCollector");
+	g_pCollector = new GarbageCollector (pCollect);
+	TRACE ("Registering GC Command");
+	ExcelUtils::RegisterCommand (pxDLL, TEXT ("GarbageCollect"));
+	TRACE ("Registered, booking GC call");
+	ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
+	TRACE ("Finished registration");
+}
+
+
+__declspec(dllexport) int RegisterSomeFunctions () {
+	TRACE ("Entered");
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
-	g_pFunctionRegistry->RegisterFunctions (xDLL);
+	if (g_pFunctionRegistry->IsRegistrationComplete ()) {
+		TRACE ("Called after registration complete");
+		return 1; // erroneous call
+	}
+	if (g_pFunctionRegistry != NULL && g_pFunctionRegistry->IsScanComplete ()) {
+		for (int i = 0; i < 20; i++) {
+			HRESULT hr = g_pFunctionRegistry->RegisterFunctions (xDLL, 5);
+			if (hr == S_FALSE) {
+				int iRegistered;
+				g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
+				g_pProgress->Update (iRegistered);
+				// didn't complete, schedule another go in half a second
+				ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
+			} else {
+				int iRegistered;
+				g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
+				g_pProgress->Update (iRegistered);
+				Sleep (100); // allow UI to show completed status.
+				g_pProgress->Release ();
+				StartGC (&xDLL);
+				break;
+			}
+		}
+	} else {
+		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
+	}
 	return 1;
 }
 
+
+
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	LARGE_INTEGER t1;
-	QueryPerformanceCounter (&t1);
+	TRACE ("UDF entered");
 	// Find out how many parameters this function should expect.
 	FUNCTIONINFO functionInfo;
 	HRESULT hr = g_pFunctionRegistry->Get (exportNumber, &functionInfo);
@@ -565,7 +475,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	SAFEARRAYBOUND bounds = { nArgs, 0 };
 	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
 	if (saInputs == NULL) {
-		TRACE ("UDF stub: Could not create SAFEARRAY");
+		ERROR_MSG ("UDF stub: Could not create SAFEARRAY");
 		goto error;
 	}
 	TRACE ("UDF stub: Created SAFEARRAY for parameters");
@@ -584,19 +494,12 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
 		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		//LARGE_INTEGER ta1, ta2, freq;
-		//QueryPerformanceCounter (&ta1);
 		g_pConverter->convert (arg, pInputs++);
-		//QueryPerformanceCounter (&ta2);
-		//QueryPerformanceFrequency (&freq);
-		//Debug::odprintf (TEXT ("arg %d took %lld"), i, ((ta2.QuadPart - ta1.QuadPart) * 1000000) / freq.QuadPart);
 		TRACE ("UDF stub: converted and copied into SAFEARRAY");
 	}
 	va_end (ap);
 	// trim off any VT_NULLs if it's a varargs function.
 	if (functionInfo.bIsVarArgs) {
-		LARGE_INTEGER tva1, tva2, freq;
-		QueryPerformanceCounter (&tva1);
 		TRACE ("Detected VarArgs, trying to trim");
 		int i = nArgs - 1;
 		while (i > 0 && inputs[i].vt == VT_EMPTY) {
@@ -607,12 +510,9 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 		SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
 		hr = SafeArrayRedim (saInputs, &trimmedBounds);
 		if (FAILED (hr)) {
-			TRACE ("SafeArrayRedim failed");
+			ERROR_MSG ("SafeArrayRedim failed");
 			goto error;
 		}
-		QueryPerformanceCounter (&tva2);
-		QueryPerformanceFrequency (&freq);
-		//Debug::odprintf (TEXT ("varargs section took %lld"), i, ((tva2.QuadPart - tva1.QuadPart) * 1000000) / freq.QuadPart);
 	} else {
 		SafeArrayUnaccessData (saInputs);
 	}
@@ -620,7 +520,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 
 	long szInputs;
 	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
-		TRACE ("UDF stub: SafeArrayGetUBound failed");
+		ERROR_MSG ("UDF stub: SafeArrayGetUBound failed");
 		goto error;
 	}
 	szInputs++;
@@ -630,15 +530,14 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	ICall *pCall = (ICall *) TlsGetValue (g_dwTlsIndex);
 	if (pCall == NULL) {
 		if (FAILED (g_pJvm->getJvm ()->CreateCall (&pCall))) {
-			TRACE ("UDF stub: CreateCall failed on JVM");
+			ERROR_MSG ("UDF stub: CreateCall failed on JVM");
 			return FALSE;
 		}
 		TlsSetValue (g_dwTlsIndex, pCall);
 	}
-	//TRACE ("UDF stub: Prior to invocation saInputs has %d elements (post trimming)", szInputs);
 	if (FAILED(hr = pCall->Call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
-		TRACE ("UDF stub: call failed %s.", err.ErrorMessage ());
+		ERROR_MSG ("UDF stub: call failed %s.", err.ErrorMessage ());
 		goto error;
 	}
 	SafeArrayDestroy (saInputs); // should recursively deallocate
@@ -647,32 +546,12 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	XLOPER12 *pResult = (XLOPER12 *) malloc (sizeof (XLOPER12));
 	hr = g_pConverter->convert (&result, pResult);
 	if (FAILED (hr)) {
-		TRACE ("UDF stub: Result conversion failed");
+		ERROR_MSG ("UDF stub: Result conversion failed");
 		goto error;
 	}
 	VariantClear (&result); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
 	pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
 	TRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
-	//if (pResult->xltype == xltypeMulti) {
-	//	TRACE ("UDF stub: returning multi: columns = %d, rows = %d, arr = %p", pResult->val.array.columns, pResult->val.array.rows, pResult->val.array.lparray);
-	//	XLOPER12 *arr = pResult->val.array.lparray;
-	//	if (arr->xltype == xltypeNum) {
-	//		TRACE ("first element in array is number %f", arr->val.num);
-	//	} else if (arr->xltype == xltypeStr) {
-	//		TRACE ("first element is string");
-	//	} else {
-	//		TRACE ("Unrecognised xltype %d (0x%x)", arr->xltype, arr->xltype);
-	//	}
-	//}
-	LARGE_INTEGER t4;
-	QueryPerformanceCounter (&t4);
-	LARGE_INTEGER TicksPerSec;
-	QueryPerformanceFrequency (&TicksPerSec);
-	long long usecsTotal = ((t4.QuadPart - t1.QuadPart) * 1000000 ) / TicksPerSec.QuadPart;
-	long long safeArray = ((t2.QuadPart - t1.QuadPart) * 1000000 ) / TicksPerSec.QuadPart;
-	long long call = ((t3.QuadPart - t2.QuadPart) * 1000000) / TicksPerSec.QuadPart;
-	long long resultConv = ((t4.QuadPart - t3.QuadPart) * 1000000) / TicksPerSec.QuadPart;
-	//Debug::odprintf (TEXT ("total %lld, SAFEARRAY %lld, call %lld, result conv %lld\n"), usecsTotal, safeArray, call, resultConv);
 	return pResult;
 error:
 	if (saInputs) {

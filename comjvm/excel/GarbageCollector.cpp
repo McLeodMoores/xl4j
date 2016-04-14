@@ -2,27 +2,26 @@
 #include "GarbageCollector.h"
 #include <wchar.h>
 
-
 void GarbageCollector::ScanCell (XLOPER12 *cell) {
 	//printXLOPER (cell);
 	if ((cell->xltype == xltypeStr) &&
 		(cell->val.str[0] > 0) &&
 		(cell->val.str[1] == L'\x1A')) {
-		TRACE ("Found an object ref!");
+		//TRACE ("Found an object ref!");
 		//printXLOPER (cell);
-		hyper id = ParseId (cell->val.str);
+		__int64 id = ParseId (cell->val.str);
 		m_vObservedIds.push_back (id);
 	}
 }
 
-hyper GarbageCollector::ParseId (XCHAR *pExcelStr) {
+__int64 GarbageCollector::ParseId (XCHAR *pExcelStr) {
 	int cChars = *pExcelStr;
 	XCHAR *pStr = pExcelStr + 1; // skip first char, which is the length in chars as 16-bit value
 	int iHyphenPos;
 	for (iHyphenPos = 0; *pStr != L'-' && iHyphenPos < cChars; iHyphenPos++, pStr++); // find dash separator
 	++pStr; // skip over the dash and point to first digit
 	++iHyphenPos;
-	unsigned hyper id = 0;
+	unsigned __int64 id = 0;
 	while (pStr <= pExcelStr + cChars + 1) {
 		id *= 10; // shift digit to left
 		id += *pStr - L'0';

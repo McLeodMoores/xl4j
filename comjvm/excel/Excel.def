@@ -14,6 +14,7 @@ EXPORTS
 	xlAddInManagerInfo12
 	xlAutoFree12
 	GarbageCollect
+	RegisterSomeFunctions
 	UDF
 	UDF_0
 	UDF_1

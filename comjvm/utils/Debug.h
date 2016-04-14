@@ -45,6 +45,7 @@ public:
 	static HRESULT print_HRESULT (HRESULT result); 
 	static void printException (JNIEnv *pEnv, jthrowable exception);
 	//static void printXLOPER (XLOPER12 *oper);
+	static void SetThreadName (DWORD dwThreadID, const char* threadName);
 };
 
 #define TRACE_OFF __pragma(push_macro(TRACE))

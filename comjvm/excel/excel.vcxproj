@@ -122,6 +122,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-i386;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
+      <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -199,19 +200,23 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="ExcelUtils.h" />
     <ClInclude Include="FunctionRegistry.h" />
     <ClInclude Include="GarbageCollector.h" />
     <ClInclude Include="Jvm.h" />
+    <ClInclude Include="Progress.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="Excel.cpp" />
+    <ClCompile Include="ExcelUtils.cpp" />
     <ClCompile Include="Exports.cpp" />
     <ClCompile Include="FunctionRegistery.cpp" />
     <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="Jvm.cpp" />
+    <ClCompile Include="Progress.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

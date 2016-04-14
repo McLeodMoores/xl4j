@@ -29,7 +29,9 @@ public:
 		m_eState = NOT_RUNNING;
 		m_pJvm = NULL;
 		#pragma warning(suppress: 28159)
-		m_dwJvmRef = GetTickCount (); // suppress warning suggesting GetTickCount64
+		LARGE_INTEGER liTickCount;
+		QueryPerformanceCounter (&liTickCount);
+		m_dwJvmRef = liTickCount.LowPart; // GetTickCount (); // suppress warning suggesting GetTickCount64
 		TRACE ("(%p) CVMHolder constructor called.  m_dwJvmRef initialized to %d", GetCurrentThreadId (), m_dwJvmRef);
 	}
 	~CVMHolder () {
