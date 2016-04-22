@@ -108,3 +108,120 @@ void ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) 
 		);
 	TRACE ("After xlfRegister");
 }
+
+
+///***************************************************************************
+// ExcelCursorProc()
+//
+// Purpose:
+//
+//      When a modal dialog box is displayed over Microsoft Excel's window, the
+//      cursor is a busy cursor over Microsoft Excel's window. This WndProc traps
+//      WM_SETCURSORs and changes the cursor back to a normal arrow.
+//
+// Parameters:
+//
+//      HWND hWndDlg        Contains the HWND Window
+//      UINT message        The message to respond to
+//      WPARAM wParam       Arguments passed by Windows
+//      LPARAM lParam
+//
+// Returns: 
+//
+//      LRESULT             0 if message handled, otherwise the result of the
+//                          default WndProc
+//
+// Comments:
+//
+// History:  Date       Author        Reason
+///***************************************************************************
+
+// Create a place to store Microsoft Excel's WndProc address //
+WNDPROC ExcelUtils::g_lpfnExcelWndProc = NULL;
+
+LRESULT CALLBACK ExcelUtils::ExcelCursorProc (HWND hwnd,
+	UINT wMsg,
+	WPARAM wParam,
+	LPARAM lParam) {
+	//
+	// This block checks to see if the message that was passed in is a
+	// WM_SETCURSOR message. If so, the cursor is set to an arrow; if not,
+	// the default WndProc is called.
+	//
+
+	if (wMsg == WM_SETCURSOR) {
+		SetCursor (LoadCursor (NULL, IDC_ARROW));
+		return 0L;
+	} else {
+		return CallWindowProc (g_lpfnExcelWndProc, hwnd, wMsg, wParam, lParam);
+	}
+}
+
+///***************************************************************************
+// HookExcelWindow()
+//
+// Purpose:
+//
+//     This is the function that installs ExcelCursorProc so that it is
+//     called before Microsoft Excel's main WndProc.
+//
+// Parameters:
+//
+//      HANDLE hWndExcel    This is a handle to Microsoft Excel's hWnd
+//
+// Returns: 
+//
+// Comments:
+//
+// History:  Date       Author        Reason
+///***************************************************************************
+
+void ExcelUtils::HookExcelWindow (HWND hWndExcel) {
+	//
+	// This block obtains the address of Microsoft Excel's WndProc through the
+	// use of GetWindowLongPtr(). It stores this value in a global that can be
+	// used to call the default WndProc and also to restore it. Finally, it
+	// replaces this address with the address of ExcelCursorProc using
+	// SetWindowLongPtr().
+	//
+
+	g_lpfnExcelWndProc = (WNDPROC)GetWindowLongPtr (hWndExcel, GWLP_WNDPROC);
+	SetWindowLongPtr (hWndExcel, GWLP_WNDPROC, (LONG_PTR)(FARPROC)ExcelCursorProc);
+}
+
+///***************************************************************************
+// UnhookExcelWindow()
+//
+// Purpose:
+//
+//      This is the function that removes the ExcelCursorProc that was
+//      called before Microsoft Excel's main WndProc.
+//
+// Parameters:
+//
+//      HANDLE hWndExcel    This is a handle to Microsoft Excel's hWnd
+//
+// Returns: 
+//
+// Comments:
+//
+// History:  Date       Author        Reason
+///***************************************************************************
+
+void ExcelUtils::UnhookExcelWindow (HWND hWndExcel) {
+	//
+	// This function restores Microsoft Excel's default WndProc using
+	// SetWindowLongPtr to restore the address that was saved into
+	// g_lpfnExcelWndProc by HookExcelWindow(). It then sets g_lpfnExcelWndProc
+	// to NULL.
+	//
+
+	SetWindowLongPtr (hWndExcel, GWLP_WNDPROC, (LONG_PTR)g_lpfnExcelWndProc);
+	g_lpfnExcelWndProc = NULL;
+}
+
+HWND ExcelUtils::GetHWND () {
+	XLOPER12 xWnd;
+	Excel12f (xlGetHwnd, &xWnd, 0);
+	return (HWND)xWnd.val.w;
+}

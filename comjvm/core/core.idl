@@ -371,6 +371,59 @@ midl_pragma warning (disable: 2362)
 	[propput] HRESULT Index ([in] GUID *pguidJVM, [in] long lIndex);
 };
 
+/// <summary>Collection of strings representing command line options.</summary>
+///
+/// <para>One or more ICommandLineOption instances can be used to populate a
+/// IClasspath when constructing a JVM.</para>
+[
+	object,
+	uuid (959bdc8c-71c1-425e-bdbf-14ea5a486746)
+] interface IJvmOptionEntries : IUnknown {
+	/// <summary>Number of entries in the collection.</summary>
+	///
+	/// <param name="plCount">Receives the number of entries</param>
+	/// <returns>S_OK if successful, an error code otherwise</summary>
+	[propget] HRESULT Count ([out, retval] long *plCount);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Returns the item at the given index.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="ppEntry">Receives the element from the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Item ([in] long lIndex, [out, retval] BSTR *ppEntry);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Sets the item at the given index. If the index already exists then the
+	/// element at that index is replaced. If the index is the first unallocated value
+	/// then the collection is extended ni the same was as if Add was called.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Item ([in] long lIndex, [in] BSTR pEntry);
+	/// <summary>Adds an element to the collection.</summary>
+	///
+	/// <para>The element is appended to the end of the collection.</para>
+	///
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Add ([in] BSTR pEntry);
+	/// <summary>Empties the collection.</summary>
+	///
+	/// <para>The collection is reset to its initial/empty state.</para>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Clear ();
+	/// <summary>Removes an element from the collection</summary>
+	///
+	/// <para>The element at the given index is removed and all elements at
+	/// greater indices are shifted down.</para>
+	///
+	/// <param name="lIndex">The 1-based index of the element to remove</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Remove ([in] long lIndex);
+};
+
 /*
 ** XL 12 Basic Datatypes
 **/

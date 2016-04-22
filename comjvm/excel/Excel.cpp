@@ -8,6 +8,7 @@
 #include "GarbageCollector.h"
 #include "ExcelUtils.h"
 #include "Progress.h"
+#include "settings/Settings.h"
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -109,6 +110,49 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	return TRUE;
 }
 
+__declspec(dllexport) void AddToolbar () {
+	XLOPER12 xTest;
+	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
+	if (xTest.xltype == xltypeErr) {
+		XLOPER12 xlaToolRef[9];
+		XLOPER12 xlArr;
+		xlArr.xltype = xltypeMulti;
+		xlArr.val.array.columns = 8;
+		xlArr.val.array.rows = 1;
+		xlArr.val.array.lparray = &xlaToolRef[0];
+		xlaToolRef[0].xltype = xltypeStr;
+		xlaToolRef[0].val.str = TempStr12 (L"211")->val.str;
+		xlaToolRef[1].xltype = xltypeStr;
+		xlaToolRef[1].val.str = TempStr12 (L"Settings")->val.str;
+		xlaToolRef[2].xltype = xltypeStr;
+		xlaToolRef[2].val.str = TempStr12 (L"FALSE")->val.str;;
+		xlaToolRef[3].xltype = xltypeStr;
+		xlaToolRef[3].val.str = TempStr12 (L"TRUE")->val.str;
+		xlaToolRef[4].xltype = xltypeStr;
+		xlaToolRef[4].val.str = TempStr12 (L"")->val.str;
+		xlaToolRef[5].xltype = xltypeStr;
+		xlaToolRef[5].val.str = TempStr12 (L"Settings desc")->val.str;
+		xlaToolRef[6].xltype = xltypeStr;
+		xlaToolRef[6].val.str = TempStr12 (L"")->val.str;
+		xlaToolRef[7].xltype = xltypeStr;
+		xlaToolRef[7].val.str = TempStr12 (L"")->val.str;
+		int retVal = Excel12f (xlfAddToolbar, NULL, 2, TempStr12 (TEXT ("XL4J")), &xlArr);
+		TRACE ("xlfAddToolbar retval = %d", retVal);
+		Excel12f (xlcShowToolbar, NULL, 6, TempStr12 (L"XL4J"), TempBool12 (1),
+			TempInt12 (5), TempMissing12 (), TempMissing12 (), TempInt12 (999));
+	}
+	Excel12f (xlFree, 0, 1, &xTest); 
+}
+
+__declspec(dllexport) int Settings () {
+	HWND hwndExcel = ExcelUtils::GetHWND ();
+	CXl4jSettings settings;
+	ExcelUtils::HookExcelWindow (hwndExcel);
+	settings.Open (hwndExcel);
+	ExcelUtils::UnhookExcelWindow (hwndExcel);
+	return 1;
+}
+
 DWORD WINAPI MarqueeTickThread (LPVOID param) {
 	Progress *pProgress = (Progress *)param;
 	pProgress->AddRef ();
@@ -196,38 +240,21 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	Excel12f (xlGetHwnd, &xWnd, 0);
 	g_pProgress = new Progress (); // addref
 	g_pProgress->Open((HWND)xWnd.val.w, (HINSTANCE)g_hInst);
-	//g_pProgress->SetMarquee ();
-	//Sleep (2000);
-	//g_pJvm = new Jvm ();
-	//if (!g_pJvm) {
-	//	ERROR_MSG ("JVM global pointer is NULL");
-	//}
-	//
-	//TRACE ("Jvm created");
 	DWORD dwThreadId;
-	//TRACE ("Calling CreateThread");
-	////HANDLE hStartup = CreateSemaphoreW (NULL, 0, 1, TEXT ("Initial"));
-
 	HANDLE hThread = CreateThread (NULL, 2048*1024, RegistryThreadFunction, (LPVOID)xWnd.val.w, 0, &dwThreadId); 
 	if (hThread == NULL) {
 		TRACE ("CreateThread failed %d", GetLastError());
 	}
 	ExcelUtils::RegisterCommand (&xDLL, TEXT ("RegisterSomeFunctions"));
-	//Sleep (5000);
-	//WaitForSingleObject (hStartup, INFINITE);
-	//TRACE ("Thread is is %x", dwThreadId);
-	//RegistryThreadFunction (NULL);
 	TRACE ("Not Calling ScheduleCommand");
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
-	// Free the XLL filename //
-	//Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
-	//FreeAllTempMemory ();
+	ExcelUtils::RegisterCommand (&xDLL, TEXT ("Settings"));
+	AddToolbar ();
+	// Free the XLL filename 
+	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
+	FreeAllTempMemory ();
 	return 1;
 }
-
-
-
-
 
 ///***************************************************************************
 // xlAutoClose()
@@ -389,7 +416,7 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	if (xIntAction.val.w == 1)
 	{
 		xInfo.xltype = xltypeStr;
-		xInfo.val.str = L"\022Excel4J DLL";
+		xInfo.val.str = L"\013Excel4J DLL";
 	}
 	else
 	{

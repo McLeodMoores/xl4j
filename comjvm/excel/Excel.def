@@ -15,6 +15,7 @@ EXPORTS
 	xlAutoFree12
 	GarbageCollect
 	RegisterSomeFunctions
+	Settings
 	UDF
 	UDF_0
 	UDF_1

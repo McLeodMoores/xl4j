@@ -264,6 +264,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AbstractJvm.h" />
+    <ClInclude Include="JvmOptionEntries.h" />
     <ClInclude Include="InstanceHolder.h" />
     <ClInclude Include="ClassFolder.h" />
     <ClInclude Include="ClasspathEntries.h" />
@@ -304,6 +305,7 @@
     <ClCompile Include="JarFile.cpp" />
     <ClCompile Include="JvmConnectors.cpp" />
     <ClCompile Include="JvmContainer.cpp" />
+    <ClCompile Include="JvmOptionEntries.cpp" />
     <ClCompile Include="JvmSupport.cpp" />
     <ClCompile Include="JvmTemplate.cpp" />
     <ClCompile Include="MultiClasspathEntry.cpp" />

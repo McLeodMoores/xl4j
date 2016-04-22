@@ -1,0 +1,9 @@
+; settings.def : Declares the module parameters for the DLL.
+
+LIBRARY Settings.dll
+
+EXPORTS
+    ; Explicit exports can go here
+	??0CXl4jSettings@@QAE@XZ
+	??1CXl4jSettings@@QAE@XZ
+	?Open@CXl4jSettings@@SAXPAUHWND__@@@Z

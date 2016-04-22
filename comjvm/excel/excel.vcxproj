@@ -237,6 +237,9 @@
     <ProjectReference Include="..\local\local.vcxproj">
       <Project>{c0d7a35b-7195-4541-bb35-6cd51ea739bd}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\settings\settings.vcxproj">
+      <Project>{a9bc44b6-35c2-440d-a6a1-da59305740e2}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\utils\utils.vcxproj">
       <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
     </ProjectReference>
