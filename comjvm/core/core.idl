@@ -740,6 +740,44 @@ struct XL4JMULTIREFERENCE {
 	/// <param name="ppClasspath">Receives the classpath</param>
 	/// <returns>S_OK if successful, an error code otherwise</returns>
 	[propget] HRESULT Classpath ([out, retval] IClasspathEntries **ppClasspath);
+	/// <summary>JVM Options.</summary>
+	///
+	/// <para>The options are held as a collection of BSTR instances that
+	/// can be accessed at the point of JVM construction.</para>
+	///
+	/// <param name="ppJvmOptions">Receives the options</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Options ([out, retval] IJvmOptionEntries **ppJvmOptions);
+	/// <summary>JVM connection/container vendor.</summary>
+	///
+	/// <para>Queries the vendor of the JVM.</para>
+	///
+	/// <param name="pbstrVendor">Receives the JVM vendor, or NULL if none is specified in the template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Vendor ([out, retval] BSTR *pbstrVendor);
+	/// <summary>JVM connection/container vendor.</summary>
+	///
+	/// <para>Sets the vendor of the JVM. This may be NULL
+	/// if the template does not mandate any particular vendor.</para>
+	///
+	/// <param name="bstrVendor">The JVM vendor, or NULL if this template should not specify any</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Vendor ([in] BSTR bstrVendor);
+	/// <summary>JVM connection/container version.</summary>
+	///
+	/// <para>Queries the version of the JVM.</para>
+	///
+	/// <param name="pbstrVersion">Receives the JVM version, or NULL if none is specified in the template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Version ([out, retval] BSTR *pbstrVersion);
+	/// <summary>JVM connection/container version.</summary>
+	///
+	/// <para>Sets the version of the JVM. This may be NULL
+	/// if the template does not mandate any particular version.</para>
+	///
+	/// <param name="bstrVersion">The JVM version, or NULL if this template should not specify any</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Version ([in] BSTR bstrVersion);
 	/// <summary>JVM connection/container type.</summary>
 	///
 	/// <para>Queries the method used to construct/connect to a JVM, if mandated

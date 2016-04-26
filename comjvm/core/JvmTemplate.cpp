@@ -8,12 +8,13 @@
 #include "stdafx.h"
 #include "JvmTemplate.h"
 #include "ClasspathEntries.h"
+#include "JvmOptionEntries.h"
 #include "core.h"
 #include "internal.h"
 
 /// <summary>Creates a new instance.</summary>
 CJvmTemplate::CJvmTemplate ()
-: m_lRefCount (1), m_pClasspath (NULL), m_bstrType (), m_pDefaults (NULL) {
+: m_lRefCount (1), m_pClasspath (NULL),m_pOptions (NULL), m_bstrType (), m_pDefaults (NULL) {
 	IncrementActiveObjectCount ();
 }
 
@@ -23,6 +24,7 @@ CJvmTemplate::CJvmTemplate ()
 CJvmTemplate::~CJvmTemplate () {
 	assert (m_lRefCount == 0);
 	if (m_pClasspath) m_pClasspath->Release ();
+	if (m_pOptions) m_pOptions->Release ();
 	if (m_pDefaults) m_pDefaults->Release ();
 	DecrementActiveObjectCount ();
 }
@@ -100,6 +102,31 @@ HRESULT CJvmTemplate::LoadClasspath (const CSettings &oSettings) {
 	}
 }
 
+/// <summary>Loads any VM options from the given configuration.</summary>
+///
+/// <para>A configuration may include a reference to another, base, configuration set which is
+/// loaded prior to the main configuration.</para>
+///
+/// <param name="oSettings">Configuration data being loaded</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+HRESULT CJvmTemplate::LoadOptions (const CSettings &oSettings) {
+	try {
+		long l = 0;
+		_std_string_t strOptions (JVM_TEMPLATE_OPTIONS);
+		_bstr_t bstr;
+		while (!(!(bstr = oSettings.GetString (strOptions, l++)))) {
+			if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
+			HRESULT hr = m_pOptions->Add (bstr); // copy should increase count.
+			if (FAILED (hr)) return hr;
+		}
+		return S_OK;
+	} catch (std::bad_alloc) {
+		return E_OUTOFMEMORY;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
 /// <summary>Loads the JVM connection type from the given configuration.</summary>
 ///
 /// <param name="oSettings">Configuration data being loaded</param>
@@ -107,6 +134,32 @@ HRESULT CJvmTemplate::LoadClasspath (const CSettings &oSettings) {
 HRESULT CJvmTemplate::LoadType (const CSettings &oSettings) {
 	try {
 		m_bstrType = oSettings.GetString (JVM_TEMPLATE_JVM, JVM_TEMPLATE_JVM_TYPE);
+		return S_OK;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
+/// <summary>Loads the JVM vendor name from the given configuration.</summary>
+///
+/// <param name="oSettings">Configuration data being loaded</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+HRESULT CJvmTemplate::LoadVendor (const CSettings &oSettings) {
+	try {
+		m_bstrVendor = oSettings.GetString (JVM_TEMPLATE_JVM, JVM_TEMPLATE_JVM_VENDOR);
+		return S_OK;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
+/// <summary>Loads the JVM version from the given configuration.</summary>
+///
+/// <param name="oSettings">Configuration data being loaded</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+HRESULT CJvmTemplate::LoadVersion (const CSettings &oSettings) {
+	try {
+		m_bstrType = oSettings.GetString (JVM_TEMPLATE_JVM, JVM_TEMPLATE_JVM_VERSION);
 		return S_OK;
 	} catch (_com_error &e) {
 		return e.Error ();
@@ -123,7 +176,10 @@ HRESULT CJvmTemplate::Load (const CSettings &oSettings) {
 	if (FAILED (hr = LoadBaseSettings (oSettings))) return hr;
 	if (FAILED (hr = LoadOverrideSettings (oSettings))) return hr;
 	if (FAILED (hr = LoadClasspath (oSettings))) return hr;
+	if (FAILED (hr = LoadOptions (oSettings))) return hr;
 	if (FAILED (hr = LoadType (oSettings))) return hr;
+	if (FAILED (hr = LoadVendor (oSettings))) return hr;
+	if (FAILED (hr = LoadVersion (oSettings))) return hr;
 	return S_OK;
 }
 
@@ -141,12 +197,53 @@ static HRESULT AppendClasspath (IJvmTemplate *pSource, IJvmTemplate *pDest) {
 	return hr;
 }
 
+static HRESULT AppendOptions (IJvmTemplate *pSource, IJvmTemplate *pDest) {
+	IJvmOptionEntries *pOptions;
+	HRESULT hr;
+	if (SUCCEEDED (hr = pSource->get_Options (&pOptions)) && pOptions) {
+		IJvmOptionEntries *pDestOptions;
+		if (FAILED (hr = pDest->get_Options (&pDestOptions))) return hr;
+		long lCount;
+		if (FAILED (hr = pOptions->get_Count (&lCount))) return hr;
+		for (int i = 1; i <= lCount; i++) {
+			BSTR bstrItem;
+			if (FAILED (hr = pOptions->get_Item (i, &bstrItem))) return hr;
+			hr = pDestOptions->Add (bstrItem);
+			SysFreeString (bstrItem);
+			if (FAILED (hr)) {
+				return hr;
+			}
+		}
+	}
+	return hr;
+}
+
 static HRESULT AppendType (IJvmTemplate *pSource, IJvmTemplate *pDest) {
 	BSTR bstrType;
 	HRESULT hr;
 	if (SUCCEEDED (hr = pSource->get_Type (&bstrType)) && bstrType) {
 		hr = pDest->put_Type (bstrType);
 		SysFreeString (bstrType);
+	}
+	return hr;
+}
+
+static HRESULT AppendVendor (IJvmTemplate *pSource, IJvmTemplate *pDest) {
+	BSTR bstrVendor;
+	HRESULT hr;
+	if (SUCCEEDED (hr = pSource->get_Vendor (&bstrVendor)) && bstrVendor) {
+		hr = pDest->put_Vendor (bstrVendor);
+		SysFreeString (bstrVendor);
+	}
+	return hr;
+}
+
+static HRESULT AppendVersion (IJvmTemplate *pSource, IJvmTemplate *pDest) {
+	BSTR bstrVersion;
+	HRESULT hr;
+	if (SUCCEEDED (hr = pSource->get_Version (&bstrVersion)) && bstrVersion) {
+		hr = pDest->put_Version (bstrVersion);
+		SysFreeString (bstrVersion);
 	}
 	return hr;
 }
@@ -164,6 +261,9 @@ HRESULT CJvmTemplate::Append (IJvmTemplate *pSource, IJvmTemplate *pDest) {
 	if (!pDest) return E_POINTER;
 	HRESULT hr;
 	if (FAILED (hr = AppendClasspath (pSource, pDest))) return hr;
+	if (FAILED (hr = AppendOptions (pSource, pDest))) return hr;
+	if (FAILED (hr = AppendVendor (pSource, pDest))) return hr;
+	if (FAILED (hr = AppendVersion (pSource, pDest))) return hr;
 	if (FAILED (hr = AppendType (pSource, pDest))) return hr;
 	return S_OK;
 }
@@ -248,6 +348,22 @@ ULONG STDMETHODCALLTYPE CJvmTemplate::Release () {
 	}
 }
 
+/* [propget] */ HRESULT STDMETHODCALLTYPE CJvmTemplate::get_Options (
+	/* [retval][out] */ IJvmOptionEntries **ppOptions
+	) {
+	if (!ppOptions) return E_POINTER;
+	try {
+		if (!m_pOptions) {
+			m_pOptions = new CJvmOptionEntries ();
+		}
+		m_pOptions->AddRef ();
+		*ppOptions = m_pOptions;
+		return S_OK;
+	} catch (std::bad_alloc) {
+		return E_OUTOFMEMORY;
+	}
+}
+
 /* [propget] */ HRESULT STDMETHODCALLTYPE CJvmTemplate::get_Type (
 	/* [retval][out] */ BSTR *pbstrType
 	) {
@@ -265,6 +381,52 @@ ULONG STDMETHODCALLTYPE CJvmTemplate::Release () {
 	) {
 	try {
 		m_bstrType = bstrType;
+		return S_OK;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
+/* [propget] */ HRESULT STDMETHODCALLTYPE CJvmTemplate::get_Vendor (
+	/* [retval][out] */ BSTR *pbstrVendor
+	) {
+	if (!pbstrVendor) return E_POINTER;
+	try {
+		*pbstrVendor = m_bstrVendor.copy ();
+		return S_OK;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
+/* [propput] */ HRESULT STDMETHODCALLTYPE CJvmTemplate::put_Vendor (
+	/* [in] */ BSTR bstrVendor
+	) {
+	try {
+		m_bstrVendor = bstrVendor;
+		return S_OK;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
+/* [propget] */ HRESULT STDMETHODCALLTYPE CJvmTemplate::get_Version (
+	/* [retval][out] */ BSTR *pbstrVersion
+	) {
+	if (!pbstrVersion) return E_POINTER;
+	try {
+		*pbstrVersion = m_bstrVersion.copy ();
+		return S_OK;
+	} catch (_com_error &e) {
+		return e.Error ();
+	}
+}
+
+/* [propput] */ HRESULT STDMETHODCALLTYPE CJvmTemplate::put_Version (
+	/* [in] */ BSTR bstrVersion
+	) {
+	try {
+		m_bstrVersion = bstrVersion;
 		return S_OK;
 	} catch (_com_error &e) {
 		return e.Error ();
