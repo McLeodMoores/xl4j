@@ -23,6 +23,8 @@ public:
 	virtual ~CSettingsImpl ();
 	virtual const _bstr_t GetString (const _std_string_t &strKey, long lIndex) const = 0;
 	virtual const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const = 0;
+	virtual bool PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) = 0;
+	virtual bool PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) = 0;
 };
 
 /// <summary>Configuration settings.</summary>
@@ -37,4 +39,7 @@ public:
 	BOOL IsValid () const;
 	const _bstr_t GetString (const _std_string_t &strKey, long lIndex) const;
 	const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const;
+    bool PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue);
+	bool PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue);
+
 };

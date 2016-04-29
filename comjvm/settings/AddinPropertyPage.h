@@ -17,13 +17,16 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-	DECLARE_MESSAGE_MAP()
-public:
 	// The listbox of JVMs available
 	CListBox m_lbJvms;
 	// Control to determine if GC is enabled
 	CButton m_bGarbageCollection;
 	// Control to determine whether to save heap in the worksheet file
 	CButton m_cbSaveHeap;
+
+	DECLARE_MESSAGE_MAP()
+public:
+	void SetSelectedJvm (LPCTSTR szValue) {
+		m_lbJvms.SelectString (-1, szValue);
+	}
 };

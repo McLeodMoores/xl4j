@@ -8,7 +8,8 @@
 #include "GarbageCollector.h"
 #include "ExcelUtils.h"
 #include "Progress.h"
-#include "settings/Settings.h"
+#include "settings/SettingsDialog.h"
+#include "core/Settings.h"
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -146,7 +147,7 @@ __declspec(dllexport) void AddToolbar () {
 
 __declspec(dllexport) int Settings () {
 	HWND hwndExcel = ExcelUtils::GetHWND ();
-	CXl4jSettings settings;
+	CSettingsDialog settings(new CEmptySettings());
 	ExcelUtils::HookExcelWindow (hwndExcel);
 	settings.Open (hwndExcel);
 	ExcelUtils::UnhookExcelWindow (hwndExcel);
