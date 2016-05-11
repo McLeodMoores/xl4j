@@ -27,7 +27,7 @@ public:
 		pTemplate->get_Classpath (&entries);
 		TCHAR szCurrentDir[MAX_PATH];
 		GetCurrentDirectory (MAX_PATH, szCurrentDir);
-		TRACE ("Current dir is %s", szCurrentDir);
+		LOGTRACE ("Current dir is %s", szCurrentDir);
 		ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
 		ClasspathUtils::AddEntry (entries, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar"));
 		//AddEntries (entries);
@@ -57,7 +57,7 @@ public:
 				TCHAR szRelativePath[MAX_PATH];
 				StringCchCopy (szRelativePath, MAX_PATH, base);
 				StringCchCat (szRelativePath, MAX_PATH, findData.cFileName);
-				TRACE ("Adding ClasspathEntry for %s", szRelativePath);
+				LOGTRACE ("Adding ClasspathEntry for %s", szRelativePath);
 				IClasspathEntry *pEntry;
 				HRESULT hr = ComJvmCreateClasspathEntry (szRelativePath, &pEntry);
 				if (FAILED (hr)) {
@@ -81,7 +81,7 @@ public:
 		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromGuids %s", errMsg);
+			LOGTRACE ("Failed to get RecordInfoFromGuids %s", errMsg);
 			Assert::Fail ();
 		}
 		SAFEARRAY *results;
@@ -106,7 +106,7 @@ public:
 			if (::VarBstrCmp (pFunctionInfos[i].bsFunctionWorksheetName, myAdd, NULL, NULL) == VARCMP_EQ) {
 				m_iMyAdd = pFunctionInfos[i].iExportNumber;
 			}
-			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
+			LOGTRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
 		}
 		SafeArrayUnaccessData (results);
 		Assert::AreNotEqual ((long)100, count);

@@ -25,16 +25,16 @@ CCall::~CCall () {
 }
 
 static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {
-	TRACE ("Entering static callback function _call");
+	LOGTRACE ("Entering static callback function _call");
 	CCallExecutor *pExecutor = (CCallExecutor*)lpData;
 	HRESULT hr = pExecutor->Run (pEnv);
 	//if (SUCCEEDED (hr)) {
-	//	TRACE ("_call: Run returned success");
+	//	LOGTRACE ("_call: Run returned success");
 	//	hr = pExecutor->Wait ();
-	//	TRACE ("pExecutor->Wait() returned");
+	//	LOGTRACE ("pExecutor->Wait() returned");
 	//	Debug::print_HRESULT (hr);
 	//} else {
-	//	TRACE ("_call: Run returned failure");
+	//	LOGTRACE ("_call: Run returned failure");
 	//	Debug::print_HRESULT (hr);
 	//	pExecutor->Release ();
 	//}
@@ -52,15 +52,15 @@ HRESULT STDMETHODCALLTYPE CCall::Call (/* [out] */ VARIANT *result, /* [in] */ i
 #endif
 		pExecutor->AddRef ();
 		pExecutor->SetArguments (result, iFunctionNum, args); //
-		TRACE ("call on safearray** about to call Execute on vm");
+		LOGTRACE ("call on safearray** about to call Execute on vm");
 		hr = m_pJvm->Execute (_call, pExecutor);
 		if (SUCCEEDED (hr)) {
-			TRACE ("vm execute succeeded");
+			LOGTRACE ("vm execute succeeded");
 			// The executor will release RC2
 			hr = pExecutor->Wait ();
-			TRACE ("hr = %x after Wait()", hr);
+			LOGTRACE ("hr = %x after Wait()", hr);
 		} else {
-			TRACE ("vm execute failed");
+			LOGTRACE ("vm execute failed");
 			// Release RC2
 			pExecutor->Release ();
 		}
@@ -69,7 +69,7 @@ HRESULT STDMETHODCALLTYPE CCall::Call (/* [out] */ VARIANT *result, /* [in] */ i
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	}
-	TRACE ("Returning hr = %x", hr);
+	LOGTRACE ("Returning hr = %x", hr);
 	return hr;
 }
 

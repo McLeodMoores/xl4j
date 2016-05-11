@@ -31,7 +31,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 //			Assert::AreEqual (S_OK, pTemplate->get_Classpath (&entries));
 //			TCHAR szCurrentDir[MAX_PATH];
 //			GetCurrentDirectory(MAX_PATH, szCurrentDir);
-//			TRACE ("Current dir is %s", szCurrentDir);
+//			LOGTRACE ("Current dir is %s", szCurrentDir);
 //			AddEntries (entries);
 //			Assert::AreEqual (S_OK, Debug::print_HRESULT(m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm)));
 //			pTemplate->Release ();
@@ -57,7 +57,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 //					TCHAR szRelativePath[MAX_PATH];
 //					StringCchCopy (szRelativePath, MAX_PATH, base);
 //					StringCchCat (szRelativePath, MAX_PATH, findData.cFileName);
-//					TRACE ("Adding ClasspathEntry for %s", szRelativePath);
+//					LOGTRACE ("Adding ClasspathEntry for %s", szRelativePath);
 //					IClasspathEntry *pEntry;
 //					HRESULT hr = ComJvmCreateClasspathEntry (szRelativePath, &pEntry);
 //					if (FAILED (hr)) {

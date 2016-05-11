@@ -11,7 +11,7 @@
 
 static HRESULT CreateSystemObject (REFCLSID clsid, IJvmConnector **ppConnector) {
 	// TODO
-	//TRACE ("CreateSystemObject not implemented");
+	//LOGTRACE ("CreateSystemObject not implemented");
 	return E_NOTIMPL;
 }
 

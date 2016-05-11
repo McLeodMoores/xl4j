@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 #include <vector>
+#include <string>
+#include <comdef.h>
 #include "../core/Settings.h"
 
 class CAvailableJvms {

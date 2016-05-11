@@ -205,18 +205,18 @@ void Debug::SetThreadName (DWORD dwThreadID, const char* threadName) {
 //void Debug::printXLOPER (XLOPER12 *oper) {
 //	switch (oper->xltype) {
 //	case xltypeStr: {
-//		TRACE ("XLOPER12: xltypeStr: %s", oper->val.str);
+//		LOGTRACE ("XLOPER12: xltypeStr: %s", oper->val.str);
 //	} break;
 //	case xltypeNum: {
-//		TRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
+//		LOGTRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
 //	} break;
 //	case xltypeNil: {
-//		TRACE ("XLOPER12: xltypeNil");
+//		LOGTRACE ("XLOPER12: xltypeNil");
 //	} break;
 //	case xltypeRef: {
-//		TRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
+//		LOGTRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
 //		for (int i = 0; i < oper->val.mref.lpmref->count; i++) {
-//			TRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
+//			LOGTRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 //				oper->val.mref.lpmref->reftbl[i].rwFirst,
 //				oper->val.mref.lpmref->reftbl[i].rwLast,
 //				oper->val.mref.lpmref->reftbl[i].colFirst,
@@ -224,35 +224,35 @@ void Debug::SetThreadName (DWORD dwThreadID, const char* threadName) {
 //		}
 //	} break;
 //	case xltypeMissing: {
-//		TRACE ("XLOPER12: xltypeMissing");
+//		LOGTRACE ("XLOPER12: xltypeMissing");
 //	} break;
 //	case xltypeSRef: {
-//		TRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
+//		LOGTRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 //				oper->val.sref.ref.rwFirst,
 //				oper->val.sref.ref.rwLast,
 //				oper->val.sref.ref.colFirst,
 //				oper->val.sref.ref.colLast);
 //	} break;
 //	case xltypeInt: {
-//		TRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
+//		LOGTRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
 //	} break;
 //	case xltypeErr: {
-//		TRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
+//		LOGTRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
 //	} break;
 //	case xltypeBool: {
 //		if (oper->val.xbool == FALSE) {
-//			TRACE ("XLOPER12: xltypeBool: FALSE");
+//			LOGTRACE ("XLOPER12: xltypeBool: FALSE");
 //		} else {
-//			TRACE ("XLOPER12: xltypeBool: TRUE");
+//			LOGTRACE ("XLOPER12: xltypeBool: TRUE");
 //		}
 //	} break;
 //	case xltypeBigData: {
-//		TRACE ("XLOPER12: xltypeBigData");
+//		LOGTRACE ("XLOPER12: xltypeBigData");
 //	} break;
 //	case xltypeMulti: {
 //		RW cRows = oper->val.array.rows;
 //		COL cCols = oper->val.array.columns;
-//		TRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
+//		LOGTRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
 //		XLOPER12 *pXLOPER = oper->val.array.lparray;
 //		for (RW j = 0; j < cRows; j++) {
 //			for (COL i = 0; i < cCols; i++) {
@@ -261,7 +261,7 @@ void Debug::SetThreadName (DWORD dwThreadID, const char* threadName) {
 //		}
 //	} break;
 //	default: {
-//		TRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
+//		LOGTRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
 //	}
 //
 //	}

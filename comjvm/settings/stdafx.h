@@ -36,9 +36,4 @@
 #include <afxcmn.h>                     // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 #include <afxdlgs.h>
-
-#ifdef _UNICODE
-typedef std::wstring _std_string_t;
-#else /* ifdef _UNICODE */
-typedef std::string _std_string_t;
-#endif /* ifdef _UNICODE */
+#include <string>

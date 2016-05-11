@@ -31,7 +31,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		//QueryPerformanceCounter (&t1);
 		long szValidIds;
 		if (FAILED (hr = ::SafeArrayGetUBound (m_psaValidIds, 1, &szValidIds))) {
-			TRACE ("SafeArrayGetUBound failed");
+			LOGTRACE ("SafeArrayGetUBound failed");
 			goto error;
 		}
 		szValidIds++; // upper bound not count, returns -1 for zero length array.
@@ -39,7 +39,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		//QueryPerformanceCounter (&t2);
 		hyper *pllValidIds;
 		if (FAILED (hr = SafeArrayAccessData (m_psaValidIds, reinterpret_cast<PVOID *>(&pllValidIds)))) {
-			TRACE ("SafeArrayAccessData failed");
+			LOGTRACE ("SafeArrayAccessData failed");
 			goto error;
 		}
 		jlong *plRawArray = pEnv->GetLongArrayElements (jlaValidIds, false);
@@ -52,21 +52,21 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		//QueryPerformanceCounter (&t4);
 
 		if (pEnv->ExceptionCheck ()) {
-			TRACE ("Exception occurred");
+			LOGTRACE ("Exception occurred");
 			jthrowable joThrowable = pEnv->ExceptionOccurred ();
 			pEnv->ExceptionClear ();
 			Debug::printException (pEnv, joThrowable);
 			hr = E_ABORT;
 			goto error;
 		}
-		//TRACE ("About to convert result");
+		//LOGTRACE ("About to convert result");
 
 		*m_piAllocations = jiResult;
-		/*TRACE ("Resulting VARIANT is %p", m_pResult);
+		/*LOGTRACE ("Resulting VARIANT is %p", m_pResult);
 		if (m_pResult) {
-		TRACE ("Resulting VARIANT vt = %d", m_pResult->vt);
+		LOGTRACE ("Resulting VARIANT vt = %d", m_pResult->vt);
 		}
-		TRACE ("Converted result");
+		LOGTRACE ("Converted result");
 		QueryPerformanceCounter (&t5);
 		QueryPerformanceFrequency (&freq);
 		long long usecsArrayAlloc = ((t2.QuadPart - t1.QuadPart) * 1000000) / freq.QuadPart;
@@ -85,10 +85,10 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		hr = S_OK;
 
 	} catch (std::bad_alloc) {
-		TRACE ("bad_alloc exception thrown");
+		LOGTRACE ("bad_alloc exception thrown");
 		hr = E_OUTOFMEMORY;
 	} catch (_com_error &e) {
-		TRACE ("Com error %s", e.ErrorMessage ());
+		LOGTRACE ("Com error %s", e.ErrorMessage ());
 		hr = e.Error ();
 	}
 error:

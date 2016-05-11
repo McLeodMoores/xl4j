@@ -63,14 +63,14 @@ public:
 		if (FAILED (hr)) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to load type lib via LoadRegTypeLib: %s", errMsg);
+			LOGTRACE ("Failed to load type lib via LoadRegTypeLib: %s", errMsg);
 			Assert::Fail ();
 		}
 		hr = pTypeLib->GetTypeInfoOfGuid (XL4JOPER12_IID, &pTypeInfo);
 		if (FAILED (hr)) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to load type lib via GetTypeInfoOfGuid: %s", errMsg);
+			LOGTRACE ("Failed to load type lib via GetTypeInfoOfGuid: %s", errMsg);
 			Assert::Fail ();
 		}
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
@@ -79,7 +79,7 @@ public:
 		if (FAILED (hr)) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromTypeInfo %s", errMsg);
+			LOGTRACE ("Failed to get RecordInfoFromTypeInfo %s", errMsg);
 			Assert::Fail ();
 		}
 	}
@@ -137,21 +137,21 @@ public:
 		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
+			LOGTRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
 			Assert::Fail ();
 		}
 		IRecordInfo *pXL4JREFERENCERecordInfo = NULL;
 		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, IID_XL4JREFERENCE, &pXL4JREFERENCERecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
+			LOGTRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
 			Assert::Fail ();
 		}
 		IRecordInfo *pXL4JMULTIREFERENCERecordInfo = NULL;
 		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pXL4JMULTIREFERENCERecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
+			LOGTRACE ("Failed to get RecordInfoFromGuids (%x) %s", hr, errMsg);
 			Assert::Fail ();
 		}
 	}

@@ -4,7 +4,6 @@
  * Copyright 2014 by Andrew Ian William Griffin <griffin@beerdragon.co.uk>
  * Released under the GNU General Public License.
  */
-
 #include "stdafx.h"
 #include "Settings.h"
 
@@ -26,12 +25,12 @@ public:
 		return (PCTSTR)NULL;
 	}
 
-	bool PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) {
-		return false;
+	BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) {
+		return FALSE;
 	}
 
-	bool PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) {
-		return false;
+	BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) {
+		return FALSE;
 	}
 };
 
@@ -68,13 +67,13 @@ public:
 		}
 	}
 
-	bool PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) {
+	BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) {
 		TCHAR szKey[16];
 		StringCbPrintf (szKey, sizeof (szKey), TEXT ("v%d"), lIndex + 1);
 		return WritePrivateProfileString (strKey.data (), szKey, strValue.data (), m_strPath.data());
 	}
 
-	bool PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) {
+	BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) {
 		return WritePrivateProfileString (strKey.data (), strIndex.data(), strValue.data (), m_strPath.data ());
 	}
 
@@ -86,20 +85,30 @@ CSettingsImpl::CSettingsImpl () {
 CSettingsImpl::~CSettingsImpl () {
 }
 
-static CSettingsImpl *LoadFromDisk (const _std_string_t &strType, const _std_string_t &strIdentifier) {
-	// Try to load the file from %AppData%
-	CSettingsImpl *pSettings = LoadFromAppData (strType, strIdentifier);
-	if (pSettings != NULL) {
-		return pSettings;
+static HRESULT CreateAppDataPath (const _std_string_t &strType, const _std_string_t &strIdentifier, LPTSTR szPathBuffer, size_t chPathBuffer) {
+	const LPCTSTR XL4J_PATH = TEXT ("\\XL4J");
+	HRESULT hr;
+	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
+	// first param is reserved
+	if (FAILED (hr = SHGetFolderPath (NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szPathBuffer))) return hr;
+	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, XL4J_PATH))) return hr;
+	if (!PathFileExists (szPathBuffer)) {
+		if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
+		if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strType.data ()))) return hr;
+		if (!PathFileExists (szPathBuffer)) {
+			if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
+		}
 	}
-	return LoadFromDLLLocalPath (strType, strIdentifier);
+	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strIdentifier.data ()))) return hr;
+	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, TEXT (".INI")))) return hr;
+	return S_OK;
 }
 
 static HRESULT BuildDllLocalPath (const _std_string_t &strType, const _std_string_t &strIdentifier, LPTSTR szPathBuffer, size_t chPathBuffer) {
 	HMODULE hModule;
 	_std_string_t strPath;
 	HRESULT hr;
-	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)LoadFromDisk, &hModule)) {
+	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)BuildDllLocalPath, &hModule)) {
 		if (GetModuleFileName (hModule, szPathBuffer, chPathBuffer) <= MAX_PATH) {
 			size_t cch = _tcslen (szPathBuffer);
 			while (cch > 0) {
@@ -130,43 +139,25 @@ static CSettingsImpl *LoadFromDLLLocalPath (const _std_string_t &strType, const 
 	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
 	if (FAILED (hr = BuildDllLocalPath (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
 		_com_error err (hr);
-		ERROR_MSG ("CreateAppDataPath failed: %s", err.ErrorMessage ());
+		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
 		return NULL;
 	}
 	if (!PathFileExists (szPathBuffer)) {
-		TRACE ("AppData settings file %s does not exist", szPathBuffer);
+		LOGTRACE ("AppData settings file %s does not exist", szPathBuffer);
 		return NULL;
 	}
 	DWORD dwAttributes = GetFileAttributes (szPathBuffer);
 	if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
-		ERROR_MSG ("File attributes for %s are invalid", szPathBuffer);
+		LOGERROR ("File attributes for %s are invalid", szPathBuffer);
 		return NULL;
 	}
 	if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		ERROR_MSG ("%s is a directory and should be an .INI file", szPathBuffer);
+		LOGERROR ("%s is a directory and should be an .INI file", szPathBuffer);
 		return NULL;
 	}
 	return new CIniFileSettings (szPathBuffer);
 }
 
-static HRESULT CreateAppDataPath (const _std_string_t &strType, const _std_string_t &strIdentifier, LPTSTR szPathBuffer, size_t chPathBuffer) {
-	const LPCTSTR XL4J_PATH = TEXT ("\\XL4J");
-	HRESULT hr;
-	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
-	// first param is reserved
-	if (FAILED (hr = SHGetFolderPath (NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, szPathBuffer))) return hr;
-	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, XL4J_PATH))) return hr;
-	if (!PathFileExists (szPathBuffer)) {
-		if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
-		if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strType.data ()))) return hr;
-		if (!PathFileExists (szPathBuffer)) {
-			if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
-		}
-	}
-	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strIdentifier.data ()))) return hr;
-	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, TEXT (".INI")))) return hr;
-	return S_OK;
-}
 
 static CSettingsImpl *LoadFromAppData (const _std_string_t &strType, const _std_string_t &strIdentifier) {
 	const LPCTSTR XL4J_PATH = TEXT ("\\XL4J");
@@ -175,23 +166,32 @@ static CSettingsImpl *LoadFromAppData (const _std_string_t &strType, const _std_
 	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
 	if (FAILED (hr = CreateAppDataPath (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
 		_com_error err (hr);
-		ERROR_MSG ("CreateAppDataPath failed: %s", err.ErrorMessage ());
+		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
 		return NULL;
 	}
 	if (!PathFileExists (szPathBuffer)) {
-		TRACE ("AppData settings file %s does not exist", szPathBuffer);
+		LOGTRACE ("AppData settings file %s does not exist", szPathBuffer);
 		return NULL;
 	}
 	DWORD dwAttributes = GetFileAttributes (szPathBuffer);
 	if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
-		ERROR_MSG ("File attributes for %s are invalid", szPathBuffer);
+		LOGERROR ("File attributes for %s are invalid", szPathBuffer);
 		return NULL;
 	}
 	if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		ERROR_MSG ("%s is a directory and should be an .INI file", szPathBuffer);
+		LOGERROR ("%s is a directory and should be an .INI file", szPathBuffer);
 		return NULL;
 	}
 	return new CIniFileSettings (szPathBuffer);
+}
+
+static CSettingsImpl *LoadFromDisk (const _std_string_t &strType, const _std_string_t &strIdentifier) {
+	// Try to load the file from %AppData%
+	CSettingsImpl *pSettings = LoadFromAppData (strType, strIdentifier);
+	if (pSettings != NULL) {
+		return pSettings;
+	}
+	return LoadFromDLLLocalPath (strType, strIdentifier);
 }
 
 // TODO: Allow identifier to be prefixed with "file:", "HKCU:" or "HKLM:" to force specific locations to be used.
@@ -206,7 +206,6 @@ CSettings::CSettings (const _std_string_t &strType, const _std_string_t &strIden
 	if (strIdentifier.data () == NULL) {
 		m_pImpl = new CEmptySettings ();
 	} else {
-		
 		m_pImpl = LoadFromDisk (strType, strIdentifier);
 		if (!m_pImpl) {
 			// TODO: Look for the data in HKCU
@@ -214,6 +213,8 @@ CSettings::CSettings (const _std_string_t &strType, const _std_string_t &strIden
 		}
 	}
 }
+
+
 
 /// <summary>Destroys an instance.</summary>
 CSettings::~CSettings () {

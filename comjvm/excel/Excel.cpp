@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #define COMJVM_EXCEL_EXPORT
 #include "Jvm.h"
-#include "local/CScanExecutor.h"
-#include "local/CCallExecutor.h"
+#include "../local/CScanExecutor.h"
+#include "../local/CCallExecutor.h"
 #include "FunctionRegistry.h"
 #include "Converter.h"
 #include "GarbageCollector.h"
 #include "ExcelUtils.h"
 #include "Progress.h"
-#include "settings/SettingsDialog.h"
-#include "core/Settings.h"
+#include "../settings/SettingsDialog.h"
+#include "../core/Settings.h"
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -72,42 +72,42 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		TRACE ("DLL_PROCESS_ATTACH called");
+		LOGTRACE ("DLL_PROCESS_ATTACH called");
 		// The instance handle passed into DllMain is saved
 		// in the global variable g_hInst for later use.
 		g_hInst = hDLL;
 		/*if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
-			ERROR_MSG ("TlsAlloc returned TLS_OUT_OF_INDEXES");
+			LOGERROR ("TlsAlloc returned TLS_OUT_OF_INDEXES");
 			return FALSE;
 		}*/
-		TRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
+		LOGTRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
 
 		break;
 	case DLL_THREAD_ATTACH: {
-		TRACE ("DLL_THREAD_ATTACH called");
+		LOGTRACE ("DLL_THREAD_ATTACH called");
 		//TlsSetValue (g_dwTlsIndex, NULL);
 	} break;
 	case DLL_THREAD_DETACH: {
-		TRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
+		LOGTRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
 		//ICall *pCall = (ICall *)TlsGetValue (g_dwTlsIndex);
 		//if (pCall) {
-		//	TRACE ("Calling Release on pCall and setting TLS entry to NULL");
+		//	LOGTRACE ("Calling Release on pCall and setting TLS entry to NULL");
 		//	pCall->Release ();
 		//	TlsSetValue (g_dwTlsIndex, NULL);
 		//}
 	} break;
 	case DLL_PROCESS_DETACH: {
-		TRACE ("DLL_PROCESS_DETACH");
+		LOGTRACE ("DLL_PROCESS_DETACH");
 		//TlsFree (g_dwTlsIndex);
 		//if (g_pJvm) {
-		//	TRACE ("Calling Release on Jvm");
+		//	LOGTRACE ("Calling Release on Jvm");
 		//	g_pJvm->Release ();
 		//}
 	}
 	default:
 		break;
 	}
-	TRACE ("Existing DllMain");
+	LOGTRACE ("Existing DllMain");
 	return TRUE;
 }
 
@@ -138,7 +138,7 @@ __declspec(dllexport) void AddToolbar () {
 		xlaToolRef[7].xltype = xltypeStr;
 		xlaToolRef[7].val.str = TempStr12 (L"")->val.str;
 		int retVal = Excel12f (xlfAddToolbar, NULL, 2, TempStr12 (TEXT ("XL4J")), &xlArr);
-		TRACE ("xlfAddToolbar retval = %d", retVal);
+		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
 		Excel12f (xlcShowToolbar, NULL, 6, TempStr12 (L"XL4J"), TempBool12 (1),
 			TempInt12 (5), TempMissing12 (), TempMissing12 (), TempInt12 (999));
 	}
@@ -147,10 +147,12 @@ __declspec(dllexport) void AddToolbar () {
 
 __declspec(dllexport) int Settings () {
 	HWND hwndExcel = ExcelUtils::GetHWND ();
-	CSettingsDialog settings(new CEmptySettings());
+	ISettingsDialog *pSettingsDialog;
+	CSettingsDialogFactory::Create(new CSettings (TEXT ("local"), TEXT ("default")), &pSettingsDialog);
 	ExcelUtils::HookExcelWindow (hwndExcel);
-	settings.Open (hwndExcel);
+	pSettingsDialog->Open (hwndExcel);
 	ExcelUtils::UnhookExcelWindow (hwndExcel);
+	delete pSettingsDialog;
 	return 1;
 }
 
@@ -169,21 +171,21 @@ DWORD WINAPI MarqueeTickThread (LPVOID param) {
 }
 
 DWORD WINAPI RegistryThreadFunction (LPVOID param) {
-	TRACE ("Registry thread");
+	LOGTRACE ("Registry thread");
 	g_pJvm = new Jvm ();
 	if (!g_pJvm) {
-		ERROR_MSG ("JVM global pointer is NULL");
+		LOGERROR ("JVM global pointer is NULL");
 	}
 	g_pConverter = new Converter ();
 
 	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm ());
 	HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
 	if (hThread == NULL) {
-		TRACE ("CreateThread failed %d", GetLastError ());
+		LOGTRACE ("CreateThread failed %d", GetLastError ());
 	}
-	TRACE ("Calling scan from registry thread");
+	LOGTRACE ("Calling scan from registry thread");
 	if (FAILED (g_pFunctionRegistry->Scan ())) {
-		ERROR_MSG ("scan failed");
+		LOGERROR ("scan failed");
 	}
 	return 0;
 }
@@ -244,10 +246,10 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	DWORD dwThreadId;
 	HANDLE hThread = CreateThread (NULL, 2048*1024, RegistryThreadFunction, (LPVOID)xWnd.val.w, 0, &dwThreadId); 
 	if (hThread == NULL) {
-		TRACE ("CreateThread failed %d", GetLastError());
+		LOGTRACE ("CreateThread failed %d", GetLastError());
 	}
 	ExcelUtils::RegisterCommand (&xDLL, TEXT ("RegisterSomeFunctions"));
-	TRACE ("Not Calling ScheduleCommand");
+	LOGTRACE ("Not Calling ScheduleCommand");
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
 	ExcelUtils::RegisterCommand (&xDLL, TEXT ("Settings"));
 	AddToolbar ();
@@ -431,36 +433,36 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 }
 
 __declspec(dllexport) int GarbageCollect () {
-	TRACE ("GarbageCollect() called.");
+	LOGTRACE ("GarbageCollect() called.");
 	g_pCollector->Collect ();
 	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
 }
 
 __declspec(dllexport) void StartGC (XLOPER12 *pxDLL) {
-	TRACE ("Creating ICollect");
+	LOGTRACE ("Creating ICollect");
 	ICollect *pCollect;
 	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
 	if (FAILED (hr)) {
 		_com_error err (hr);
-		TRACE ("Can't create ICollect instance: %s", err.ErrorMessage ());
+		LOGTRACE ("Can't create ICollect instance: %s", err.ErrorMessage ());
 	}
-	TRACE ("Creating GarbageCollector");
+	LOGTRACE ("Creating GarbageCollector");
 	g_pCollector = new GarbageCollector (pCollect);
-	TRACE ("Registering GC Command");
+	LOGTRACE ("Registering GC Command");
 	ExcelUtils::RegisterCommand (pxDLL, TEXT ("GarbageCollect"));
-	TRACE ("Registered, booking GC call");
+	LOGTRACE ("Registered, booking GC call");
 	ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
-	TRACE ("Finished registration");
+	LOGTRACE ("Finished registration");
 }
 
 
 __declspec(dllexport) int RegisterSomeFunctions () {
-	TRACE ("Entered");
+	LOGTRACE ("Entered");
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
 	if (g_pFunctionRegistry->IsRegistrationComplete ()) {
-		TRACE ("Called after registration complete");
+		LOGTRACE ("Called after registration complete");
 		return 1; // erroneous call
 	}
 	if (g_pFunctionRegistry != NULL && g_pFunctionRegistry->IsScanComplete ()) {
@@ -491,54 +493,54 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	TRACE ("UDF entered");
+	LOGTRACE ("UDF entered");
 	// Find out how many parameters this function should expect.
 	FUNCTIONINFO functionInfo;
 	HRESULT hr = g_pFunctionRegistry->Get (exportNumber, &functionInfo);
 	long nArgs = wcslen (functionInfo.bsFunctionSignature) - 2;
 	//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
-	TRACE ("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
+	LOGTRACE ("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
 	
 	// Create a SAFEARRAY(XL4JOPER12) of nArg entries
 	SAFEARRAYBOUND bounds = { nArgs, 0 };
 	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
 	if (saInputs == NULL) {
-		ERROR_MSG ("UDF stub: Could not create SAFEARRAY");
+		LOGERROR ("UDF stub: Could not create SAFEARRAY");
 		goto error;
 	}
-	TRACE ("UDF stub: Created SAFEARRAY for parameters");
+	LOGTRACE ("UDF stub: Created SAFEARRAY for parameters");
 	// Get a ptr into the SAFEARRAY
 	VARIANT *inputs;
 	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
 	VARIANT *pInputs = inputs;
 	if (nArgs > 0) {
-		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
+		LOGTRACE ("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
 		g_pConverter->convert (first, pInputs++);
-		TRACE ("UDF stub: copied first element into SAFEARRAY");
+		LOGTRACE ("UDF stub: copied first element into SAFEARRAY");
 	} else {
-		TRACE ("UDF stub: first paramter was NULL, no conversion");
+		LOGTRACE ("UDF stub: first paramter was NULL, no conversion");
 	}
-	TRACE ("UDF stub: converting any remaining parameters");
+	LOGTRACE ("UDF stub: converting any remaining parameters");
 	for (int i = 0; i < nArgs - 1; i++) {
 		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
-		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
+		LOGTRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
 		g_pConverter->convert (arg, pInputs++);
-		TRACE ("UDF stub: converted and copied into SAFEARRAY");
+		LOGTRACE ("UDF stub: converted and copied into SAFEARRAY");
 	}
 	va_end (ap);
 	// trim off any VT_NULLs if it's a varargs function.
 	if (functionInfo.bIsVarArgs) {
-		TRACE ("Detected VarArgs, trying to trim");
+		LOGTRACE ("Detected VarArgs, trying to trim");
 		int i = nArgs - 1;
 		while (i > 0 && inputs[i].vt == VT_EMPTY) {
 			i--;
 		}
 		SafeArrayUnaccessData (saInputs);
-		TRACE ("Trimming to %d", i + 1);
+		LOGTRACE ("Trimming to %d", i + 1);
 		SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
 		hr = SafeArrayRedim (saInputs, &trimmedBounds);
 		if (FAILED (hr)) {
-			ERROR_MSG ("SafeArrayRedim failed");
+			LOGERROR ("SafeArrayRedim failed");
 			goto error;
 		}
 	} else {
@@ -548,7 +550,7 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 
 	long szInputs;
 	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
-		ERROR_MSG ("UDF stub: SafeArrayGetUBound failed");
+		LOGERROR ("UDF stub: SafeArrayGetUBound failed");
 		goto error;
 	}
 	szInputs++;
@@ -558,14 +560,14 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	ICall *pCall = (ICall *) TlsGetValue (g_dwTlsIndex);
 	if (pCall == NULL) {
 		if (FAILED (g_pJvm->getJvm ()->CreateCall (&pCall))) {
-			ERROR_MSG ("UDF stub: CreateCall failed on JVM");
+			LOGERROR ("UDF stub: CreateCall failed on JVM");
 			return FALSE;
 		}
 		TlsSetValue (g_dwTlsIndex, pCall);
 	}
 	if (FAILED(hr = pCall->Call (&result, exportNumber, saInputs))) {
 		_com_error err (hr);
-		ERROR_MSG ("UDF stub: call failed %s.", err.ErrorMessage ());
+		LOGERROR ("UDF stub: call failed %s.", err.ErrorMessage ());
 		goto error;
 	}
 	SafeArrayDestroy (saInputs); // should recursively deallocate
@@ -574,12 +576,12 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	XLOPER12 *pResult = (XLOPER12 *) malloc (sizeof (XLOPER12));
 	hr = g_pConverter->convert (&result, pResult);
 	if (FAILED (hr)) {
-		ERROR_MSG ("UDF stub: Result conversion failed");
+		LOGERROR ("UDF stub: Result conversion failed");
 		goto error;
 	}
 	VariantClear (&result); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
 	pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
-	TRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
+	LOGTRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
 	return pResult;
 error:
 	if (saInputs) {
@@ -639,7 +641,7 @@ __declspec(dllexport) int WINAPI fExit (void)
 
 __declspec(dllexport) void WINAPI xlAutoFree12 (LPXLOPER12 oper) 
 {
-	TRACE ("xlAutoFree12 called");
+	LOGTRACE ("xlAutoFree12 called");
 	if (oper->xltype & xlbitDLLFree) {
 		FreeXLOper12T (oper);
 		free (oper);

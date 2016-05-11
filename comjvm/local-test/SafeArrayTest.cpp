@@ -19,12 +19,12 @@ public:
 		hr = SafeArrayGetLBound (psa, 1, &iLBound);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("SafeArrayGetLBound failed %s", err.ErrorMessage());
+			LOGTRACE ("SafeArrayGetLBound failed %s", err.ErrorMessage());
 		}
 		long iUBound;
 		SafeArrayGetUBound (psa, 1, &iUBound);
-		TRACE ("SafeArrayGetLBound returned %d", iLBound);
-		TRACE ("SafeArrayGetUBound returned %d", iUBound);
+		LOGTRACE ("SafeArrayGetLBound returned %d", iLBound);
+		LOGTRACE ("SafeArrayGetUBound returned %d", iUBound);
 	}
 
 	};

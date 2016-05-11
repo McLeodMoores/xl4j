@@ -1,27 +1,27 @@
 #include "stdafx.h"
-#include "SettingsDialog.h"
+#include "SettingsDialogImpl.h"
 #include "AddinPropertyPage.h"
 #include "ClasspathPropertyPage.h"
 #include "VmOptionsPropertyPage.h"
 
-CSettingsDialog::CSettingsDialog (CSettings *pSettings)  : m_pSettings(pSettings) {
+CSettingsDialogImpl::CSettingsDialogImpl (CSettings *pSettings)  : m_pSettings(pSettings) {
 	AFX_MANAGE_STATE (AfxGetStaticModuleState ());
 	init ();
 }
 
-CSettingsDialog::~CSettingsDialog () {
+CSettingsDialogImpl::~CSettingsDialogImpl () {
 	if (!m_pAddinPropertyPage) { delete m_pAddinPropertyPage; }
 	if (!m_pClasspathPropertyPage) { delete m_pClasspathPropertyPage; }
 	if (!m_pVmOptionsPropertyPage) { delete m_pVmOptionsPropertyPage; }
 }
 
-void CSettingsDialog::init () {
+void CSettingsDialogImpl::init () {
 	m_pAddinPropertyPage = new CAddinPropertyPage ();
 	m_pClasspathPropertyPage = new CClasspathPropertyPage ();
 	m_pVmOptionsPropertyPage = new CVmOptionsPropertyPage ();
 }
 
-void CSettingsDialog::Open (HWND hwndParent) {
+void CSettingsDialogImpl::Open (HWND hwndParent) {
 	CPropertySheet psSheet (IDS_PROPSHEET_TITLE, CWnd::FromHandle(hwndParent), 0);
 	psSheet.AddPage (m_pAddinPropertyPage);
 	psSheet.AddPage (m_pClasspathPropertyPage);

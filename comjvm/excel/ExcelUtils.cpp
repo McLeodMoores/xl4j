@@ -8,23 +8,23 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 		wchar_t *zeroTerminated = (wchar_t *)malloc ((sz + 1) * sizeof (wchar_t)); // + 1 for zero terminator
 		wcsncpy_s (zeroTerminated, sz + 1, (const wchar_t *)pXLOper->val.str + 1, sz); // +1 to ptr to skip length 16 bit word.
 		zeroTerminated[sz] = '\0'; // add a NULL terminator
-		TRACE ("XLOPER12: xltypeStr: %s", zeroTerminated);
+		LOGTRACE ("XLOPER12: xltypeStr: %s", zeroTerminated);
 		free (zeroTerminated);
 	} break;
 	case xltypeNum: {
-		TRACE ("XLOPER12: xltypeNum: %f", pXLOper->val.num);
+		LOGTRACE ("XLOPER12: xltypeNum: %f", pXLOper->val.num);
 	} break;
 	case xltypeNil: {
-		TRACE ("XLOPER12: xltypeNil");
+		LOGTRACE ("XLOPER12: xltypeNil");
 	} break;
 	case xltypeRef: {
-		TRACE ("XLOPER12: xltypeRef: sheetId=%d", pXLOper->val.mref.idSheet);
+		LOGTRACE ("XLOPER12: xltypeRef: sheetId=%d", pXLOper->val.mref.idSheet);
 		if (pXLOper->val.mref.lpmref == NULL) {
-			TRACE ("  lpmref = NULL");
+			LOGTRACE ("  lpmref = NULL");
 			break;
 		}
 		for (int i = 0; i < pXLOper->val.mref.lpmref->count; i++) {
-			TRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
+			LOGTRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 				pXLOper->val.mref.lpmref->reftbl[i].rwFirst,
 				pXLOper->val.mref.lpmref->reftbl[i].rwLast,
 				pXLOper->val.mref.lpmref->reftbl[i].colFirst,
@@ -32,35 +32,35 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 		}
 	} break;
 	case xltypeMissing: {
-		TRACE ("XLOPER12: xltypeMissing");
+		LOGTRACE ("XLOPER12: xltypeMissing");
 	} break;
 	case xltypeSRef: {
-		TRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
+		LOGTRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 			pXLOper->val.sref.ref.rwFirst,
 			pXLOper->val.sref.ref.rwLast,
 			pXLOper->val.sref.ref.colFirst,
 			pXLOper->val.sref.ref.colLast);
 	} break;
 	case xltypeInt: {
-		TRACE ("XLOPER12: xltypeInt: %d", pXLOper->val.w);
+		LOGTRACE ("XLOPER12: xltypeInt: %d", pXLOper->val.w);
 	} break;
 	case xltypeErr: {
-		TRACE ("XLOPER12: xltypeErr: %d", pXLOper->val.err);
+		LOGTRACE ("XLOPER12: xltypeErr: %d", pXLOper->val.err);
 	} break;
 	case xltypeBool: {
 		if (pXLOper->val.xbool == FALSE) {
-			TRACE ("XLOPER12: xltypeBool: FALSE");
+			LOGTRACE ("XLOPER12: xltypeBool: FALSE");
 		} else {
-			TRACE ("XLOPER12: xltypeBool: TRUE");
+			LOGTRACE ("XLOPER12: xltypeBool: TRUE");
 		}
 	} break;
 	case xltypeBigData: {
-		TRACE ("XLOPER12: xltypeBigData");
+		LOGTRACE ("XLOPER12: xltypeBigData");
 	} break;
 	case xltypeMulti: {
 		RW cRows = pXLOper->val.array.rows;
 		COL cCols = pXLOper->val.array.columns;
-		TRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
+		LOGTRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
 		XLOPER12 *pXLOPER = pXLOper->val.array.lparray;
 		for (RW j = 0; j < cRows; j++) {
 			for (COL i = 0; i < cCols; i++) {
@@ -69,7 +69,7 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 		}
 	} break;
 	default: {
-		TRACE ("XLOPER12: Unrecognised XLOPER12 type %d", pXLOper->xltype);
+		LOGTRACE ("XLOPER12: Unrecognised XLOPER12 type %d", pXLOper->xltype);
 	}
 
 	}
@@ -77,13 +77,13 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 
 void ExcelUtils::ScheduleCommand (wchar_t *wsCommandName, double dbSeconds) {
 	XLOPER12 now;
-	TRACE ("xlfNow");
+	LOGTRACE ("xlfNow");
 	Excel12f (xlfNow, &now, 0);
 	now.val.num += 2. / (3600. * 24.);
 	XLOPER12 retVal;
-	TRACE ("xlcOnTime");
+	LOGTRACE ("xlcOnTime");
 	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (wsCommandName));
-	TRACE ("xlcFree");
+	LOGTRACE ("xlcFree");
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
 }
 
@@ -96,7 +96,7 @@ void ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) 
 	LPXLOPER12 commandName = TempStr12 (wsCommandName);
 	LPXLOPER12 args = TempMissing12 ();
 	LPXLOPER12 functionType = TempInt12 (2);
-	TRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
+	LOGTRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
 
 	Excel12f (
 		xlfRegister, &retVal, 6, xDLL,
@@ -106,7 +106,7 @@ void ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) 
 		args, // args
 		functionType // function type 2 = Command
 		);
-	TRACE ("After xlfRegister");
+	LOGTRACE ("After xlfRegister");
 }
 
 

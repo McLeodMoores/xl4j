@@ -10,7 +10,7 @@ private:
 	FUNCTIONINFO *m_pFunctions;
 	size_t m_cFunctions;
 	bool m_bComplete;
-	int m_iIndex;
+	size_t m_iIndex;
 	LARGE_INTEGER m_liFreq;
 	void RegisterFunction (XLOPER12 xDll, int functionExportNumber, 
 		bstr_t functionExportName, bstr_t functionSignature, 

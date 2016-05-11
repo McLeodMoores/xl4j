@@ -7,7 +7,7 @@ void GarbageCollector::ScanCell (XLOPER12 *cell) {
 	if ((cell->xltype == xltypeStr) &&
 		(cell->val.str[0] > 0) &&
 		(cell->val.str[1] == L'\x1A')) {
-		//TRACE ("Found an object ref!");
+		//LOGTRACE ("Found an object ref!");
 		//printXLOPER (cell);
 		__int64 id = ParseId (cell->val.str);
 		m_vObservedIds.push_back (id);
@@ -52,7 +52,7 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 			Excel12f (xlFree, 0, 1, &m_firstCol);
 			Excel12f (xlFree, 0, 1, &m_lastCol);
 			// Excel12f (xlFree, 0, 1, &m_sheetId); -- don't need to free because no pointers
-			TRACE ("sheet was empty");
+			LOGTRACE ("sheet was empty");
 			return false; // sheet empty (but not partial)
 		}
 		if (m_sheetId.xltype == xltypeErr) {
@@ -61,7 +61,7 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 			Excel12f (xlFree, 0, 1, &m_firstCol);
 			Excel12f (xlFree, 0, 1, &m_lastCol);
 			// Excel12f (xlFree, 0, 1, &m_sheetId); -- don't need to free because no pointers
-			TRACE ("Could not get sheet ID");
+			LOGTRACE ("Could not get sheet ID");
 			throw std::invalid_argument ("Could not get sheet ID");
 			return false;
 		}
@@ -108,7 +108,7 @@ bool GarbageCollector::ScanWorkbook (XLOPER12 *pWorkbookName) {
 	}
 	
 	while (m_iSheet < m_cSheets) {
-		TRACE ("Sheet=");
+		LOGTRACE ("Sheet=");
 		//printXLOPER (pSheetName);
 		bool partial = ScanSheet (pWorkbookName, m_pSheetName);
 		m_pSheetName++;
@@ -125,7 +125,7 @@ bool GarbageCollector::ScanWorkbook (XLOPER12 *pWorkbookName) {
 }
 
 bool GarbageCollector::ScanDocuments () {
-	TRACE ("GarbageCollect() called.");
+	LOGTRACE ("GarbageCollect() called.");
 	if (m_documents.xltype == xltypeMissing) {
 		Excel12f (xlfDocuments, &m_documents, 0);
 		m_cDocs = m_documents.val.array.columns;
@@ -133,7 +133,7 @@ bool GarbageCollector::ScanDocuments () {
 		m_pWorkbookName = m_documents.val.array.lparray;
 	}
 	while (m_iDoc < m_cDocs) {
-		TRACE ("WorkbookName=");
+		LOGTRACE ("WorkbookName=");
 		bool partial = ScanWorkbook (m_pWorkbookName);
 		m_pWorkbookName++;
 		m_iDoc++;
@@ -151,11 +151,10 @@ void GarbageCollector::Collect () {
 	QueryPerformanceCounter (&liNow);
 	m_liLatestTime.QuadPart = liNow.QuadPart + m_liMaxTicks.QuadPart;
 	if (ScanDocuments ()) {
-		TRACE ("Partial collection");
+		LOGTRACE ("Partial collection");
 	} else {
-		TRACE ("Full collection");
-		hyper allocations;
-		__int64 a;
+		LOGTRACE ("Full collection");
+		__int64 allocations;
 		SAFEARRAY *psaIds;
 		if (SUCCEEDED (MakeSafeArray (&psaIds))) {
 			Debug::odprintf (TEXT("Marking %d items still in use"), m_vObservedIds.size ());
@@ -164,7 +163,7 @@ void GarbageCollector::Collect () {
 			Debug::odprintf (TEXT("Collection complete, there were %ll allocations since"), allocations);
 			Reset ();
 		} else {
-			TRACE ("Collector returned error");
+			LOGTRACE ("Collector returned error");
 		}
 	}
 }

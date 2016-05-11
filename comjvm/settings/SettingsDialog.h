@@ -1,16 +1,14 @@
 #pragma once
+#include <string>
+#include <comdef.h>
 #include "..\core\Settings.h"
 
-class CSettingsDialog {
-private:
-	CAddinPropertyPage *m_pAddinPropertyPage;
-	CClasspathPropertyPage *m_pClasspathPropertyPage;
-	CVmOptionsPropertyPage *m_pVmOptionsPropertyPage;
-	CSettings *m_pSettings;
-	void init ();
+class ISettingsDialog {
 public:
-	CSettingsDialog (CSettings *pSettings);
-	~CSettingsDialog ();
-	void Open (HWND hwndParent);
+	virtual void Open (HWND hwndParent) = 0;
 };
 
+class CSettingsDialogFactory {
+public:
+	static HRESULT Create (CSettings *pSettings, ISettingsDialog **ppDialog);
+};

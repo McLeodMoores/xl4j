@@ -24,7 +24,7 @@ public:
 		pTemplate->get_Classpath (&entries);
 		TCHAR szCurrentDir[MAX_PATH];
 		GetCurrentDirectory (MAX_PATH, szCurrentDir);
-		TRACE ("Current dir is %s", szCurrentDir);
+		LOGTRACE ("Current dir is %s", szCurrentDir);
 		AddEntries (entries);
 		Assert::AreEqual (S_OK, m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm));
 		pTemplate->Release ();
@@ -50,7 +50,7 @@ public:
 				TCHAR szRelativePath[MAX_PATH];
 				StringCchCopy (szRelativePath, MAX_PATH, base);
 				StringCchCat (szRelativePath, MAX_PATH, findData.cFileName);
-				TRACE ("Adding ClasspathEntry for %s", szRelativePath);
+				LOGTRACE ("Adding ClasspathEntry for %s", szRelativePath);
 				IClasspathEntry *pEntry;
 				HRESULT hr = ComJvmCreateClasspathEntry (szRelativePath, &pEntry);
 				if (FAILED (hr)) {
@@ -74,7 +74,7 @@ public:
 		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromGuids %s", errMsg);
+			LOGTRACE ("Failed to get RecordInfoFromGuids %s", errMsg);
 			Assert::Fail (); 
 		}
 		SAFEARRAY *results;
@@ -90,7 +90,7 @@ public:
 		count++;
 		SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
 		for (int i = 0; i < count; i++) {
-			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
+			LOGTRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
 		}
 		SafeArrayUnaccessData (results);
 		Assert::AreNotEqual ((long) 100, count);

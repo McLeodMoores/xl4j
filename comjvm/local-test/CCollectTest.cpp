@@ -27,7 +27,7 @@ public:
 		pTemplate->get_Classpath (&entries);
 		TCHAR szCurrentDir[MAX_PATH];
 		GetCurrentDirectory (MAX_PATH, szCurrentDir);
-		TRACE ("Current dir is %s", szCurrentDir);
+		LOGTRACE ("Current dir is %s", szCurrentDir);
 		ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
 		ClasspathUtils::AddEntry (entries, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar"));
 		//AddEntries (entries);
@@ -57,7 +57,7 @@ public:
 				TCHAR szRelativePath[MAX_PATH];
 				StringCchCopy (szRelativePath, MAX_PATH, base);
 				StringCchCat (szRelativePath, MAX_PATH, findData.cFileName);
-				TRACE ("Adding ClasspathEntry for %s", szRelativePath);
+				LOGTRACE ("Adding ClasspathEntry for %s", szRelativePath);
 				IClasspathEntry *pEntry;
 				HRESULT hr = ComJvmCreateClasspathEntry (szRelativePath, &pEntry);
 				if (FAILED (hr)) {
@@ -104,7 +104,7 @@ public:
 		SAFEARRAY *psaIds;
 		std::vector<hyper> vIds;
 		if (SUCCEEDED (hr = MakeSafeArray (&psaIds, vIds))) {
-			TRACE ("Marking %d items still in use", vIds.size ());
+			LOGTRACE ("Marking %d items still in use", vIds.size ());
 			hr = pCollect->Collect (psaIds, &allocations);
 			SafeArrayDestroy (psaIds);
 		}

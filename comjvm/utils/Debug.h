@@ -48,16 +48,16 @@ public:
 	static void SetThreadName (DWORD dwThreadID, const char* threadName);
 };
 
-#define TRACE_OFF __pragma(push_macro(TRACE))
-#define TRACE_ON __pragme(pop_macro(TRACE))
+#define LOGTRACE_OFF __pragma(push_macro(LOGTRACE))
+#define LOGTRACE_ON __pragme(pop_macro(LOGTRACE))
 #if 0 //def _DEBUG
-#define TRACE(x, ...) 
+#define LOGTRACE(x, ...) 
 #else
-//#define TRACE(x, ...) do { Debug::odprintf(TEXT("TRACE:%S:%d:%S ") TEXT(x) TEXT("\n"), __SHORT_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
-#define TRACE(x, ...)do { Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__); } while (0)
+//#define LOGTRACE(x, ...) do { Debug::odprintf(TEXT("LOGTRACE:%S:%d:%S ") TEXT(x) TEXT("\n"), __SHORT_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define LOGTRACE(x, ...)do { Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__); } while (0)
 #endif
-//#define ERROR_MSG(x, ...)do { Debug::odprintf(TEXT("TRACE:%S:%d:%S ") TEXT(x) TEXT("\n"), __SHORT_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
-#define ERROR_MSG(x, ...)do { Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__); } while (0)
+//#define LOGERROR(x, ...)do { Debug::odprintf(TEXT("LOGTRACE:%S:%d:%S ") TEXT(x) TEXT("\n"), __SHORT_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
+#define LOGERROR(x, ...)do { Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__); } while (0)
 #ifdef __cplusplus
 }
 #endif /* ifdef __cplusplus */

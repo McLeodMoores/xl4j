@@ -11,7 +11,7 @@ Progress::Progress () {
 }
 
 Progress::~Progress () {
-	TRACE ("Destructor");
+	LOGTRACE ("Destructor");
 	Destroy();
 }
 
@@ -33,7 +33,7 @@ void Progress::Open (HWND hwndParent, HINSTANCE hInst) {
 
 	//GetClientRect (hwndParent, &rcClient);
 	GetWindowRect (hwndParent, &rcClient);
-	TRACE ("Client Rect bottom=%d, left=%d, right=%d, top=%d", rcClient.bottom, rcClient.left, rcClient.right, rcClient.top);
+	LOGTRACE ("Client Rect bottom=%d, left=%d, right=%d, top=%d", rcClient.bottom, rcClient.left, rcClient.right, rcClient.top);
 
 	cyVScroll = GetSystemMetrics (SM_CYVSCROLL);
 	int width = rcClient.right - rcClient.left;
@@ -61,12 +61,12 @@ void Progress::SetMarquee () {
 }
 
 ULONG Progress::AddRef () {
-	TRACE ("AddRef");
+	LOGTRACE ("AddRef");
 	return InterlockedIncrement (&m_lRefCount);
 }
 
 ULONG Progress::Release () {
-	TRACE ("Release");
+	LOGTRACE ("Release");
 	ULONG lResult = InterlockedDecrement (&m_lRefCount);
 	if (!lResult) delete this;
 	return lResult;

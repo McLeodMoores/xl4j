@@ -7,35 +7,35 @@ Jvm::Jvm () {
 
 	HRESULT hr = ComJvmCreateLocalConnector (&m_pConnector);
 	if (FAILED (hr)) {
-		ERROR_MSG ("CreateLocalConnector failed");
+		LOGERROR ("CreateLocalConnector failed");
 		_com_raise_error (hr);
 	} else {
-		TRACE ("CreateLocalConnector succeeded");
+		LOGTRACE ("CreateLocalConnector succeeded");
 	}
 	hr = m_pConnector->Lock ();
 	if (FAILED (hr)) {
-		ERROR_MSG ("connector Lock could not be aquired");
+		LOGERROR ("connector Lock could not be aquired");
 		_com_raise_error (hr);
 	} else {
-		TRACE ("Connector lock aquired");
+		LOGTRACE ("Connector lock aquired");
 	}
 
 	IJvmTemplate *pTemplate;
 
 	hr = ComJvmCreateTemplate (NULL, &pTemplate);
 	if (FAILED (hr)) {
-		ERROR_MSG ("could not create template");
+		LOGERROR ("could not create template");
 		_com_raise_error (hr);
 	} else {
-		TRACE ("Created template");
+		LOGTRACE ("Created template");
 	}
 	IClasspathEntries *entries;
 	hr = pTemplate->get_Classpath (&entries);
 	if (FAILED (hr)) {
-		ERROR_MSG ("could not get template classpath");
+		LOGERROR ("could not get template classpath");
 		_com_raise_error (hr);
 	} else {
-		TRACE ("Got classpath entries");
+		LOGTRACE ("Got classpath entries");
 	}
 
 	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
@@ -45,19 +45,19 @@ Jvm::Jvm () {
 	if (FAILED (hr)) {
 		_com_error err (hr);
 		LPCTSTR errMsg = err.ErrorMessage ();
-		TRACE ("could not create JVM: %s", errMsg);
+		LOGTRACE ("could not create JVM: %s", errMsg);
 		_com_raise_error (hr);
 	}
-	TRACE ("Created JVM!");
+	LOGTRACE ("Created JVM!");
 	m_pConnector->Unlock ();
-	TRACE ("Unlocked connector");
+	LOGTRACE ("Unlocked connector");
 
 	hr = pTemplate->Release ();
 	if (FAILED (hr)) {
-		ERROR_MSG ("Could not release template");
+		LOGERROR ("Could not release template");
 		_com_raise_error (hr);
 	} else {
-		TRACE ("Released template");
+		LOGTRACE ("Released template");
 	}
 }
 

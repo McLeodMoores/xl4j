@@ -67,14 +67,14 @@ void JniCache::Init (JNIEnv *pEnv) {
 	if (m_initializerEnv != NULL) {
 		return;
 	}
-	TRACE ("JCache::init() entered (pEnv=%p)", pEnv);
+	LOGTRACE ("JCache::init() entered (pEnv=%p)", pEnv);
 	m_jcXLNumber = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLNumber"));
 	m_jmXLNumber_of = pEnv->GetStaticMethodID (m_jcXLNumber, "of", "(D)Lcom/mcleodmoores/excel4j/values/XLNumber;");
 	m_jcXLString = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLString"));
 	m_jmXLString_of = pEnv->GetStaticMethodID (m_jcXLString, "of", "(Ljava/lang/String;)Lcom/mcleodmoores/excel4j/values/XLString;");
 	m_jcXLBoolean = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLBoolean"));
 	m_jmXLBoolean_from = pEnv->GetStaticMethodID (m_jcXLBoolean, "from", "(Z)Lcom/mcleodmoores/excel4j/values/XLBoolean;");
-	TRACE ("JCache::init() checkpoint 1");
+	LOGTRACE ("JCache::init() checkpoint 1");
 	m_jcXLMultiReference = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLMultiReference"));
 	m_jmXLMultiReference_of = pEnv->GetStaticMethodID (m_jcXLMultiReference, "of", "(Lcom/mcleodmoores/excel4j/values/XLSheetId;[Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLMultiReference;");
 	m_jcXLSheetId = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLSheetId"));
@@ -83,7 +83,7 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_jmXLRange_of = pEnv->GetStaticMethodID (m_jcXLRange, "of", "(IIII)Lcom/mcleodmoores/excel4j/values/XLRange;");
 	m_jcXLLocalReference = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLLocalReference"));
 	m_jmXLLocalReference_of = pEnv->GetStaticMethodID (m_jcXLLocalReference, "of", "(Lcom/mcleodmoores/excel4j/values/XLRange;)Lcom/mcleodmoores/excel4j/values/XLLocalReference;");
-	TRACE ("JCache::init() checkpoint 2");
+	LOGTRACE ("JCache::init() checkpoint 2");
 	m_jcXLError = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLError"));
 	jfieldID jfNull = pEnv->GetStaticFieldID (m_jcXLError, "Null", "Lcom/mcleodmoores/excel4j/values/XLError;");
 	jfieldID jfDiv0 = pEnv->GetStaticFieldID (m_jcXLError, "Div0", "Lcom/mcleodmoores/excel4j/values/XLError;");
@@ -92,13 +92,13 @@ void JniCache::Init (JNIEnv *pEnv) {
 	jfieldID jfName = pEnv->GetStaticFieldID (m_jcXLError, "Name", "Lcom/mcleodmoores/excel4j/values/XLError;");
 	jfieldID jfNum = pEnv->GetStaticFieldID (m_jcXLError, "Num", "Lcom/mcleodmoores/excel4j/values/XLError;");
 	jfieldID jfNA = pEnv->GetStaticFieldID (m_jcXLError, "NA", "Lcom/mcleodmoores/excel4j/values/XLError;");
-	TRACE ("JCache::init() checkpoint 3");
+	LOGTRACE ("JCache::init() checkpoint 3");
 	m_joXLError_Null = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNull));
 	m_joXLError_Div0 = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfDiv0));
 	m_joXLError_Value = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfValue));
 	m_joXLError_Ref = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfRef));
 	m_joXLError_Name = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfName));
-	TRACE ("JCache::init() checkpoint 4");
+	LOGTRACE ("JCache::init() checkpoint 4");
 	m_joXLError_Num = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNum));
 	m_joXLError_NA = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNA));
 	m_jcXLArray = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLArray"));
@@ -106,7 +106,7 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_jcXLValue = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLValue"));
 	m_jcaXLValue = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("[Lcom/mcleodmoores/excel4j/values/XLValue;"));
 	m_jcXLNil = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLNil"));
-	TRACE ("JCache::init() checkpoint 5");
+	LOGTRACE ("JCache::init() checkpoint 5");
 	jfieldID jfNilInstance = pEnv->GetStaticFieldID (m_jcXLNil, "INSTANCE", "Lcom/mcleodmoores/excel4j/values/XLNil;");
 	m_joXLNil = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLNil, jfNilInstance));
 	m_jcXLMissing = (jclass) pEnv->NewGlobalRef(pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLMissing"));
@@ -114,7 +114,7 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_joXLMissing = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLMissing, jfMissingInstance));
 	m_jcXLInteger = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLInteger"));
 	m_jmXLInteger_of = pEnv->GetStaticMethodID (m_jcXLInteger, "of", "(I)Lcom/mcleodmoores/excel4j/values/XLInteger;");
-	TRACE ("JCache::init() checkpoint 6");
+	LOGTRACE ("JCache::init() checkpoint 6");
 	m_jcXLBigData = (jclass)pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLBigData"));
 	m_jcXLObject = (jclass)pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLObject"));
 	m_jmXLObject_toXLString = pEnv->GetMethodID (m_jcXLObject, "toXLString", "()Lcom/mcleodmoores/excel4j/values/XLString;");
@@ -124,7 +124,7 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_jmXLMultiReference_getSheetId = pEnv->GetMethodID (m_jcXLMultiReference, "getSheetId", "()Lcom/mcleodmoores/excel4j/values/XLSheetId;");
 	m_jmXLSheetId_getSheetId = pEnv->GetMethodID (m_jcXLSheetId, "getSheetId", "()I");
 	m_jmXLRange_getRowFirst = pEnv->GetMethodID (m_jcXLRange, "getRowFirst", "()I");
-	TRACE ("JCache::init() checkpoint 7");
+	LOGTRACE ("JCache::init() checkpoint 7");
 	m_jmXLRange_getRowLast = pEnv->GetMethodID (m_jcXLRange, "getRowLast", "()I");
 	m_jmXLRange_getColumnFirst = pEnv->GetMethodID (m_jcXLRange, "getColumnFirst", "()I");
 	m_jmXLRange_getColumnLast = pEnv->GetMethodID (m_jcXLRange, "getColumnLast", "()I");
@@ -140,9 +140,9 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_jmExcelFunctionCallHandler_invoke = pEnv->GetMethodID (jcExcelFunctionCallHandler, "invoke", "(I[Lcom/mcleodmoores/excel4j/values/XLValue;)Lcom/mcleodmoores/excel4j/values/XLValue;");
 	jclass jcExcel = pEnv->FindClass ("com/mcleodmoores/excel4j/Excel");
 	jmethodID jmExcel_getExcelCallHandler = pEnv->GetMethodID (jcExcel, "getExcelCallHandler", "()Lcom/mcleodmoores/excel4j/ExcelFunctionCallHandler;");
-	TRACE ("about to get Excel instance");
+	LOGTRACE ("about to get Excel instance");
 	jobject joExcel = pEnv->CallStaticObjectMethod (jcExcelFactory, jmExcelFactory_getInstance);
-	TRACE ("Getting function call handler (excel instance = %p", joExcel);
+	LOGTRACE ("Getting function call handler (excel instance = %p", joExcel);
 	m_joCallHandler = pEnv->NewGlobalRef(pEnv->CallObjectMethod (joExcel, jmExcel_getExcelCallHandler));
 
 	jclass jcHeap = pEnv->FindClass ("com/mcleodmoores/excel4j/heap/Heap");
@@ -151,7 +151,7 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_jmHeap_cycleGC = pEnv->GetMethodID (jcHeap, "cycleGC", "([J)J");
 
 	ValidateHandles ();
-	TRACE ("JCache::init() done");
+	LOGTRACE ("JCache::init() done");
 	m_initializerEnv = pEnv;
 }
 
@@ -247,12 +247,12 @@ void JniCache::Destroy (JNIEnv *pEnv) {
 }
 
 jobject JniCache::InvokeCallHandler (JNIEnv *pEnv, jint iFunctionNum, jobjectArray joaArgs) {
-	//TRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
+	//LOGTRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
 	return pEnv->CallObjectMethod (m_joCallHandler, m_jmExcelFunctionCallHandler_invoke, iFunctionNum, joaArgs);
 }
 
 jlong JniCache::CycleGC (JNIEnv *pEnv, jlongArray jlaValidIds) {
-	//TRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
+	//LOGTRACE ("Calling function call handler (call handler = %p", m_joCallHandler);
 	EnsureInit (pEnv);
 	return pEnv->CallLongMethod (m_joHeap, m_jmHeap_cycleGC, jlaValidIds);
 }
@@ -320,7 +320,7 @@ jobject JniCache::XLError_from (JNIEnv *pEnv, jint err) {
 		return m_joXLError_NA;
 	default:
 	case xl4jerrGettingData:
-		TRACE ("CCallExecutor::convert: invalid error number");
+		LOGTRACE ("CCallExecutor::convert: invalid error number");
 		return NULL;
 	}
 }

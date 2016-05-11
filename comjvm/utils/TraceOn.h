@@ -1,1 +1,1 @@
-#pragma pop_macro("TRACE")
+#pragma pop_macro("LOGTRACE")

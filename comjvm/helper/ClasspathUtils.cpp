@@ -19,7 +19,7 @@ void ClasspathUtils::AddEntries (IClasspathEntries *entries, TCHAR *base) {
 			TCHAR szRelativePath[MAX_PATH];
 			StringCchCopy (szRelativePath, MAX_PATH, base);
 			StringCchCat (szRelativePath, MAX_PATH, findData.cFileName);
-			TRACE ("Adding ClasspathEntry for %s", szRelativePath);
+			LOGTRACE ("Adding ClasspathEntry for %s", szRelativePath);
 			IClasspathEntry *pEntry;
 			HRESULT hr = ComJvmCreateClasspathEntry (szRelativePath, &pEntry);
 			if (FAILED (hr)) {

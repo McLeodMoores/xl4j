@@ -1,3 +1,3 @@
-#pragma push_macro("TRACE")
-#undef TRACE
-#define TRACE(x, ...) 
+#pragma push_macro("LOGTRACE")
+#undef LOGTRACE
+#define LOGTRACE(x, ...) 

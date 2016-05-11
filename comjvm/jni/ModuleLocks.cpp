@@ -29,7 +29,7 @@ static HMODULE CurrentModule (BOOL bIncrement) {
 /// handled with a DecrementModuleLockCount. The end of the thread execution
 /// should use DecrementModuleLockCountAndExitThread.</para>
 void IncrementModuleLockCount () {
-	TRACE ("(%p) IncrementModuleLockCount called", GetCurrentThreadId ());
+	LOGTRACE ("(%p) IncrementModuleLockCount called", GetCurrentThreadId ());
 	CurrentModule (TRUE);
 }
 
@@ -38,7 +38,7 @@ void IncrementModuleLockCount () {
 /// <para>This must be called after failing to create a thread to balance
 /// the call to IncrementModuleLockCount.</para>
 void DecrementModuleLockCount () {
-	TRACE ("(%p) DecrementModuleLockCount called", GetCurrentThreadId ());
+	LOGTRACE ("(%p) DecrementModuleLockCount called", GetCurrentThreadId ());
 	FreeLibrary (CurrentModule (FALSE));
 }
 
@@ -47,6 +47,6 @@ void DecrementModuleLockCount () {
 /// <para>This must be called at the end of a thread that was created using
 /// IncrementModuleLockCount to keep the code loaded.</para>
 void DecrementModuleLockCountAndExitThread () {
-	TRACE ("(%p) DecrementModuleLockCountAndExitThread called", GetCurrentThreadId ());
+	LOGTRACE ("(%p) DecrementModuleLockCountAndExitThread called", GetCurrentThreadId ());
 	FreeLibraryAndExitThread (CurrentModule (FALSE), 0);
 }
