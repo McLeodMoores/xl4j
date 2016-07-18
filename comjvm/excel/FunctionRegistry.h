@@ -11,7 +11,7 @@ private:
 	SAFEARRAY *m_pResults;
 	FUNCTIONINFO *m_pFunctions;
 	size_t m_cFunctions;
-	bool m_bComplete;
+	volatile bool m_bComplete;
 	size_t m_iIndex;
 	LARGE_INTEGER m_liFreq;
 	XLOPER12 RegisterFunction (XLOPER12 xDll, int functionExportNumber, 

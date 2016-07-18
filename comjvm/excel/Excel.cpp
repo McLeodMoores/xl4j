@@ -41,6 +41,7 @@ int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
 ULONG_PTR g_cookie;
+bool g_initialized = false;
 
 ///***************************************************************************
 // DllMain()
@@ -190,7 +191,7 @@ DWORD WINAPI MarqueeTickThread (LPVOID param) {
 
 DWORD WINAPI RegistryThreadFunction (LPVOID param) {
 	LOGTRACE ("Registry thread");
-	LOGTRACE ("Creating activation context");
+	//LOGTRACE ("Creating activation context");
 	//ACTCTX actCtx;
 	//memset ((void*)&actCtx, 0, sizeof (ACTCTX));
 	//actCtx.cbSize = sizeof (ACTCTX);
@@ -293,18 +294,32 @@ DWORD WINAPI RegistryThreadFunction (LPVOID param) {
 // History:  Date       Author        Reason
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
+	if (g_initialized) {
+		return 1;
+	}
+	g_initialized = true;
 	////InitFramework ();
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
 	wchar_t szDirPath[MAX_PATH];
+	wchar_t *pszDlls[] = { L"core.dll", L"jni.dll", L"helper.dll", L"settings.dll", L"local.dll", L"utils.dll" };
 	HRESULT hr;
+	for (int i = 0; i < _countof(pszDlls); i++) {
+		if (SUCCEEDED (hr = FileUtils::GetAddinAbsolutePath (szDirPath, MAX_PATH, pszDlls[i]))) {
+			LOGTRACE ("Loading DLL %s", szDirPath);
+			LoadLibraryExW (szDirPath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+		} else {
+			LOGERROR ("Error gettings AddinDirectory path");
+		}
+	}
+	/*HRESULT hr;
 	if (SUCCEEDED(hr = FileUtils::GetAddinDirectory (szDirPath, MAX_PATH))) {
 		LOGTRACE ("Setting CWD and DllDirectory to %s", szDirPath);
 		SetCurrentDirectoryW (szDirPath);
 		SetDllDirectoryW (szDirPath);
 	} else {
 		LOGERROR ("Error gettings AddinDirectory path");
-	}
+	}*/
 	// the above only (might) work because we've set the linker to specify all the dependent DLLs are delay-loaded.
 	XLOPER12 xWnd;
 	Excel12f (xlGetHwnd, &xWnd, 0);
@@ -550,12 +565,14 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 			if (hr == S_FALSE) {
 				int iRegistered;
 				g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
+				LOGTRACE ("RegisterFunctions returned S_FALSE, GetNumberRegsitered returned %d", iRegistered);
 				g_pProgress->Update (iRegistered);
 				// didn't complete, schedule another go in half a second
 				ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
 			} else {
 				int iRegistered;
 				g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
+				LOGTRACE ("GetNumberRegsitered returned %d", iRegistered);
 				g_pProgress->Update (iRegistered);
 				Sleep (100); // allow UI to show completed status.
 				g_pProgress->Release ();
@@ -564,6 +581,7 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 			}
 		}
 	} else {
+		LOGTRACE ("Scan ongoing...");
 		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
 	}
 	return 1;

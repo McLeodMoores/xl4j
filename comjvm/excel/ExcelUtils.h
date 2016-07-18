@@ -13,6 +13,7 @@ public:
 	static int RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName);
 	static LRESULT CALLBACK ExcelCursorProc (HWND hwnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
 	static void HookExcelWindow (HWND hWndExcel);
-	static void ExcelUtils::UnhookExcelWindow (HWND hWndExcel);
-	static HWND ExcelUtils::GetHWND ();
+	static void UnhookExcelWindow (HWND hWndExcel);
+	static HWND GetHWND ();
+	static void PrintExcel12Error (int err);
 };

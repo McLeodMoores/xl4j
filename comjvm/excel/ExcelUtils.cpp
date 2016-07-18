@@ -89,7 +89,7 @@ void ExcelUtils::ScheduleCommand (wchar_t *wsCommandName, double dbSeconds) {
 
 int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 	FreeAllTempMemory ();
-	XLOPER12 retVal;
+	XLOPER12 retVal = {};
 	LPXLOPER12 exportName = TempStr12 (wsCommandName);
 	//((LPXLOPER12)NULL)->val;
 	LPXLOPER12 returnType = TempStr12 (TEXT ("J"));
@@ -98,7 +98,7 @@ int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 	LPXLOPER12 functionType = TempInt12 (2);
 	LOGTRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
 
-	Excel12f (
+	int ret = Excel12f (
 		xlfRegister, &retVal, 6, xDLL,
 		exportName, // export name
 		returnType, // return type, always J for commands
@@ -106,16 +106,24 @@ int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 		args, // args
 		functionType // function type 2 = Command
 		);
-	LOGTRACE ("After xlfRegister");
-	if (retVal.xltype == xltypeInt) {
-		return retVal.val.w;
-	} else if (retVal.xltype == xltypeErr) {
-		LOGERROR ("Error registering command %s, xltypeErr value was %d", wsCommandName, retVal.val.err);
-		return 0;
+	ExcelUtils::PrintExcel12Error (ret);
+	if (ret == xlretSuccess) {
+		LOGTRACE ("After xlfRegister");
+		if (retVal.xltype == xltypeInt) {
+			return retVal.val.w;
+		} else if (retVal.xltype == xltypeErr) {
+			LOGERROR ("Error registering command %s, xltypeErr value was %d", wsCommandName, retVal.val.err);
+			return 0;
+		} else if (retVal.xltype == xltypeNum) {
+			return retVal.val.num;
+		} else {
+			LOGERROR ("LOGIC ERROR: Unexpected return value registering command %s, returned value was", wsCommandName);
+			PrintXLOPER (&retVal);
+			return 0;
+		}
 	} else {
-		LOGERROR ("LOGIC ERROR: Unexpected return value registering command %s, returned value was", wsCommandName);
-		PrintXLOPER (&retVal);
-		return 0;
+		LOGERROR ("Registration failed");
+		return 1;
 	}
 }
 
@@ -234,4 +242,45 @@ HWND ExcelUtils::GetHWND () {
 	XLOPER12 xWnd;
 	Excel12f (xlGetHwnd, &xWnd, 0);
 	return (HWND)xWnd.val.w;
+}
+
+void ExcelUtils::PrintExcel12Error (int err) {
+	switch (err) {
+	case xlretSuccess:
+		LOGTRACE ("xlretSuccess(%d) returned by Excel12", err);
+		break;
+	case xlretAbort:
+		LOGERROR ("xlretAbort(%d) returned by Excel12 (internal abort)", err);
+		break;
+	case xlretInvXlfn:
+		LOGERROR ("xlretInvXlfn(%d) returned by Excel12 (invalid function number was supplied)", err);
+		break;
+	case xlretInvCount:
+		LOGERROR ("xlretInvCount(%d) returned by Excel12 (invalid number of arguments was entered)", err);
+		break;
+	case xlretInvXloper:
+		LOGERROR ("xlretInvXloper(%d) returned by Excel12 (invalid XLOPER/XLOPER12 was passed or an argument was of the wrong type)", err);
+		break;
+	case xlretStackOvfl:
+		LOGERROR ("xlretStackOvfl(%d) returned by Excel12 (a stack overflow occurred)", err);
+		break;
+	case xlretFailed:
+		LOGERROR ("xlretFailed(%d) returned by Excel12 (a command-equivalent function failed)", err);
+		break;
+	case xlretUncalced:
+		LOGERROR ("xlretUncalced(%d) returned by Excel12 (attempt to dereference cell that hasn't been calculated yet)", err);
+		break;
+	case xlretNotThreadSafe:
+		LOGERROR ("xlretNotThreadSafe(%d) returned by Excel12 (attempt made to call function that might not be thread safe during MT recalc)", err);
+		break;
+	case xlretInvAsynchronousContext:
+		LOGERROR ("xlretInvAsynchronousContext(%d) returned by Excel12 (the asynchronous function handle is invalid)", err);
+		break;
+	case xlretNotClusterSafe:
+		LOGERROR ("xlretNotClusterSafe(%d) returned by Excel12 (The call is not supported on clusters)", err);
+		break;
+	default:
+		LOGERROR ("Unknown error code (%d) returned by Excel12", err);
+		break;
+	}
 }
