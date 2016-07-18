@@ -2,6 +2,8 @@
 #include "GarbageCollector.h"
 #include <wchar.h>
 
+#include "../utils/TraceOff.h"
+
 void GarbageCollector::ScanCell (XLOPER12 *cell) {
 	//printXLOPER (cell);
 	if ((cell->xltype == xltypeStr) &&
@@ -214,3 +216,5 @@ GarbageCollector::GarbageCollector (ICollect *pCollector) {
 	QueryPerformanceFrequency (&m_liFrequency);
 	SetMaxTime (10);
 }
+
+#include "../utils/TraceOn.h"

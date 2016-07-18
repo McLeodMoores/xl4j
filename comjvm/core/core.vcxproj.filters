@@ -129,5 +129,8 @@
     <None Include="..\target\Debug-Win32\core.tlb">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="core.rgs">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

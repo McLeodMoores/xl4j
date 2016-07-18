@@ -1,11 +1,14 @@
 #include "stdafx.h"
 #include "SettingsDialogImpl.h"
-#include "AddinPropertyPage.h"
-#include "ClasspathPropertyPage.h"
-#include "VmOptionsPropertyPage.h"
+//#include "resource.h"
+//#include "AddinPropertyPage.h"
+//#include "ClasspathPropertyPage.h"
+//#include "VmOptionsPropertyPage.h"
+
 
 CSettingsDialogImpl::CSettingsDialogImpl (CSettings *pSettings)  : m_pSettings(pSettings) {
-	AFX_MANAGE_STATE (AfxGetStaticModuleState ());
+	// DO NOT UNCOMMENT, THIS DESTROYS EVERYTHING WITH AN INCOMPREHENSIBLE LINKER ERROR
+	//AFX_MANAGE_STATE (AfxGetStaticModuleState ());
 	init ();
 }
 
@@ -16,9 +19,10 @@ CSettingsDialogImpl::~CSettingsDialogImpl () {
 }
 
 void CSettingsDialogImpl::init () {
-	m_pAddinPropertyPage = new CAddinPropertyPage ();
+	m_pAddinPropertyPage = new CAddinPropertyPage (m_pSettings);
 	m_pClasspathPropertyPage = new CClasspathPropertyPage ();
 	m_pVmOptionsPropertyPage = new CVmOptionsPropertyPage ();
+
 }
 
 void CSettingsDialogImpl::Open (HWND hwndParent) {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Jvm.h"
+#include "TypeLib.h"
 #include "local/CScanExecutor.h"
 #include <vector>
 
@@ -21,7 +22,7 @@ private:
 	IRecordInfo *m_pLocalReferenceRecInfo;
 
 public:
-	Converter ();
+	Converter (TypeLib *pTypeLib);
 	~Converter ();
 	HRESULT convert (VARIANT *in, XLOPER12 *out);
 	HRESULT convert (XLOPER12 *in, VARIANT *out);

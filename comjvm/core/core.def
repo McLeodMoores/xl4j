@@ -4,4 +4,9 @@ EXPORTS
 	DllGetClassObject PRIVATE
 	DllRegisterServer PRIVATE
 	DllUnregisterServer PRIVATE
-	??0CSettings@@QAE@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z
+	?RegisterTypeLibrary@@YGJXZ
+	??0CSettings@@QAE@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0W4LoadType@0@@Z
+	?GetString@CSettings@@QBE?BV_bstr_t@@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z
+	?IsValid@CSettings@@QBEHXZ
+	?PutString@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@00@Z
+	??1CSettings@@QAE@XZ

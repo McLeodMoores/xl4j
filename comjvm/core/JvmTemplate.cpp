@@ -40,7 +40,7 @@ HRESULT CJvmTemplate::LoadBaseSettings (const CSettings &oSettings) {
 	try {
 		_bstr_t bstrBase = oSettings.GetString (JVM_TEMPLATE_CONFIG, JVM_TEMPLATE_CONFIG_BASE);
 		if (!bstrBase) return S_FALSE;
-		CSettings oBaseSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrBase);
+		CSettings oBaseSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrBase, CSettings::MOST_LOCAL);
 		return Load (oBaseSettings);
 	} catch (std::bad_alloc) {
 		return E_OUTOFMEMORY;
@@ -60,7 +60,7 @@ HRESULT CJvmTemplate::LoadOverrideSettings (const CSettings &oSettings) {
 	try {
 		_bstr_t bstrOverride = oSettings.GetString (JVM_TEMPLATE_CONFIG, JVM_TEMPLATE_CONFIG_OVERRIDE);
 		if (!bstrOverride) return S_FALSE;
-		CSettings oOverrideSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrOverride);
+		CSettings oOverrideSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrOverride, CSettings::MOST_LOCAL);
 		pOverride = new CJvmTemplate ();
 		hr = pOverride->Load (oOverrideSettings);
 		if (FAILED (hr)) _com_raise_error (hr);

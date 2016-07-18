@@ -21,7 +21,16 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SettingsDialogImpl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="AddinPropertyPage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AvailableJvms.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ClasspathPropertyPage.cpp">
@@ -30,10 +39,7 @@
     <ClCompile Include="VmOptionsPropertyPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AvailableJvms.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SettingsDialog.cpp">
+    <ClCompile Include="SettingsDialogFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,19 +53,22 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SettingsDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsDialogImpl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="AddinPropertyPage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AvailableJvms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ClasspathPropertyPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="VmOptionsPropertyPage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AvailableJvms.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SettingsDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

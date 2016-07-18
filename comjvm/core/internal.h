@@ -25,3 +25,5 @@ extern "C" {
 	HRESULT APIENTRY ProxyDllUnregisterServer ();
 	BOOL APIENTRY ProxyDllMain (HMODULE hModule, DWORD dwReason, LPVOID lpReserved);
 }
+
+HRESULT APIENTRY RegisterTypeLibrary ();

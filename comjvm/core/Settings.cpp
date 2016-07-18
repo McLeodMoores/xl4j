@@ -6,6 +6,7 @@
  */
 #include "stdafx.h"
 #include "Settings.h"
+#include "../utils/Debug.h"
 
 /// <summary>Empty configuration.</summary>
 class CEmptySettings : public CSettingsImpl {
@@ -52,18 +53,25 @@ public:
 		TCHAR szBuffer[MAX_PATH];
 		StringCbPrintf (szKey, sizeof (szKey), TEXT ("v%d"), lIndex + 1);
 		if (GetPrivateProfileString (strKey.data (), szKey, NULL, szBuffer, sizeof (szBuffer) / sizeof (TCHAR), m_strPath.data ()) > 0) {
-			return szBuffer;
+			_bstr_t bstrResult (szBuffer);
+			return bstrResult.Detach();
 		} else {
-			return (PCTSTR)NULL;
+			return (LPCSTR)NULL;
+			//_bstr_t bstrResult (TEXT (""));
+			//return bstrResult.Detach();
 		}
 	}
 
 	const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const {
 		TCHAR szBuffer[MAX_PATH];
 		if (GetPrivateProfileString (strKey.data (), strIndex.data (), NULL, szBuffer, sizeof (szBuffer) / sizeof (TCHAR), m_strPath.data ()) > 0) {
-			return szBuffer;
+			LOGTRACE ("GetPrivateProfileString returned %s, returning _bstr_t", szBuffer);
+			_bstr_t bstrResult (szBuffer);
+			return bstrResult;
 		} else {
-			return (PCTSTR)NULL;
+			LOGTRACE ("GetPrivateProfileString returned error, returning empty string _bstr_t");
+			//_bstr_t bstrResult ();
+			return (LPCSTR)NULL;
 		}
 	}
 
@@ -85,6 +93,8 @@ CSettingsImpl::CSettingsImpl () {
 CSettingsImpl::~CSettingsImpl () {
 }
 
+typedef HRESULT (*PathBuilder)(const _std_string_t &strType, const _std_string_t &strIdentifier, LPTSTR szPathBuffer, size_t chPathBuffer);
+
 static HRESULT CreateAppDataPath (const _std_string_t &strType, const _std_string_t &strIdentifier, LPTSTR szPathBuffer, size_t chPathBuffer) {
 	const LPCTSTR XL4J_PATH = TEXT ("\\XL4J");
 	HRESULT hr;
@@ -94,11 +104,13 @@ static HRESULT CreateAppDataPath (const _std_string_t &strType, const _std_strin
 	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, XL4J_PATH))) return hr;
 	if (!PathFileExists (szPathBuffer)) {
 		if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
-		if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strType.data ()))) return hr;
-		if (!PathFileExists (szPathBuffer)) {
-			if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
-		}
 	}
+	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, TEXT("\\")))) return hr;
+	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strType.data ()))) return hr;
+	if (!PathFileExists (szPathBuffer)) {
+		if (!CreateDirectory (szPathBuffer, NULL)) return HRESULT_FROM_WIN32 (GetLastError ());
+	}
+	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, TEXT("\\")))) return hr;
 	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, strIdentifier.data ()))) return hr;
 	if (FAILED (hr = StringCchCat (szPathBuffer, chPathBuffer, TEXT (".INI")))) return hr;
 	return S_OK;
@@ -133,11 +145,11 @@ static HRESULT BuildDllLocalPath (const _std_string_t &strType, const _std_strin
 	return S_OK;
 }
 
-static CSettingsImpl *LoadFromDLLLocalPath (const _std_string_t &strType, const _std_string_t &strIdentifier) {
+static CSettingsImpl *LoadFrom (PathBuilder pfPathBuilder, const _std_string_t &strType, const _std_string_t &strIdentifier) {
 	TCHAR szPathBuffer[MAX_PATH + 1];
 	HRESULT hr;
 	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
-	if (FAILED (hr = BuildDllLocalPath (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
+	if (FAILED (hr = pfPathBuilder (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
 		_com_error err (hr);
 		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
 		return NULL;
@@ -156,43 +168,79 @@ static CSettingsImpl *LoadFromDLLLocalPath (const _std_string_t &strType, const 
 		return NULL;
 	}
 	return new CIniFileSettings (szPathBuffer);
-}
-
-
-static CSettingsImpl *LoadFromAppData (const _std_string_t &strType, const _std_string_t &strIdentifier) {
-	const LPCTSTR XL4J_PATH = TEXT ("\\XL4J");
-	TCHAR szPathBuffer[MAX_PATH + 1];
-	HRESULT hr;
-	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
-	if (FAILED (hr = CreateAppDataPath (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
-		_com_error err (hr);
-		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
-		return NULL;
-	}
-	if (!PathFileExists (szPathBuffer)) {
-		LOGTRACE ("AppData settings file %s does not exist", szPathBuffer);
-		return NULL;
-	}
-	DWORD dwAttributes = GetFileAttributes (szPathBuffer);
-	if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
-		LOGERROR ("File attributes for %s are invalid", szPathBuffer);
-		return NULL;
-	}
-	if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-		LOGERROR ("%s is a directory and should be an .INI file", szPathBuffer);
-		return NULL;
-	}
-	return new CIniFileSettings (szPathBuffer);
-}
+} 
 
 static CSettingsImpl *LoadFromDisk (const _std_string_t &strType, const _std_string_t &strIdentifier) {
 	// Try to load the file from %AppData%
-	CSettingsImpl *pSettings = LoadFromAppData (strType, strIdentifier);
+	CSettingsImpl *pSettings = LoadFrom (CreateAppDataPath, strType, strIdentifier);
 	if (pSettings != NULL) {
 		return pSettings;
 	}
-	return LoadFromDLLLocalPath (strType, strIdentifier);
+	return LoadFrom (BuildDllLocalPath, strType, strIdentifier);
 }
+
+static BOOL SettingsFileExists (PathBuilder pfPathBuilder, const _std_string_t &strType, const _std_string_t &strIdentifier) {
+	TCHAR szPathBuffer[MAX_PATH + 1];
+	HRESULT hr;
+	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
+	if (FAILED (hr = pfPathBuilder (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
+		_com_error err (hr);
+		LOGERROR ("Path build failed: %s", err.ErrorMessage ());
+		return FALSE;
+	}
+	if (!PathFileExists (szPathBuffer)) {
+		LOGTRACE ("AppData settings file %s does not exist", szPathBuffer);
+		return FALSE;
+	}
+	DWORD dwAttributes = GetFileAttributes (szPathBuffer);
+	if (dwAttributes == INVALID_FILE_ATTRIBUTES) {
+		LOGERROR ("File attributes for %s are invalid", szPathBuffer);
+		return FALSE;
+	}
+	if (dwAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+		LOGERROR ("%s is a directory and should be an .INI file", szPathBuffer);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+static BOOL CopyDLLSettingsFile (const _std_string_t &strType, const _std_string_t &strIdentifier) {
+	TCHAR szDLLSettingsPathBuffer[MAX_PATH + 1];
+	HRESULT hr;
+	if (FAILED (hr = BuildDllLocalPath (strType, strIdentifier, szDLLSettingsPathBuffer, MAX_PATH))) {
+		_com_error err (hr);
+		LOGERROR ("BuildDllLocalPath failed: %s", err.ErrorMessage ());
+		return FALSE;
+	}
+	TCHAR szAppDataSettingsPathBuffer[MAX_PATH + 1];
+	if (FAILED (hr = CreateAppDataPath (strType, strIdentifier, szAppDataSettingsPathBuffer, MAX_PATH))) {
+		_com_error err (hr);
+		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
+		return FALSE;
+	}
+	return CopyFile (szDLLSettingsPathBuffer, szAppDataSettingsPathBuffer, TRUE);
+}
+
+static BOOL CreateDefaultFile (const _std_string_t &strType, const _std_string_t &strIdentifier) {
+	TCHAR szAppDataSettingsPathBuffer[MAX_PATH + 1];
+	HRESULT hr;
+	if (FAILED (hr = CreateAppDataPath (strType, strIdentifier, szAppDataSettingsPathBuffer, MAX_PATH))) {
+		_com_error err (hr);
+		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
+		return FALSE;
+	}
+	
+	HANDLE hFile = CreateFile (szAppDataSettingsPathBuffer, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		_com_error err (HRESULT_FROM_WIN32(GetLastError()));
+		LOGERROR ("CreateFile failed attempting to create AppData settings file %s with error %s", szAppDataSettingsPathBuffer, err.ErrorMessage ());
+		return FALSE;
+	} else {
+		CloseHandle (hFile);
+		return TRUE;
+	}
+}
+
 
 // TODO: Allow identifier to be prefixed with "file:", "HKCU:" or "HKLM:" to force specific locations to be used.
 
@@ -202,12 +250,30 @@ static CSettingsImpl *LoadFromDisk (const _std_string_t &strType, const _std_str
 ///
 /// <param name="strType">Configuration type classifier</param>
 /// <param name="strIdentifier">Configuration identifier</param>
-CSettings::CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier) {
+/// <param name="eLoadType">Whether to initialise AppData settings from template (INIT_APPDATA) or read AppData and fallback to DLL directory if not present (MOST_LOCAL)</param>
+CSettings::CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier, LoadType eLoadType) {
 	if (strIdentifier.data () == NULL) {
 		m_pImpl = new CEmptySettings ();
 	} else {
-		m_pImpl = LoadFromDisk (strType, strIdentifier);
+		// If we should initialise a new AppData settings file...
+		if (eLoadType == INIT_APPDATA) {
+			// if there's already an AppData settings file, use that (note CreateAppDataPath creates any directories needed)
+			if (SettingsFileExists (CreateAppDataPath, strType, strIdentifier)) {
+				// 
+			} else {
+				if (SettingsFileExists (BuildDllLocalPath, strType, strIdentifier)) {
+					CopyDLLSettingsFile (strType, strIdentifier);
+				} else {
+					CreateDefaultFile (strType, strIdentifier);
+				}
+			}
+			m_pImpl = LoadFrom (CreateAppDataPath, strType, strIdentifier);
+		} else {
+			// try to load from AppData, and if not back down the DLL local.
+			m_pImpl = LoadFromDisk (strType, strIdentifier);
+		}
 		if (!m_pImpl) {
+			LOGERROR ("Could not load settings file of type %s, named %s", strType.c_str(), strIdentifier.c_str());
 			// TODO: Look for the data in HKCU
 			// TODO: Look for the data in HKLM
 		}
@@ -241,7 +307,7 @@ const _bstr_t CSettings::GetString (const _std_string_t &strKey, long lIndex) co
 	if (m_pImpl) {
 		return m_pImpl->GetString (strKey, lIndex);
 	} else {
-		return (PCTSTR)NULL;
+		return _bstr_t ();
 	}
 }
 
@@ -256,8 +322,43 @@ const _bstr_t CSettings::GetString (const _std_string_t &strKey, long lIndex) co
 /// <returns>The string entry, or NULL if there is none</returns>
 const _bstr_t CSettings::GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const {
 	if (m_pImpl) {
+		LOGTRACE ("Through to CIniSettings");
 		return m_pImpl->GetString (strKey, strIndex);
 	} else {
-		return (PCTSTR)NULL;
+		return _bstr_t ();
+	}
+}
+
+/// <summary>Fetches a configuration string.</summary>
+///
+/// <para>If the configuration was not loaded this will always return a NULL
+/// string. This can be distinguished from a vaild configuration that lacks the
+/// entry (also returning NULL) using IsValid.</para>
+///
+/// <param name="strKey">Parent key for the item</param>
+/// <param name="lIndex">1-based index into a multiple value key</param>
+/// <returns>The string entry, or NULL if there is none</returns>
+BOOL CSettings::PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &value) {
+	if (m_pImpl) {
+		return m_pImpl->PutString (strKey, lIndex, value);
+	} else {
+		return FALSE;
+	}
+}
+
+/// <summary>Fetches a configuration string.</summary>
+///
+/// <para>If the configuration was not loaded this will always return a NULL
+/// string. This can be distinguished from a vaild configuration that lacks the
+/// entry (also returning NULL) using IsValid.</para>
+///
+/// <param name="strKey">Parent key for the item</param>
+/// <param name="strIndex">Name of the value within the key</param>
+/// <returns>The string entry, or NULL if there is none</returns>
+BOOL CSettings::PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &value) {
+	if (m_pImpl) {
+		return m_pImpl->PutString (strKey, strIndex, value);
+	} else {
+		return FALSE;
 	}
 }

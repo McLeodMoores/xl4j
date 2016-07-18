@@ -5,6 +5,7 @@ class Progress {
 private:
 	ULONG m_lRefCount;
 	HWND m_hwndProgress;
+	HWND m_hwndParent;
 	~Progress ();
 	void Destroy ();
 public:

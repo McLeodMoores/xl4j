@@ -26,7 +26,7 @@ HRESULT ComJvmCreateTemplateB (const _bstr_t &bstrIdentifier, IJvmTemplate **ppT
 	try {
 		pTemplate = new CJvmTemplate ();
 		if (!(!bstrIdentifier)) {
-			CSettings oSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrIdentifier);
+			CSettings oSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrIdentifier, CSettings::MOST_LOCAL);
 			hr = pTemplate->Load (oSettings);
 			if (FAILED (hr)) _com_raise_error (hr);
 		}

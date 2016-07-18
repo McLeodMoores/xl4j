@@ -10,6 +10,8 @@
 #include "Progress.h"
 #include "../settings/SettingsDialog.h"
 #include "../core/Settings.h"
+#include "../core/internal.h"
+#include "../utils/FileUtils.h"
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -30,12 +32,15 @@ HANDLE g_hInst = NULL;
 XCHAR g_szBuffer[20] = L"";
 FunctionRegistry *g_pFunctionRegistry;
 Converter *g_pConverter;
+TypeLib *g_pTypeLib;
 Jvm *g_pJvm = NULL;
 DWORD g_dwTlsIndex = 0;
 GarbageCollector *g_pCollector;
 Progress *g_pProgress;
-
-
+int g_idRegisterSomeFunctions;
+int g_idSettings;
+int g_idGarbageCollect;
+ULONG_PTR g_cookie;
 
 ///***************************************************************************
 // DllMain()
@@ -145,14 +150,25 @@ __declspec(dllexport) void AddToolbar () {
 	Excel12f (xlFree, 0, 1, &xTest); 
 }
 
+__declspec(dllexport) void RemoveToolbar () {
+	XLOPER12 xTest;
+	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
+	if (xTest.xltype != xltypeErr) {
+		int retVal = Excel12f (xlfDeleteToolbar, NULL, 1, TempStr12 (TEXT ("XL4J")));
+		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
+	}
+	Excel12f (xlFree, 0, 1, &xTest);
+}
+
 __declspec(dllexport) int Settings () {
 	HWND hwndExcel = ExcelUtils::GetHWND ();
 	ISettingsDialog *pSettingsDialog;
-	CSettingsDialogFactory::Create(new CSettings (TEXT ("local"), TEXT ("default")), &pSettingsDialog);
+	CSettingsDialogFactory::Create(new CSettings (TEXT ("inproc"), TEXT ("default"), CSettings::INIT_APPDATA), &pSettingsDialog);
 	ExcelUtils::HookExcelWindow (hwndExcel);
 	pSettingsDialog->Open (hwndExcel);
 	ExcelUtils::UnhookExcelWindow (hwndExcel);
-	delete pSettingsDialog;
+	// decrement reference.
+	//delete pSettingsDialog;
 	return 1;
 }
 
@@ -170,23 +186,64 @@ DWORD WINAPI MarqueeTickThread (LPVOID param) {
 	return 0;
 }
 
+
+
 DWORD WINAPI RegistryThreadFunction (LPVOID param) {
 	LOGTRACE ("Registry thread");
-	g_pJvm = new Jvm ();
-	if (!g_pJvm) {
-		LOGERROR ("JVM global pointer is NULL");
-	}
-	g_pConverter = new Converter ();
+	LOGTRACE ("Creating activation context");
+	//ACTCTX actCtx;
+	//memset ((void*)&actCtx, 0, sizeof (ACTCTX));
+	//actCtx.cbSize = sizeof (ACTCTX);
+	//actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
+	////TCHAR pszModulePath[MAX_PATH + 1];
+	////GetModuleFileName ((HMODULE) g_hInst, pszModulePath, MAX_PATH + 1);
+	////LOGTRACE ("GetModuleFileName returned %s", pszModulePath);
+	////actCtx.lpSource = pszModulePath; // _T ("client");
+	//actCtx.hModule = (HMODULE) g_hInst;
+	//actCtx.lpResourceName = MAKEINTRESOURCE (2);
+	//HANDLE hCtx = ::CreateActCtx (&actCtx);
+	//if (hCtx == INVALID_HANDLE_VALUE) {
+	//	DWORD   dwLastError = ::GetLastError ();
+	//	TCHAR   lpBuffer[256] = _T ("?");
+	//	::FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM,                 // It´s a system error
+	//					NULL,                                      // No string to be formatted needed
+	//					dwLastError,                               // Hey Windows: Please explain this error!
+	//					MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),  // Do it in the standard language
+	//					lpBuffer,              // Put the message here
+	//					256 - 1,                     // Number of bytes to store the message
+	//					NULL);
+	//	LOGERROR ("CreateActCtx returned: INVALID_HANDLE_VALUE, error code %d, error was %s", dwLastError, lpBuffer);
+	//} else {
+	//	if (::ActivateActCtx (hCtx, &g_cookie)) {
+	//		
+	//		LOGTRACE ("Activation of context succeeded!");
+			//RegisterTypeLibrary ();
+	//		LOGTRACE ("Registered server");
+			// previous compound statement goes here...
+			g_pTypeLib = new TypeLib ();
+			g_pJvm = new Jvm ();
+			if (!g_pJvm) {
+				LOGERROR ("JVM global pointer is NULL");
+			}
+			try {
+				g_pConverter = new Converter (g_pTypeLib);
+			} catch (const std::exception& e) {
+				LOGERROR ("Exception occurred");
+				return 1;
+			}
 
-	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm ());
-	HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
-	if (hThread == NULL) {
-		LOGTRACE ("CreateThread failed %d", GetLastError ());
-	}
-	LOGTRACE ("Calling scan from registry thread");
-	if (FAILED (g_pFunctionRegistry->Scan ())) {
-		LOGERROR ("scan failed");
-	}
+			g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm (), g_pTypeLib);
+			HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
+			if (hThread == NULL) {
+				LOGTRACE ("CreateThread failed %d", GetLastError ());
+			}
+			LOGTRACE ("Calling scan from registry thread");
+			if (FAILED (g_pFunctionRegistry->Scan ())) {
+				LOGERROR ("scan failed");
+			}
+	//	}
+	//}
+	
 	return 0;
 }
 
@@ -239,6 +296,16 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	////InitFramework ();
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
+	wchar_t szDirPath[MAX_PATH];
+	HRESULT hr;
+	if (SUCCEEDED(hr = FileUtils::GetAddinDirectory (szDirPath, MAX_PATH))) {
+		LOGTRACE ("Setting CWD and DllDirectory to %s", szDirPath);
+		SetCurrentDirectoryW (szDirPath);
+		SetDllDirectoryW (szDirPath);
+	} else {
+		LOGERROR ("Error gettings AddinDirectory path");
+	}
+	// the above only (might) work because we've set the linker to specify all the dependent DLLs are delay-loaded.
 	XLOPER12 xWnd;
 	Excel12f (xlGetHwnd, &xWnd, 0);
 	g_pProgress = new Progress (); // addref
@@ -248,16 +315,18 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	if (hThread == NULL) {
 		LOGTRACE ("CreateThread failed %d", GetLastError());
 	}
-	ExcelUtils::RegisterCommand (&xDLL, TEXT ("RegisterSomeFunctions"));
+	g_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (&xDLL, TEXT ("RegisterSomeFunctions"));
 	LOGTRACE ("Not Calling ScheduleCommand");
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
-	ExcelUtils::RegisterCommand (&xDLL, TEXT ("Settings"));
+	g_idSettings = ExcelUtils::RegisterCommand (&xDLL, TEXT ("Settings"));
 	AddToolbar ();
 	// Free the XLL filename 
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 	FreeAllTempMemory ();
 	return 1;
 }
+
+
 
 ///***************************************************************************
 // xlAutoClose()
@@ -320,13 +389,23 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	// The code is left in, in hopes that it will be
 	// fixed in a future version.
 	//
-
-	//for (i = 0; i < g_rgWorksheetFuncsRows; i++)
-	//	Excel12f (xlfSetName, 0, 1, TempStr12 (g_rgWorksheetFuncs[i][2]));
-
-	//for (i = 0; i < g_rgCommandFuncsRows; i++)
-	//	Excel12f (xlfSetName, 0, 1, TempStr12 (g_rgCommandFuncs[i][2]));
-
+	if (g_pFunctionRegistry) {
+		g_pFunctionRegistry->UnregsiterFunctions ();
+		if (g_idGarbageCollect) {
+			g_pFunctionRegistry->UnregisterFunction (_T ("GarbageCollect"), g_idGarbageCollect);
+		}
+		if (g_idRegisterSomeFunctions) {
+			g_pFunctionRegistry->UnregisterFunction (_T ("RegisterSomeFunctions"), g_idRegisterSomeFunctions);
+		}
+		if (g_idSettings) {
+			g_pFunctionRegistry->UnregisterFunction (_T ("Settings"), g_idSettings);
+		}
+	} else {
+		LOGERROR ("xlAutoClose called when function registry has not been initialised");
+	}
+	RemoveToolbar ();
+	// Deactiveate COM context.
+	::DeactivateActCtx (0, g_cookie);
 	return 1;
 }
 
@@ -334,7 +413,7 @@ __declspec(dllexport) int WINAPI xlAutoAdd (void)
 {
 	XCHAR szBuf[255];
 
-	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding Excel4J.XLL\n "
+	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding XL4J.XLL\n "
 		L"built on %hs at %hs", __DATE__, __TIME__);
 
 	// Display a dialog box indicating that the XLL was successfully added //
@@ -370,7 +449,7 @@ __declspec(dllexport) int WINAPI xlAutoAdd (void)
 __declspec(dllexport) int WINAPI xlAutoRemove (void)
 {
 	// Show a dialog box indicating that the XLL was successfully removed //
-	Excel12f (xlcAlert, 0, 2, TempStr12 (L"You have removed Excel4J.XLL!"),
+	Excel12f (xlcAlert, 0, 2, TempStr12 (L"You have removed XL4J.XLL!"),
 		TempInt12 (2));
 	return 1;
 }
@@ -419,7 +498,7 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	if (xIntAction.val.w == 1)
 	{
 		xInfo.xltype = xltypeStr;
-		xInfo.val.str = L"\013Excel4J DLL";
+		xInfo.val.str = TempStr12 (_T("XL4J"))->val.str;// L"\013Excel4J DLL";
 	}
 	else
 	{
@@ -433,7 +512,7 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 }
 
 __declspec(dllexport) int GarbageCollect () {
-	LOGTRACE ("GarbageCollect() called.");
+	//LOGTRACE ("GarbageCollect() called.");
 	g_pCollector->Collect ();
 	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
@@ -450,7 +529,7 @@ __declspec(dllexport) void StartGC (XLOPER12 *pxDLL) {
 	LOGTRACE ("Creating GarbageCollector");
 	g_pCollector = new GarbageCollector (pCollect);
 	LOGTRACE ("Registering GC Command");
-	ExcelUtils::RegisterCommand (pxDLL, TEXT ("GarbageCollect"));
+	g_idGarbageCollect = ExcelUtils::RegisterCommand (pxDLL, TEXT ("GarbageCollect"));
 	LOGTRACE ("Registered, booking GC call");
 	ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
 	LOGTRACE ("Finished registration");
@@ -461,7 +540,7 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 	LOGTRACE ("Entered");
 	static XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
-	if (g_pFunctionRegistry->IsRegistrationComplete ()) {
+	if (g_pFunctionRegistry != NULL && g_pFunctionRegistry->IsRegistrationComplete ()) {
 		LOGTRACE ("Called after registration complete");
 		return 1; // erroneous call
 	}

@@ -814,6 +814,7 @@ typedef
 	helpstring("Information about a UDF")
 ]
 struct FUNCTIONINFO {
+	int iRegisterId;
 	int iExportNumber;
 	BSTR bsFunctionExportName;
 	boolean bIsVarArgs;

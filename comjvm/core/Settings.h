@@ -40,7 +40,8 @@ class CSettings {
 private:
 	CSettingsImpl *m_pImpl;
 public:
-	CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier);
+	typedef enum LoadType { INIT_APPDATA, MOST_LOCAL };
+	CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier, LoadType eLoadType);
 	~CSettings ();
 	BOOL IsValid () const;
 	const _bstr_t GetString (const _std_string_t &strKey, long lIndex) const;

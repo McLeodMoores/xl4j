@@ -5,12 +5,18 @@
  * Released under the GNU General Public License.
  */
 
+
+
 #ifndef _STDAFX_H_
 #define _STDAFX_H_
+
+#define _WIN32_DCOM
+#define _WIN32_FUSION 0x0100
 
 #include "targetver.h"
 
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
+
 #include <windows.h>
 #include <Shlobj.h>
 #include <Shlwapi.h>

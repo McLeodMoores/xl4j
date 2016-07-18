@@ -87,8 +87,8 @@ public final class TimeSeries implements Operation<TimeSeries> {
               description = "Create a time series",
               category = "Time series",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries of(@XLArgument(name = "dates", description = "The dates")final XLArray datesArray,
-                              @XLArgument(name = "values", description = "The values")final XLArray valuesArray) {
+  public static TimeSeries of(@XLArgument(name = "dates", description = "The dates") final XLArray datesArray,
+                              @XLArgument(name = "values", description = "The values") final XLArray valuesArray) {
     ArgumentChecker.notNull(datesArray, "dates");
     ArgumentChecker.notNull(valuesArray, "values");
     ArgumentChecker.isFalse(datesArray.isArea(), "The date array must be either a column or row");

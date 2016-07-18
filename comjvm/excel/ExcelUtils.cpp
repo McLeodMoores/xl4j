@@ -77,17 +77,17 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 
 void ExcelUtils::ScheduleCommand (wchar_t *wsCommandName, double dbSeconds) {
 	XLOPER12 now;
-	LOGTRACE ("xlfNow");
+	//LOGTRACE ("xlfNow");
 	Excel12f (xlfNow, &now, 0);
 	now.val.num += 2. / (3600. * 24.);
 	XLOPER12 retVal;
-	LOGTRACE ("xlcOnTime");
+	//LOGTRACE ("xlcOnTime");
 	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (wsCommandName));
-	LOGTRACE ("xlcFree");
+	//LOGTRACE ("xlcFree");
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
 }
 
-void ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
+int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 	FreeAllTempMemory ();
 	XLOPER12 retVal;
 	LPXLOPER12 exportName = TempStr12 (wsCommandName);
@@ -107,6 +107,16 @@ void ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) 
 		functionType // function type 2 = Command
 		);
 	LOGTRACE ("After xlfRegister");
+	if (retVal.xltype == xltypeInt) {
+		return retVal.val.w;
+	} else if (retVal.xltype == xltypeErr) {
+		LOGERROR ("Error registering command %s, xltypeErr value was %d", wsCommandName, retVal.val.err);
+		return 0;
+	} else {
+		LOGERROR ("LOGIC ERROR: Unexpected return value registering command %s, returned value was", wsCommandName);
+		PrintXLOPER (&retVal);
+		return 0;
+	}
 }
 
 

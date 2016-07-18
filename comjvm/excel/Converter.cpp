@@ -1,19 +1,26 @@
 #include "stdafx.h"
 #include "Converter.h"
 
-Converter::Converter () {
-	HRESULT hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &m_pMultiReferenceRecInfo);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		LOGTRACE ("Converter::constructor::could not get IRecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
-		throw std::abort;
-	}
-	hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &m_pLocalReferenceRecInfo);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		LOGTRACE ("Converter::constructor::could not get IRecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
-		throw std::abort;
-	}
+Converter::Converter (TypeLib *pTypeLib) {
+	pTypeLib->GetLocalReferenceRecInfo (&m_pLocalReferenceRecInfo);
+	pTypeLib->GetMultReferenceRecInfo (&m_pMultiReferenceRecInfo);
+	//HRESULT hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &m_pMultiReferenceRecInfo);
+	//if (FAILED (hr)) {
+	//	_com_error err (hr);
+	//	LOGTRACE ("Converter::constructor::could not get IRecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
+	//	throw std::abort;
+	//}
+	//hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &m_pLocalReferenceRecInfo);
+	//if (FAILED (hr)) {
+	//	_com_error err (hr);
+	//	LOGTRACE ("Converter::constructor::could not get IRecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
+	//	throw std::abort;
+	//}
+}
+
+Converter::~Converter () {
+	if (m_pLocalReferenceRecInfo) m_pLocalReferenceRecInfo->Release ();
+	if (m_pMultiReferenceRecInfo) m_pMultiReferenceRecInfo->Release ();
 }
 
 

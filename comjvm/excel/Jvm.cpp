@@ -2,6 +2,7 @@
 #define COMJVM_EXCEL_EXPORT
 #include "Jvm.h"
 #include "helper/ClasspathUtils.h"
+#include "../utils/FileUtils.h"
 
 Jvm::Jvm () {
 
@@ -37,9 +38,20 @@ Jvm::Jvm () {
 	} else {
 		LOGTRACE ("Got classpath entries");
 	}
-
-	ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
-	ClasspathUtils::AddEntry (entries, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar"));
+	wchar_t szLibPath[MAX_PATH];
+	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szLibPath, MAX_PATH, TEXT ("..\\lib\\")))) {
+		LOGERROR ("Could not create add-in relative path");
+		_com_raise_error (hr);
+	}
+	LOGTRACE ("Calling ClasspathUtils::AddEntries with %s", szLibPath);
+	ClasspathUtils::AddEntries (entries, szLibPath);
+	wchar_t szXL4JPath[MAX_PATH];
+	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szXL4JPath, MAX_PATH, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar")))) {
+		LOGERROR ("Could not crate add-in relative path for xl4j jar");
+		_com_raise_error (hr);
+	}
+	LOGTRACE ("Calling Classpathutils::AddEntries with %s", szXL4JPath);
+	ClasspathUtils::AddEntry (entries, szXL4JPath);
 	
 	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
 	if (FAILED (hr)) {

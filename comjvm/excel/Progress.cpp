@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Progress.h"
+#include "ExcelUtils.h"
 
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -21,9 +22,14 @@ void Progress::Update (int iRegistered) {
 
 void Progress::Destroy () {
 	DestroyWindow (m_hwndProgress);
+	//ExcelUtils::UnhookExcelWindow (m_hwndParent);
 }
 
+
 void Progress::Open (HWND hwndParent, HINSTANCE hInst) {
+	m_hwndParent = hwndParent;
+	//ExcelUtils::HookExcelWindow (hwndParent);
+
 	RECT rcClient;  // Client area of parent window.
 	int cyVScroll;  // Height of scroll bar arrow.
 	INITCOMMONCONTROLSEX init;
@@ -31,7 +37,6 @@ void Progress::Open (HWND hwndParent, HINSTANCE hInst) {
 	init.dwSize = sizeof (INITCOMMONCONTROLSEX);
 	InitCommonControlsEx (&init);
 
-	//GetClientRect (hwndParent, &rcClient);
 	GetWindowRect (hwndParent, &rcClient);
 	LOGTRACE ("Client Rect bottom=%d, left=%d, right=%d, top=%d", rcClient.bottom, rcClient.left, rcClient.right, rcClient.top);
 
