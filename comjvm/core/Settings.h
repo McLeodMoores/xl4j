@@ -31,6 +31,9 @@ public:
 	virtual const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const = 0;
 	virtual BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) = 0;
 	virtual BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) = 0;
+	virtual BOOL DeleteString (const _std_string_t &strKey, long lIndex) = 0;
+	virtual BOOL DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex) = 0;
+	virtual BOOL DeleteKey (const _std_string_t &strKey) = 0;
 };
 
 /// <summary>Configuration settings.</summary>
@@ -48,5 +51,7 @@ public:
 	const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const;
     BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue);
 	BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue);
-
+	BOOL DeleteString (const _std_string_t &strKey, long lIndex);
+	BOOL DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex);
+	BOOL DeleteKey (const _std_string_t &strKey);
 };

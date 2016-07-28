@@ -191,60 +191,27 @@ DWORD WINAPI MarqueeTickThread (LPVOID param) {
 
 DWORD WINAPI RegistryThreadFunction (LPVOID param) {
 	LOGTRACE ("Registry thread");
-	//LOGTRACE ("Creating activation context");
-	//ACTCTX actCtx;
-	//memset ((void*)&actCtx, 0, sizeof (ACTCTX));
-	//actCtx.cbSize = sizeof (ACTCTX);
-	//actCtx.dwFlags = ACTCTX_FLAG_HMODULE_VALID | ACTCTX_FLAG_RESOURCE_NAME_VALID;
-	////TCHAR pszModulePath[MAX_PATH + 1];
-	////GetModuleFileName ((HMODULE) g_hInst, pszModulePath, MAX_PATH + 1);
-	////LOGTRACE ("GetModuleFileName returned %s", pszModulePath);
-	////actCtx.lpSource = pszModulePath; // _T ("client");
-	//actCtx.hModule = (HMODULE) g_hInst;
-	//actCtx.lpResourceName = MAKEINTRESOURCE (2);
-	//HANDLE hCtx = ::CreateActCtx (&actCtx);
-	//if (hCtx == INVALID_HANDLE_VALUE) {
-	//	DWORD   dwLastError = ::GetLastError ();
-	//	TCHAR   lpBuffer[256] = _T ("?");
-	//	::FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM,                 // It´s a system error
-	//					NULL,                                      // No string to be formatted needed
-	//					dwLastError,                               // Hey Windows: Please explain this error!
-	//					MAKELANGID (LANG_NEUTRAL, SUBLANG_DEFAULT),  // Do it in the standard language
-	//					lpBuffer,              // Put the message here
-	//					256 - 1,                     // Number of bytes to store the message
-	//					NULL);
-	//	LOGERROR ("CreateActCtx returned: INVALID_HANDLE_VALUE, error code %d, error was %s", dwLastError, lpBuffer);
-	//} else {
-	//	if (::ActivateActCtx (hCtx, &g_cookie)) {
-	//		
-	//		LOGTRACE ("Activation of context succeeded!");
-			//RegisterTypeLibrary ();
-	//		LOGTRACE ("Registered server");
-			// previous compound statement goes here...
-			g_pTypeLib = new TypeLib ();
-			g_pJvm = new Jvm ();
-			if (!g_pJvm) {
-				LOGERROR ("JVM global pointer is NULL");
-			}
-			try {
-				g_pConverter = new Converter (g_pTypeLib);
-			} catch (const std::exception& e) {
-				LOGERROR ("Exception occurred");
-				return 1;
-			}
+	g_pTypeLib = new TypeLib ();
+	g_pJvm = new Jvm ();
+	if (!g_pJvm) {
+		LOGERROR ("JVM global pointer is NULL");
+	}
+	try {
+		g_pConverter = new Converter (g_pTypeLib);
+	} catch (const std::exception& e) {
+		LOGERROR ("Exception occurred");
+		return 1;
+	}
 
-			g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm (), g_pTypeLib);
-			HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
-			if (hThread == NULL) {
-				LOGTRACE ("CreateThread failed %d", GetLastError ());
-			}
-			LOGTRACE ("Calling scan from registry thread");
-			if (FAILED (g_pFunctionRegistry->Scan ())) {
-				LOGERROR ("scan failed");
-			}
-	//	}
-	//}
-	
+	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm (), g_pTypeLib);
+	HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
+	if (hThread == NULL) {
+		LOGTRACE ("CreateThread failed %d", GetLastError ());
+	}
+	LOGTRACE ("Calling scan from registry thread");
+	if (FAILED (g_pFunctionRegistry->Scan ())) {
+		LOGERROR ("scan failed");
+	}
 	return 0;
 }
 

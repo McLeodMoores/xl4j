@@ -20,9 +20,8 @@ CSettingsDialogImpl::~CSettingsDialogImpl () {
 
 void CSettingsDialogImpl::init () {
 	m_pAddinPropertyPage = new CAddinPropertyPage (m_pSettings);
-	m_pClasspathPropertyPage = new CClasspathPropertyPage ();
-	m_pVmOptionsPropertyPage = new CVmOptionsPropertyPage ();
-
+	m_pClasspathPropertyPage = new CClasspathPropertyPage (m_pSettings);
+	m_pVmOptionsPropertyPage = new CVmOptionsPropertyPage (m_pSettings);
 }
 
 void CSettingsDialogImpl::Open (HWND hwndParent) {

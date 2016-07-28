@@ -33,6 +33,18 @@ public:
 	BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) {
 		return FALSE;
 	}
+
+	BOOL DeleteString (const _std_string_t &strKey, long lIndex) {
+		return FALSE;
+	}
+
+	BOOL DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex) {
+		return FALSE;
+	}
+
+	BOOL DeleteKey (const _std_string_t &strKey) {
+		return FALSE;
+	}
 };
 
 /// <summary>Configuration sourced from an INI file.</summary>
@@ -85,6 +97,19 @@ public:
 		return WritePrivateProfileString (strKey.data (), strIndex.data(), strValue.data (), m_strPath.data ());
 	}
 
+	BOOL DeleteString (const _std_string_t &strKey, long lIndex) {
+		TCHAR szKey[16];
+		StringCbPrintf (szKey, sizeof (szKey), TEXT ("v%d"), lIndex + 1);
+		return WritePrivateProfileString (strKey.data (), szKey, NULL, m_strPath.data ());
+	}
+
+	BOOL DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex) {
+		return WritePrivateProfileString (strKey.data (), strIndex.data (), NULL, m_strPath.data ());
+	}
+
+	BOOL DeleteKey (const _std_string_t &strKey) {
+		return WritePrivateProfileString (strKey.data (), NULL, NULL, m_strPath.data ());
+	}
 };
 
 CSettingsImpl::CSettingsImpl () {
@@ -329,15 +354,16 @@ const _bstr_t CSettings::GetString (const _std_string_t &strKey, const _std_stri
 	}
 }
 
-/// <summary>Fetches a configuration string.</summary>
+/// <summary>Puts a configuration string.</summary>
 ///
-/// <para>If the configuration was not loaded this will always return a NULL
-/// string. This can be distinguished from a vaild configuration that lacks the
-/// entry (also returning NULL) using IsValid.</para>
+/// <para>If the configuration was not loaded this will always return FALSE. 
+/// This can be distinguished from a vaild configuration that lacks the
+/// entry  using IsValid.</para>
 ///
 /// <param name="strKey">Parent key for the item</param>
 /// <param name="lIndex">1-based index into a multiple value key</param>
-/// <returns>The string entry, or NULL if there is none</returns>
+/// <param name="value">Value</param>
+/// <returns>TRUE if put was successful</returns>
 BOOL CSettings::PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &value) {
 	if (m_pImpl) {
 		return m_pImpl->PutString (strKey, lIndex, value);
@@ -346,18 +372,69 @@ BOOL CSettings::PutString (const _std_string_t &strKey, long lIndex, const _std_
 	}
 }
 
-/// <summary>Fetches a configuration string.</summary>
+/// <summary>Puts a configuration string.</summary>
 ///
-/// <para>If the configuration was not loaded this will always return a NULL
-/// string. This can be distinguished from a vaild configuration that lacks the
-/// entry (also returning NULL) using IsValid.</para>
+/// <para>If the configuration was not loaded this will always return FALSE. 
+/// This can be distinguished from a vaild configuration that lacks the
+/// entry  using IsValid.</para>
 ///
 /// <param name="strKey">Parent key for the item</param>
-/// <param name="strIndex">Name of the value within the key</param>
-/// <returns>The string entry, or NULL if there is none</returns>
+/// <param name="strIndex">String index</param>
+/// <param name="value">Value</param>
+/// <returns>TRUE if put was successful</returns>
 BOOL CSettings::PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &value) {
 	if (m_pImpl) {
 		return m_pImpl->PutString (strKey, strIndex, value);
+	} else {
+		return FALSE;
+	}
+}
+
+/// <summary>Delete a configuration string.</summary>
+///
+/// <para>If the configuration was not loaded this will always return FALSE. 
+/// This can be distinguished from a vaild configuration that lacks the
+/// entry (also returning NULL) using IsValid.</para>
+///
+/// <param name="strKey">Parent key for the item</param>
+/// <param name="lIndex">1-based index into a multiple value key</param>
+/// <returns>TRUE, if the delete was successful</returns>
+BOOL CSettings::DeleteString (const _std_string_t &strKey, long lIndex) {
+	if (m_pImpl) {
+		return m_pImpl->DeleteString (strKey, lIndex);
+	} else {
+		return FALSE;
+	}
+}
+
+/// <summary>Delete a configuration string.</summary>
+///
+/// <para>If the configuration was not loaded this will always return FALSE. 
+/// This can be distinguished from a vaild configuration that lacks the
+/// entry (also returning NULL) using IsValid.</para>
+///
+/// <param name="strKey">Parent key for the item</param>
+/// <param name="strIndex">String index</param>
+/// <returns>TRUE, if the delete was successful</returns>
+BOOL CSettings::DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex) {
+	if (m_pImpl) {
+		return m_pImpl->DeleteString (strKey, strIndex);
+	} else {
+		return FALSE;
+	}
+}
+
+/// <summary>Delete a configuration key and any entries under it.</summary>
+///
+/// <para>If the configuration was not loaded this will always return FALSE. 
+/// This can be distinguished from a vaild configuration that lacks the
+/// entry (also returning NULL) using IsValid.</para>
+///
+/// <param name="strKey">Parent key for the item</param>
+/// <returns>TRUE, if the delete was successful</returns>
+BOOL CSettings::DeleteKey (const _std_string_t &strKey) {
+	if (m_pImpl) {
+		return m_pImpl->DeleteKey (strKey);
 	} else {
 		return FALSE;
 	}

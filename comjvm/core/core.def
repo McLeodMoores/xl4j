@@ -10,3 +10,7 @@ EXPORTS
 	?IsValid@CSettings@@QBEHXZ
 	?PutString@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@00@Z
 	??1CSettings@@QAE@XZ
+	?GetString@CSettings@@QBE?BV_bstr_t@@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@J@Z
+	?PutString@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@J0@Z
+	?DeleteKey@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z
+	?DeleteString@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z

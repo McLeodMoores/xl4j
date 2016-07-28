@@ -2,6 +2,8 @@
 #include "Resource.h"
 #include "afxwin.h"
 
+#include "../core/Settings.h"
+
 // CVmOptionsPropertyPage dialog
 
 class CVmOptionsPropertyPage : public CPropertyPage
@@ -9,7 +11,7 @@ class CVmOptionsPropertyPage : public CPropertyPage
 	DECLARE_DYNAMIC(CVmOptionsPropertyPage)
 
 public:
-	CVmOptionsPropertyPage();
+	CVmOptionsPropertyPage(CSettings *pSettings);
 	virtual ~CVmOptionsPropertyPage();
 
 // Dialog Data
@@ -17,7 +19,10 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
+	virtual BOOL OnInitDialog ();
+	virtual void OnOK ();
+	virtual void UpdateButtons ();
+	CSettings *m_pSettings;
 	DECLARE_MESSAGE_MAP()
 public:
 	// Checkbox to determine if debug flag enabled
@@ -40,4 +45,21 @@ public:
 	CButton m_bAdd;
 	// Button to remove currently selected VM option
 	CButton m_bRemove;
+	// Button to move item up list
+	CButton m_bMoveUp;
+	// Button to move item down list
+	CButton m_bMoveDown;
+	// Button to edit currently selected item
+	CButton m_bEdit;
+	afx_msg void OnBnClickedButtonCustomAdd ();
+	
+
+	
+	afx_msg void OnBnClickedButtonCustomEdit ();
+	afx_msg void OnBnClickedButtonUp ();
+	afx_msg void OnBnClickedButtonDown ();
+	afx_msg void OnBnClickedButtonCustomRemove ();
+	afx_msg void OnLbnSelchangeListVmOptions ();
+	afx_msg void OnBnClickedCheckMaxHeap ();
+	afx_msg void OnBnClickedCheckLogback ();
 };

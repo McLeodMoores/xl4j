@@ -125,7 +125,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddinPropertyPage.cpp" />
+    <ClCompile Include="AddVmOptionDialog.cpp" />
     <ClCompile Include="AvailableJvms.cpp" />
+    <ClCompile Include="EditVmOptionDialog.cpp" />
     <ClCompile Include="SettingsDialogFactory.cpp" />
     <ClCompile Include="ClasspathPropertyPage.cpp" />
     <ClCompile Include="dllmain.cpp" />
@@ -138,8 +140,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AddinPropertyPage.h" />
+    <ClInclude Include="AddVmOptionDialog.h" />
     <ClInclude Include="AvailableJvms.h" />
     <ClInclude Include="ClasspathPropertyPage.h" />
+    <ClInclude Include="EditVmOptionDialog.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="SettingsDialog.h" />
     <ClInclude Include="SettingsDialogImpl.h" />

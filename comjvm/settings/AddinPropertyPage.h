@@ -32,6 +32,7 @@ protected:
 	
 	DECLARE_MESSAGE_MAP()
 public:
+
 	void SetSelectedJvm (LPCTSTR szValue) {
 		m_lbJvms.SelectString (-1, szValue);
 	}
