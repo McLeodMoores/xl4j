@@ -5,7 +5,7 @@
 
 class ISettingsDialog {
 public:
-	virtual void Open (HWND hwndParent) = 0;
+	virtual INT_PTR Open (HWND hwndParent) = 0;
 };
 
 class CSettingsDialogFactory {

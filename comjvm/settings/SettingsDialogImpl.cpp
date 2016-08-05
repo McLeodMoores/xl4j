@@ -24,10 +24,10 @@ void CSettingsDialogImpl::init () {
 	m_pVmOptionsPropertyPage = new CVmOptionsPropertyPage (m_pSettings);
 }
 
-void CSettingsDialogImpl::Open (HWND hwndParent) {
+INT_PTR CSettingsDialogImpl::Open (HWND hwndParent) {
 	CPropertySheet psSheet (IDS_PROPSHEET_TITLE, CWnd::FromHandle(hwndParent), 0);
 	psSheet.AddPage (m_pAddinPropertyPage);
 	psSheet.AddPage (m_pClasspathPropertyPage);
 	psSheet.AddPage (m_pVmOptionsPropertyPage);
-	psSheet.DoModal ();
+	return psSheet.DoModal ();
 }

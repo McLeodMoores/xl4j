@@ -17,6 +17,6 @@ private:
 public:
 	CSettingsDialogImpl (CSettings *pSettings);
 	~CSettingsDialogImpl ();
-	virtual void Open (HWND hwndParent);
+	virtual INT_PTR Open (HWND hwndParent);
 };
 

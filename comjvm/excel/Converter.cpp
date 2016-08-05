@@ -4,26 +4,12 @@
 Converter::Converter (TypeLib *pTypeLib) {
 	pTypeLib->GetLocalReferenceRecInfo (&m_pLocalReferenceRecInfo);
 	pTypeLib->GetMultReferenceRecInfo (&m_pMultiReferenceRecInfo);
-	//HRESULT hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &m_pMultiReferenceRecInfo);
-	//if (FAILED (hr)) {
-	//	_com_error err (hr);
-	//	LOGTRACE ("Converter::constructor::could not get IRecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
-	//	throw std::abort;
-	//}
-	//hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &m_pLocalReferenceRecInfo);
-	//if (FAILED (hr)) {
-	//	_com_error err (hr);
-	//	LOGTRACE ("Converter::constructor::could not get IRecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
-	//	throw std::abort;
-	//}
 }
 
 Converter::~Converter () {
 	if (m_pLocalReferenceRecInfo) m_pLocalReferenceRecInfo->Release ();
 	if (m_pMultiReferenceRecInfo) m_pMultiReferenceRecInfo->Release ();
 }
-
-
 
 HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	switch (V_VT(in)) {
@@ -137,6 +123,11 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 			for (int i = 0; i < cColumns; i++) {
 				//LOGTRACE ("Converter::convert(VARIANT->XLOPER): converting element (%d, %d)", i, j);
 				hr = convert (pArray++, pXLOPERArr++);
+				if (FAILED (hr))
+				{
+					_com_error err (hr);
+					LOGTRACE ("Failed to convert (%d, %d) in array", err.ErrorMessage ());
+				}
 			}
 		}
 		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): finished converting elements, writing to out structure");
@@ -302,7 +293,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 
 HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 	// by using sizeof XLMREF - sizeof XLREF to determine size of count, we should account for any padding/alignement.
-	*result = (XLMREF12 *) malloc ((ranges * (sizeof (XLREF12))) + (sizeof XLMREF12 - sizeof XLREF12));
+	*result = static_cast<XLMREF12 *>(malloc ((ranges * (sizeof (XLREF12))) + (sizeof XLMREF12 - sizeof XLREF12)));
 	if (*result == NULL) {
 		return E_OUTOFMEMORY;
 	}
@@ -310,7 +301,7 @@ HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 }
 
 HRESULT Converter::allocARRAY (size_t cols, size_t rows, XLOPER12 **arr) {
-	*arr = (XLOPER12 *) malloc ((cols * rows * sizeof (XLOPER12)));
+	*arr = static_cast<XLOPER12 *>(malloc ((cols * rows * sizeof (XLOPER12))));
 	if (*arr == NULL) {
 		return E_OUTOFMEMORY;
 	}
@@ -318,7 +309,7 @@ HRESULT Converter::allocARRAY (size_t cols, size_t rows, XLOPER12 **arr) {
 }
 
 HRESULT Converter::allocBSTR (XCHAR *str, BSTR *out) {
-	*out = SysAllocStringLen (str + 1, (UINT)((unsigned short) str[0])); // two casts probably unnecessary
+	*out = SysAllocStringLen (str + 1, static_cast<UINT>(static_cast<unsigned short>(str[0]))); // two casts probably unnecessary
 	if (*out == NULL) {
 		return E_OUTOFMEMORY;
 	}
@@ -326,8 +317,9 @@ HRESULT Converter::allocBSTR (XCHAR *str, BSTR *out) {
 	return S_OK;
 }
 
-HRESULT Converter::allocMultiReference (XL4JMULTIREFERENCE **result, size_t elems) {
-	*result = (XL4JMULTIREFERENCE *) m_pMultiReferenceRecInfo->RecordCreate ();
+HRESULT Converter::allocMultiReference (XL4JMULTIREFERENCE **result, size_t elems) const
+{
+	*result = static_cast<XL4JMULTIREFERENCE *>(m_pMultiReferenceRecInfo->RecordCreate ());
 	if (*result == NULL) {
 		LOGTRACE ("XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
@@ -349,8 +341,9 @@ HRESULT Converter::allocMultiReference (XL4JMULTIREFERENCE **result, size_t elem
 	return S_OK;
 }
 
-HRESULT Converter::allocReference (XL4JREFERENCE **result) {
-	*result = (XL4JREFERENCE *)m_pLocalReferenceRecInfo->RecordCreate ();
+HRESULT Converter::allocReference (XL4JREFERENCE **result) const
+{
+	*result = static_cast<XL4JREFERENCE *>(m_pLocalReferenceRecInfo->RecordCreate ());
 	if (*result == NULL) {
 		LOGTRACE ("XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
@@ -360,11 +353,11 @@ HRESULT Converter::allocReference (XL4JREFERENCE **result) {
 
 HRESULT Converter::allocXCHAR (BSTR in, XCHAR **out) {
 	const UINT cbLen = SysStringByteLen (in);
-	*out = (XCHAR *)malloc (cbLen + 2); // add two bytes for length prefix, remember no null terminator
+	*out = static_cast<XCHAR *>(malloc (cbLen + 2)); // add two bytes for length prefix, remember no null terminator
 	if (*out == NULL) {
 		return E_OUTOFMEMORY;
 	}
-	(*out)[0] = (XCHAR)SysStringLen (in);
+	(*out)[0] = static_cast<XCHAR>(SysStringLen (in));
 	CopyMemory ((*out) + 1, in, cbLen); // copying memory because no null terminator, so string function can't handle.
 	return S_OK;
 }

@@ -206,11 +206,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="Excel.h" />
     <ClInclude Include="ExcelUtils.h" />
     <ClInclude Include="FunctionRegistry.h" />
     <ClInclude Include="GarbageCollector.h" />
     <ClInclude Include="Jvm.h" />
     <ClInclude Include="Progress.h" />
+    <ClInclude Include="Lifecycle.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TypeLib.h" />
@@ -224,6 +226,7 @@
     <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="Jvm.cpp" />
     <ClCompile Include="Progress.cpp" />
+    <ClCompile Include="Lifecycle.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

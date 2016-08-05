@@ -87,7 +87,9 @@ void ExcelUtils::ScheduleCommand (wchar_t *wsCommandName, double dbSeconds) {
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
 }
 
-int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
+int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
+	XLOPER12 xDLL;
+	Excel12f (xlGetName, &xDLL, 0);
 	FreeAllTempMemory ();
 	XLOPER12 retVal = {};
 	LPXLOPER12 exportName = TempStr12 (wsCommandName);
@@ -96,10 +98,10 @@ int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 	LPXLOPER12 commandName = TempStr12 (wsCommandName);
 	LPXLOPER12 args = TempMissing12 ();
 	LPXLOPER12 functionType = TempInt12 (2);
-	LOGTRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", xDLL, exportName, returnType, commandName, args, functionType);
+	LOGTRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", &xDLL, exportName, returnType, commandName, args, functionType);
 
 	int ret = Excel12f (
-		xlfRegister, &retVal, 6, xDLL,
+		xlfRegister, &retVal, 6, &xDLL,
 		exportName, // export name
 		returnType, // return type, always J for commands
 		commandName, // command name
@@ -107,6 +109,7 @@ int ExcelUtils::RegisterCommand (XLOPER12 *xDLL, const wchar_t *wsCommandName) {
 		functionType // function type 2 = Command
 		);
 	ExcelUtils::PrintExcel12Error (ret);
+	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 	if (ret == xlretSuccess) {
 		LOGTRACE ("After xlfRegister");
 		if (retVal.xltype == xltypeInt) {

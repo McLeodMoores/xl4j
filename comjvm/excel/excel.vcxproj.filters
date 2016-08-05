@@ -31,6 +31,9 @@
     <ClCompile Include="TypeLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Lifecycle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -58,6 +61,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TypeLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Excel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Lifecycle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

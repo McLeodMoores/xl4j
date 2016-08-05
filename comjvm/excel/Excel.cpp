@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #define COMJVM_EXCEL_EXPORT
 #include "Jvm.h"
-#include "../local/CScanExecutor.h"
-#include "../local/CCallExecutor.h"
 #include "FunctionRegistry.h"
 #include "Converter.h"
 #include "GarbageCollector.h"
@@ -12,6 +10,7 @@
 #include "../core/Settings.h"
 #include "../core/internal.h"
 #include "../utils/FileUtils.h"
+#include "Lifecycle.h"
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -29,7 +28,6 @@ const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 
 //
 HWND g_hWndMain = NULL;
 HANDLE g_hInst = NULL;
-XCHAR g_szBuffer[20] = L"";
 FunctionRegistry *g_pFunctionRegistry;
 Converter *g_pConverter;
 TypeLib *g_pTypeLib;
@@ -173,47 +171,7 @@ __declspec(dllexport) int Settings () {
 	return 1;
 }
 
-DWORD WINAPI MarqueeTickThread (LPVOID param) {
-	Progress *pProgress = (Progress *)param;
-	pProgress->AddRef ();
-	while (!g_pFunctionRegistry->IsScanComplete ()) {
-		Sleep (300);
-		pProgress->Increment ();
-	}
-	int iNumberRegistered;
-	g_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
-	pProgress->SetMax (iNumberRegistered);
-	pProgress->Release ();
-	return 0;
-}
 
-
-
-DWORD WINAPI RegistryThreadFunction (LPVOID param) {
-	LOGTRACE ("Registry thread");
-	g_pTypeLib = new TypeLib ();
-	g_pJvm = new Jvm ();
-	if (!g_pJvm) {
-		LOGERROR ("JVM global pointer is NULL");
-	}
-	try {
-		g_pConverter = new Converter (g_pTypeLib);
-	} catch (const std::exception& e) {
-		LOGERROR ("Exception occurred");
-		return 1;
-	}
-
-	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm (), g_pTypeLib);
-	HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
-	if (hThread == NULL) {
-		LOGTRACE ("CreateThread failed %d", GetLastError ());
-	}
-	LOGTRACE ("Calling scan from registry thread");
-	if (FAILED (g_pFunctionRegistry->Scan ())) {
-		LOGERROR ("scan failed");
-	}
-	return 0;
-}
 
 
 ///***************************************************************************
@@ -265,50 +223,22 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		return 1;
 	}
 	g_initialized = true;
-	////InitFramework ();
-	static XLOPER12 xDLL;
-	Excel12f (xlGetName, &xDLL, 0);
-	wchar_t szDirPath[MAX_PATH];
-	wchar_t *pszDlls[] = { L"core.dll", L"jni.dll", L"helper.dll", L"settings.dll", L"local.dll", L"utils.dll" };
-	HRESULT hr;
-	for (int i = 0; i < _countof(pszDlls); i++) {
-		if (SUCCEEDED (hr = FileUtils::GetAddinAbsolutePath (szDirPath, MAX_PATH, pszDlls[i]))) {
-			LOGTRACE ("Loading DLL %s", szDirPath);
-			LoadLibraryExW (szDirPath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
-		} else {
-			LOGERROR ("Error gettings AddinDirectory path");
-		}
-	}
-	/*HRESULT hr;
-	if (SUCCEEDED(hr = FileUtils::GetAddinDirectory (szDirPath, MAX_PATH))) {
-		LOGTRACE ("Setting CWD and DllDirectory to %s", szDirPath);
-		SetCurrentDirectoryW (szDirPath);
-		SetDllDirectoryW (szDirPath);
-	} else {
-		LOGERROR ("Error gettings AddinDirectory path");
-	}*/
-	// the above only (might) work because we've set the linker to specify all the dependent DLLs are delay-loaded.
-	XLOPER12 xWnd;
-	Excel12f (xlGetHwnd, &xWnd, 0);
-	g_pProgress = new Progress (); // addref
-	g_pProgress->Open((HWND)xWnd.val.w, (HINSTANCE)g_hInst);
-	DWORD dwThreadId;
-	HANDLE hThread = CreateThread (NULL, 2048*1024, RegistryThreadFunction, (LPVOID)xWnd.val.w, 0, &dwThreadId); 
-	if (hThread == NULL) {
-		LOGTRACE ("CreateThread failed %d", GetLastError());
-	}
-	g_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (&xDLL, TEXT ("RegisterSomeFunctions"));
-	LOGTRACE ("Not Calling ScheduleCommand");
+	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
+	LoadDLLs ();
+	// Display the progress bar
+	StartProgress ();
+	// Start up Java and begin scanning for functions in background.
+	StartRegistryThread ();
+	// Register polling command that registers chunks of functions
+	g_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (TEXT ("RegisterSomeFunctions"));
+	// Schedule polling command to start in 0.1 secs.  This will reschedule itself until all functions registered.
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
-	g_idSettings = ExcelUtils::RegisterCommand (&xDLL, TEXT ("Settings"));
+	// Register command to display MFC settings dialog
+	g_idSettings = ExcelUtils::RegisterCommand (TEXT ("Settings"));
 	AddToolbar ();
-	// Free the XLL filename 
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 	FreeAllTempMemory ();
 	return 1;
 }
-
-
 
 ///***************************************************************************
 // xlAutoClose()
@@ -364,27 +294,7 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	// used to delete it.
 	//
 
-	//
-	// Due to a bug in Excel the following code to delete the defined names
-	// does not work.  There is no way to delete these
-	// names once they are Registered
-	// The code is left in, in hopes that it will be
-	// fixed in a future version.
-	//
-	if (g_pFunctionRegistry) {
-		g_pFunctionRegistry->UnregsiterFunctions ();
-		if (g_idGarbageCollect) {
-			g_pFunctionRegistry->UnregisterFunction (_T ("GarbageCollect"), g_idGarbageCollect);
-		}
-		if (g_idRegisterSomeFunctions) {
-			g_pFunctionRegistry->UnregisterFunction (_T ("RegisterSomeFunctions"), g_idRegisterSomeFunctions);
-		}
-		if (g_idSettings) {
-			g_pFunctionRegistry->UnregisterFunction (_T ("Settings"), g_idSettings);
-		}
-	} else {
-		LOGERROR ("xlAutoClose called when function registry has not been initialised");
-	}
+	Unregister ();
 	RemoveToolbar ();
 	// Deactiveate COM context.
 	::DeactivateActCtx (0, g_cookie);
@@ -500,7 +410,7 @@ __declspec(dllexport) int GarbageCollect () {
 	return 1;
 }
 
-__declspec(dllexport) void StartGC (XLOPER12 *pxDLL) {
+__declspec(dllexport) void StartGC () {
 	LOGTRACE ("Creating ICollect");
 	ICollect *pCollect;
 	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
@@ -511,12 +421,11 @@ __declspec(dllexport) void StartGC (XLOPER12 *pxDLL) {
 	LOGTRACE ("Creating GarbageCollector");
 	g_pCollector = new GarbageCollector (pCollect);
 	LOGTRACE ("Registering GC Command");
-	g_idGarbageCollect = ExcelUtils::RegisterCommand (pxDLL, TEXT ("GarbageCollect"));
+	g_idGarbageCollect = ExcelUtils::RegisterCommand (TEXT ("GarbageCollect"));
 	LOGTRACE ("Registered, booking GC call");
 	ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
 	LOGTRACE ("Finished registration");
 }
-
 
 __declspec(dllexport) int RegisterSomeFunctions () {
 	LOGTRACE ("Entered");
@@ -543,7 +452,7 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 				g_pProgress->Update (iRegistered);
 				Sleep (100); // allow UI to show completed status.
 				g_pProgress->Release ();
-				StartGC (&xDLL);
+				StartGC ();
 				break;
 			}
 		}
@@ -690,16 +599,7 @@ __declspec(dllexport) int WINAPI fExit (void)
 	// register ID is then used to unregister each function. Then the code
 	// frees the DLL name and calls xlAutoClose.
 	//
-
-	// Make xFunc a string //
-	xFunc.xltype = xltypeStr;
-
-	Excel12f (xlGetName, &xDLL, 0);
-
-	// TODO: unregister worksheet functions
-
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
-
+	
 	return xlAutoClose ();
 }
 
