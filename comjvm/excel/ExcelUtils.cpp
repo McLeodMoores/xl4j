@@ -241,10 +241,24 @@ void ExcelUtils::UnhookExcelWindow (HWND hWndExcel) {
 	g_lpfnExcelWndProc = NULL;
 }
 
-HWND ExcelUtils::GetHWND () {
+BOOL ExcelUtils::GetHWND (HWND *phWnd) {
 	XLOPER12 xWnd;
-	Excel12f (xlGetHwnd, &xWnd, 0);
-	return (HWND)xWnd.val.w;
+	if (Excel12f (xlGetHwnd, &xWnd, 0) == xlretSuccess) {
+		*phWnd = reinterpret_cast<HWND>(xWnd.val.w);
+		Excel12f (xlFree, 0, 1, static_cast<LPXLOPER12>(&xWnd));
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL GetHwnd (HWND * pHwnd) {
+	XLOPER12 x;
+
+	if (Excel12f (xlGetHwnd, &x, 0) == xlretSuccess) {
+		*pHwnd = (HWND)x.val.w;
+		return TRUE;
+	}
+	return FALSE;
 }
 
 void ExcelUtils::PrintExcel12Error (int err) {

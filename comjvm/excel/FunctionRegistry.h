@@ -3,6 +3,7 @@
 #include "TypeLib.h"
 #include "local/CScanExecutor.h"
 #include <vector>
+#pragma once 
 
 class FunctionRegistry {
 private:

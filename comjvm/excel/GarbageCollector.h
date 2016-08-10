@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#pragma once
 #include "Jvm.h"
 #include <vector>
 

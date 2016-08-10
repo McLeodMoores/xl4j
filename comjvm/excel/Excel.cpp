@@ -26,7 +26,6 @@ const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 
 //
 // Global Variables
 //
-HWND g_hWndMain = NULL;
 HANDLE g_hInst = NULL;
 FunctionRegistry *g_pFunctionRegistry;
 Converter *g_pConverter;
@@ -38,7 +37,6 @@ Progress *g_pProgress;
 int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
-ULONG_PTR g_cookie;
 bool g_initialized = false;
 
 ///***************************************************************************
@@ -160,7 +158,10 @@ __declspec(dllexport) void RemoveToolbar () {
 }
 
 __declspec(dllexport) int Settings () {
-	HWND hwndExcel = ExcelUtils::GetHWND ();
+	HWND hwndExcel;
+	if (!ExcelUtils::GetHWND (&hwndExcel)) {
+		LOGERROR ("Couldn not get Excel window handle");
+	}
 	ISettingsDialog *pSettingsDialog;
 	CSettingsDialogFactory::Create(new CSettings (TEXT ("inproc"), TEXT ("default"), CSettings::INIT_APPDATA), &pSettingsDialog);
 	ExcelUtils::HookExcelWindow (hwndExcel);
@@ -296,8 +297,6 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 
 	Unregister ();
 	RemoveToolbar ();
-	// Deactiveate COM context.
-	::DeactivateActCtx (0, g_cookie);
 	return 1;
 }
 

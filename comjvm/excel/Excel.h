@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#pragma once
 #define COMJVM_EXCEL_EXPORT
 #include "Jvm.h"
 #include "../local/CScanExecutor.h"
@@ -13,7 +14,6 @@
 #include "../core/internal.h"
 #include "../utils/FileUtils.h"
 
-extern HWND g_hWndMain;
 extern HANDLE g_hInst;
 extern FunctionRegistry *g_pFunctionRegistry;
 extern Converter *g_pConverter;

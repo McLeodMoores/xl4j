@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#pragma once
 #include <Commctrl.h>
 
 class Progress {

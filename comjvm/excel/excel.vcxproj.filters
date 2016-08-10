@@ -34,6 +34,12 @@
     <ClCompile Include="Lifecycle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JvmEnvironment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AddinEnvironment.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -67,6 +73,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Lifecycle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="JvmEnvironment.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AddinEnvironment.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

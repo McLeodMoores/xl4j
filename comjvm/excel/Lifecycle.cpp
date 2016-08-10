@@ -70,11 +70,11 @@ void LoadDLLs () {
 }
 
 void StartProgress () {
-	XLOPER12 xWnd;
-	Excel12f (xlGetHwnd, &xWnd, 0);
+	HWND hWnd;
+	ExcelUtils::GetHWND (&hWnd);
 	g_pProgress = new Progress (); // addref
-	g_pProgress->Open ((HWND)xWnd.val.w, (HINSTANCE)g_hInst);
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xWnd);
+	g_pProgress->Open ((HWND)hWnd, (HINSTANCE)g_hInst);
+	
 }
 
 void Unregister ()
