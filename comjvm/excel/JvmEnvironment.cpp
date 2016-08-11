@@ -2,14 +2,15 @@
 #include "JvmEnvironment.h"
 #include "Excel.h"
 
-CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv, HWND hWnd) : m_pAddinEnvironment (pEnv), m_hWnd (hWnd) {
+CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	m_pProgress = new Progress ();
-	HWND hInst;
-	if (!ExcelUtils::GetHWND (&hInst)) {
+	HWND hWnd;
+	if (!ExcelUtils::GetHWND (&hWnd)) {
 		LOGERROR ("Could not get Excel window handle");
 		return;
 	}
 	m_pProgress->Open (hWnd, static_cast<HINSTANCE>(g_hInst));
+	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
 	HANDLE hThread = CreateThread (nullptr, 2048 * 1024, MarqueeTickThread, static_cast<LPVOID>(this), 0, nullptr);
 	if (!hThread) {
 		LOGTRACE ("CreateThread (marquee tick)failed %d", GetLastError ());
@@ -23,10 +24,13 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv, HWND hWnd) : m_pAddin
 }
 
 CJvmEnvironment::~CJvmEnvironment () {
-	
+	Unregister ();
+	m_pJvm->Release ();
+	delete m_pFunctionRegistry;
+	delete m_pCollector;
 }
 
-BOOL CJvmEnvironment::RegisterSomeFunctions () const {
+BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 	LOGTRACE ("Entered");
 	XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
@@ -38,9 +42,9 @@ BOOL CJvmEnvironment::RegisterSomeFunctions () const {
 		HRESULT hr = m_pFunctionRegistry->RegisterFunctions (xDLL, 20 * 5);
 		if (hr == S_FALSE) { // NOT FINISHED
 			int iRegistered;
-			g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
+			m_pFunctionRegistry->GetNumberRegistered (&iRegistered);
 			LOGTRACE ("RegisterFunctions returned S_FALSE, GetNumberRegsitered returned %d", iRegistered);
-			g_pProgress->Update (iRegistered);
+			m_pProgress->Update (iRegistered);
 			return false;
 		} else {
 			int iRegistered;
@@ -63,7 +67,7 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 	}
 	CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
 	pThis->m_pJvm = new Jvm ();
-	if (pThis->m_pJvm) {
+	if (!pThis->m_pJvm) {
 		LOGERROR ("JVM global pointer is NULL");
 		return 1;
 	}
@@ -75,14 +79,14 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 	}
 	LOGTRACE ("Starting GC");
 	ICollect *pCollect;
-	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
+	HRESULT hr = pThis->m_pJvm->getJvm ()->CreateCollect (&pCollect);
 	if (FAILED (hr)) {
 		_com_error err (hr);
 		LOGERROR ("Can't create ICollect instance: %s", err.ErrorMessage ());
 		return 1;
 	}
 	LOGTRACE ("Creating GarbageCollector");
-	g_pCollector = new GarbageCollector (pCollect);
+	pThis->m_pCollector = new GarbageCollector (pCollect);
 	LOGTRACE ("Created GarbageCollector");
 	return 0;
 }
@@ -94,25 +98,25 @@ DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {
 	}
 	CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
 	Progress *pProgress = pThis->m_pProgress;
-	pProgress->AddRef ();
+	//pProgress->AddRef ();
 	while (pThis->m_pFunctionRegistry && !pThis->m_pFunctionRegistry->IsScanComplete ()) {
 		Sleep (500);
 		pProgress->Increment ();
 	}
 	int iNumberRegistered;
 	if (pThis->m_pFunctionRegistry) {
-		g_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
+		pThis->m_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
 		pProgress->SetMax (iNumberRegistered);
 		pProgress->Release ();
 	}
 	return 0;
 }
 
-void CJvmEnvironment::GarbageCollect () const {
+void CJvmEnvironment::_GarbageCollect () const {
 	m_pCollector->Collect ();
 }
 
-LPXLOPER12 CJvmEnvironment::UDF (int exportNumber, LPXLOPER12 first, va_list ap) const {
+LPXLOPER12 CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 first, va_list ap) const {
 	LOGTRACE ("UDF entered");
 	// Find out how many parameters this function should expect.
 	FUNCTIONINFO functionInfo;
@@ -179,9 +183,9 @@ LPXLOPER12 CJvmEnvironment::UDF (int exportNumber, LPXLOPER12 first, va_list ap)
 	// get TLS call instance.
 	ICall *pCall = static_cast<ICall *>(TlsGetValue (g_dwTlsIndex));
 	if (!pCall) {
-		if (FAILED (g_pJvm->getJvm ()->CreateCall (&pCall))) {
+		if (FAILED (m_pJvm->getJvm ()->CreateCall (&pCall))) {
 			LOGERROR ("UDF stub: CreateCall failed on JVM");
-			return FALSE;
+			return nullptr;
 		}
 		TlsSetValue (g_dwTlsIndex, pCall);
 	}
@@ -194,7 +198,7 @@ LPXLOPER12 CJvmEnvironment::UDF (int exportNumber, LPXLOPER12 first, va_list ap)
 	LARGE_INTEGER t3;
 	QueryPerformanceCounter (&t3);
 	XLOPER12 *pResult = static_cast<XLOPER12*> (malloc (sizeof (XLOPER12)));
-	hr = g_pConverter->convert (&result, pResult);
+	hr = m_pAddinEnvironment->GetConverter()->convert (&result, pResult);
 	if (FAILED (hr)) {
 		LOGERROR ("UDF stub: Result conversion failed");
 		goto error;
@@ -210,4 +214,27 @@ error:
 	// free result...
 	XLOPER12 *pErrVal = TempErr12 (xlerrValue);
 	return pErrVal;
+}
+
+void CJvmEnvironment::Unregister () {
+	// Due to a bug in Excel the following code to delete the defined names
+	// does not work.  There is no way to delete these
+	// names once they are Registered
+	// The code is left in, in hopes that it will be
+	// fixed in a future version.
+	//
+	if (m_pFunctionRegistry) {
+		m_pFunctionRegistry->UnregsiterFunctions ();
+		if (g_idGarbageCollect) {
+			m_pFunctionRegistry->UnregisterFunction (_T ("GarbageCollect"), g_idGarbageCollect);
+		}
+		if (g_idRegisterSomeFunctions) {
+			m_pFunctionRegistry->UnregisterFunction (_T ("RegisterSomeFunctions"), g_idRegisterSomeFunctions);
+		}
+		if (g_idSettings) {
+			m_pFunctionRegistry->UnregisterFunction (_T ("Settings"), g_idSettings);
+		}
+	} else {
+		LOGERROR ("xlAutoClose called when function registry has not been initialised");
+	}
 }

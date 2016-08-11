@@ -11,6 +11,8 @@
 #include "../core/internal.h"
 #include "../utils/FileUtils.h"
 #include "Lifecycle.h"
+#include "AddinEnvironment.h"
+#include "JvmEnvironment.h"
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -27,17 +29,19 @@ const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 
 // Global Variables
 //
 HANDLE g_hInst = NULL;
-FunctionRegistry *g_pFunctionRegistry;
-Converter *g_pConverter;
-TypeLib *g_pTypeLib;
-Jvm *g_pJvm = NULL;
+//FunctionRegistry *g_pFunctionRegistry;
+//Converter *g_pConverter;
+//TypeLib *g_pTypeLib;
+//Jvm *g_pJvm = NULL;
 DWORD g_dwTlsIndex = 0;
-GarbageCollector *g_pCollector;
-Progress *g_pProgress;
+//GarbageCollector *g_pCollector;
+//Progress *g_pProgress;
 int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
 bool g_initialized = false;
+CAddinEnvironment *g_pAddinEnv;
+CJvmEnvironment *g_pJvmEnv;
 
 ///***************************************************************************
 // DllMain()
@@ -227,15 +231,16 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	LoadDLLs ();
 	// Display the progress bar
-	StartProgress ();
-	// Start up Java and begin scanning for functions in background.
-	StartRegistryThread ();
+	g_pAddinEnv = new CAddinEnvironment ();
+	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+
 	// Register polling command that registers chunks of functions
 	g_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (TEXT ("RegisterSomeFunctions"));
 	// Schedule polling command to start in 0.1 secs.  This will reschedule itself until all functions registered.
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
 	// Register command to display MFC settings dialog
 	g_idSettings = ExcelUtils::RegisterCommand (TEXT ("Settings"));
+	g_idGarbageCollect = ExcelUtils::RegisterCommand (TEXT ("GarbageCollect"));
 	AddToolbar ();
 	FreeAllTempMemory ();
 	return 1;
@@ -295,7 +300,7 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	// used to delete it.
 	//
 
-	Unregister ();
+	delete g_pJvmEnv;
 	RemoveToolbar ();
 	return 1;
 }
@@ -399,169 +404,27 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 
 	//Word of caution - returning static XLOPERs/XLOPER12s is not thread safe
 	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
-	return(LPXLOPER12)&xInfo;
+	return static_cast<LPXLOPER12>(&xInfo);
 }
 
 __declspec(dllexport) int GarbageCollect () {
 	//LOGTRACE ("GarbageCollect() called.");
-	g_pCollector->Collect ();
+	g_pJvmEnv->_GarbageCollect();
 	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
 }
 
-__declspec(dllexport) void StartGC () {
-	LOGTRACE ("Creating ICollect");
-	ICollect *pCollect;
-	HRESULT hr = g_pJvm->getJvm ()->CreateCollect (&pCollect);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		LOGTRACE ("Can't create ICollect instance: %s", err.ErrorMessage ());
-	}
-	LOGTRACE ("Creating GarbageCollector");
-	g_pCollector = new GarbageCollector (pCollect);
-	LOGTRACE ("Registering GC Command");
-	g_idGarbageCollect = ExcelUtils::RegisterCommand (TEXT ("GarbageCollect"));
-	LOGTRACE ("Registered, booking GC call");
-	ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
-	LOGTRACE ("Finished registration");
-}
-
 __declspec(dllexport) int RegisterSomeFunctions () {
-	LOGTRACE ("Entered");
-	static XLOPER12 xDLL;
-	Excel12f (xlGetName, &xDLL, 0);
-	if (g_pFunctionRegistry != NULL && g_pFunctionRegistry->IsRegistrationComplete ()) {
-		LOGTRACE ("Called after registration complete");
-		return 1; // erroneous call
-	}
-	if (g_pFunctionRegistry != NULL && g_pFunctionRegistry->IsScanComplete ()) {
-		for (int i = 0; i < 20; i++) {
-			HRESULT hr = g_pFunctionRegistry->RegisterFunctions (xDLL, 5);
-			if (hr == S_FALSE) {
-				int iRegistered;
-				g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
-				LOGTRACE ("RegisterFunctions returned S_FALSE, GetNumberRegsitered returned %d", iRegistered);
-				g_pProgress->Update (iRegistered);
-				// didn't complete, schedule another go in half a second
-				ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
-			} else {
-				int iRegistered;
-				g_pFunctionRegistry->GetNumberRegistered (&iRegistered);
-				LOGTRACE ("GetNumberRegsitered returned %d", iRegistered);
-				g_pProgress->Update (iRegistered);
-				Sleep (100); // allow UI to show completed status.
-				g_pProgress->Release ();
-				StartGC ();
-				break;
-			}
-		}
+	if (g_pJvmEnv->_RegisterSomeFunctions ()) {
+		ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
 	} else {
-		LOGTRACE ("Scan ongoing...");
 		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
 	}
 	return 1;
 }
 
-
-
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	LOGTRACE ("UDF entered");
-	// Find out how many parameters this function should expect.
-	FUNCTIONINFO functionInfo;
-	HRESULT hr = g_pFunctionRegistry->Get (exportNumber, &functionInfo);
-	long nArgs = wcslen (functionInfo.bsFunctionSignature) - 2;
-	//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
-	LOGTRACE ("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
-	
-	// Create a SAFEARRAY(XL4JOPER12) of nArg entries
-	SAFEARRAYBOUND bounds = { nArgs, 0 };
-	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
-	if (saInputs == NULL) {
-		LOGERROR ("UDF stub: Could not create SAFEARRAY");
-		goto error;
-	}
-	LOGTRACE ("UDF stub: Created SAFEARRAY for parameters");
-	// Get a ptr into the SAFEARRAY
-	VARIANT *inputs;
-	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
-	VARIANT *pInputs = inputs;
-	if (nArgs > 0) {
-		LOGTRACE ("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
-		g_pConverter->convert (first, pInputs++);
-		LOGTRACE ("UDF stub: copied first element into SAFEARRAY");
-	} else {
-		LOGTRACE ("UDF stub: first paramter was NULL, no conversion");
-	}
-	LOGTRACE ("UDF stub: converting any remaining parameters");
-	for (int i = 0; i < nArgs - 1; i++) {
-		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
-		LOGTRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		g_pConverter->convert (arg, pInputs++);
-		LOGTRACE ("UDF stub: converted and copied into SAFEARRAY");
-	}
-	va_end (ap);
-	// trim off any VT_NULLs if it's a varargs function.
-	if (functionInfo.bIsVarArgs) {
-		LOGTRACE ("Detected VarArgs, trying to trim");
-		int i = nArgs - 1;
-		while (i > 0 && inputs[i].vt == VT_EMPTY) {
-			i--;
-		}
-		SafeArrayUnaccessData (saInputs);
-		LOGTRACE ("Trimming to %d", i + 1);
-		SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
-		hr = SafeArrayRedim (saInputs, &trimmedBounds);
-		if (FAILED (hr)) {
-			LOGERROR ("SafeArrayRedim failed");
-			goto error;
-		}
-	} else {
-		SafeArrayUnaccessData (saInputs);
-	}
-	VARIANT result;
-
-	long szInputs;
-	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
-		LOGERROR ("UDF stub: SafeArrayGetUBound failed");
-		goto error;
-	}
-	szInputs++;
-	LARGE_INTEGER t2;
-	QueryPerformanceCounter (&t2);
-	// get TLS call instance.
-	ICall *pCall = (ICall *) TlsGetValue (g_dwTlsIndex);
-	if (pCall == NULL) {
-		if (FAILED (g_pJvm->getJvm ()->CreateCall (&pCall))) {
-			LOGERROR ("UDF stub: CreateCall failed on JVM");
-			return FALSE;
-		}
-		TlsSetValue (g_dwTlsIndex, pCall);
-	}
-	if (FAILED(hr = pCall->Call (&result, exportNumber, saInputs))) {
-		_com_error err (hr);
-		LOGERROR ("UDF stub: call failed %s.", err.ErrorMessage ());
-		goto error;
-	}
-	SafeArrayDestroy (saInputs); // should recursively deallocate
-	LARGE_INTEGER t3;
-	QueryPerformanceCounter (&t3);
-	XLOPER12 *pResult = (XLOPER12 *) malloc (sizeof (XLOPER12));
-	hr = g_pConverter->convert (&result, pResult);
-	if (FAILED (hr)) {
-		LOGERROR ("UDF stub: Result conversion failed");
-		goto error;
-	}
-	VariantClear (&result); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
-	pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
-	LOGTRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
-	return pResult;
-error:
-	if (saInputs) {
-		SafeArrayDestroy (saInputs);
-	}
-	// free result...
-	XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-	return pErrVal;
+	return g_pJvmEnv->_UDF (exportNumber, first, ap);
 }
 
 

@@ -13,17 +13,21 @@
 #include "../core/Settings.h"
 #include "../core/internal.h"
 #include "../utils/FileUtils.h"
+#include "AddinEnvironment.h"
+#include "JvmEnvironment.h"
 
 extern HANDLE g_hInst;
-extern FunctionRegistry *g_pFunctionRegistry;
-extern Converter *g_pConverter;
-extern TypeLib *g_pTypeLib;
-extern Jvm *g_pJvm;
+//extern FunctionRegistry *g_pFunctionRegistry;
+//extern Converter *g_pConverter;
+//extern TypeLib *g_pTypeLib;
+//extern Jvm *g_pJvm;
 extern DWORD g_dwTlsIndex;
-extern GarbageCollector *g_pCollector;
-extern Progress *g_pProgress;
+//extern GarbageCollector *g_pCollector;
+//extern Progress *g_pProgress;
 extern int g_idRegisterSomeFunctions;
 extern int g_idSettings;
 extern int g_idGarbageCollect;
-extern ULONG_PTR g_cookie;
+//extern ULONG_PTR g_cookie;
 extern bool g_initialized;
+extern CAddinEnvironment *g_pAddinEnv;
+extern CJvmEnvironment *g_pJvmEnv;
