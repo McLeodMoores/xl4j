@@ -10,15 +10,21 @@
 #include "core_h.h"
 #include "Settings.h"
 
-#define JVM_TEMPLATE_CLASSPATH			TEXT ("Classpath")
-#define JVM_TEMPLATE_OPTIONS			TEXT ("Options")
-#define JVM_TEMPLATE_CONFIG				TEXT ("Config")
-#define JVM_TEMPLATE_CONFIG_BASE		TEXT ("base")
-#define JVM_TEMPLATE_CONFIG_OVERRIDE	TEXT ("override")
-#define JVM_TEMPLATE_JVM				TEXT ("JVM")
-#define JVM_TEMPLATE_JVM_TYPE			TEXT ("type")
-#define JVM_TEMPLATE_JVM_VENDOR			TEXT ("vendor")
-#define JVM_TEMPLATE_JVM_VERSION		TEXT ("version")
+#define JVM_TEMPLATE_CLASSPATH					TEXT ("Classpath")
+#define JVM_TEMPLATE_OPTIONS					TEXT ("Options")
+#define JVM_TEMPLATE_CONFIG						TEXT ("Config")
+#define JVM_TEMPLATE_AUTO_OPTIONS				TEXT ("Auto Options")
+#define JVM_TEMPLATE_AUTO_OPTIONS_DEBUG			TEXT ("Debug")
+#define JVM_TEMPLATE_AUTO_OPTIONS_CHECK_JNI		TEXT ("CheckJNI")
+#define JVM_TEMPLATE_AUTO_OPTIONS_MAX_HEAP		TEXT ("MaxHeap")
+#define JVM_TEMPLATE_AUTO_OPTIONS_REMOTE_DEBUG	TEXT ("RemoteDebugging")
+#define JVM_TEMPLATE_AUTO_OPTIONS_LOGBACK		TEXT ("Logback")
+#define JVM_TEMPLATE_CONFIG_BASE				TEXT ("base")
+#define JVM_TEMPLATE_CONFIG_OVERRIDE			TEXT ("override")
+#define JVM_TEMPLATE_JVM						TEXT ("JVM")
+#define JVM_TEMPLATE_JVM_TYPE					TEXT ("type")
+#define JVM_TEMPLATE_JVM_VENDOR					TEXT ("vendor")
+#define JVM_TEMPLATE_JVM_VERSION				TEXT ("version")
 
 /// <summary>Implementation of IJvmTemplate.</summary>
 ///

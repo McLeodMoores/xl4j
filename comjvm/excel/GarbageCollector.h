@@ -52,7 +52,7 @@ private:
 	bool ScanDocuments ();
 public:
 	GarbageCollector (ICollect *pCollector);
-	
+	~GarbageCollector ();
 	void SetMaxTime (int iMillis);
 	void Collect ();
 };

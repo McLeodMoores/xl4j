@@ -1,7 +1,13 @@
 #include "stdafx.h"
 #include "TypeLib.h"
+#include "ClasspathUtils.h"
 #include "../core/internal.h"
-#include "../local/CScanExecutor.h"
+#include "../utils/Debug.h"
+
+//const IID IID_XL4JREFERENCE = { 0x470dd302, 0x0bd5, 0x4e23, { 0x9f, 0x82, 0xa4, 0x25, 0xb7, 0x3a, 0xf0, 0xda } };
+//const IID IID_XL4JMULTIREFERENCE = { 0x5c20fd94, 0x3101, 0x475f, { 0x80, 0x36, 0xbe, 0xd8, 0xec, 0x47, 0xa0, 0x61 } };
+//const IID MYLIBID_ComJvmCore = { 0x0e07a0b8, 0x0fa3, 0x4497, { 0xbc, 0x66, 0x6d, 0x2a, 0xf2, 0xa0, 0xb9, 0xc8 } };
+const IID FUNCTIONINFO_IID = { 0xdff6d900, 0xb72f, 0x4f06, { 0xa1, 0xad, 0x04, 0x66, 0xad, 0x25, 0xc3, 0x52 } };
 
 TypeLib::TypeLib () {
 	m_pLocalReferenceRecInfo = NULL;
@@ -24,13 +30,19 @@ TypeLib::~TypeLib () {
 HRESULT TypeLib::LoadTypeLibrary () {
 	HRESULT hr;
 	HMODULE hModule;
-	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)RegisterTypeLibrary, &hModule)) {
+	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)ClasspathUtils::AddEntry, &hModule)) {
 		TCHAR szFilename[MAX_PATH + 1];
 		ZeroMemory (szFilename, sizeof (szFilename)); // to please the code analyzer gods
 		DWORD dwLength = GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR));
+		LOGTRACE ("Module filename came back as: %s", szFilename);
 		if (dwLength <= MAX_PATH && dwLength > 0) {
 			size_t cch = _tcslen (szFilename);
-			hr = StringCchCopy (szFilename + cch - 9, 9, TEXT ("core.tlb"));
+			size_t cBase = _tcslen (_T ("helper.dll"));
+			hr = StringCchCopy (szFilename + cch - 10, 10, TEXT ("core.tlb"));
+			if (FAILED (hr)) {
+				LOGERROR ("StringCchCopy failed");
+				return hr;
+			}
 			ITypeLib *pTypeLib;
 			OutputDebugStringW (szFilename);
 			hr = LoadTypeLibEx (szFilename, REGKIND_NONE, &pTypeLib);
@@ -66,7 +78,7 @@ HRESULT TypeLib::LoadTypeLibrary () {
 		}
 		FreeLibrary (hModule);
 	} else {
-		HRESULT hr = HRESULT_FROM_WIN32 (GetLastError ());
+		hr = HRESULT_FROM_WIN32 (GetLastError ());
 		_com_error err (hr);
 		LOGERROR ("Error from GetModuleHandleEx: %s", err.ErrorMessage ());
 		return hr;
@@ -74,7 +86,7 @@ HRESULT TypeLib::LoadTypeLibrary () {
 	return S_OK;
 }
 
-HRESULT TypeLib::FindTypeInfoAndGetRecordInfo (ITypeLib *pTypeLib, GUID typeGUID, IRecordInfo **ppRecordInfo) {
+HRESULT TypeLib::FindTypeInfoAndGetRecordInfo (ITypeLib *pTypeLib, GUID typeGUID, IRecordInfo **ppRecordInfo) const {
 	for (unsigned int i = 0; i < pTypeLib->GetTypeInfoCount (); i++) {
 		HRESULT hr;
 		TYPEKIND typeKind;
@@ -84,7 +96,7 @@ HRESULT TypeLib::FindTypeInfoAndGetRecordInfo (ITypeLib *pTypeLib, GUID typeGUID
 		}
 		if (typeKind == TKIND_RECORD) {
 			ITypeInfo *pTypeInfo;
-			hr = pTypeLib->GetTypeInfo ((unsigned int)i, &pTypeInfo);
+			hr = pTypeLib->GetTypeInfo (static_cast<unsigned int>(i), &pTypeInfo);
 			if (FAILED (hr)) {
 				LOGERROR ("Error calling GetTypeInfo");
 				//free resources

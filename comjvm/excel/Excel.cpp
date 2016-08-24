@@ -1,18 +1,14 @@
 #include "stdafx.h"
 #define COMJVM_EXCEL_EXPORT
-#include "Jvm.h"
-#include "FunctionRegistry.h"
-#include "Converter.h"
-#include "GarbageCollector.h"
 #include "ExcelUtils.h"
-#include "Progress.h"
 #include "../settings/SettingsDialog.h"
 #include "../core/Settings.h"
-#include "../core/internal.h"
 #include "../utils/FileUtils.h"
 #include "Lifecycle.h"
 #include "AddinEnvironment.h"
 #include "JvmEnvironment.h"
+#include "resource.h"
+#include <comdef.h>
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -28,20 +24,15 @@ const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 
 //
 // Global Variables
 //
-HANDLE g_hInst = NULL;
-//FunctionRegistry *g_pFunctionRegistry;
-//Converter *g_pConverter;
-//TypeLib *g_pTypeLib;
-//Jvm *g_pJvm = NULL;
+HANDLE g_hInst = nullptr;
 DWORD g_dwTlsIndex = 0;
-//GarbageCollector *g_pCollector;
-//Progress *g_pProgress;
 int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
 bool g_initialized = false;
 CAddinEnvironment *g_pAddinEnv;
 CJvmEnvironment *g_pJvmEnv;
+SRWLOCK g_JvmEnvLock = SRWLOCK_INIT;
 
 ///***************************************************************************
 // DllMain()
@@ -65,10 +56,6 @@ CJvmEnvironment *g_pJvmEnv;
 //      The function returns TRUE (1) to indicate success. If, during
 //      per-process initialization, the function returns zero, 
 //      the system cancels the process.
-//
-// Comments:
-//
-// History:  Date       Author        Reason
 ///***************************************************************************
 
 BOOL APIENTRY DllMain (HANDLE hDLL,
@@ -124,7 +111,7 @@ __declspec(dllexport) void AddToolbar () {
 		XLOPER12 xlaToolRef[9];
 		XLOPER12 xlArr;
 		xlArr.xltype = xltypeMulti;
-		xlArr.val.array.columns = 8;
+		xlArr.val.array.columns = 9;
 		xlArr.val.array.rows = 1;
 		xlArr.val.array.lparray = &xlaToolRef[0];
 		xlaToolRef[0].xltype = xltypeStr;
@@ -136,17 +123,20 @@ __declspec(dllexport) void AddToolbar () {
 		xlaToolRef[3].xltype = xltypeStr;
 		xlaToolRef[3].val.str = TempStr12 (L"TRUE")->val.str;
 		xlaToolRef[4].xltype = xltypeStr;
-		xlaToolRef[4].val.str = TempStr12 (L"")->val.str;
+		xlaToolRef[4].val.str = TempStr12 (L"943")->val.str; // Gears face (face means icon in office-speak)
 		xlaToolRef[5].xltype = xltypeStr;
 		xlaToolRef[5].val.str = TempStr12 (L"Settings desc")->val.str;
 		xlaToolRef[6].xltype = xltypeStr;
 		xlaToolRef[6].val.str = TempStr12 (L"")->val.str;
 		xlaToolRef[7].xltype = xltypeStr;
 		xlaToolRef[7].val.str = TempStr12 (L"")->val.str;
+		xlaToolRef[8].xltype = xltypeStr;
+		xlaToolRef[8].val.str = TempStr12 (L"")->val.str;
 		int retVal = Excel12f (xlfAddToolbar, NULL, 2, TempStr12 (TEXT ("XL4J")), &xlArr);
 		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
-		Excel12f (xlcShowToolbar, NULL, 6, TempStr12 (L"XL4J"), TempBool12 (1),
-			TempInt12 (5), TempMissing12 (), TempMissing12 (), TempInt12 (999));
+		Excel12f (xlcShowToolbar, NULL, 10, TempStr12 (L"XL4J"), TempBool12 (1),
+			TempInt12 (5), TempMissing12 (), TempMissing12 (), TempInt12 (999), TempInt12(0), // no protection, 
+			TempBool12(TRUE), TempBool12(TRUE), TempBool12(TRUE));
 	}
 	Excel12f (xlFree, 0, 1, &xTest); 
 }
@@ -167,16 +157,43 @@ __declspec(dllexport) int Settings () {
 		LOGERROR ("Couldn not get Excel window handle");
 	}
 	ISettingsDialog *pSettingsDialog;
-	CSettingsDialogFactory::Create(new CSettings (TEXT ("inproc"), TEXT ("default"), CSettings::INIT_APPDATA), &pSettingsDialog);
-	ExcelUtils::HookExcelWindow (hwndExcel);
-	pSettingsDialog->Open (hwndExcel);
-	ExcelUtils::UnhookExcelWindow (hwndExcel);
-	// decrement reference.
-	//delete pSettingsDialog;
+	CSettings *pSettings = g_pAddinEnv->GetSettings ();
+	HRESULT hr;
+	if (SUCCEEDED (hr = CSettingsDialogFactory::Create (pSettings, &pSettingsDialog))) {
+		ExcelUtils::HookExcelWindow (hwndExcel);
+		INT_PTR nRet = pSettingsDialog->Open (hwndExcel);
+		ExcelUtils::UnhookExcelWindow (hwndExcel);
+		// Handle the return value from DoModal
+		switch (nRet) {
+		case -1:
+			LOGERROR ("Dialog box could not be created!");
+			break;
+		case IDABORT: {
+			hr = HRESULT_FROM_WIN32 (GetLastError ());
+			_com_error err (hr);
+			LOGERROR ("An error occurred in the settings dialog box: %s", err.ErrorMessage ());
+			// Do something
+		} break;
+		case IDOK:
+			LOGTRACE ("Settings OK clicked, restarting JVM");
+			MessageBox (hwndExcel, _T ("Restart Required"), _T ("You will need to restart Excel before changes take effect"), MB_OK);
+			//RestartJvm ();
+			break;
+		case IDCANCEL:
+			LOGTRACE ("Settings Cancel clicked");
+			break;
+		default:
+			LOGERROR ("LOGIC ERROR: default case triggered in Settings dialog result handler");
+			break;
+		};
+	} else {
+		_com_error err (hr);
+		LOGERROR ("Problem opening settings dialog: %s", err.ErrorMessage ());
+		MessageBox (hwndExcel, _T ("Error"), _T ("Problem opening settings dialog.  Rerun with DebugView open and check log for reason"), MB_OK);
+	}
+	// TODO: Release dialog object.
 	return 1;
 }
-
-
 
 
 ///***************************************************************************
@@ -203,45 +220,33 @@ __declspec(dllexport) int Settings () {
 //      REGISTER("EXAMPLE.XLL"), which in turn calls xlAutoOpen.
 //
 //      xlAutoOpen should:
-//
 //       - register all the functions you want to make available while this
 //         XLL is open,
-//
 //       - add any menus or menu items that this XLL supports,
-//
 //       - perform any other initialization you need, and
-//
 //       - return 1 if successful, or return 0 if your XLL cannot be opened.
 //
-// Parameters:
-//
-// Returns: 
-//
-//      int         1 on success, 0 on failure
-//
-// Comments:
-//
-// History:  Date       Author        Reason
+// Returns: int  1 on success, 0 on failure
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
+	if (XLCallVer () < (12 * 256)) {
+		HWND hWnd;
+		ExcelUtils::GetHWND (&hWnd);
+		MessageBox (hWnd, _T ("Not Supported"), _T ("Sorry, versions of Excel prior to 2007 are not supported."), MB_OK);
+		return 0;
+	}
 	if (g_initialized) {
 		return 1;
 	}
 	g_initialized = true;
+
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	LoadDLLs ();
-	// Display the progress bar
-	g_pAddinEnv = new CAddinEnvironment ();
-	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
-
-	// Register polling command that registers chunks of functions
-	g_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (TEXT ("RegisterSomeFunctions"));
-	// Schedule polling command to start in 0.1 secs.  This will reschedule itself until all functions registered.
-	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
-	// Register command to display MFC settings dialog
-	g_idSettings = ExcelUtils::RegisterCommand (TEXT ("Settings"));
-	g_idGarbageCollect = ExcelUtils::RegisterCommand (TEXT ("GarbageCollect"));
-	AddToolbar ();
+	InitAddin ();
+	InitJvm ();
+	if (ExcelUtils::IsAddinSettingEnabled (L"ShowToolbar", TRUE)) {
+		AddToolbar ();
+	}
 	FreeAllTempMemory ();
 	return 1;
 }
@@ -292,25 +297,18 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 ///***************************************************************************
 
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
-	
-	// This block first deletes all names added by xlAutoOpen or
-	// xlAutoRegister12. Next, it checks if the drop-down menu Generic still
-	// exists. If it does, it is deleted using xlfDeleteMenu. It then checks
-	// if the Test toolbar still exists. If it is, xlfDeleteToolbar is
-	// used to delete it.
-	//
-
-	delete g_pJvmEnv;
+	ShutdownJvm ();
+	ShutdownAddin ();
 	RemoveToolbar ();
 	return 1;
 }
 
-__declspec(dllexport) int WINAPI xlAutoAdd (void)
-{
+__declspec(dllexport) int WINAPI xlAutoAdd (void) {
 	XCHAR szBuf[255];
 
-	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding XL4J.XLL\n "
-		L"built on %hs at %hs", __DATE__, __TIME__);
+	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
+	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding %s.XLL\n "
+		L"built on %hs at %hs", addinName, __DATE__, __TIME__);
 
 	// Display a dialog box indicating that the XLL was successfully added //
 	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf), TempInt12 (2));
@@ -342,10 +340,13 @@ __declspec(dllexport) int WINAPI xlAutoAdd (void)
 // History:  Date       Author        Reason
 ///***************************************************************************
 
-__declspec(dllexport) int WINAPI xlAutoRemove (void)
-{
+__declspec(dllexport) int WINAPI xlAutoRemove (void) {
 	// Show a dialog box indicating that the XLL was successfully removed //
-	Excel12f (xlcAlert, 0, 2, TempStr12 (L"You have removed XL4J.XLL!"),
+	XCHAR szBuf[255];
+	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
+	wsprintfW ((LPWSTR)szBuf, L"You have removed %s.XLL successfully\n "
+		L"built on %hs at %hs", addinName, __DATE__, __TIME__);
+	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf),
 		TempInt12 (2));
 	return 1;
 }
@@ -378,8 +379,7 @@ __declspec(dllexport) int WINAPI xlAutoRemove (void)
 // History:  Date       Author        Reason
 ///***************************************************************************
 
-__declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction)
-{
+__declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction) {
 	static XLOPER12 xInfo, xIntAction;
 
 	//
@@ -390,18 +390,19 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	//
 
 	Excel12f (xlCoerce, &xIntAction, 2, xAction, TempInt12 (xltypeInt));
-
+	bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
 	if (xIntAction.val.w == 1)
 	{
 		xInfo.xltype = xltypeStr;
-		xInfo.val.str = TempStr12 (_T("XL4J"))->val.str;// L"\013Excel4J DLL";
+		
+		xInfo.val.str = TempStr12 (addinName)->val.str;// L"\013Excel4J DLL";
 	}
 	else
 	{
 		xInfo.xltype = xltypeErr;
 		xInfo.val.err = xlerrValue;
 	}
-
+	addinName.Detach (); // to prevent it being deallocated.
 	//Word of caution - returning static XLOPERs/XLOPER12s is not thread safe
 	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
 	return static_cast<LPXLOPER12>(&xInfo);
@@ -409,22 +410,41 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 
 __declspec(dllexport) int GarbageCollect () {
 	//LOGTRACE ("GarbageCollect() called.");
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockShared (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
 	g_pJvmEnv->_GarbageCollect();
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockShared (&g_JvmEnvLock);
 	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
 }
 
 __declspec(dllexport) int RegisterSomeFunctions () {
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockShared (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
 	if (g_pJvmEnv->_RegisterSomeFunctions ()) {
+		LOGTRACE ("Releasing Lock");
+		ReleaseSRWLockShared (&g_JvmEnvLock);
 		ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
 	} else {
+		LOGTRACE ("Releasing Lock");
+		ReleaseSRWLockShared (&g_JvmEnvLock);
 		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
 	}
+	
 	return 1;
 }
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	return g_pJvmEnv->_UDF (exportNumber, first, ap);
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockShared (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+	LPXLOPER12 result = g_pJvmEnv->_UDF (exportNumber, first, ap);
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockShared (&g_JvmEnvLock);
+	return result;
 }
 
 
@@ -450,23 +470,11 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 // History:  Date       Author        Reason
 ///***************************************************************************
 
-__declspec(dllexport) int WINAPI fExit (void)
-{
-	XLOPER12  xDLL,    // The name of this DLL //
-		xFunc;             // The name of the function //
-
-	//
-	// This code gets the DLL name. It then uses this along with information
-	// from g_rgFuncs[] to obtain a REGISTER.ID() for each function. The
-	// register ID is then used to unregister each function. Then the code
-	// frees the DLL name and calls xlAutoClose.
-	//
-	
+__declspec(dllexport) int WINAPI fExit (void) {
 	return xlAutoClose ();
 }
 
-__declspec(dllexport) void WINAPI xlAutoFree12 (LPXLOPER12 oper) 
-{
+__declspec(dllexport) void WINAPI xlAutoFree12 (LPXLOPER12 oper) {
 	LOGTRACE ("xlAutoFree12 called");
 	if (oper->xltype & xlbitDLLFree) {
 		FreeXLOper12T (oper);

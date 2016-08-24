@@ -215,9 +215,9 @@
     <ClInclude Include="Jvm.h" />
     <ClInclude Include="Progress.h" />
     <ClInclude Include="Lifecycle.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="TypeLib.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddinEnvironment.cpp" />
@@ -237,7 +237,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TypeLib.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.vcxproj">
@@ -266,6 +265,13 @@
     <Manifest Include="excel.xll.manifest">
       <SubType>Designer</SubType>
     </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="excel.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="settings.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

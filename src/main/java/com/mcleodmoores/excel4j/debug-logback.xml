@@ -10,7 +10,7 @@
   </appender>
   
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>excel4j-java.log</file>
+    <file>c:\excel4j-java.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
       <fileNamePattern>excel4j-java.%i.log.gz</fileNamePattern>
       <minIndex>1</minIndex>
@@ -28,7 +28,7 @@
   
   <!--appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /-->
    
-  <root level="warn">
+  <root level="info">
     <!-- appender-ref ref="FILE" /-->
     <appender-ref ref="FILE" />
   </root>

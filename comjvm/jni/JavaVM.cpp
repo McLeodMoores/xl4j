@@ -159,8 +159,36 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMW (PDWORD plJvmRef, PJAVA_VM_PARAMETERSW p
 		} else {
 			params.pszClasspath = "";
 		}
-		return JNICreateJavaVMA (plJvmRef, &params);
-	} catch (std::bad_alloc) {
+		params.cOptions = pParams->cOptions;
+		params.ppszOptions = new PCSTR[params.cOptions];
+		ZeroMemory (params.ppszOptions, params.cOptions * sizeof PCSTR); // prevent bad clean-ups
+		// now do each option in the array
+		for (int i = 0; i < pParams->cOptions; i++) {
+			int cchOption = wcslen(pParams->ppszOptions[i]);
+			char *pszOption;
+			if (cchOption) {
+				int cbOption = WideCharToMultiByte (CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->ppszOptions[i], cchOption, NULL, 0, NULL, NULL);
+				if (!cbOption) return HRESULT_FROM_WIN32 (GetLastError ());
+				pszOption = new char[cbOption + 1]; // +1 for NULL
+				if (!WideCharToMultiByte (CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->ppszOptions[i], cchOption, pszOption, cbOption + 1, NULL, NULL)) {
+					return HRESULT_FROM_WIN32 (GetLastError ());
+				}
+				pszOption[cbOption] = 0;
+				params.ppszOptions[i] = pszOption;
+			}
+		}
+		HRESULT result = JNICreateJavaVMA (plJvmRef, &params);
+		if (params.ppszOptions) {
+			// clean-up
+			for (int i = 0; i < params.cOptions; i++) {
+				if (params.ppszOptions[i]) {
+					delete[] params.ppszOptions[i];
+				}
+			}
+			delete[] params.ppszOptions;
+		}
+		return result;
+	} catch (std::bad_alloc) { // thia could leak.
 		return E_OUTOFMEMORY;
 	}
 }
@@ -169,10 +197,12 @@ struct _CreateJVM {
 	HANDLE hSemaphore;
 	JavaVM *pJvm;
 	PCSTR pszClasspath;
+	DWORD cOptions;
+	PCSTR *ppszOptions;
 };
 
 static BOOL StartJVMImpl (struct _CreateJVM *pCreateJVM, JNIEnv **ppEnv) {
-	BOOL bResult = StartJVM (&pCreateJVM->pJvm, ppEnv, pCreateJVM->pszClasspath);
+	BOOL bResult = StartJVM (&pCreateJVM->pJvm, ppEnv, pCreateJVM->pszClasspath, pCreateJVM->cOptions, pCreateJVM->ppszOptions);
 	ReleaseSemaphore (pCreateJVM->hSemaphore, 1, NULL);
 	return bResult;
 }
@@ -194,7 +224,7 @@ static BOOL StartJVMImpl (struct _CreateJVM *pCreateJVM, JNIEnv **ppEnv) {
 DWORD APIENTRY JNIMainThreadProc (LPVOID lpCreateJVM) {
 	LOGTRACE ("(%p) JNIMainThreadProc called", GetCurrentThreadId ());
 	JNIEnv *pEnv;
-	if (!StartJVMImpl ((struct _CreateJVM*)lpCreateJVM, &pEnv)) return ERROR_INVALID_ENVIRONMENT;
+	if (!StartJVMImpl (static_cast<struct _CreateJVM*>(lpCreateJVM), &pEnv)) return ERROR_INVALID_ENVIRONMENT;
 	LOGTRACE ("(%p) JNIMainThreadProc: Calling slave thread handler", GetCurrentThreadId ());
 	JNISlaveThread (pEnv, INFINITE);
 	LOGTRACE ("(%p) JNIMainThreadProc: Returned from  slave thread handler, Stopping VM", GetCurrentThreadId ());
@@ -225,9 +255,11 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 	*pdwJvmRef = 0;
 	createJVM.pJvm = NULL;
 	createJVM.pszClasspath = (pParams->cbSize >= offsetof (JAVA_VM_PARAMETERSA, pszClasspath)) ? pParams->pszClasspath : "";
+	createJVM.cOptions = pParams->cOptions;
+	createJVM.ppszOptions = pParams->ppszOptions;
 	IncrementModuleLockCount ();
 	LOGTRACE ("(%p) JNICreateJavaVMA Creating main thread", GetCurrentThreadId ());
-	HANDLE hThread = CreateThread (NULL, 0, JNIMainThreadProc, &createJVM, 0, NULL);
+	HANDLE hThread = CreateThread (NULL, 2048 * 1024, JNIMainThreadProc, &createJVM, 0, NULL);
 	HRESULT hr;
 	if (hThread != NULL) {
 		LOGTRACE ("(%p) JNICreateJavaVMA: Created main thread, waiting for semaphore", GetCurrentThreadId ());
@@ -244,7 +276,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 	CloseHandle (createJVM.hSemaphore);
 	if (SUCCEEDED (hr)) {
 		LOGTRACE ("(%p) JNICreateJavaVMA: main thread signalled successfully", GetCurrentThreadId ());
-		if (!g_oVM.EnterStartedState (createJVM.pJvm,  pdwJvmRef)) {
+		if (!g_oVM.EnterStartedState (createJVM.pJvm, pdwJvmRef)) {
 			// The JVM thread terminated
 			LOGTRACE ("(%p) JNICreateJavaVMA: VM Not in correct state, JVM thread terminated.", GetCurrentThreadId ());
 			hr = E_FAIL;

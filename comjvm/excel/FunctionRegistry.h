@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "Jvm.h"
-#include "TypeLib.h"
+#include "../helper/TypeLib.h"
 #include "local/CScanExecutor.h"
 #include <vector>
 #pragma once 

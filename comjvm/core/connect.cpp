@@ -26,7 +26,8 @@ HRESULT ComJvmCreateTemplateB (const _bstr_t &bstrIdentifier, IJvmTemplate **ppT
 	try {
 		pTemplate = new CJvmTemplate ();
 		if (!(!bstrIdentifier)) {
-			CSettings oSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrIdentifier, CSettings::MOST_LOCAL);
+			//CSettings oSettings (SETTINGS_JVM_TEMPLATE, (PCTSTR)bstrIdentifier, CSettings::MOST_LOCAL);
+			CSettings oSettings (_T ("inproc"), (PCTSTR)bstrIdentifier, CSettings::INIT_APPDATA);
 			hr = pTemplate->Load (oSettings);
 			if (FAILED (hr)) _com_raise_error (hr);
 		}

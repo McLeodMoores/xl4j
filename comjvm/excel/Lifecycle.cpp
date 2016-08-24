@@ -1,57 +1,6 @@
 #include "stdafx.h"
 #include "Excel.h"
 
-//DWORD WINAPI MarqueeTickThread (LPVOID param) {
-//	Progress *pProgress = (Progress *)param;
-//	pProgress->AddRef ();
-//	while (!g_pFunctionRegistry->IsScanComplete ()) {
-//		Sleep (300);
-//		pProgress->Increment ();
-//	}
-//	int iNumberRegistered;
-//	g_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
-//	pProgress->SetMax (iNumberRegistered);
-//	pProgress->Release ();
-//	return 0;
-//}
-//
-//DWORD WINAPI RegistryThreadFunction (LPVOID param) {
-//	LOGTRACE ("Registry thread");
-//	g_pTypeLib = new TypeLib ();
-//	g_pJvm = new Jvm ();
-//	if (!g_pJvm) {
-//		LOGERROR ("JVM global pointer is NULL");
-//	}
-//	try {
-//		g_pConverter = new Converter (g_pTypeLib);
-//	} catch (const std::exception& e) {
-//		LOGERROR ("Exception occurred");
-//		return 1;
-//	}
-//
-//	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm (), g_pTypeLib);
-//	HANDLE hThread = CreateThread (NULL, 2048 * 1024, MarqueeTickThread, (LPVOID)g_pProgress, 0, NULL);
-//	if (hThread == NULL) {
-//		LOGTRACE ("CreateThread failed %d", GetLastError ());
-//	}
-//	LOGTRACE ("Calling scan from registry thread");
-//	if (FAILED (g_pFunctionRegistry->Scan ())) {
-//		LOGERROR ("scan failed");
-//	}
-//	return 0;
-//}
-//
-//void StartRegistryThread () {
-//	XLOPER12 xWnd;
-//	Excel12f (xlGetHwnd, &xWnd, 0);
-//	DWORD dwThreadId;
-//	HANDLE hThread = CreateThread (NULL, 2048 * 1024, RegistryThreadFunction, (LPVOID)xWnd.val.w, 0, &dwThreadId);
-//	if (hThread == NULL) {
-//		LOGTRACE ("CreateThread failed %d", GetLastError ());
-//	}
-//	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xWnd);
-//}
-
 void LoadDLLs () {
 	XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
@@ -69,11 +18,52 @@ void LoadDLLs () {
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 }
 
-//void StartProgress () {
-//	HWND hWnd;
-//	ExcelUtils::GetHWND (&hWnd);
-//	g_pProgress = new Progress (); // addref
-//	g_pProgress->Open ((HWND)hWnd, (HINSTANCE)g_hInst);
-//	
-//}
+void InitAddin () {
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockExclusive (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+	g_pAddinEnv = new CAddinEnvironment ();
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+}
 
+void InitJvm () {
+	// Display the progress bar
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockExclusive (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+}
+
+void ShutdownJvm () {
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockExclusive (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+
+	delete g_pJvmEnv;
+	g_pJvmEnv = nullptr;
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+}
+
+void ShutdownAddin () {
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockExclusive (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+	delete g_pAddinEnv;
+	g_pAddinEnv = nullptr;
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+}
+
+void RestartJvm () {
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockExclusive (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+	delete g_pJvmEnv;
+	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+}

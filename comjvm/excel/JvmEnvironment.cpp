@@ -11,22 +11,29 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment
 	}
 	m_pProgress->Open (hWnd, static_cast<HINSTANCE>(g_hInst));
 	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
+	m_pCollector = nullptr; // this means an already registered GarbageCollect() command will see that the collector hasn't been created yet.
 	HANDLE hThread = CreateThread (nullptr, 2048 * 1024, MarqueeTickThread, static_cast<LPVOID>(this), 0, nullptr);
 	if (!hThread) {
 		LOGTRACE ("CreateThread (marquee tick)failed %d", GetLastError ());
 		return;
 	}
-	HANDLE hJvmThread = CreateThread (nullptr, 2048 * 1024, BackgroundJvmThread, static_cast<LPVOID>(this), 0, nullptr);
+	CloseHandle (hThread); // doesn't close the thread, just the handle
+	HANDLE hJvmThread = CreateThread (nullptr, 4096 * 1024, BackgroundJvmThread, static_cast<LPVOID>(this), 0, nullptr);
 	if (!hJvmThread) {
 		LOGTRACE ("CreateThread (background JVM) failed %d", GetLastError ());
 		return;
 	}
+	CloseHandle (hJvmThread); // doesn't close the thread, just the handle
 }
 
 CJvmEnvironment::~CJvmEnvironment () {
+	LOGTRACE ("Unregistering functions");
 	Unregister ();
+	LOGTRACE ("Releasing JVM");
 	m_pJvm->Release ();
+	LOGTRACE ("Deleteing function registry");
 	delete m_pFunctionRegistry;
+	LOGTRACE ("Deleting garbage collector");
 	delete m_pCollector;
 }
 
@@ -77,7 +84,7 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		LOGERROR ("scan failed");
 		return 1;
 	}
-	LOGTRACE ("Starting GC");
+	LOGTRACE ("Initialising GC");
 	ICollect *pCollect;
 	HRESULT hr = pThis->m_pJvm->getJvm ()->CreateCollect (&pCollect);
 	if (FAILED (hr)) {
@@ -113,7 +120,11 @@ DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {
 }
 
 void CJvmEnvironment::_GarbageCollect () const {
-	m_pCollector->Collect ();
+	// because we don't cancel outstanding future calls to the GarbageCollect command, we might get a call before the collector
+	// is initialized, so check for nullptr (we do init to nullptr in the constructor, but the full init happens in a bg thread.
+	if (m_pCollector) {
+		m_pCollector->Collect ();
+	}
 }
 
 LPXLOPER12 CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 first, va_list ap) const {
@@ -225,15 +236,6 @@ void CJvmEnvironment::Unregister () {
 	//
 	if (m_pFunctionRegistry) {
 		m_pFunctionRegistry->UnregsiterFunctions ();
-		if (g_idGarbageCollect) {
-			m_pFunctionRegistry->UnregisterFunction (_T ("GarbageCollect"), g_idGarbageCollect);
-		}
-		if (g_idRegisterSomeFunctions) {
-			m_pFunctionRegistry->UnregisterFunction (_T ("RegisterSomeFunctions"), g_idRegisterSomeFunctions);
-		}
-		if (g_idSettings) {
-			m_pFunctionRegistry->UnregisterFunction (_T ("Settings"), g_idSettings);
-		}
 	} else {
 		LOGERROR ("xlAutoClose called when function registry has not been initialised");
 	}

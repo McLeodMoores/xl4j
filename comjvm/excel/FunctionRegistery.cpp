@@ -83,6 +83,7 @@ HRESULT FunctionRegistry::Scan () {
 	::SafeArrayUnaccessData (m_pResults);
 	m_bComplete = true;
 	pFunctionInfoRecordInfo->Release ();
+	pScan->Release ();
 	return S_OK;
 }
 
@@ -266,35 +267,6 @@ HRESULT FunctionRegistry::UnregsiterFunctions () {
 		}
 	}
 	return S_OK; // should really make this a bit more subtle...
-}
-
-HRESULT FunctionRegistry::UnregisterFunction (const TCHAR *szFunctionName, int iRegisterId) {
-	HRESULT hr;
-	XLOPER12 result;
-	Excel12f (xlfUnregister, &result, 1, TempInt12 (iRegisterId));
-	if (result.xltype == xltypeErr) {
-		LOGERROR ("xlfUnregister on %s returned argument was invalid: xlErr code %d", szFunctionName, result.val.err);
-		return E_FAIL;
-	} else if (result.xltype == xltypeBool) {
-		if (result.val.xbool) {
-			LOGTRACE ("Sucessfully unregisterd function %s", szFunctionName);
-		} else {
-			LOGERROR ("Could not unregister function %s", szFunctionName);
-		}
-	}
-	Excel12f (xlfSetName, &result, 2, TempStr12 (szFunctionName), TempMissing12 ());
-	if (result.xltype == xltypeErr) {
-		LOGERROR ("xlfSetName on %s returned argument was invalid: xlErr code %d", szFunctionName, result.val.err);
-		return E_FAIL;
-	} else if (result.xltype == xltypeBool) {
-		if (result.val.xbool) {
-			LOGTRACE ("Sucessfully unset name %s", szFunctionName);
-		} else {
-			LOGERROR ("Could not unset name %s", szFunctionName);
-			return E_FAIL;
-		}
-	}
-	return S_OK;// should really make this a bit more subtle...
 }
 
 bool FunctionRegistry::IsRegistrationComplete () {

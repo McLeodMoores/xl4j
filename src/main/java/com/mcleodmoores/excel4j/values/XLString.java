@@ -53,7 +53,7 @@ public final class XLString implements XLValue {
       if (split.length != 2) {
         throw new Excel4JRuntimeException("String has object prefix character but cannot split on hyphen");
       }
-      return XLObject.of(split[0], Long.parseLong(split[1]));
+      return XLObject.of(split[0], Long.parseUnsignedLong(split[1]));
     }
     throw new Excel4JRuntimeException("XLString is not object handle");
   }

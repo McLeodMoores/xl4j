@@ -2,17 +2,18 @@
 #include "comjvm/local.h"
 #include "comjvm/core.h"
 #include "local/CScanExecutor.h"
+#include "../helper/TypeLib.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace localtest {
 
-	TEST_CLASS (String) {
+	TEST_CLASS (CScanTest) {
 private:
 	IJvmConnector *m_pConnector;
 	IJvm *m_pJvm;
 public:
-
+	
 	TEST_METHOD_INITIALIZE (Connect) {
 		m_pConnector = NULL;
 		m_pJvm = NULL;
@@ -64,19 +65,23 @@ public:
 	TEST_METHOD_CLEANUP (Disconnect) {
 		if (m_pJvm) m_pJvm->Release ();
 		if (m_pConnector) m_pConnector->Release ();
+		LOGTRACE ("Disconnect finishing up.");
+		exit (0);
 	}
 
 	TEST_METHOD (BasicScan) {
 		IScan *pScan;
 		Assert::AreEqual (S_OK, m_pJvm->CreateScan (&pScan));
 		HRESULT hr; 
-		IRecordInfo *pFunctionInfoRecordInfo = NULL;
-		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
+		IRecordInfo *pFunctionInfoRecordInfo;
+		TypeLib *pTypeLib = new TypeLib ();
+		if (FAILED (hr = pTypeLib->GetFunctionInfoRecInfo(&pFunctionInfoRecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			LOGTRACE ("Failed to get RecordInfoFromGuids %s", errMsg);
+			LOGTRACE ("Failed to get record info from TypeLib %s", errMsg);
 			Assert::Fail (); 
 		}
+		delete pTypeLib;
 		SAFEARRAY *results;
 		SAFEARRAYBOUND bounds;
 		bounds.cElements = 100;

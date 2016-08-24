@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Excel.h"
 #include "ExcelUtils.h"
 
 void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
@@ -118,7 +119,7 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 			LOGERROR ("Error registering command %s, xltypeErr value was %d", wsCommandName, retVal.val.err);
 			return 0;
 		} else if (retVal.xltype == xltypeNum) {
-			return retVal.val.num;
+			return static_cast<int>(retVal.val.num);
 		} else {
 			LOGERROR ("LOGIC ERROR: Unexpected return value registering command %s, returned value was", wsCommandName);
 			PrintXLOPER (&retVal);
@@ -128,6 +129,37 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 		LOGERROR ("Registration failed");
 		return 1;
 	}
+}
+
+
+
+HRESULT ExcelUtils::UnregisterFunction (const TCHAR *szFunctionName, int iRegisterId) {
+	HRESULT hr;
+	XLOPER12 result;
+	Excel12f (xlfUnregister, &result, 1, TempInt12 (iRegisterId));
+	if (result.xltype == xltypeErr) {
+		LOGERROR ("xlfUnregister on %s returned argument was invalid: xlErr code %d", szFunctionName, result.val.err);
+		return E_FAIL;
+	} else if (result.xltype == xltypeBool) {
+		if (result.val.xbool) {
+			LOGTRACE ("Sucessfully unregisterd function %s", szFunctionName);
+		} else {
+			LOGERROR ("Could not unregister function %s", szFunctionName);
+		}
+	}
+	Excel12f (xlfSetName, &result, 2, TempStr12 (szFunctionName), TempMissing12 ());
+	if (result.xltype == xltypeErr) {
+		LOGERROR ("xlfSetName on %s returned argument was invalid: xlErr code %d", szFunctionName, result.val.err);
+		return E_FAIL;
+	} else if (result.xltype == xltypeBool) {
+		if (result.val.xbool) {
+			LOGTRACE ("Sucessfully unset name %s", szFunctionName);
+		} else {
+			LOGERROR ("Could not unset name %s", szFunctionName);
+			return E_FAIL;
+		}
+	}
+	return S_OK;// should really make this a bit more subtle...
 }
 
 
@@ -260,6 +292,26 @@ BOOL GetHwnd (HWND * pHwnd) {
 	}
 	return FALSE;
 }
+
+BOOL ExcelUtils::IsAddinSettingEnabled (const wchar_t *wsSettingName, const BOOL bDefaultIfMissing) {
+	_std_string_t settingName = _std_string_t (wsSettingName);
+	const _bstr_t value = g_pAddinEnv->GetSettings ()->GetString (ADDIN_SETTINGS, settingName);
+	if (value.length () == 0) {
+		return bDefaultIfMissing;
+	}
+	return value == _bstr_t("Enabled");
+}
+
+bstr_t ExcelUtils::GetAddinSetting (const wchar_t *wsSettingName, const wchar_t* wsDefaultIfMissing) {
+	_std_string_t settingName = _std_string_t (wsSettingName);
+	const _bstr_t value = g_pAddinEnv->GetSettings ()->GetString (ADDIN_SETTINGS, settingName);
+	if (value.length () == 0) {
+		return wsDefaultIfMissing;
+	}
+	return value;
+}
+
+const wchar_t *ExcelUtils::ADDIN_SETTINGS = L"AddinSettings";
 
 void ExcelUtils::PrintExcel12Error (int err) {
 	switch (err) {

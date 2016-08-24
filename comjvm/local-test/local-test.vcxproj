@@ -213,6 +213,7 @@
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="ExternalJarsTest.cpp" />
     <ClCompile Include="filesystem.cpp" />
+    <ClCompile Include="JvmCycleTest.cpp" />
     <ClCompile Include="Metadata.cpp" />
     <ClCompile Include="RecordInfoTest.cpp" />
     <ClCompile Include="SafeArrayTest.cpp" />

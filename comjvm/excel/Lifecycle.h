@@ -1,5 +1,7 @@
 #include "stdafx.h"
-void StartRegistryThread ();
 void LoadDLLs ();
-void StartProgress ();
-void Unregister ();
+void InitAddin ();
+void InitJvm ();
+void ShutdownJvm ();
+void ShutdownAddin ();
+void RestartJvm (); // Restart != Shutdown(); Init();

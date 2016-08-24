@@ -281,6 +281,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\core\core.vcxproj">
+      <Project>{9e596700-1153-46a5-b3b8-ca386ffd9b16}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\utils\utils.vcxproj">
       <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
     </ProjectReference>

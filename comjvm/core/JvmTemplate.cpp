@@ -11,6 +11,7 @@
 #include "JvmOptionEntries.h"
 #include "core.h"
 #include "internal.h"
+#include <atlcomcli.h>
 
 /// <summary>Creates a new instance.</summary>
 CJvmTemplate::CJvmTemplate ()
@@ -113,10 +114,58 @@ HRESULT CJvmTemplate::LoadOptions (const CSettings &oSettings) {
 	try {
 		long l = 0;
 		_std_string_t strOptions (JVM_TEMPLATE_OPTIONS);
+		// Normal options, just copied from what the user specifies.
 		_bstr_t bstr;
 		while (!(!(bstr = oSettings.GetString (strOptions, l++)))) {
 			if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
 			HRESULT hr = m_pOptions->Add (bstr); // copy should increase count.
+			if (FAILED (hr)) return hr;
+		}
+		// Auto options - these are precanned options so the user doesn't have to remember them.
+		_std_string_t strAutoOptions (JVM_TEMPLATE_AUTO_OPTIONS);
+		_bstr_t bstrEnabled ("Enabled");
+		_std_string_t strDebug (JVM_TEMPLATE_AUTO_OPTIONS_DEBUG);
+		if (!(!(bstr = oSettings.GetString (strAutoOptions, strDebug)))) {
+			if (bstr == bstrEnabled) {
+				if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
+				HRESULT hr = m_pOptions->Add (_bstr_t (_T ("-Xdebug"))); // copy should increase count.
+				if (FAILED (hr)) return hr;
+			}
+		}
+		_std_string_t strCheckJNI (JVM_TEMPLATE_AUTO_OPTIONS_CHECK_JNI);
+		if (!(!(bstr = oSettings.GetString (strAutoOptions, strCheckJNI)))) {
+			if (bstr == bstrEnabled) {
+				if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
+				HRESULT hr = m_pOptions->Add (_bstr_t (_T ("-Xcheck:jni"))); // copy should increase count.
+				if (FAILED (hr)) return hr;
+			}
+		}
+		_std_string_t strMaxHeap (JVM_TEMPLATE_AUTO_OPTIONS_MAX_HEAP);
+		if (!(!(bstr = oSettings.GetString (strAutoOptions, strMaxHeap)))) {
+			if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
+			_bstr_t maxHeap (_T ("-Xmx"));
+			maxHeap += bstr;
+			maxHeap += _bstr_t ("m"); // megabytes
+			HRESULT hr = m_pOptions->Add (maxHeap); // copy should increase count.
+			if (FAILED (hr)) return hr;
+		}
+		_std_string_t strRemoteDebug (JVM_TEMPLATE_AUTO_OPTIONS_REMOTE_DEBUG);
+		if (!(!(bstr = oSettings.GetString (strAutoOptions, strRemoteDebug)))) {
+			if (bstr == bstrEnabled) {
+				if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
+				HRESULT hr = m_pOptions->Add (_bstr_t (_T ("-Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n"))); // copy should increase count.
+				if (FAILED (hr)) return hr;
+			}
+		}
+		_std_string_t strLogback (JVM_TEMPLATE_AUTO_OPTIONS_LOGBACK);
+		if (!(!(bstr = oSettings.GetString (strAutoOptions, strMaxHeap)))) {
+			if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
+			_bstr_t checkJni (_T ("-Dlogback.configurationFile=com/mcleodmoores/excel4j/"));
+			CComBSTR logLevel (bstr.GetBSTR()); // because it has a ToLower method...
+			logLevel.ToLower ();
+			checkJni += _bstr_t(logLevel.Detach());
+			checkJni += _bstr_t ("-logback.xml"); // megabytes
+			HRESULT hr = m_pOptions->Add (checkJni); // copy should increase count.
 			if (FAILED (hr)) return hr;
 		}
 		return S_OK;

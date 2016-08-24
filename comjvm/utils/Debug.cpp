@@ -42,7 +42,7 @@ void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sF
 	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
 	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 		wchar_t formatBuffer[LINE_MAX];
-		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%-%dS %%%dd %%-%dS %%s"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
+		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%-%dS %%%dd %%-%dS %%s\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
 		if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 			wchar_t finalBuffer[LINE_MAX];
 			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, sFileName, iLineNum, sFunctionName, buffer);

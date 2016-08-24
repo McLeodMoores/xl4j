@@ -3,8 +3,9 @@
 #include "Jvm.h"
 #include "helper/ClasspathUtils.h"
 #include "../utils/FileUtils.h"
+#include <core/Settings.h>
 
-Jvm::Jvm () {
+Jvm::Jvm () : m_lRefCount (1) {
 
 	HRESULT hr = ComJvmCreateLocalConnector (&m_pConnector);
 	if (FAILED (hr)) {
@@ -23,11 +24,12 @@ Jvm::Jvm () {
 
 	IJvmTemplate *pTemplate;
 
-	hr = ComJvmCreateTemplate (NULL, &pTemplate);
+	hr = ComJvmCreateTemplate (TEXT("default"), &pTemplate);
 	if (FAILED (hr)) {
 		LOGERROR ("could not create template");
 		_com_raise_error (hr);
 	} else {
+		pTemplate->AddRef ();
 		LOGTRACE ("Created template");
 	}
 	IClasspathEntries *entries;
@@ -37,6 +39,7 @@ Jvm::Jvm () {
 		_com_raise_error (hr);
 	} else {
 		LOGTRACE ("Got classpath entries");
+		entries->AddRef ();
 	}
 	wchar_t szLibPath[MAX_PATH];
 	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szLibPath, MAX_PATH, TEXT ("..\\lib\\")))) {
@@ -52,7 +55,7 @@ Jvm::Jvm () {
 	}
 	LOGTRACE ("Calling Classpathutils::AddEntries with %s", szXL4JPath);
 	ClasspathUtils::AddEntry (entries, szXL4JPath);
-	
+	// Load settings.
 	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
 	if (FAILED (hr)) {
 		_com_error err (hr);
@@ -60,6 +63,7 @@ Jvm::Jvm () {
 		LOGTRACE ("could not create JVM: %s", errMsg);
 		_com_raise_error (hr);
 	}
+	//m_pJvm->AddRef ();
 	LOGTRACE ("Created JVM!");
 	m_pConnector->Unlock ();
 	LOGTRACE ("Unlocked connector");
@@ -71,10 +75,19 @@ Jvm::Jvm () {
 	} else {
 		LOGTRACE ("Released template");
 	}
+	hr = entries->Release ();
+	if (FAILED (hr)) {
+		LOGERROR ("Could not release classpath entries");
+		_com_raise_error (hr);
+	} else {
+		LOGTRACE ("Released classpath entries");
+	}
 }
 
 Jvm::~Jvm () {
+	LOGTRACE ("Releasing JVM");
 	m_pJvm->Release ();
+	LOGTRACE ("Releasing Connector");
 	m_pConnector->Release ();
 }
 
@@ -84,6 +97,11 @@ ULONG Jvm::AddRef () {
 
 ULONG Jvm::Release () {
 	ULONG lResult = InterlockedDecrement (&m_lRefCount);
-	if (!lResult) delete this;
+	if (!lResult) {
+		LOGTRACE ("Refcount 0, deleting this");
+		delete this;
+	} else {
+		LOGTRACE ("Refcount not 0, it's %d", m_lRefCount);
+	}
 	return lResult;
 }

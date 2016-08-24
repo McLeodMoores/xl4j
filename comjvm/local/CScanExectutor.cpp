@@ -16,7 +16,7 @@ CScanExecutor::~CScanExecutor () {
 	m_pOwner->Release ();
 }
 
-
+#define CHECK_EXCEPTION() if (pEnv->ExceptionCheck ()) { LOGERROR("EXCEPTION!"); Debug::printException (pEnv, pEnv->ExceptionOccurred ()); return E_FAIL; } 0
 
 HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 	HRESULT hResult = S_OK;
@@ -25,25 +25,31 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jclass jcExcelFactory = pEnv->FindClass ("com/mcleodmoores/excel4j/ExcelFactory");
 		jmethodID jmExcelFactory_Instance = pEnv->GetStaticMethodID (jcExcelFactory, "getInstance", "()Lcom/mcleodmoores/excel4j/Excel;");
 		jobject joExcel = pEnv->CallStaticObjectMethod (jcExcelFactory, jmExcelFactory_Instance);
+		CHECK_EXCEPTION ();
 		LOGTRACE ("Got Excel object %p", joExcel);
 		jclass jcExcel = pEnv->FindClass ("com/mcleodmoores/excel4j/Excel");
-
+		CHECK_EXCEPTION ();
 		jmethodID jmExcel_GetExcelCallback = pEnv->GetMethodID (jcExcel, "getExcelCallback", "()Lcom/mcleodmoores/excel4j/callback/ExcelCallback;");
 		jobject joExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetExcelCallback);
+		CHECK_EXCEPTION ();
 		LOGTRACE ("Got Excel callback object %p", joExcelCallback);
 		jclass jcFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/excel4j/FunctionRegistry");
 		jmethodID jmFunctionRegistry_RegisterFunctions = pEnv->GetMethodID (jcFunctionRegistry, "registerFunctions", "(Lcom/mcleodmoores/excel4j/callback/ExcelCallback;)V");
 		jmethodID jmExcel_GetFunctionRegistry = pEnv->GetMethodID (jcExcel, "getFunctionRegistry", "()Lcom/mcleodmoores/excel4j/FunctionRegistry;");
 		jobject joFunctionRegistry = pEnv->CallObjectMethod (joExcel, jmExcel_GetFunctionRegistry);
+		CHECK_EXCEPTION ();
 		LOGTRACE ("Calling registerFunctions...");
 		pEnv->CallVoidMethod (joFunctionRegistry, jmFunctionRegistry_RegisterFunctions, joExcelCallback);
 		LOGTRACE ("...Returned.");
+		CHECK_EXCEPTION();
 		jmethodID jmExcel_GetLowLevelExcelCallback = pEnv->GetMethodID (jcExcel, "getLowLevelExcelCallback", "()Lcom/mcleodmoores/excel4j/lowlevel/LowLevelExcelCallback;");
 		jobject joLowLevelExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetLowLevelExcelCallback);
+		CHECK_EXCEPTION ();
 		LOGTRACE ("Got LowLevelExcelCallback %p", joLowLevelExcelCallback);
 		jclass jcXLLAccumulatingFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry");
 		jmethodID jmXLLAccumulatingFunctionRegistry_GetEntries = pEnv->GetMethodID (jcXLLAccumulatingFunctionRegistry, "getEntries", "()[Lcom/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;");
 		jobjectArray jaEntries = (jobjectArray) pEnv->CallObjectMethod (joLowLevelExcelCallback, jmXLLAccumulatingFunctionRegistry_GetEntries);
+		CHECK_EXCEPTION ();
 		LOGTRACE ("Got entries array %p", jaEntries);
 		long cEntries = pEnv->GetArrayLength (jaEntries);
 		LOGTRACE ("Got %d entries", cEntries);

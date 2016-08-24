@@ -217,4 +217,8 @@ GarbageCollector::GarbageCollector (ICollect *pCollector) {
 	SetMaxTime (10);
 }
 
+GarbageCollector::~GarbageCollector () {
+	m_pCollector->Release ();
+}
+
 #include "../utils/TraceOn.h"
