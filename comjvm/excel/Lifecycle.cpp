@@ -16,13 +16,18 @@ void LoadDLLs () {
 		}
 	}
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
+	HMODULE hModule;
+	// set this module to never unload.
+	GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(LoadDLLs), &hModule);
 }
 
 void InitAddin () {
 	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockExclusive (&g_JvmEnvLock);
 	LOGTRACE ("Lock Acquired");
-	g_pAddinEnv = new CAddinEnvironment ();
+	if (!g_pAddinEnv) {
+		g_pAddinEnv = new CAddinEnvironment ();
+	}
 	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockExclusive (&g_JvmEnvLock);
 }

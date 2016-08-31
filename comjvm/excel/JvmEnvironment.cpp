@@ -33,8 +33,12 @@ CJvmEnvironment::~CJvmEnvironment () {
 	m_pJvm->Release ();
 	LOGTRACE ("Deleteing function registry");
 	delete m_pFunctionRegistry;
+	m_pFunctionRegistry = nullptr;
 	LOGTRACE ("Deleting garbage collector");
 	delete m_pCollector;
+	m_pCollector = nullptr;
+	m_pProgress->Release ();
+	m_pProgress = nullptr;
 }
 
 BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
@@ -105,18 +109,23 @@ DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {
 	}
 	CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
 	Progress *pProgress = pThis->m_pProgress;
-	//pProgress->AddRef ();
-	while (pThis->m_pFunctionRegistry && !pThis->m_pFunctionRegistry->IsScanComplete ()) {
-		Sleep (500);
-		pProgress->Increment ();
+	if (pProgress) {
+		//pProgress->AddRef ();
+		while (pThis->m_pFunctionRegistry && !pThis->m_pFunctionRegistry->IsScanComplete ()) {
+			Sleep (500);
+			pProgress->Increment ();
+		}
+		int iNumberRegistered;
+		if (pThis->m_pFunctionRegistry) {
+			pThis->m_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
+			pProgress->SetMax (iNumberRegistered);
+			pProgress->Release ();
+		}
+		return 0;
+	} else {
+		LOGERROR ("MarqueeTickThread has come across NULL pointer in m_pProgress");
+		return 1;
 	}
-	int iNumberRegistered;
-	if (pThis->m_pFunctionRegistry) {
-		pThis->m_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
-		pProgress->SetMax (iNumberRegistered);
-		pProgress->Release ();
-	}
-	return 0;
 }
 
 void CJvmEnvironment::_GarbageCollect () const {

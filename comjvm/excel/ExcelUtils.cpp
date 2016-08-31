@@ -306,7 +306,7 @@ bstr_t ExcelUtils::GetAddinSetting (const wchar_t *wsSettingName, const wchar_t*
 	_std_string_t settingName = _std_string_t (wsSettingName);
 	const _bstr_t value = g_pAddinEnv->GetSettings ()->GetString (ADDIN_SETTINGS, settingName);
 	if (value.length () == 0) {
-		return wsDefaultIfMissing;
+		return _bstr_t(wsDefaultIfMissing);
 	}
 	return value;
 }

@@ -16,6 +16,7 @@ EXPORTS
 	GarbageCollect
 	RegisterSomeFunctions
 	Settings
+	g_shudown DATA
 	UDF
 	UDF_0
 	UDF_1

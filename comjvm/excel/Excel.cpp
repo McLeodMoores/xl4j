@@ -30,8 +30,9 @@ int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
 bool g_initialized = false;
-CAddinEnvironment *g_pAddinEnv;
-CJvmEnvironment *g_pJvmEnv;
+bool g_shudown = false;
+CAddinEnvironment *g_pAddinEnv = nullptr;
+CJvmEnvironment *g_pJvmEnv = nullptr;
 SRWLOCK g_JvmEnvLock = SRWLOCK_INIT;
 
 ///***************************************************************************
@@ -235,6 +236,10 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		MessageBox (hWnd, _T ("Not Supported"), _T ("Sorry, versions of Excel prior to 2007 are not supported."), MB_OK);
 		return 0;
 	}
+	if (g_shudown) {
+		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
+		return 0;
+	}
 	if (g_initialized) {
 		return 1;
 	}
@@ -300,15 +305,21 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	ShutdownJvm ();
 	ShutdownAddin ();
 	RemoveToolbar ();
+	g_shudown = true;
 	return 1;
 }
 
 __declspec(dllexport) int WINAPI xlAutoAdd (void) {
+	if (g_shudown) {
+		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
+		return 0;
+	}
 	XCHAR szBuf[255];
-
+	InitAddin ();
 	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
+	LOGTRACE ("Add-in name is %s", static_cast<wchar_t*>(addinName));
 	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding %s.XLL\n "
-		L"built on %hs at %hs", addinName, __DATE__, __TIME__);
+		L"built on %hs at %hs", static_cast<wchar_t*>(addinName), __DATE__, __TIME__);
 
 	// Display a dialog box indicating that the XLL was successfully added //
 	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf), TempInt12 (2));
@@ -344,8 +355,9 @@ __declspec(dllexport) int WINAPI xlAutoRemove (void) {
 	// Show a dialog box indicating that the XLL was successfully removed //
 	XCHAR szBuf[255];
 	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
+	LOGTRACE ("Add-in name is %s", static_cast<wchar_t*>(addinName));
 	wsprintfW ((LPWSTR)szBuf, L"You have removed %s.XLL successfully\n "
-		L"built on %hs at %hs", addinName, __DATE__, __TIME__);
+		L"built on %hs at %hs.\nYou should consider restarting Excel to free all resources.", static_cast<wchar_t*>(addinName), __DATE__, __TIME__);
 	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf),
 		TempInt12 (2));
 	return 1;
@@ -388,7 +400,8 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	// it returns a string representing the long name. If it receives 
 	// anything else, it returns a #VALUE! error.
 	//
-
+	LoadDLLs ();
+	InitAddin ();
 	Excel12f (xlCoerce, &xIntAction, 2, xAction, TempInt12 (xltypeInt));
 	bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
 	if (xIntAction.val.w == 1)
@@ -410,11 +423,11 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 
 __declspec(dllexport) int GarbageCollect () {
 	//LOGTRACE ("GarbageCollect() called.");
-	LOGTRACE ("Acquiring Lock");
+//	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
+//	LOGTRACE ("Lock Acquired");
 	g_pJvmEnv->_GarbageCollect();
-	LOGTRACE ("Releasing Lock");
+//	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockShared (&g_JvmEnvLock);
 	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
@@ -438,11 +451,11 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 }
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	LOGTRACE ("Acquiring Lock");
+//	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
+//	LOGTRACE ("Lock Acquired");
 	LPXLOPER12 result = g_pJvmEnv->_UDF (exportNumber, first, ap);
-	LOGTRACE ("Releasing Lock");
+//	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockShared (&g_JvmEnvLock);
 	return result;
 }
