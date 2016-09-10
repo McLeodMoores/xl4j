@@ -106,33 +106,56 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 }
 
 __declspec(dllexport) void AddToolbar () {
+	IPicture *pIcon;
+	PICTDESC icon;
+	ZeroMemory (&icon, sizeof (icon));
+	icon.cbSizeofstruct = sizeof (icon);
+	icon.picType = PICTYPE_BITMAP;
+	HICON hIcon = LoadIcon (static_cast<HMODULE>(g_hInst), MAKEINTRESOURCE (IDI_SETTINGSICON));
+	if (!hIcon) {
+		_com_error err (HRESULT_FROM_WIN32 (GetLastError ()));
+		LOGERROR ("Couldn't load icon: %s", err.ErrorMessage());
+	}
+	ICONINFO iconInfo;
+	GetIconInfo (hIcon, &iconInfo);
+	HRESULT hr;
+	if (FAILED(hr = OleCreatePictureIndirect (&icon, IID_IPicture, FALSE, (PVOID*)&pIcon))) {
+		_com_error err (hr);
+		LOGERROR ("Problem creating picture: %s", err.ErrorMessage());
+	}
 	XLOPER12 xTest;
 	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
 	if (xTest.xltype == xltypeErr) {
-		XLOPER12 xlaToolRef[9];
+		const int ROWS = 1;
+		XLOPER12 xlaToolRef[9 * ROWS];
 		XLOPER12 xlArr;
 		xlArr.xltype = xltypeMulti;
 		xlArr.val.array.columns = 9;
-		xlArr.val.array.rows = 1;
+		xlArr.val.array.rows = ROWS;
 		xlArr.val.array.lparray = &xlaToolRef[0];
-		xlaToolRef[0].xltype = xltypeStr;
-		xlaToolRef[0].val.str = TempStr12 (L"211")->val.str;
-		xlaToolRef[1].xltype = xltypeStr;
-		xlaToolRef[1].val.str = TempStr12 (L"Settings")->val.str;
-		xlaToolRef[2].xltype = xltypeStr;
-		xlaToolRef[2].val.str = TempStr12 (L"FALSE")->val.str;;
-		xlaToolRef[3].xltype = xltypeStr;
-		xlaToolRef[3].val.str = TempStr12 (L"TRUE")->val.str;
-		xlaToolRef[4].xltype = xltypeStr;
-		xlaToolRef[4].val.str = TempStr12 (L"943")->val.str; // Gears face (face means icon in office-speak)
-		xlaToolRef[5].xltype = xltypeStr;
-		xlaToolRef[5].val.str = TempStr12 (L"Settings desc")->val.str;
-		xlaToolRef[6].xltype = xltypeStr;
-		xlaToolRef[6].val.str = TempStr12 (L"")->val.str;
-		xlaToolRef[7].xltype = xltypeStr;
-		xlaToolRef[7].val.str = TempStr12 (L"")->val.str;
-		xlaToolRef[8].xltype = xltypeStr;
-		xlaToolRef[8].val.str = TempStr12 (L"")->val.str;
+		for (int i = 0; i < ROWS; i++) {
+			int j = i * 9;
+			xlaToolRef[j + 0].xltype = xltypeStr;
+			xlaToolRef[j + 0].val.str = TempStr12 (L"211")->val.str;
+			xlaToolRef[j + 1].xltype = xltypeStr;
+			xlaToolRef[j + 1].val.str = TempStr12 (L"Settings")->val.str;
+			xlaToolRef[j + 2].xltype = xltypeStr;
+			xlaToolRef[j + 2].val.str = TempStr12 (L"FALSE")->val.str;;
+			xlaToolRef[j + 3].xltype = xltypeStr;
+			xlaToolRef[j + 3].val.str = TempStr12 (L"TRUE")->val.str;
+			xlaToolRef[j + 4].xltype = xltypeInt;
+			int rnd = rand ();
+			xlaToolRef[j + 4].val.w = rnd;// TempStr12 (L"943")->val.str; // Gears face (face means icon in office-speak)
+			LOGTRACE ("%d", rnd);
+			xlaToolRef[j + 5].xltype = xltypeStr;
+			xlaToolRef[j + 5].val.str = TempStr12 (L"Settings desc")->val.str;
+			xlaToolRef[j + 6].xltype = xltypeStr;
+			xlaToolRef[j + 6].val.str = TempStr12 (L"")->val.str;
+			xlaToolRef[j + 7].xltype = xltypeStr;
+			xlaToolRef[j + 7].val.str = TempStr12 (L"")->val.str;
+			xlaToolRef[j + 8].xltype = xltypeStr;
+			xlaToolRef[j + 8].val.str = TempStr12 (L"")->val.str;
+		}
 		int retVal = Excel12f (xlfAddToolbar, NULL, 2, TempStr12 (TEXT ("XL4J")), &xlArr);
 		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
 		Excel12f (xlcShowToolbar, NULL, 10, TempStr12 (L"XL4J"), TempBool12 (1),
@@ -247,6 +270,9 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	LoadDLLs ();
+	wchar_t buf[MAX_PATH + 1];
+	GetCurrentDirectoryW (MAX_PATH, buf);
+	LOGTRACE ("CWD = %s", buf);
 	InitAddin ();
 	InitJvm ();
 	if (ExcelUtils::IsAddinSettingEnabled (L"ShowToolbar", TRUE)) {

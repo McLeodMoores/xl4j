@@ -60,11 +60,15 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
       }
       final XLObject object = (XLObject) args[0];
       final Object obj = _heap.getObject(object.getHandle());
+      if (obj == null) {
+        LOGGER.error("Object handle was invalid, returning XLError.Ref");
+        return XLError.Ref;
+      }
       final XLValue[] newArgs = new XLValue[args.length - 1];
       System.arraycopy(args, 1, newArgs, 0, args.length - 1);
       return methodInvoker.invoke(obj, newArgs);
     } catch (final Exception e) {
-      LOGGER.info("Exception occurred while invoking method, returning XLError: {}", e.getMessage());
+      LOGGER.info("Exception occurred while invoking method, returning XLError", e);
       return XLError.Null;
     }
   }
