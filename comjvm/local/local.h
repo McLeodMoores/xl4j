@@ -11,7 +11,7 @@
 # define COMJVM_LOCAL_API __declspec(dllimport) __stdcall
 #endif /* ifndef COMJVM_LOCAL_API */
 
-#include "core_h.h"
+#include "../core/core_h.h"
 
 #ifdef __cplusplus
 extern "C" {

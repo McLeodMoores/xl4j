@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core_h.h"
+#include "../core/core.h"
 
 /// <summary>Partial implementation of IJvm.</summary>
 class CAbstractJvm : public IJvm {

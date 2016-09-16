@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core_h.h"
+#include "../core/core_h.h"
 
 extern volatile long g_lActiveObjects;
 

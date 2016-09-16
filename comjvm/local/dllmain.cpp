@@ -6,7 +6,7 @@
  */
 
 #include "stdafx.h"
-#include "core_h.h"
+#include "../core/core_h.h"
 #include "local_h.h"
 #include "internal.h"
 #include "JvmConnector.h"

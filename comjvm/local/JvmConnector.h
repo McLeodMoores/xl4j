@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core_h.h"
+#include "../core/core_h.h"
 #include "core/InstanceHolder.h"
 
 /// <summary>Factory for creating CJvmConnector instances.</summary>

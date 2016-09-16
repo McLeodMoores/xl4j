@@ -166,7 +166,7 @@ HRESULT CClasspathEntries::IsCompatible (IClasspathEntries *pLeft, IClasspathEnt
 	try {
 		long lCount, lIndex;
 		if (FAILED (hr = pLeft->get_Count (&lCount))) return hr;
-		std::hash_set<_std_string_t> oNames;
+		std::unordered_set<_std_string_t> oNames;
 		for (lIndex = 1; lIndex <= lCount; lIndex++) {
 			IClasspathEntry *pEntry;
 			if (FAILED (hr = pLeft->get_Item (lIndex, &pEntry))) return hr;
@@ -174,7 +174,7 @@ HRESULT CClasspathEntries::IsCompatible (IClasspathEntries *pLeft, IClasspathEnt
 			pEntry->get_Name (&bstr);
 			pEntry->Release ();
 			_bstr_t bstrName (bstr, FALSE);
-			oNames.insert (std::hash_set<_std_string_t>::value_type ((PCTSTR)bstrName));
+			oNames.insert (std::unordered_set<_std_string_t>::value_type ((PCTSTR)bstrName));
 		}
 		if (FAILED (hr = pRight->get_Count (&lCount))) return hr;
 		for (lIndex = 1; lIndex <= lCount; lIndex++) {

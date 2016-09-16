@@ -11,7 +11,7 @@
 #endif /* ifndef COMJVM_DEBUG_API */
 
 #include <strsafe.h>
-#include "jni.h"
+#include <jni.h>
 #include <string>
 //#include <xlcall.h>
 

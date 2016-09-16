@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core_h.h"
+#include "../core/core_h.h"
 
 class CFileWriter : public IFileWriter {
 private:

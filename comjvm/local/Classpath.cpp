@@ -58,7 +58,7 @@ public:
 /// <summary>Fetches the components from the classpath.</summary>
 ///
 /// <returns>Classpath components, in the order they should be present on the path.</returns>
-std::list<const _std_string_t> CClasspath::GetPathComponents () const {
+std::list<_std_string_t> CClasspath::GetPathComponents () const {
 	CCriticalSectionLock oLock (&m_cs);
 	return m_astrPath;
 }
@@ -72,14 +72,14 @@ std::list<const _std_string_t> CClasspath::GetPathComponents () const {
 PTSTR CClasspath::GetPath () const {
 	CCriticalSectionLock oLock (&m_cs);
 	size_t cch = 0;
-	for (std::list<const _std_string_t>::const_iterator itr = m_astrPath.begin (), end = m_astrPath.end (); itr != end; itr++) {
+	for (std::list<_std_string_t>::const_iterator itr = m_astrPath.begin (), end = m_astrPath.end (); itr != end; itr++) {
 		cch += itr->length () + 1;
 	}
 	if (!cch) cch++;
 	PTSTR pszPath = new TCHAR[cch];
 	bool bFirst = true;
 	PTSTR psz = pszPath;
-	for (std::list<const _std_string_t>::const_iterator itr = m_astrPath.begin (), end = m_astrPath.end (); itr != end; itr++) {
+	for (std::list<_std_string_t>::const_iterator itr = m_astrPath.begin (), end = m_astrPath.end (); itr != end; itr++) {
 		if (bFirst) {
 			bFirst = false;
 		} else {

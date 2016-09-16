@@ -106,7 +106,7 @@ private:
 	DWORD m_dwLastUse;
 	DWORD m_dwJvm;
 	GUID m_guid;
-	std::list<const _std_string_t> m_astrClasspath;
+	std::list<_std_string_t> m_astrClasspath;
 
 	HRESULT CreateJvmWrapper (IJvm **ppJvm) {
 		HRESULT hr;
@@ -116,7 +116,7 @@ private:
 		try {
 			if (FAILED (hr = ComJvmCreateTemplate (NULL, &pTemplate))) _com_raise_error (hr);
 			if (FAILED (hr = pTemplate->get_Classpath (&pClasspath))) _com_raise_error (hr);
-			for (std::list<const _std_string_t>::iterator itr = m_astrClasspath.begin (), end = m_astrClasspath.end (); itr != end; itr++) {
+			for (std::list<_std_string_t>::iterator itr = m_astrClasspath.begin (), end = m_astrClasspath.end (); itr != end; itr++) {
 				if (FAILED (hr = ComJvmCreateClasspathEntry (itr->data (), &pEntry))) _com_raise_error (hr);
 				if (FAILED (hr = pClasspath->Add (pEntry))) _com_raise_error (hr);
 				pEntry->Release ();

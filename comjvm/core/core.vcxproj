@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -22,31 +22,32 @@
     <ProjectGuid>{9E596700-1153-46A5-B3B8-CA386FFD9B16}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>core</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -68,9 +69,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
-    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
+    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -102,7 +103,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_CORE_API=__declspec(dllexport) __stdcall;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <AdditionalOptions />
@@ -127,7 +128,7 @@
       <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
-      <HeaderFileName>..\%(Filename)_h.h</HeaderFileName>
+      <HeaderFileName>%(Filename)_h.h</HeaderFileName>
     </Midl>
     <Midl>
       <DllDataFileName>%(Filename)_d.c</DllDataFileName>
@@ -137,12 +138,13 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <TypeLibraryFile>core.tlb</TypeLibraryFile>
+      <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
     </Manifest>
     <Manifest>
       <ComponentFileName>core.dll</ComponentFileName>
@@ -159,7 +161,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_CORE_API=__declspec(dllexport) __stdcall;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;C:\Program Files (x86)\Java\jdk1.8.0_20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions />
     </ClCompile>
     <Link>
@@ -179,7 +181,7 @@
       <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
-      <HeaderFileName>..\%(Filename)_h.h</HeaderFileName>
+      <HeaderFileName>%(Filename)_h.h</HeaderFileName>
     </Midl>
     <Midl>
       <DllDataFileName>%(Filename)_d.c</DllDataFileName>
@@ -189,7 +191,15 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
+    <Manifest>
+      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
+      <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
+      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
+      <ComponentFileName>core.dll</ComponentFileName>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -200,15 +210,17 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_CORE_API=__declspec(dllexport) __stdcall;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;Shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>core.def</ModuleDefinitionFile>
+      <EnableUAC>false</EnableUAC>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -220,7 +232,7 @@
       <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
-      <HeaderFileName>..\%(Filename)_h.h</HeaderFileName>
+      <HeaderFileName>%(Filename)_h.h</HeaderFileName>
     </Midl>
     <Midl>
       <DllDataFileName>%(Filename)_d.c</DllDataFileName>
@@ -230,7 +242,19 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
+    <Manifest>
+      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
+      <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
+      <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
+      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
+      <ComponentFileName>core.dll</ComponentFileName>
+    </Manifest>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName>$(IntDir)$(TargetName)$(TargetExt).embed.manifest.res</ResourceOutputFileName>
+    </ManifestResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -241,7 +265,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_CORE_API=__declspec(dllexport) __stdcall;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_20\include\win32;C:\Program Files\Java\jdk1.8.0_20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -261,7 +285,7 @@
       <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
-      <HeaderFileName>..\%(Filename)_h.h</HeaderFileName>
+      <HeaderFileName>%(Filename)_h.h</HeaderFileName>
     </Midl>
     <Midl>
       <DllDataFileName>%(Filename)_d.c</DllDataFileName>
@@ -271,7 +295,19 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
+    <Manifest>
+      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
+      <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
+      <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
+      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
+      <ComponentFileName>core.dll</ComponentFileName>
+    </Manifest>
+    <ManifestResourceCompile>
+      <ResourceOutputFileName>$(IntDir)$(TargetName)$(TargetExt).embed.manifest.res</ResourceOutputFileName>
+    </ManifestResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AbstractJvm.h" />

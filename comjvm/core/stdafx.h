@@ -25,8 +25,8 @@
 #include <tchar.h>
 #include <strsafe.h>
 #include <list>
-#include <hash_map>
-#include <hash_set>
+#include <unordered_map>
+#include <unordered_set>
 #include "../utils/Debug.h"
 
 #ifdef _UNICODE

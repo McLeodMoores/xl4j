@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core_h.h"
+#include "../core/core_h.h"
 
 /// <summary>Implementation of IClasspath.</summary>
 ///
@@ -20,11 +20,11 @@ private:
 	mutable CRITICAL_SECTION m_cs;
 	const _std_string_t m_strOwner;
 	const _std_string_t m_strHost;
-	std::list<const _std_string_t> m_astrPath;
+	std::list<_std_string_t> m_astrPath;
 	~CClasspath ();
 public:
 	CClasspath (const _std_string_t &strOwner);
-	std::list<const _std_string_t> GetPathComponents () const;
+	std::list<_std_string_t> GetPathComponents () const;
 	PTSTR GetPath () const;
 	// IUnknown
 	HRESULT STDMETHODCALLTYPE QueryInterface (

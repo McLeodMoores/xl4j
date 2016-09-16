@@ -76,30 +76,36 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		LOGERROR ("BackgroundJvmThread passed NULL pointer, shutting down");
 		return 1;
 	}
-	CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
-	pThis->m_pJvm = new Jvm ();
-	if (!pThis->m_pJvm) {
-		LOGERROR ("JVM global pointer is NULL");
+	try {
+		CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
+		pThis->m_pJvm = new Jvm();
+		if (!pThis->m_pJvm) {
+			LOGERROR("JVM global pointer is NULL");
+			return 1;
+		}
+		pThis->m_pFunctionRegistry = new FunctionRegistry(pThis->m_pJvm->getJvm(), pThis->m_pAddinEnvironment->GetTypeLib());
+		LOGTRACE("Calling scan from registry thread");
+		if (FAILED(pThis->m_pFunctionRegistry->Scan())) {
+			LOGERROR("scan failed");
+			return 1;
+		}
+		LOGTRACE("Initialising GC");
+		ICollect *pCollect;
+		HRESULT hr = pThis->m_pJvm->getJvm()->CreateCollect(&pCollect);
+		if (FAILED(hr)) {
+			_com_error err(hr);
+			LOGERROR("Can't create ICollect instance: %s", err.ErrorMessage());
+			return 1;
+		}
+		LOGTRACE("Creating GarbageCollector");
+		pThis->m_pCollector = new GarbageCollector(pCollect);
+		LOGTRACE("Created GarbageCollector");
+		return 0;
+	}
+	catch (const std::exception& ex) {
+		MessageBox(nullptr, L"Could not create JVM, have you got a 32-bit Java 8 installed?", L"JVM Creation Error", MB_OK);
 		return 1;
 	}
-	pThis->m_pFunctionRegistry = new FunctionRegistry (pThis->m_pJvm->getJvm (), pThis->m_pAddinEnvironment->GetTypeLib ());
-	LOGTRACE ("Calling scan from registry thread");
-	if (FAILED (pThis->m_pFunctionRegistry->Scan ())) {
-		LOGERROR ("scan failed");
-		return 1;
-	}
-	LOGTRACE ("Initialising GC");
-	ICollect *pCollect;
-	HRESULT hr = pThis->m_pJvm->getJvm ()->CreateCollect (&pCollect);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		LOGERROR ("Can't create ICollect instance: %s", err.ErrorMessage ());
-		return 1;
-	}
-	LOGTRACE ("Creating GarbageCollector");
-	pThis->m_pCollector = new GarbageCollector (pCollect);
-	LOGTRACE ("Created GarbageCollector");
-	return 0;
 }
 
 DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {
