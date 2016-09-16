@@ -93,6 +93,7 @@ BOOL CVmOptionsPropertyPage::OnInitDialog () {
 
 void CVmOptionsPropertyPage::OnOK () {
 	LOGTRACE ("Called");
+	const int MAX_HEAP_CHARS = 32;
 	CPropertyPage::OnOK ();
 	if (m_pSettings->IsValid ()) {
 		m_pSettings->DeleteKey (TEXT ("VM Options"));
@@ -115,7 +116,7 @@ void CVmOptionsPropertyPage::OnOK () {
 		}
 		// Max Heap
 		CString maxHeap;
-		m_eMaxHeap.GetWindowTextW (maxHeap);
+		m_eMaxHeap.GetLine (0, maxHeap.GetBuffer(MAX_HEAP_CHARS), MAX_HEAP_CHARS);
 		maxHeap.Trim ();
 		if ((maxHeap.GetLength () > 0) && (m_cbMaxHeap.GetCheck() == BST_CHECKED)) {
 			m_pSettings->PutString (szAutoOptions, TEXT ("MaxHeap"), maxHeap.GetBuffer ());
@@ -130,7 +131,7 @@ void CVmOptionsPropertyPage::OnOK () {
 		}
 		// Logback
 		CString logback;
-		m_cmLogbackLevel.GetWindowTextW (logback);
+		m_cmLogbackLevel.GetLBText (m_cmLogbackLevel.GetCurSel (), logback);
 		if ((logback.GetLength () > 0) && (m_cbLogback.GetCheck () == BST_CHECKED)) {
 			m_pSettings->PutString (szAutoOptions, TEXT ("Logback"), logback.GetBuffer ());
 		} else {
