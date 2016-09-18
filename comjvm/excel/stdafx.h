@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <tchar.h>
 #include <vector>
+#include <string>
 
 // Headers for CppUnitTest:
 #include "CppUnitTest.h"
@@ -29,6 +30,7 @@
 #include <framewrk.h>
 
 // comjvm stuff
+#include <comdef.h>
 #include <iostream>
 #include "comjvm/local.h"
 #include "comjvm/core.h"

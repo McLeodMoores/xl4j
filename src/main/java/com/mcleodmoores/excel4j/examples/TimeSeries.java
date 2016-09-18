@@ -48,7 +48,7 @@ public final class TimeSeries implements Operation<TimeSeries> {
     if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
       return ofRange((XLArray) datesAndValues[0]);
     } else if (datesAndValues.length == 2 && datesAndValues[0] instanceof XLArray && datesAndValues[1] instanceof XLArray) {
-      return ofRowsOrColumns((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
+      return of((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
     }
     throw new Excel4JRuntimeException("Cannot create time series from input");
   }
@@ -100,7 +100,12 @@ public final class TimeSeries implements Operation<TimeSeries> {
    * @param valuesArray  the values, must be either a row or column, not null
    * @return  a time series
    */
-  private static TimeSeries ofRowsOrColumns(final XLArray datesArray, final XLArray valuesArray) {
+  @XLFunction(name = "TimeSeries",
+              description = "Create a time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  public static TimeSeries of(@XLArgument(name = "dates", description = "The dates") final XLArray datesArray,
+                              @XLArgument(name = "values", description = "The values") final XLArray valuesArray) {
     ArgumentChecker.notNull(datesArray, "dates");
     ArgumentChecker.notNull(valuesArray, "values");
     ArgumentChecker.isFalse(datesArray.isArea(), "The date array must be either a column or row");

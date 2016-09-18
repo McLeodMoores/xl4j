@@ -23,4 +23,6 @@ public:
 		/* [retval][out] */ IScan **ppScan);
 	HRESULT STDMETHODCALLTYPE CreateCall (
 		/* [retval][out] */ ICall **ppCall);
+	HRESULT STDMETHODCALLTYPE CreateCollect (
+		/* [retval][out] */ ICollect **ppCollect);
 };

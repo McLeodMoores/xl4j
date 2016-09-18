@@ -1,39 +1,32 @@
 #include "stdafx.h"
 #include "Converter.h"
 
-Converter::Converter () {
-	HRESULT hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &m_pMultiReferenceRecInfo);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		TRACE ("Converter::constructor::could not get IRecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
-		throw std::abort;
-	}
-	hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &m_pLocalReferenceRecInfo);
-	if (FAILED (hr)) {
-		_com_error err (hr);
-		TRACE ("Converter::constructor::could not get IRecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
-		throw std::abort;
-	}
+Converter::Converter (TypeLib *pTypeLib) {
+	pTypeLib->GetLocalReferenceRecInfo (&m_pLocalReferenceRecInfo);
+	pTypeLib->GetMultReferenceRecInfo (&m_pMultiReferenceRecInfo);
 }
 
-
+Converter::~Converter () {
+	if (m_pLocalReferenceRecInfo) m_pLocalReferenceRecInfo->Release ();
+	if (m_pMultiReferenceRecInfo) m_pMultiReferenceRecInfo->Release ();
+}
 
 HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	switch (V_VT(in)) {
 	case VT_R8:
 	{
-		//TRACE ("Converter::convert(VARIANT->XLOPER): VT_R8");
+		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): VT_R8");
 		out->xltype = xltypeNum;
 		out->val.num = V_R8 (in);
 	}
 	break;
 	case VT_BSTR:
 	{
-		//TRACE ("Converter::convert(VARIANT->XLOPER): VT_BSTR (%s)", V_BSTR(in));
+		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): VT_BSTR (%s)", V_BSTR(in));
 		out->xltype = xltypeStr;
 		HRESULT hr = allocXCHAR (V_BSTR (in), &(out->val.str));
 		if (FAILED (hr)) {
-			TRACE ("Converter::convert(VARIANT->XLOPER): could not alloc XCHAR array for string.");
+			LOGTRACE ("Converter::convert(VARIANT->XLOPER): could not alloc XCHAR array for string.");
 			return hr;
 		}
 	}
@@ -50,7 +43,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		HRESULT hr = V_RECORDINFO (in)->GetGuid (&guid);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Converter::convert::recordinfo->GetGuid returned: %s", err.ErrorMessage ());
+			LOGTRACE ("Converter::convert::recordinfo->GetGuid returned: %s", err.ErrorMessage ());
 			return hr;
 		}
 		if (guid == IID_XL4JMULTIREFERENCE) {
@@ -66,7 +59,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 			HRESULT hr = allocMREF (cRanges, &(out->val.mref.lpmref));
 			if (FAILED (hr)) {
 				_com_error err (hr);
-				TRACE ("Converter::convert:: allocMREF returned: %s", err.ErrorMessage ());
+				LOGTRACE ("Converter::convert:: allocMREF returned: %s", err.ErrorMessage ());
 				SafeArrayUnaccessData (psa);
 				return hr;
 			}
@@ -97,10 +90,10 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	break;
 	case VT_ARRAY:
 	{
-		//TRACE ("Converter::convert(VARIANT->XLOPER): VT_ARRAY");
+		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): VT_ARRAY");
 		SAFEARRAY *psa = V_ARRAY (in);
 		if (SafeArrayGetDim (psa) != 2) {
-			TRACE ("Converter::convert: VT_ARRAY not a 2D array");
+			LOGTRACE ("Converter::convert: VT_ARRAY not a 2D array");
 			return E_NOT_VALID_STATE;
 		}
 		long cRows;
@@ -113,26 +106,31 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		HRESULT hr = SafeArrayAccessData (psa, (PVOID *)&pArray);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Converter::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
+			LOGTRACE ("Converter::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
 			return hr;
 		}
 		XLOPER12 *pXLOPERArr;
-		//TRACE ("Converter::convert(VARIANT->XLOPER): allocating (%d x %d) array.", cColumns, cRows);
+		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): allocating (%d x %d) array.", cColumns, cRows);
 		hr = allocARRAY (cColumns, cRows, &pXLOPERArr);
 		out->val.array.lparray = pXLOPERArr; // assign BEFORE walking it along array!!!
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("CCallExecutor::convert allocARRAY failed: %s", err.ErrorMessage ());
+			LOGTRACE ("CCallExecutor::convert allocARRAY failed: %s", err.ErrorMessage ());
 			return hr;
 		}
 		
 		for (int j = 0; j < cRows; j++) {
 			for (int i = 0; i < cColumns; i++) {
-				//TRACE ("Converter::convert(VARIANT->XLOPER): converting element (%d, %d)", i, j);
+				//LOGTRACE ("Converter::convert(VARIANT->XLOPER): converting element (%d, %d)", i, j);
 				hr = convert (pArray++, pXLOPERArr++);
+				if (FAILED (hr))
+				{
+					_com_error err (hr);
+					LOGTRACE ("Failed to convert (%d, %d) in array", err.ErrorMessage ());
+				}
 			}
 		}
-		//TRACE ("Converter::convert(VARIANT->XLOPER): finished converting elements, writing to out structure");
+		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): finished converting elements, writing to out structure");
 		SafeArrayUnaccessData (psa);
 		out->xltype = xltypeMulti;
 		out->val.array.columns = cColumns;
@@ -158,7 +156,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	break;
 	default:
 	{
-		TRACE ("Unrecognised VARIANT type %d", V_VT(in));
+		LOGTRACE ("Unrecognised VARIANT type %d", V_VT(in));
 	}
 	break;
 	}
@@ -186,7 +184,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		HRESULT hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &pRecInfo);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
+			LOGTRACE ("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't get RecordInfo for XL4JMULTIREFERENCE");
 		}
 		V_RECORDINFO (out) = pRecInfo;
@@ -194,7 +192,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		hr = allocMultiReference (&pMultiReference, in->val.mref.lpmref->count);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
+			LOGTRACE ("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't allocate XL4JMULTIREFERENCE");
 		}
 		V_RECORD (out) = pMultiReference;
@@ -203,7 +201,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		hr = SafeArrayAccessData (pMultiReference->refs, (PVOID *)&pRefs);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not access XL4JMULTIREFERENCE array: %s", err.ErrorMessage ());
+			LOGTRACE ("Could not access XL4JMULTIREFERENCE array: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't access XL4JMULTIREFERENCE array");
 		}
 		for (jsize i = 0; i < in->val.mref.lpmref->count; i++) {
@@ -215,7 +213,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		SafeArrayUnaccessData (pMultiReference->refs);
 	} break;
 	case xltypeMissing: {
-		//TRACE ("Converter::convert(XLOPER->VARIANT): Missing->VT_EMPTY");
+		//LOGTRACE ("Converter::convert(XLOPER->VARIANT): Missing->VT_EMPTY");
 		VariantClear (out);
 		V_VT (out) = VT_EMPTY;
 	} break;
@@ -226,7 +224,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		HRESULT hr = GetRecordInfoFromGuids (MYLIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &pRecInfo);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
+			LOGTRACE ("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't get RecordInfo for XL4JREFERENCE");
 		}
 		V_RECORDINFO (out) = pRecInfo;
@@ -234,7 +232,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		hr = allocReference (&pReference);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			TRACE ("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage ());
+			LOGTRACE ("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage ());
 			throw std::logic_error ("Couldn't allocate XL4JREFERENCE");
 		}
 		V_RECORD (out) = pReference;
@@ -265,7 +263,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		SAFEARRAYBOUND bounds[2] = { { cRows, 0 }, { cCols, 0 } };
 		psa = SafeArrayCreateEx (VT_VARIANT, 2, bounds, NULL);
 		if (psa == NULL) {
-			TRACE ("CCallExecutor::convert Out of memory when allocating SAFEARRAY for xltypeMulti");
+			LOGTRACE ("CCallExecutor::convert Out of memory when allocating SAFEARRAY for xltypeMulti");
 			throw std::exception ("Can't allocate SAFEARRAY for xltypeMulti");
 		}
 		VARIANT *pVariant;
@@ -275,7 +273,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 			for (jsize i = 0; i < cCols; i++) {
 				hr = convert (pXLOPER++, pVariant++);
 				if (FAILED (hr)) {
-					TRACE ("Failed to convert array element (col=%d, row=%d)", i, j);
+					LOGTRACE ("Failed to convert array element (col=%d, row=%d)", i, j);
 					return hr;
 				}
 			}
@@ -285,7 +283,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		V_ARRAY (out) = psa;
 	} break;
 	default: {
-		TRACE ("Unrecognised XLOPER12 type %d", in->xltype);
+		LOGTRACE ("Unrecognised XLOPER12 type %d", in->xltype);
 		return E_ABORT;
 	}
 	}
@@ -295,7 +293,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 
 HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 	// by using sizeof XLMREF - sizeof XLREF to determine size of count, we should account for any padding/alignement.
-	*result = (XLMREF12 *) malloc ((ranges * (sizeof (XLREF12))) + (sizeof XLMREF12 - sizeof XLREF12));
+	*result = static_cast<XLMREF12 *>(malloc ((ranges * (sizeof (XLREF12))) + (sizeof XLMREF12 - sizeof XLREF12)));
 	if (*result == NULL) {
 		return E_OUTOFMEMORY;
 	}
@@ -303,7 +301,7 @@ HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 }
 
 HRESULT Converter::allocARRAY (size_t cols, size_t rows, XLOPER12 **arr) {
-	*arr = (XLOPER12 *) malloc ((cols * rows * sizeof (XLOPER12)));
+	*arr = static_cast<XLOPER12 *>(malloc ((cols * rows * sizeof (XLOPER12))));
 	if (*arr == NULL) {
 		return E_OUTOFMEMORY;
 	}
@@ -311,23 +309,24 @@ HRESULT Converter::allocARRAY (size_t cols, size_t rows, XLOPER12 **arr) {
 }
 
 HRESULT Converter::allocBSTR (XCHAR *str, BSTR *out) {
-	*out = SysAllocStringLen (str + 1, (UINT)((unsigned short) str[0])); // two casts probably unnecessary
+	*out = SysAllocStringLen (str + 1, static_cast<UINT>(static_cast<unsigned short>(str[0]))); // two casts probably unnecessary
 	if (*out == NULL) {
 		return E_OUTOFMEMORY;
 	}
-	//TRACE ("Converter::allocBSTR: str = %s, out = %s", str, *out);
+	//LOGTRACE ("Converter::allocBSTR: str = %s, out = %s", str, *out);
 	return S_OK;
 }
 
-HRESULT Converter::allocMultiReference (XL4JMULTIREFERENCE **result, size_t elems) {
-	*result = (XL4JMULTIREFERENCE *) m_pMultiReferenceRecInfo->RecordCreate ();
+HRESULT Converter::allocMultiReference (XL4JMULTIREFERENCE **result, size_t elems) const
+{
+	*result = static_cast<XL4JMULTIREFERENCE *>(m_pMultiReferenceRecInfo->RecordCreate ());
 	if (*result == NULL) {
-		TRACE ("XL4JMULTIREFERENCE allocation failed.");
+		LOGTRACE ("XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
 	}
 	SAFEARRAY *psa = SafeArrayCreateVectorEx (VT_RECORD, 0, elems, m_pMultiReferenceRecInfo);
 	if (psa == NULL) {
-		TRACE ("SAFEARRAY in XL4JMULTIREFERENCE allocation failed.");
+		LOGTRACE ("SAFEARRAY in XL4JMULTIREFERENCE allocation failed.");
 		m_pMultiReferenceRecInfo->RecordDestroy (*result); // otherwise memory leak...
 		return E_OUTOFMEMORY;
 	}
@@ -337,15 +336,16 @@ HRESULT Converter::allocMultiReference (XL4JMULTIREFERENCE **result, size_t elem
 	V_ARRAY (&varFieldValue) = psa;
 	HRESULT hr = m_pMultiReferenceRecInfo->PutFieldNoCopy (INVOKE_PROPERTYPUT, *result, TEXT ("refs"), &varFieldValue);
 	if (FAILED (hr)) {
-		TRACE ("Converter::allocMultiReferencePutFieldNoCopy failed.");
+		LOGTRACE ("Converter::allocMultiReferencePutFieldNoCopy failed.");
 	}
 	return S_OK;
 }
 
-HRESULT Converter::allocReference (XL4JREFERENCE **result) {
-	*result = (XL4JREFERENCE *)m_pLocalReferenceRecInfo->RecordCreate ();
+HRESULT Converter::allocReference (XL4JREFERENCE **result) const
+{
+	*result = static_cast<XL4JREFERENCE *>(m_pLocalReferenceRecInfo->RecordCreate ());
 	if (*result == NULL) {
-		TRACE ("XL4JMULTIREFERENCE allocation failed.");
+		LOGTRACE ("XL4JMULTIREFERENCE allocation failed.");
 		return E_OUTOFMEMORY;
 	}
 	return S_OK;
@@ -353,11 +353,11 @@ HRESULT Converter::allocReference (XL4JREFERENCE **result) {
 
 HRESULT Converter::allocXCHAR (BSTR in, XCHAR **out) {
 	const UINT cbLen = SysStringByteLen (in);
-	*out = (XCHAR *)malloc (cbLen + 2); // add two bytes for length prefix, remember no null terminator
+	*out = static_cast<XCHAR *>(malloc (cbLen + 2)); // add two bytes for length prefix, remember no null terminator
 	if (*out == NULL) {
 		return E_OUTOFMEMORY;
 	}
-	(*out)[0] = (XCHAR)SysStringLen (in);
+	(*out)[0] = static_cast<XCHAR>(SysStringLen (in));
 	CopyMemory ((*out) + 1, in, cbLen); // copying memory because no null terminator, so string function can't handle.
 	return S_OK;
 }

@@ -28,6 +28,37 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 	}
 }
 
+size_t Debug::m_cMaxFileNameLength = 0;
+size_t Debug::m_cMaxFunctionNameLength = 0;
+
+void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
+	va_list argptr;
+	va_start (argptr, sFormat);
+	//static FILE *logFile = _tfopen (_T ("excel4j.log"), _T ("w"));
+	m_cMaxFileNameLength = max (m_cMaxFileNameLength, strnlen (sFileName, FILENAME_MAX));
+	m_cMaxFunctionNameLength = max (m_cMaxFunctionNameLength, strnlen (sFunctionName, FILENAME_MAX));
+	const int LINE_MAX = 2000;
+	wchar_t buffer[LINE_MAX];
+	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
+	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
+		wchar_t formatBuffer[LINE_MAX];
+		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%-%dS %%%dd %%-%dS %%s\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
+		if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
+			wchar_t finalBuffer[LINE_MAX];
+			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, sFileName, iLineNum, sFunctionName, buffer);
+			if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
+				OutputDebugString (finalBuffer);
+				return;
+			}
+		}
+		//_ftprintf (logFile, buffer);
+		//fflush (logFile);
+	}
+	OutputDebugString (_T ("StringCbVPrintf error."));
+		//_ftprintf (logFile, _T ("StringCbVPrintf error."));
+		//fflush (logFile);
+}
+
 HRESULT Debug::print_HRESULT (HRESULT hResult) {
 	_com_error error (hResult);
 	odprintf (TEXT ("HRESULT error was %s\n"), error.ErrorMessage ());
@@ -144,21 +175,48 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 	OutputDebugStringA (error_msg.c_str());
 }
 
+//
+// Usage: SetThreadName ((DWORD)-1, "MainThread");
+//
+const DWORD MS_VC_EXCEPTION = 0x406D1388;
+#pragma pack(push,8)
+typedef struct tagTHREADNAME_INFO {
+	DWORD dwType; // Must be 0x1000.
+	LPCSTR szName; // Pointer to name (in user addr space).
+	DWORD dwThreadID; // Thread ID (-1=caller thread).
+	DWORD dwFlags; // Reserved for future use, must be zero.
+} THREADNAME_INFO;
+#pragma pack(pop)
+void Debug::SetThreadName (DWORD dwThreadID, const char* threadName) {
+	THREADNAME_INFO info;
+	info.dwType = 0x1000;
+	info.szName = threadName;
+	info.dwThreadID = dwThreadID;
+	info.dwFlags = 0;
+#pragma warning(push)
+#pragma warning(disable: 6320 6322)
+	__try {
+		RaiseException (MS_VC_EXCEPTION, 0, sizeof (info) / sizeof (ULONG_PTR), (ULONG_PTR*)&info);
+	} __except (EXCEPTION_EXECUTE_HANDLER) {
+	}
+#pragma warning(pop)
+}
+
 //void Debug::printXLOPER (XLOPER12 *oper) {
 //	switch (oper->xltype) {
 //	case xltypeStr: {
-//		TRACE ("XLOPER12: xltypeStr: %s", oper->val.str);
+//		LOGTRACE ("XLOPER12: xltypeStr: %s", oper->val.str);
 //	} break;
 //	case xltypeNum: {
-//		TRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
+//		LOGTRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
 //	} break;
 //	case xltypeNil: {
-//		TRACE ("XLOPER12: xltypeNil");
+//		LOGTRACE ("XLOPER12: xltypeNil");
 //	} break;
 //	case xltypeRef: {
-//		TRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
+//		LOGTRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
 //		for (int i = 0; i < oper->val.mref.lpmref->count; i++) {
-//			TRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
+//			LOGTRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 //				oper->val.mref.lpmref->reftbl[i].rwFirst,
 //				oper->val.mref.lpmref->reftbl[i].rwLast,
 //				oper->val.mref.lpmref->reftbl[i].colFirst,
@@ -166,35 +224,35 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 //		}
 //	} break;
 //	case xltypeMissing: {
-//		TRACE ("XLOPER12: xltypeMissing");
+//		LOGTRACE ("XLOPER12: xltypeMissing");
 //	} break;
 //	case xltypeSRef: {
-//		TRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
+//		LOGTRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
 //				oper->val.sref.ref.rwFirst,
 //				oper->val.sref.ref.rwLast,
 //				oper->val.sref.ref.colFirst,
 //				oper->val.sref.ref.colLast);
 //	} break;
 //	case xltypeInt: {
-//		TRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
+//		LOGTRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
 //	} break;
 //	case xltypeErr: {
-//		TRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
+//		LOGTRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
 //	} break;
 //	case xltypeBool: {
 //		if (oper->val.xbool == FALSE) {
-//			TRACE ("XLOPER12: xltypeBool: FALSE");
+//			LOGTRACE ("XLOPER12: xltypeBool: FALSE");
 //		} else {
-//			TRACE ("XLOPER12: xltypeBool: TRUE");
+//			LOGTRACE ("XLOPER12: xltypeBool: TRUE");
 //		}
 //	} break;
 //	case xltypeBigData: {
-//		TRACE ("XLOPER12: xltypeBigData");
+//		LOGTRACE ("XLOPER12: xltypeBigData");
 //	} break;
 //	case xltypeMulti: {
 //		RW cRows = oper->val.array.rows;
 //		COL cCols = oper->val.array.columns;
-//		TRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
+//		LOGTRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
 //		XLOPER12 *pXLOPER = oper->val.array.lparray;
 //		for (RW j = 0; j < cRows; j++) {
 //			for (COL i = 0; i < cCols; i++) {
@@ -203,7 +261,7 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 //		}
 //	} break;
 //	default: {
-//		TRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
+//		LOGTRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
 //	}
 //
 //	}

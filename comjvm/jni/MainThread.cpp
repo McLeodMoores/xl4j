@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "internal.h"
+#include <utils/Debug.h>
 
 typedef jint (JNICALL *JNICreateJavaVMProc)(JavaVM **, void **, void *);
 
@@ -28,7 +29,7 @@ static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
 		g_hJRE = LoadLibrary(szPath);
 		if (!g_hJRE) return FALSE;
 	}
-	g_pfnCreateVM = (JNICreateJavaVMProc)GetProcAddress (g_hJRE, "JNI_CreateJavaVM");
+	g_pfnCreateVM = reinterpret_cast<JNICreateJavaVMProc>(GetProcAddress (g_hJRE, "JNI_CreateJavaVM"));
 	if (!g_pfnCreateVM) {
 		FreeLibrary (g_hJRE);
 		g_hJRE = NULL;
@@ -97,28 +98,30 @@ static void UnloadJVMLibrary () {
 	g_hJRE = NULL;
 }
 
-static BOOL StartJVMImpl (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath) {
+static BOOL StartJVMImpl (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DWORD cOptions, PCSTR *ppszOptions) {
 	JavaVMInitArgs args;
-	JavaVMOption aOptions[2];
+	JavaVMOption *aOptions = new JavaVMOption[cOptions + 1];
 	ZeroMemory (&args, sizeof (args));
-	ZeroMemory (aOptions, sizeof (aOptions));
+	ZeroMemory (aOptions, sizeof (aOptions) * (cOptions + 1));
 	std::string strClasspath ("-Djava.class.path=");
 	strClasspath += pszClasspath;
-	aOptions[0].optionString = (char*)strClasspath.data ();
-	/*aOptions[1].optionString = "-Xcheck:jni";
-	aOptions[2].optionString = "-Xdebug";
-	aOptions[3].optionString = "-Xrunjdwp:server=y,transport=dt_socket,address=8000,suspend=n";*/
-	aOptions[1].optionString = "-Dlogback.configurationFile=com/mcleodmoores/excel4j/debug-logback.xml";
+	aOptions[0].optionString = const_cast<char*>(strClasspath.data ());
+	for (int i = 0; i < cOptions; i++) {
+		aOptions[i + 1].optionString = const_cast<char*>(ppszOptions[i]);
+	}
 	args.version = JNI_VERSION_1_6;
-	args.nOptions = sizeof (aOptions) / sizeof (JavaVMOption);
+	args.nOptions = cOptions + 1;// sizeof (aOptions) / sizeof (JavaVMOption);
 	args.options = aOptions;
+	for (int i = 0; i < args.nOptions; i++) {
+		LOGTRACE ("arg[%d] = %S", i, args.options[i]);
+	}
 	return g_pfnCreateVM (ppJVM, (void**)ppEnv, &args) == 0;
 }
 
-BOOL StartJVM (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath) {
+BOOL StartJVM (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DWORD cOptions, PCSTR *ppszOptions) {
 	// TODO: Vendor and Version should be passed in from (eventually the IJvmTemplate) with defaults of JavaSoft and [Current] if omitted
 	if (LoadJVMLibrary (TEXT ("JavaSoft"), TEXT ("[Current]"))) {
-		if (StartJVMImpl (ppJVM, ppEnv, pszClasspath)) {
+		if (StartJVMImpl (ppJVM, ppEnv, pszClasspath, cOptions, ppszOptions)) {
 			return TRUE;
 		} else {
 			UnloadJVMLibrary ();

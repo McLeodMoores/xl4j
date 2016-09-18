@@ -38,7 +38,7 @@ public:
 	}
 };
 
-typedef std::hash_map<const _bstr_t, const CJvmConnectorFactory, hash_bstr> CJvmConnectorFactoryCache;
+typedef std::unordered_map<_bstr_t, CJvmConnectorFactory, hash_bstr> CJvmConnectorFactoryCache;
 
 /// <summary>Manages the available IJvmConnector implementations.</summary>
 class CJvmConnectors {

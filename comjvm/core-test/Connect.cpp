@@ -201,6 +201,11 @@ public:
 		) {
 		return E_NOTIMPL;
 	}
+	HRESULT STDMETHODCALLTYPE CreateCollect (
+		/* [retval][out] */ ICollect **pCollect
+		) {
+		return E_NOTIMPL;
+	}
 };
 
 class CMockJvmConnector : public IJvmConnector {

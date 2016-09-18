@@ -8,6 +8,7 @@
 #include "stdafx.h"
 #include "CScan.h"
 #include "CCall.h"
+#include "CCollect.h"
 #include "Jvm.h"
 
 #include "Internal.h"
@@ -51,6 +52,17 @@ HRESULT STDMETHODCALLTYPE CJvm::CreateCall (
 	if (!ppCall) return E_POINTER;
 	try {
 		*ppCall = reinterpret_cast<ICall *> (new CCall (this));
+		return S_OK;
+	} catch (std::bad_alloc) {
+		return E_OUTOFMEMORY;
+	}
+}
+
+HRESULT STDMETHODCALLTYPE CJvm::CreateCollect (
+	/* [retval][out] */ ICollect **ppCollect) {
+	if (!ppCollect) return E_POINTER;
+	try {
+		*ppCollect = reinterpret_cast<ICollect *> (new CCollect (this));
 		return S_OK;
 	} catch (std::bad_alloc) {
 		return E_OUTOFMEMORY;

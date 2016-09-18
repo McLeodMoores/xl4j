@@ -76,7 +76,7 @@ public final class XLObject implements XLValue {
     sb.append(OBJECT_PREFIX);
     sb.append(_clazz);
     sb.append('-');
-    sb.append(_handle);
+    sb.append(Long.toUnsignedString(_handle));
     return XLString.of(sb.toString());
   }
 

@@ -13,7 +13,7 @@ void IncrementModuleLockCount ();
 void DecrementModuleLockCount ();
 void DecrementModuleLockCountAndExitThread ();
 
-BOOL StartJVM (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath);
+BOOL StartJVM (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DWORD cOptions, PCSTR *ppszOptions);
 void StopJVM (JNIEnv *pEnv);
 
 void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout);

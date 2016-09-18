@@ -19,11 +19,15 @@ extern "C" {
 typedef struct tagJAVA_VM_PARAMETERSA {
 	DWORD cbSize;
 	PCSTR pszClasspath;
+	DWORD cOptions;
+	PCSTR *ppszOptions;
 } JAVA_VM_PARAMETERSA, *PJAVA_VM_PARAMETERSA;
 
 typedef struct tagJAVA_VM_PARAMETERSW {
 	DWORD cbSize;
 	PCWSTR pszClasspath;
+	DWORD cOptions;
+	PCWSTR *ppszOptions;
 } JAVA_VM_PARAMETERSW, *PJAVA_VM_PARAMETERSW;
 #ifdef _UNICODE
 # define JAVA_VM_PARAMETERS		JAVA_VM_PARAMETERSW

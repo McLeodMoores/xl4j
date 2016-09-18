@@ -66,6 +66,12 @@
     <ClInclude Include="JniCache.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CCollect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CCollectExecutor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -114,6 +120,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="JniCache.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CCollectExecutor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -32,12 +32,14 @@ HRESULT APIENTRY DllGetClassObject (REFCLSID clsid, REFIID iid, LPVOID *ppv) {
 	}
 }
 
-static HRESULT RegisterTypeLibrary () {
+HRESULT APIENTRY RegisterTypeLibrary () {
 	HRESULT hr;
 	HMODULE hModule;
 	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)DllGetClassObject, &hModule)) {
 		TCHAR szFilename[MAX_PATH + 1];
-		if (GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR)) <= MAX_PATH) {
+		ZeroMemory (szFilename, sizeof (szFilename)); // to please the code analyzer gods
+		DWORD dwLength = GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR));
+		if (dwLength <= MAX_PATH && dwLength > 0) {
 			size_t cch = _tcslen (szFilename);
 			hr = StringCchCopy (szFilename + cch - 3, 4, TEXT ("tlb"));
 			ITypeLib *typelib;
@@ -54,6 +56,12 @@ static HRESULT RegisterTypeLibrary () {
 			//	OutputDebugStringW (err.ErrorMessage());
 			//	return hr;
 			//}
+		} else { // there was an error
+			LPWSTR pErrorMsg;
+			FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError (), 0,(LPWSTR)&pErrorMsg, 0, NULL);
+			OutputDebugStringW (pErrorMsg);
+			LocalFree (pErrorMsg);
+			return HRESULT_FROM_WIN32 (GetLastError());
 		}
 		FreeLibrary (hModule);
 	}
@@ -80,12 +88,18 @@ static HRESULT RegisterServer (HKEY hkeyRoot) {
 			HMODULE hModule;
 			if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)RegisterServer, &hModule)) {
 				TCHAR szFilename[MAX_PATH + 1];
-				if (GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR)) <= MAX_PATH) {
+				ZeroMemory (szFilename, sizeof (szFilename)); // please the code analyzer gods
+				DWORD dwLength = GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR));
+				if (dwLength <= MAX_PATH && dwLength > 0) {
 					size_t cch = _tcslen (szFilename);
 					dwError = RegSetValueEx (hkeyServer, NULL, 0, REG_SZ, (LPBYTE)szFilename, ((DWORD)cch + 1) * sizeof (TCHAR));
 					if (dwError != ERROR_SUCCESS) hr = HRESULT_FROM_WIN32 (dwError);
+				} else { // there was an error
+					return HRESULT_FROM_WIN32 (GetLastError());
 				}
 				FreeLibrary (hModule);
+			} else { // there was an error
+				return HRESULT_FROM_WIN32 (GetLastError());
 			}
 			dwError = RegSetValueEx (hkeyServer, TEXT ("ThreadingModel"), 0, REG_SZ, (LPBYTE)TEXT ("Both"), 5 * sizeof (TCHAR));
 			if (dwError != ERROR_SUCCESS) hr = HRESULT_FROM_WIN32 (dwError);

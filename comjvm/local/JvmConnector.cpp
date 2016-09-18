@@ -106,7 +106,7 @@ private:
 	DWORD m_dwLastUse;
 	DWORD m_dwJvm;
 	GUID m_guid;
-	std::list<const _std_string_t> m_astrClasspath;
+	std::list<_std_string_t> m_astrClasspath;
 
 	HRESULT CreateJvmWrapper (IJvm **ppJvm) {
 		HRESULT hr;
@@ -116,7 +116,7 @@ private:
 		try {
 			if (FAILED (hr = ComJvmCreateTemplate (NULL, &pTemplate))) _com_raise_error (hr);
 			if (FAILED (hr = pTemplate->get_Classpath (&pClasspath))) _com_raise_error (hr);
-			for (std::list<const _std_string_t>::iterator itr = m_astrClasspath.begin (), end = m_astrClasspath.end (); itr != end; itr++) {
+			for (std::list<_std_string_t>::iterator itr = m_astrClasspath.begin (), end = m_astrClasspath.end (); itr != end; itr++) {
 				if (FAILED (hr = ComJvmCreateClasspathEntry (itr->data (), &pEntry))) _com_raise_error (hr);
 				if (FAILED (hr = pClasspath->Add (pEntry))) _com_raise_error (hr);
 				pEntry->Release ();
@@ -155,10 +155,12 @@ private:
 		if (!ppJvm) return E_POINTER;
 		if (!m_dwJvm) {
 			HRESULT hr;
-			CClasspath *pClasspath = NULL;
-			PTSTR pszClasspath = NULL;
-			IClasspathEntries *pEntries = NULL;
-			IClasspathEntry *pEntry = NULL;
+			CClasspath *pClasspath = nullptr;
+			PTSTR pszClasspath = nullptr;
+			IClasspathEntries *pEntries = nullptr;
+			IClasspathEntry *pEntry = nullptr;
+			IJvmOptionEntries *pOptionEntries = nullptr;
+			
 			try {
 				pClasspath = new CClasspath (bstrLogicalIdentifier ? (PCTSTR)_bstr_t (bstrLogicalIdentifier) : TEXT (""));
 				if (FAILED (hr = pTemplate->get_Classpath (&pEntries))) _com_raise_error (hr);
@@ -169,14 +171,25 @@ private:
 					if (FAILED (hr = pEntries->get_Item (lIndex, &pEntry))) _com_raise_error (hr);
 					if (FAILED (hr = pEntry->AddToClasspath (pClasspath))) _com_raise_error (hr);
 					pEntry->Release ();
-					pEntry = NULL;
+					pEntry = nullptr;
 				}
 				m_astrClasspath = pClasspath->GetPathComponents ();
 				pszClasspath = pClasspath->GetPath ();
+				// Options
+				if (FAILED (hr = pTemplate->get_Options (&pOptionEntries))) _com_raise_error (hr);
+				long cOptions;
+				if (FAILED (hr = pOptionEntries->get_Count (&cOptions))) _com_raise_error (hr);
 				JAVA_VM_PARAMETERS params;
 				ZeroMemory (&params, sizeof (params));
 				params.cbSize = sizeof (params);
 				params.pszClasspath = pszClasspath;
+				params.cOptions = cOptions;
+				params.ppszOptions = new PCTSTR[cOptions];
+				for (long i = 0; i < cOptions; i++) {
+					BSTR pOptionEntry = nullptr;
+					if (FAILED (hr = pOptionEntries->get_Item (i + 1, &pOptionEntry))) _com_raise_error (hr);
+					params.ppszOptions[i] = pOptionEntry;
+				}
 				hr = JNICreateJavaVM (&m_dwJvm, &params);
 			} catch (std::bad_alloc) {
 				hr = E_OUTOFMEMORY;
@@ -187,6 +200,7 @@ private:
 			if (pszClasspath) delete pszClasspath;
 			if (pEntries) pEntries->Release ();
 			if (pEntry) pEntry->Release ();
+			if (pOptionEntries) pOptionEntries->Release ();
 			if (FAILED (hr)) return hr;
 		}
 		return CreateJvmWrapper (ppJvm);

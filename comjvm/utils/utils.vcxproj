@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -23,31 +23,32 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>utils</RootNamespace>
     <ProjectName>utils</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -69,51 +70,56 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
-    <IncludePath>C:\2013 Office System Developer Resources\Excel2013XLLSDK\INCLUDE;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
+    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>C:\2013 Office System Developer Resources\Excel2013XLLSDK\INCLUDE;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>C:\2013 Office System Developer Resources\Excel2013XLLSDK\INCLUDE;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>C:\2013 Office System Developer Resources\Excel2013XLLSDK\INCLUDE;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_DEBUG_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_DEBUG_EXPORT;COMJVM_FILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
+      <BrowseInformation>true</BrowseInformation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;shlwapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>
       </ModuleDefinitionFile>
-      <Profile>true</Profile>
+      <Profile>false</Profile>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -121,6 +127,13 @@
     <PostBuildEvent>
       <Message>Copy DLLs to the Unicode/Ascii targets</Message>
     </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+    <Manifest>
+      <AssemblyIdentity>utils,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AdditionalManifestFiles>utils.dll.file.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -214,11 +227,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Debug.h" />
+    <ClInclude Include="FileUtils.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TraceOff.h" />
+    <ClInclude Include="TraceOn.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Debug.cpp" />
+    <ClCompile Include="FileUtils.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -60,6 +60,9 @@
     <ClInclude Include="AbstractJvm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="JvmOptionEntries.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -110,6 +113,9 @@
     <ClCompile Include="AbstractJvm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="JvmOptionEntries.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="core.idl">
@@ -121,6 +127,9 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="..\target\Debug-Win32\core.tlb">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="core.rgs">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

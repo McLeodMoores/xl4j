@@ -2,17 +2,18 @@
 #include "comjvm/local.h"
 #include "comjvm/core.h"
 #include "local/CScanExecutor.h"
+#include "../helper/TypeLib.h"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace localtest {
 
-	TEST_CLASS (String) {
+	TEST_CLASS (CScanTest) {
 private:
 	IJvmConnector *m_pConnector;
 	IJvm *m_pJvm;
 public:
-
+	
 	TEST_METHOD_INITIALIZE (Connect) {
 		m_pConnector = NULL;
 		m_pJvm = NULL;
@@ -24,7 +25,7 @@ public:
 		pTemplate->get_Classpath (&entries);
 		TCHAR szCurrentDir[MAX_PATH];
 		GetCurrentDirectory (MAX_PATH, szCurrentDir);
-		TRACE ("Current dir is %s", szCurrentDir);
+		LOGTRACE ("Current dir is %s", szCurrentDir);
 		AddEntries (entries);
 		Assert::AreEqual (S_OK, m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm));
 		pTemplate->Release ();
@@ -50,7 +51,7 @@ public:
 				TCHAR szRelativePath[MAX_PATH];
 				StringCchCopy (szRelativePath, MAX_PATH, base);
 				StringCchCat (szRelativePath, MAX_PATH, findData.cFileName);
-				TRACE ("Adding ClasspathEntry for %s", szRelativePath);
+				LOGTRACE ("Adding ClasspathEntry for %s", szRelativePath);
 				IClasspathEntry *pEntry;
 				HRESULT hr = ComJvmCreateClasspathEntry (szRelativePath, &pEntry);
 				if (FAILED (hr)) {
@@ -64,34 +65,37 @@ public:
 	TEST_METHOD_CLEANUP (Disconnect) {
 		if (m_pJvm) m_pJvm->Release ();
 		if (m_pConnector) m_pConnector->Release ();
+		LOGTRACE ("Disconnect finishing up.");
+		exit (0);
 	}
 
 	TEST_METHOD (BasicScan) {
 		IScan *pScan;
 		Assert::AreEqual (S_OK, m_pJvm->CreateScan (&pScan));
 		HRESULT hr; 
-		IRecordInfo *pFunctionInfoRecordInfo = NULL;
-		if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, LOCALE_USER_DEFAULT, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
+		IRecordInfo *pFunctionInfoRecordInfo;
+		TypeLib *pTypeLib = new TypeLib ();
+		if (FAILED (hr = pTypeLib->GetFunctionInfoRecInfo(&pFunctionInfoRecordInfo))) {
 			_com_error err (hr);
 			LPCTSTR errMsg = err.ErrorMessage ();
-			TRACE ("Failed to get RecordInfoFromGuids %s", errMsg);
+			LOGTRACE ("Failed to get record info from TypeLib %s", errMsg);
 			Assert::Fail (); 
 		}
+		delete pTypeLib;
 		SAFEARRAY *results;
 		SAFEARRAYBOUND bounds;
 		bounds.cElements = 100;
 		bounds.lLbound = 0;
 		results = SafeArrayCreateEx (VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
-		hr = pScan->scan (&results);
+		hr = pScan->Scan (&results);
 		FUNCTIONINFO *pFunctionInfos;
 
-		//Assert::AreEqual (S_OK, hr);
 		long count;
 		SafeArrayGetUBound (results, 1, &count);
 		count++;
 		SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
 		for (int i = 0; i < count; i++) {
-			TRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].functionExportName, pFunctionInfos[i].functionSignature, pFunctionInfos[i].description);
+			LOGTRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
 		}
 		SafeArrayUnaccessData (results);
 		Assert::AreNotEqual ((long) 100, count);

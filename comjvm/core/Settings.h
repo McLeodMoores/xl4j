@@ -9,6 +9,12 @@
 
 #define SETTINGS_JVM_TEMPLATE	TEXT ("JvmTemplate")
 
+#ifdef _UNICODE
+typedef std::wstring _std_string_t;
+#else /* ifdef _UNICODE */
+typedef std::string _std_string_t;
+#endif /* ifdef _UNICODE */
+
 class CSettings;
 
 /// <summary>Underlying implementation of CSettings.</summary>
@@ -23,6 +29,11 @@ public:
 	virtual ~CSettingsImpl ();
 	virtual const _bstr_t GetString (const _std_string_t &strKey, long lIndex) const = 0;
 	virtual const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const = 0;
+	virtual BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) = 0;
+	virtual BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue) = 0;
+	virtual BOOL DeleteString (const _std_string_t &strKey, long lIndex) = 0;
+	virtual BOOL DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex) = 0;
+	virtual BOOL DeleteKey (const _std_string_t &strKey) = 0;
 };
 
 /// <summary>Configuration settings.</summary>
@@ -32,9 +43,15 @@ class CSettings {
 private:
 	CSettingsImpl *m_pImpl;
 public:
-	CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier);
+	enum LoadType { INIT_APPDATA, MOST_LOCAL };
+	CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier, LoadType eLoadType);
 	~CSettings ();
 	BOOL IsValid () const;
 	const _bstr_t GetString (const _std_string_t &strKey, long lIndex) const;
 	const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const;
+    BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue);
+	BOOL PutString (const _std_string_t &strKey, const _std_string_t &strIndex, const _std_string_t &strValue);
+	BOOL DeleteString (const _std_string_t &strKey, long lIndex);
+	BOOL DeleteString (const _std_string_t &strKey, const _std_string_t &strIndex);
+	BOOL DeleteKey (const _std_string_t &strKey);
 };

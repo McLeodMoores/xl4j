@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "core_h.h"
+#include "../core/core_h.h"
 
 extern volatile long g_lActiveObjects;
 
@@ -25,3 +25,5 @@ extern "C" {
 	HRESULT APIENTRY ProxyDllUnregisterServer ();
 	BOOL APIENTRY ProxyDllMain (HMODULE hModule, DWORD dwReason, LPVOID lpReserved);
 }
+
+HRESULT APIENTRY RegisterTypeLibrary ();

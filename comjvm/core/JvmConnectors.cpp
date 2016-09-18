@@ -11,7 +11,7 @@
 
 static HRESULT CreateSystemObject (REFCLSID clsid, IJvmConnector **ppConnector) {
 	// TODO
-	//TRACE ("CreateSystemObject not implemented");
+	//LOGTRACE ("CreateSystemObject not implemented");
 	return E_NOTIMPL;
 }
 
@@ -196,6 +196,7 @@ HRESULT CJvmConnectors::FindLocalDLLs () {
 	HMODULE hModule;
 	TCHAR szFilename[MAX_PATH + 1];
 	size_t cchSlash;
+	ZeroMemory (szFilename, sizeof (szFilename)); // please the code analyzer gods
 	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)ConnectorType, &hModule)) {
 		if (GetModuleFileName (hModule, szFilename, sizeof (szFilename) / sizeof (TCHAR)) <= MAX_PATH) {
 			cchSlash = _tcslen (szFilename);

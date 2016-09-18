@@ -16,37 +16,43 @@ CScanExecutor::~CScanExecutor () {
 	m_pOwner->Release ();
 }
 
-
+#define CHECK_EXCEPTION() if (pEnv->ExceptionCheck ()) { LOGERROR("EXCEPTION!"); Debug::printException (pEnv, pEnv->ExceptionOccurred ()); return E_FAIL; } 0
 
 HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 	HRESULT hResult = S_OK;
 	try {
-		TRACE ("In CScanExecutor::Run");
+		LOGTRACE ("In CScanExecutor::Run");
 		jclass jcExcelFactory = pEnv->FindClass ("com/mcleodmoores/excel4j/ExcelFactory");
 		jmethodID jmExcelFactory_Instance = pEnv->GetStaticMethodID (jcExcelFactory, "getInstance", "()Lcom/mcleodmoores/excel4j/Excel;");
 		jobject joExcel = pEnv->CallStaticObjectMethod (jcExcelFactory, jmExcelFactory_Instance);
-		TRACE ("Got Excel object %p", joExcel);
+		CHECK_EXCEPTION ();
+		LOGTRACE ("Got Excel object %p", joExcel);
 		jclass jcExcel = pEnv->FindClass ("com/mcleodmoores/excel4j/Excel");
-
+		CHECK_EXCEPTION ();
 		jmethodID jmExcel_GetExcelCallback = pEnv->GetMethodID (jcExcel, "getExcelCallback", "()Lcom/mcleodmoores/excel4j/callback/ExcelCallback;");
 		jobject joExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetExcelCallback);
-		TRACE ("Got Excel callback object %p", joExcelCallback);
+		CHECK_EXCEPTION ();
+		LOGTRACE ("Got Excel callback object %p", joExcelCallback);
 		jclass jcFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/excel4j/FunctionRegistry");
 		jmethodID jmFunctionRegistry_RegisterFunctions = pEnv->GetMethodID (jcFunctionRegistry, "registerFunctions", "(Lcom/mcleodmoores/excel4j/callback/ExcelCallback;)V");
 		jmethodID jmExcel_GetFunctionRegistry = pEnv->GetMethodID (jcExcel, "getFunctionRegistry", "()Lcom/mcleodmoores/excel4j/FunctionRegistry;");
 		jobject joFunctionRegistry = pEnv->CallObjectMethod (joExcel, jmExcel_GetFunctionRegistry);
-		TRACE ("Calling registerFunctions...");
+		CHECK_EXCEPTION ();
+		LOGTRACE ("Calling registerFunctions...");
 		pEnv->CallVoidMethod (joFunctionRegistry, jmFunctionRegistry_RegisterFunctions, joExcelCallback);
-		TRACE ("...Returned.");
+		LOGTRACE ("...Returned.");
+		CHECK_EXCEPTION();
 		jmethodID jmExcel_GetLowLevelExcelCallback = pEnv->GetMethodID (jcExcel, "getLowLevelExcelCallback", "()Lcom/mcleodmoores/excel4j/lowlevel/LowLevelExcelCallback;");
 		jobject joLowLevelExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetLowLevelExcelCallback);
-		TRACE ("Got LowLevelExcelCallback %p", joLowLevelExcelCallback);
+		CHECK_EXCEPTION ();
+		LOGTRACE ("Got LowLevelExcelCallback %p", joLowLevelExcelCallback);
 		jclass jcXLLAccumulatingFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry");
 		jmethodID jmXLLAccumulatingFunctionRegistry_GetEntries = pEnv->GetMethodID (jcXLLAccumulatingFunctionRegistry, "getEntries", "()[Lcom/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;");
 		jobjectArray jaEntries = (jobjectArray) pEnv->CallObjectMethod (joLowLevelExcelCallback, jmXLLAccumulatingFunctionRegistry_GetEntries);
-		TRACE ("Got entries array %p", jaEntries);
+		CHECK_EXCEPTION ();
+		LOGTRACE ("Got entries array %p", jaEntries);
 		long cEntries = pEnv->GetArrayLength (jaEntries);
-		TRACE ("Got %d entries", cEntries);
+		LOGTRACE ("Got %d entries", cEntries);
 
 		jclass jcLowLevelEntry = pEnv->FindClass ("com/mcleodmoores/excel4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry");
 		jfieldID jfExportNumber = pEnv->GetFieldID (jcLowLevelEntry, "_exportNumber", "I");
@@ -64,7 +70,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
 		if (FAILED (hResult = ::GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
-			TRACE ("Couldn't get IRecotrdInfo");
+			LOGTRACE ("Couldn't get IRecotrdInfo");
 			goto fail;
 		}
 		
@@ -72,37 +78,37 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		bounds.cElements = cEntries;
 		bounds.lLbound = 0;
 		if (FAILED (hResult = ::SafeArraySetRecordInfo (*m_pResults, pFunctionInfoRecordInfo))) {
-			TRACE ("CScanExecutor::Run: couldn't set record info");
+			LOGTRACE ("CScanExecutor::Run: couldn't set record info");
 			goto fail;
 		}
 		if (FAILED (hResult = ::SafeArrayRedim (*m_pResults, &bounds))) {
-			TRACE ("CScanExecutor::Run: Couldn't redim");
+			LOGTRACE ("CScanExecutor::Run: Couldn't redim");
 			goto fail;
 		}
 		FUNCTIONINFO *pFunctionInfos;
 		hResult = SafeArrayAccessData (*m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos));
 		for (jsize i = 0; i < cEntries; i++) {
 			jobject joElement = pEnv->GetObjectArrayElement (jaEntries, i);
-			pFunctionInfos[i].exportNumber = pEnv->GetIntField (joElement, jfExportNumber);
+			pFunctionInfos[i].iExportNumber = pEnv->GetIntField (joElement, jfExportNumber);
 			jstring jsFunctionExportName = (jstring) pEnv->GetObjectField (joElement, jfFunctionExportName);
-			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].functionExportName);
+			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].bsFunctionExportName);
 			jboolean jsIsVarArgs = pEnv->GetBooleanField (joElement, jfIsVarArgs);
-			pFunctionInfos[i].isVarArgs = jsIsVarArgs;
+			pFunctionInfos[i].bIsVarArgs = jsIsVarArgs;
 			jstring jsFunctionSignature = (jstring)pEnv->GetObjectField (joElement, jfFunctionSignature);
-			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].functionSignature);
+			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].bsFunctionSignature);
 			jstring jsFunctionWorksheetname = (jstring)pEnv->GetObjectField (joElement, jfFunctionWorksheetname);
-			storeBSTR (pEnv, jsFunctionWorksheetname, &pFunctionInfos[i].functionWorksheetName);
+			storeBSTR (pEnv, jsFunctionWorksheetname, &pFunctionInfos[i].bsFunctionWorksheetName);
 			jstring jsArgumentNames = (jstring)pEnv->GetObjectField (joElement, jfArgumentNames);
-			storeBSTR (pEnv, jsArgumentNames, &pFunctionInfos[i].argumentNames);
-			pFunctionInfos[i].functionType = pEnv->GetIntField (joElement, jfFunctionType);
+			storeBSTR (pEnv, jsArgumentNames, &pFunctionInfos[i].bsArgumentNames);
+			pFunctionInfos[i].iFunctionType = pEnv->GetIntField (joElement, jfFunctionType);
 			jstring jsFunctionCategory = (jstring)pEnv->GetObjectField (joElement, jfFunctionCategory);
-			storeBSTR (pEnv, jsFunctionCategory, &pFunctionInfos[i].functionCategory);
+			storeBSTR (pEnv, jsFunctionCategory, &pFunctionInfos[i].bsFunctionCategory);
 			jstring jsAcceleratorKey = (jstring)pEnv->GetObjectField (joElement, jfAcceleratorKey);
-			storeBSTR (pEnv, jsAcceleratorKey, &pFunctionInfos[i].acceleratorKey);
+			storeBSTR (pEnv, jsAcceleratorKey, &pFunctionInfos[i].bsAcceleratorKey);
 			jstring jsHelpTopic = (jstring)pEnv->GetObjectField (joElement, jfHelpTopic);
-			storeBSTR (pEnv, jsHelpTopic, &pFunctionInfos[i].helpTopic);
+			storeBSTR (pEnv, jsHelpTopic, &pFunctionInfos[i].bsHelpTopic);
 			jstring jsDescription = (jstring)pEnv->GetObjectField (joElement, jfDescription);
-			storeBSTR (pEnv, jsDescription, &pFunctionInfos[i].description);
+			storeBSTR (pEnv, jsDescription, &pFunctionInfos[i].bsDescription);
 			jobjectArray jaArgsHelp = (jobjectArray) pEnv->GetObjectField (joElement, jfArgsHelp);
 			jsize cArgsHelp = pEnv->GetArrayLength (jaArgsHelp);
 			SAFEARRAY *psaArgsHelp;
@@ -115,24 +121,24 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 				//freeBSTR (vArgHelp.bstrVal); // SafeArrayPutElement makes copy apparently. https://msdn.microsoft.com/en-us/library/windows/desktop/ms221283(v=vs.85).aspx
 			}
 			SafeArrayUnaccessData (psaArgsHelp);
-			pFunctionInfos[i].argsHelp = psaArgsHelp;
+			pFunctionInfos[i].saArgsHelp = psaArgsHelp;
 		}
 		SafeArrayUnaccessData (*m_pResults);
 	} catch (std::bad_alloc) {
-		TRACE ("CScanExecutor::Run: out of memory");
+		LOGTRACE ("CScanExecutor::Run: out of memory");
 		hResult = E_OUTOFMEMORY;
 		goto fail;
 	} catch (_com_error &e) {
-		TRACE ("CScanExecutor::Run: com error %s", e.ErrorMessage());
+		LOGTRACE ("CScanExecutor::Run: com error %s", e.ErrorMessage());
 		hResult = e.Error ();
 		goto fail;
 	}
-	TRACE ("CScanExecutor::Run: Releasing semaphore");
+	LOGTRACE ("CScanExecutor::Run: Releasing semaphore");
 	m_hRunResult = S_OK;
 	ReleaseSemaphore (m_hSemaphore, 1, NULL);
 	return S_OK;
 fail:
-	TRACE ("CScanExecutor::Run: Releasing semaphore (failure mode)");
+	LOGTRACE ("CScanExecutor::Run: Releasing semaphore (failure mode)");
 	m_hRunResult = hResult;
 	ReleaseSemaphore (m_hSemaphore, 1, NULL);
 	return hResult;

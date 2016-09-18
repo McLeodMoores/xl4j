@@ -1,42 +1,18 @@
 #include "stdafx.h"
 #define COMJVM_EXCEL_EXPORT
-#include "Jvm.h"
-#include "local/CScanExecutor.h"
-#include "local/CCallExecutor.h"
-#include "FunctionRegistry.h"
-#include "Converter.h"
+#include "ExcelUtils.h"
+#include "../settings/SettingsDialog.h"
+#include "../core/Settings.h"
+#include "../utils/FileUtils.h"
+#include "Lifecycle.h"
+#include "AddinEnvironment.h"
+#include "JvmEnvironment.h"
+#include "resource.h"
+#include <comdef.h>
 
-const IID XL4JOPER12_IID2 = {
-	0x053798d7,
-	0xeef0,
-	0x4ac5,
-	{
-		0x8e,
-		0xb8,
-		0x4d,
-		0x51,
-		0x5e,
-		0x7c,
-		0x5d,
-		0xb5
-	}
-};
+const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
-const IID ComJvmCore_LIBID2 = {
-	0x0e07a0b8,
-	0x0fa3,
-	0x4497,
-	{
-		0xbc,
-		0x66,
-		0x6d,
-		0x2a,
-		0xf2,
-		0xa0,
-		0xb9,
-		0xc8
-	}
-};
+const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 0x2a, 0xf2, 0xa0, 0xb9, 0xc8 }};
 //
 // Later, the instance handle is required to create dialog boxes.
 // g_hInst holds the instance handle passed in by DllMain so that it is
@@ -48,88 +24,16 @@ const IID ComJvmCore_LIBID2 = {
 //
 // Global Variables
 //
-HWND g_hWndMain = NULL;
-HANDLE g_hInst = NULL;
-XCHAR g_szBuffer[20] = L"";
-FunctionRegistry *g_pFunctionRegistry;
-Converter *g_pConverter;
-Jvm *g_pJvm = NULL;
-DWORD g_dwTlsIndex;
-
-
-void printXLOPER (XLOPER12 *oper) {
-	switch (oper->xltype) {
-	case xltypeStr: {
-		size_t sz = oper->val.str[0]; // the first 16-bit word is the length in chars (not inclusing any zero terminator)
-		wchar_t *zeroTerminated = (wchar_t *)malloc ((sz + 1) * sizeof (wchar_t)); // + 1 for zero terminator
-		wcsncpy (zeroTerminated, (const wchar_t *) oper->val.str + 1, sz); // +1 to ptr to skip length 16 bit word.
-		zeroTerminated[sz] = '\0'; // add a NULL terminator
-		TRACE ("XLOPER12: xltypeStr: %s", zeroTerminated);
-		free (zeroTerminated);
-	} break;
-	case xltypeNum: {
-		TRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
-	} break;
-	case xltypeNil: {
-		TRACE ("XLOPER12: xltypeNil");
-	} break;
-	case xltypeRef: {
-		TRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
-		if (oper->val.mref.lpmref == NULL) {
-			TRACE ("  lpmref = NULL");
-			break;
-		}
-		for (int i = 0; i < oper->val.mref.lpmref->count; i++) {
-			TRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
-				oper->val.mref.lpmref->reftbl[i].rwFirst,
-				oper->val.mref.lpmref->reftbl[i].rwLast,
-				oper->val.mref.lpmref->reftbl[i].colFirst,
-				oper->val.mref.lpmref->reftbl[i].colLast);
-		}
-	} break;
-	case xltypeMissing: {
-		TRACE ("XLOPER12: xltypeMissing");
-	} break;
-	case xltypeSRef: {
-		TRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
-				oper->val.sref.ref.rwFirst,
-				oper->val.sref.ref.rwLast,
-				oper->val.sref.ref.colFirst,
-				oper->val.sref.ref.colLast);
-	} break;
-	case xltypeInt: {
-		TRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
-	} break;
-	case xltypeErr: {
-		TRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
-	} break;
-	case xltypeBool: {
-		if (oper->val.xbool == FALSE) {
-			TRACE ("XLOPER12: xltypeBool: FALSE");
-		} else {
-			TRACE ("XLOPER12: xltypeBool: TRUE");
-		}
-	} break;
-	case xltypeBigData: {
-		TRACE ("XLOPER12: xltypeBigData");
-	} break;
-	case xltypeMulti: {
-		RW cRows = oper->val.array.rows;
-		COL cCols = oper->val.array.columns;
-		TRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
-		XLOPER12 *pXLOPER = oper->val.array.lparray;
-		for (RW j = 0; j < cRows; j++) {
-			for (COL i = 0; i < cCols; i++) {
-				printXLOPER (pXLOPER++);
-			}
-		}
-	} break;
-	default: {
-		TRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
-	}
-
-	}
-}
+HANDLE g_hInst = nullptr;
+DWORD g_dwTlsIndex = 0;
+int g_idRegisterSomeFunctions;
+int g_idSettings;
+int g_idGarbageCollect;
+bool g_initialized = false;
+bool g_shudown = false;
+CAddinEnvironment *g_pAddinEnv = nullptr;
+CJvmEnvironment *g_pJvmEnv = nullptr;
+SRWLOCK g_JvmEnvLock = SRWLOCK_INIT;
 
 ///***************************************************************************
 // DllMain()
@@ -153,10 +57,6 @@ void printXLOPER (XLOPER12 *oper) {
 //      The function returns TRUE (1) to indicate success. If, during
 //      per-process initialization, the function returns zero, 
 //      the system cancels the process.
-//
-// Comments:
-//
-// History:  Date       Author        Reason
 ///***************************************************************************
 
 BOOL APIENTRY DllMain (HANDLE hDLL,
@@ -166,59 +66,159 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		TRACE ("DLL_PROCESS_ATTACH called");
+		LOGTRACE ("DLL_PROCESS_ATTACH called");
 		// The instance handle passed into DllMain is saved
 		// in the global variable g_hInst for later use.
 		g_hInst = hDLL;
-		if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
+		/*if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
+			LOGERROR ("TlsAlloc returned TLS_OUT_OF_INDEXES");
 			return FALSE;
-		}
-		TRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
+		}*/
+		LOGTRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
 
 		break;
 	case DLL_THREAD_ATTACH: {
-		TRACE ("DLL_THREAD_ATTACH called");
-		TRACE ("Thread attached, created ICall instance"); 
-		TlsSetValue (g_dwTlsIndex, NULL);
+		LOGTRACE ("DLL_THREAD_ATTACH called");
+		//TlsSetValue (g_dwTlsIndex, NULL);
 	} break;
 	case DLL_THREAD_DETACH: {
-		ICall *pCall = (ICall *)TlsGetValue (g_dwTlsIndex);
-		if (pCall) {
-			pCall->Release ();
-			TlsSetValue (g_dwTlsIndex, NULL);
-		}
+		LOGTRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
+		//ICall *pCall = (ICall *)TlsGetValue (g_dwTlsIndex);
+		//if (pCall) {
+		//	LOGTRACE ("Calling Release on pCall and setting TLS entry to NULL");
+		//	pCall->Release ();
+		//	TlsSetValue (g_dwTlsIndex, NULL);
+		//}
 	} break;
 	case DLL_PROCESS_DETACH: {
-		if (g_pJvm) {
-			g_pJvm->Release ();
-		}
+		LOGTRACE ("DLL_PROCESS_DETACH");
+		//TlsFree (g_dwTlsIndex);
+		//if (g_pJvm) {
+		//	LOGTRACE ("Calling Release on Jvm");
+		//	g_pJvm->Release ();
+		//}
 	}
 	default:
 		break;
 	}
+	LOGTRACE ("Existing DllMain");
 	return TRUE;
 }
 
-void registerTimedGC () {
-	XLOPER12 now;
-	Excel12f (xlfNow, &now, 0);
-	now.val.num += 20. / (3600. * 24.);
-	XLOPER12 retVal;
-	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (TEXT("GarbageCollect")));
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
+__declspec(dllexport) void AddToolbar () {
+	IPicture *pIcon;
+	PICTDESC icon;
+	ZeroMemory (&icon, sizeof (icon));
+	icon.cbSizeofstruct = sizeof (icon);
+	icon.picType = PICTYPE_BITMAP;
+	HICON hIcon = LoadIcon (static_cast<HMODULE>(g_hInst), MAKEINTRESOURCE (IDI_SETTINGSICON));
+	if (!hIcon) {
+		_com_error err (HRESULT_FROM_WIN32 (GetLastError ()));
+		LOGERROR ("Couldn't load icon: %s", err.ErrorMessage());
+	}
+	ICONINFO iconInfo;
+	GetIconInfo (hIcon, &iconInfo);
+	HRESULT hr;
+	if (FAILED(hr = OleCreatePictureIndirect (&icon, IID_IPicture, FALSE, (PVOID*)&pIcon))) {
+		_com_error err (hr);
+		LOGERROR ("Problem creating picture: %s", err.ErrorMessage());
+	}
+	XLOPER12 xTest;
+	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
+	if (xTest.xltype == xltypeErr) {
+		const int ROWS = 1;
+		XLOPER12 xlaToolRef[9 * ROWS];
+		XLOPER12 xlArr;
+		xlArr.xltype = xltypeMulti;
+		xlArr.val.array.columns = 9;
+		xlArr.val.array.rows = ROWS;
+		xlArr.val.array.lparray = &xlaToolRef[0];
+		for (int i = 0; i < ROWS; i++) {
+			int j = i * 9;
+			xlaToolRef[j + 0].xltype = xltypeStr;
+			xlaToolRef[j + 0].val.str = TempStr12 (L"211")->val.str;
+			xlaToolRef[j + 1].xltype = xltypeStr;
+			xlaToolRef[j + 1].val.str = TempStr12 (L"Settings")->val.str;
+			xlaToolRef[j + 2].xltype = xltypeStr;
+			xlaToolRef[j + 2].val.str = TempStr12 (L"FALSE")->val.str;;
+			xlaToolRef[j + 3].xltype = xltypeStr;
+			xlaToolRef[j + 3].val.str = TempStr12 (L"TRUE")->val.str;
+			xlaToolRef[j + 4].xltype = xltypeInt;
+			int rnd = rand ();
+			xlaToolRef[j + 4].val.w = rnd;// TempStr12 (L"943")->val.str; // Gears face (face means icon in office-speak)
+			LOGTRACE ("%d", rnd);
+			xlaToolRef[j + 5].xltype = xltypeStr;
+			xlaToolRef[j + 5].val.str = TempStr12 (L"Settings desc")->val.str;
+			xlaToolRef[j + 6].xltype = xltypeStr;
+			xlaToolRef[j + 6].val.str = TempStr12 (L"")->val.str;
+			xlaToolRef[j + 7].xltype = xltypeStr;
+			xlaToolRef[j + 7].val.str = TempStr12 (L"")->val.str;
+			xlaToolRef[j + 8].xltype = xltypeStr;
+			xlaToolRef[j + 8].val.str = TempStr12 (L"")->val.str;
+		}
+		int retVal = Excel12f (xlfAddToolbar, NULL, 2, TempStr12 (TEXT ("XL4J")), &xlArr);
+		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
+		Excel12f (xlcShowToolbar, NULL, 10, TempStr12 (L"XL4J"), TempBool12 (1),
+			TempInt12 (5), TempMissing12 (), TempMissing12 (), TempInt12 (999), TempInt12(0), // no protection, 
+			TempBool12(TRUE), TempBool12(TRUE), TempBool12(TRUE));
+	}
+	Excel12f (xlFree, 0, 1, &xTest); 
 }
 
-void registerGCCommand (XLOPER12 *xDLL) {
-	XLOPER12 retVal;
-	Excel12f (
-		xlfRegister, &retVal, 6, xDLL,
-		TempStr12 (TEXT ("GarbageCollect")), // export name
-		TempStr12 (TEXT ("J")), // return type, always J for commands
-		TempStr12 (TEXT ("GarbageCollect")), // command name
-		TempMissing12 (), // args
-		TempInt12 (2) // function type 2 = Command
-		);
+__declspec(dllexport) void RemoveToolbar () {
+	XLOPER12 xTest;
+	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
+	if (xTest.xltype != xltypeErr) {
+		int retVal = Excel12f (xlfDeleteToolbar, NULL, 1, TempStr12 (TEXT ("XL4J")));
+		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
+	}
+	Excel12f (xlFree, 0, 1, &xTest);
 }
+
+__declspec(dllexport) int Settings () {
+	HWND hwndExcel;
+	if (!ExcelUtils::GetHWND (&hwndExcel)) {
+		LOGERROR ("Couldn not get Excel window handle");
+	}
+	ISettingsDialog *pSettingsDialog;
+	CSettings *pSettings = g_pAddinEnv->GetSettings ();
+	HRESULT hr;
+	if (SUCCEEDED (hr = CSettingsDialogFactory::Create (pSettings, &pSettingsDialog))) {
+		ExcelUtils::HookExcelWindow (hwndExcel);
+		INT_PTR nRet = pSettingsDialog->Open (hwndExcel);
+		ExcelUtils::UnhookExcelWindow (hwndExcel);
+		// Handle the return value from DoModal
+		switch (nRet) {
+		case -1:
+			LOGERROR ("Dialog box could not be created!");
+			break;
+		case IDABORT: {
+			hr = HRESULT_FROM_WIN32 (GetLastError ());
+			_com_error err (hr);
+			LOGERROR ("An error occurred in the settings dialog box: %s", err.ErrorMessage ());
+			// Do something
+		} break;
+		case IDOK:
+			LOGTRACE ("Settings OK clicked, restarting JVM");
+			MessageBox (hwndExcel, _T ("Restart Required"), _T ("You will need to restart Excel before changes take effect"), MB_OK);
+			//RestartJvm ();
+			break;
+		case IDCANCEL:
+			LOGTRACE ("Settings Cancel clicked");
+			break;
+		default:
+			LOGERROR ("LOGIC ERROR: default case triggered in Settings dialog result handler");
+			break;
+		};
+	} else {
+		_com_error err (hr);
+		LOGERROR ("Problem opening settings dialog: %s", err.ErrorMessage ());
+		MessageBox (hwndExcel, _T ("Error"), _T ("Problem opening settings dialog.  Rerun with DebugView open and check log for reason"), MB_OK);
+	}
+	// TODO: Release dialog object.
+	return 1;
+}
+
 
 ///***************************************************************************
 // xlAutoOpen()
@@ -244,44 +244,40 @@ void registerGCCommand (XLOPER12 *xDLL) {
 //      REGISTER("EXAMPLE.XLL"), which in turn calls xlAutoOpen.
 //
 //      xlAutoOpen should:
-//
 //       - register all the functions you want to make available while this
 //         XLL is open,
-//
 //       - add any menus or menu items that this XLL supports,
-//
 //       - perform any other initialization you need, and
-//
 //       - return 1 if successful, or return 0 if your XLL cannot be opened.
 //
-// Parameters:
-//
-// Returns: 
-//
-//      int         1 on success, 0 on failure
-//
-// Comments:
-//
-// History:  Date       Author        Reason
+// Returns: int  1 on success, 0 on failure
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
-	static XLOPER12 xDLL;
-	Excel12f (xlGetName, &xDLL, 0);
-	g_pConverter = new Converter ();
-	g_pJvm = new Jvm ();
-	if (!g_pJvm) {
-		TRACE ("JVM global pointer is NULL");
+	if (XLCallVer () < (12 * 256)) {
+		HWND hWnd;
+		ExcelUtils::GetHWND (&hWnd);
+		MessageBox (hWnd, _T ("Not Supported"), _T ("Sorry, versions of Excel prior to 2007 are not supported."), MB_OK);
+		return 0;
 	}
-	g_pFunctionRegistry = new FunctionRegistry (g_pJvm->getJvm());
-	g_pFunctionRegistry->scan (); 
-	TRACE ("Finished scan");
-	g_pFunctionRegistry->registerFunctions (xDLL);
-	TRACE ("Registering GC Command");
-	registerGCCommand (&xDLL);
-	registerTimedGC ();
-	TRACE ("Finished registration");
-	// Free the XLL filename //
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
+	if (g_shudown) {
+		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
+		return 0;
+	}
+	if (g_initialized) {
+		return 1;
+	}
+	g_initialized = true;
+
+	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
+	LoadDLLs ();
+	wchar_t buf[MAX_PATH + 1];
+	GetCurrentDirectoryW (MAX_PATH, buf);
+	LOGTRACE ("CWD = %s", buf);
+	InitAddin ();
+	InitJvm ();
+	if (ExcelUtils::IsAddinSettingEnabled (L"ShowToolbar", TRUE)) {
+		AddToolbar ();
+	}
 	FreeAllTempMemory ();
 	return 1;
 }
@@ -332,57 +328,24 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 ///***************************************************************************
 
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
-	
-	// This block first deletes all names added by xlAutoOpen or
-	// xlAutoRegister12. Next, it checks if the drop-down menu Generic still
-	// exists. If it does, it is deleted using xlfDeleteMenu. It then checks
-	// if the Test toolbar still exists. If it is, xlfDeleteToolbar is
-	// used to delete it.
-	//
-
-	//
-	// Due to a bug in Excel the following code to delete the defined names
-	// does not work.  There is no way to delete these
-	// names once they are Registered
-	// The code is left in, in hopes that it will be
-	// fixed in a future version.
-	//
-
-	//for (i = 0; i < g_rgWorksheetFuncsRows; i++)
-	//	Excel12f (xlfSetName, 0, 1, TempStr12 (g_rgWorksheetFuncs[i][2]));
-
-	//for (i = 0; i < g_rgCommandFuncsRows; i++)
-	//	Excel12f (xlfSetName, 0, 1, TempStr12 (g_rgCommandFuncs[i][2]));
-
+	ShutdownJvm ();
+	ShutdownAddin ();
+	RemoveToolbar ();
+	g_shudown = true;
 	return 1;
 }
 
-///***************************************************************************
-// xlAutoAdd()
-//
-// Purpose:
-//
-//      This function is called by the Add-in Manager only. When you add a
-//      DLL to the list of active add-ins, the Add-in Manager calls xlAutoAdd()
-//      and then opens the XLL, which in turn calls xlAutoOpen.
-//
-// Parameters:
-//
-// Returns: 
-//
-//      int         1
-//
-// Comments:
-//
-// History:  Date       Author        Reason
-///***************************************************************************
-
-__declspec(dllexport) int WINAPI xlAutoAdd (void)
-{
+__declspec(dllexport) int WINAPI xlAutoAdd (void) {
+	if (g_shudown) {
+		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
+		return 0;
+	}
 	XCHAR szBuf[255];
-
-	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding Excel4J.XLL\n "
-		L"built on %hs at %hs", __DATE__, __TIME__);
+	InitAddin ();
+	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
+	LOGTRACE ("Add-in name is %s", static_cast<wchar_t*>(addinName));
+	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding %s.XLL\n "
+		L"built on %hs at %hs", static_cast<wchar_t*>(addinName), __DATE__, __TIME__);
 
 	// Display a dialog box indicating that the XLL was successfully added //
 	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf), TempInt12 (2));
@@ -414,10 +377,14 @@ __declspec(dllexport) int WINAPI xlAutoAdd (void)
 // History:  Date       Author        Reason
 ///***************************************************************************
 
-__declspec(dllexport) int WINAPI xlAutoRemove (void)
-{
+__declspec(dllexport) int WINAPI xlAutoRemove (void) {
 	// Show a dialog box indicating that the XLL was successfully removed //
-	Excel12f (xlcAlert, 0, 2, TempStr12 (L"You have removed Excel4J.XLL!"),
+	XCHAR szBuf[255];
+	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
+	LOGTRACE ("Add-in name is %s", static_cast<wchar_t*>(addinName));
+	wsprintfW ((LPWSTR)szBuf, L"You have removed %s.XLL successfully\n "
+		L"built on %hs at %hs.\nYou should consider restarting Excel to free all resources.", static_cast<wchar_t*>(addinName), __DATE__, __TIME__);
+	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf),
 		TempInt12 (2));
 	return 1;
 }
@@ -450,8 +417,7 @@ __declspec(dllexport) int WINAPI xlAutoRemove (void)
 // History:  Date       Author        Reason
 ///***************************************************************************
 
-__declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction)
-{
+__declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction) {
 	static XLOPER12 xInfo, xIntAction;
 
 	//
@@ -460,257 +426,64 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	// it returns a string representing the long name. If it receives 
 	// anything else, it returns a #VALUE! error.
 	//
-
+	LoadDLLs ();
+	InitAddin ();
 	Excel12f (xlCoerce, &xIntAction, 2, xAction, TempInt12 (xltypeInt));
-
+	bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
 	if (xIntAction.val.w == 1)
 	{
 		xInfo.xltype = xltypeStr;
-		xInfo.val.str = L"\022Excel4J DLL";
+		
+		xInfo.val.str = TempStr12 (addinName)->val.str;// L"\013Excel4J DLL";
 	}
 	else
 	{
 		xInfo.xltype = xltypeErr;
 		xInfo.val.err = xlerrValue;
 	}
-
+	addinName.Detach (); // to prevent it being deallocated.
 	//Word of caution - returning static XLOPERs/XLOPER12s is not thread safe
 	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
-	return(LPXLOPER12)&xInfo;
-}
-RW g_rw;
-COL g_col;
-IDSHEET g_sheet;
-
-void ScanCell (XLOPER12 *cell) {
-	printXLOPER (cell);
-	if ((cell->xltype == xltypeStr) &&
-		(cell->val.str[0] > 0) &&
-		(cell->val.str[1] == L'\x1A')) {
-		TRACE ("Found an object ref!");
-		printXLOPER (cell);
-	}
-}
-
-void ScanCells (int cols, int rows, XLOPER12 *arr) {
-	for (int i = 0; i < rows; i++) {
-		for (int j = 0; j < cols; j++) {
-			ScanCell (arr++);
-		}
-	}
-}
-
-
-void ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
-	XLOPER12 firstRow;
-	XLOPER12 lastRow;
-	XLOPER12 firstCol;
-	XLOPER12 lastCol;
-	Excel12f (xlfGetDocument, &firstRow, 2, TempInt12 (9), pSheetName);
-	Excel12f (xlfGetDocument, &lastRow, 2, TempInt12 (10), pSheetName);
-	Excel12f (xlfGetDocument, &firstCol, 2, TempInt12 (11), pSheetName);
-	Excel12f (xlfGetDocument, &lastCol, 2, TempInt12 (12), pSheetName);
-	if (firstRow.val.num == 0) {
-		TRACE ("sheet was empty");
-		return; // sheet empty.
-	}
-	XLOPER12 sheetId;
-	Excel12f (xlSheetId, &sheetId, 1, pSheetName);
-	if (sheetId.xltype == xltypeErr) {
-		TRACE ("Could not get sheet ID");
-		return;
-	}
-	XLOPER12 wholeRow;
-	XLMREF12 xlmRef;
-	wholeRow.xltype = xltypeRef;
-	wholeRow.val.mref.idSheet = sheetId.val.mref.idSheet;
-	wholeRow.val.mref.lpmref = &xlmRef;
-    xlmRef.count = 1;
-	xlmRef.reftbl[0].colFirst = (COL) firstCol.val.num - 1;
-	xlmRef.reftbl[0].colLast = (COL) lastCol.val.num - 1;
-	
-	for (int i = (RW) firstRow.val.num - 1; i <= (RW) lastRow.val.num - 1; i++) {
-		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
-		wholeRow.val.mref.lpmref->reftbl[0].rwFirst = i;
-		wholeRow.val.mref.lpmref->reftbl[0].rwLast = i;
-		XLOPER12 row;
-		Excel12f (xlCoerce, &row, 2, &wholeRow, pMulti);
-		ScanCells (row.val.array.columns, row.val.array.rows, row.val.array.lparray);
-		Excel12f (xlFree, 0, 1, &row);
-	}
-	Excel12f (xlFree, 0, 1, &firstRow);
-	Excel12f (xlFree, 0, 1, &lastRow);
-	Excel12f (xlFree, 0, 1, &firstCol);
-	Excel12f (xlFree, 0, 1, &lastCol);
-}
-
-
-void ScanWorkbook (XLOPER12 *pWorkbookName) {
-	XLOPER12 sheets;
-	XLOPER12 *pArgNum = TempInt12 (1); // horiz array of all sheets in workbook
-	Excel12f (xlfGetWorkbook, &sheets, 2, pArgNum, pWorkbookName);
-	int cSheets = sheets.val.array.columns;
-	XLOPER12 *pSheetName;
-	int i;
-	for (pSheetName = sheets.val.array.lparray, i = 0; i < cSheets; pSheetName++, i++) {
-		TRACE ("Sheet=");
-		printXLOPER (pSheetName);
-		ScanSheet (pWorkbookName, pSheetName);
-	}
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&sheets);
-	FreeAllTempMemory ();
+	return static_cast<LPXLOPER12>(&xInfo);
 }
 
 __declspec(dllexport) int GarbageCollect () {
-	TRACE ("GarbageCollect() called.");
-	XLOPER12 documents;
-	Excel12f (xlfDocuments, &documents, 0);
-	int cDocs = documents.val.array.columns;
-	int i;
-	XLOPER12 *pWorkbookName;
-	for (pWorkbookName = documents.val.array.lparray, i = 0; i < cDocs; pWorkbookName++, i++) {
-		TRACE ("WorkbookName=");
-		printXLOPER (pWorkbookName);
-		ScanWorkbook (pWorkbookName);
-	}
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&documents);
-	registerTimedGC ();
+	//LOGTRACE ("GarbageCollect() called.");
+//	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockShared (&g_JvmEnvLock);
+//	LOGTRACE ("Lock Acquired");
+	g_pJvmEnv->_GarbageCollect();
+//	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockShared (&g_JvmEnvLock);
+	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
 	return 1;
 }
 
-
-
+__declspec(dllexport) int RegisterSomeFunctions () {
+	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockShared (&g_JvmEnvLock);
+	LOGTRACE ("Lock Acquired");
+	if (g_pJvmEnv->_RegisterSomeFunctions ()) {
+		LOGTRACE ("Releasing Lock");
+		ReleaseSRWLockShared (&g_JvmEnvLock);
+		ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
+	} else {
+		LOGTRACE ("Releasing Lock");
+		ReleaseSRWLockShared (&g_JvmEnvLock);
+		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
+	}
+	
+	return 1;
+}
 
 __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_list ap) {
-	LARGE_INTEGER t1;
-	QueryPerformanceCounter (&t1);
-	// Find out how many parameters this function should expect.
-	FUNCTIONINFO functionInfo;
-	HRESULT hr = g_pFunctionRegistry->get (exportNumber, &functionInfo);
-	long nArgs = wcslen (functionInfo.functionSignature) - 2;
-	//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
-	TRACE ("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
-	
-	// Create a SAFEARRAY(XL4JOPER12) of nArg entries
-	SAFEARRAYBOUND bounds = { nArgs, 0 };
-	SAFEARRAY *saInputs = SafeArrayCreateEx (VT_VARIANT, 1, &bounds, NULL);
-	if (saInputs == NULL) {
-		TRACE ("UDF stub: Could not create SAFEARRAY");
-		goto error;
-	}
-	TRACE ("UDF stub: Created SAFEARRAY for parameters");
-	// Get a ptr into the SAFEARRAY
-	VARIANT *inputs;
-	SafeArrayAccessData (saInputs, reinterpret_cast<PVOID *>(&inputs));
-	VARIANT *pInputs = inputs;
-	if (nArgs > 0) {
-		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
-		g_pConverter->convert (first, pInputs++);
-		TRACE ("UDF stub: copied first element into SAFEARRAY");
-	} else {
-		TRACE ("UDF stub: first paramter was NULL, no conversion");
-	}
-	TRACE ("UDF stub: converting any remaining parameters");
-	for (int i = 0; i < nArgs - 1; i++) {
-		LPXLOPER12 arg = va_arg (ap, LPXLOPER12);
-		TRACE ("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
-		LARGE_INTEGER ta1, ta2, freq;
-		//QueryPerformanceCounter (&ta1);
-		g_pConverter->convert (arg, pInputs++);
-		//QueryPerformanceCounter (&ta2);
-		//QueryPerformanceFrequency (&freq);
-		//Debug::odprintf (TEXT ("arg %d took %lld"), i, ((ta2.QuadPart - ta1.QuadPart) * 1000000) / freq.QuadPart);
-		TRACE ("UDF stub: converted and copied into SAFEARRAY");
-	}
-	va_end (ap);
-	// trim off any VT_NULLs if it's a varargs function.
-	if (functionInfo.isVarArgs) {
-		LARGE_INTEGER tva1, tva2, freq;
-		QueryPerformanceCounter (&tva1);
-		TRACE ("Detected VarArgs, trying to trim");
-		int i = nArgs - 1;
-		while (i > 0 && inputs[i].vt == VT_EMPTY) {
-			i--;
-		}
-		SafeArrayUnaccessData (saInputs);
-		TRACE ("Trimming to %d", i + 1);
-		SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
-		hr = SafeArrayRedim (saInputs, &trimmedBounds);
-		if (FAILED (hr)) {
-			TRACE ("SafeArrayRedim failed");
-			goto error;
-		}
-		QueryPerformanceCounter (&tva2);
-		QueryPerformanceFrequency (&freq);
-		Debug::odprintf (TEXT ("varargs section took %lld"), i, ((tva2.QuadPart - tva1.QuadPart) * 1000000) / freq.QuadPart);
-	} else {
-		SafeArrayUnaccessData (saInputs);
-	}
-	VARIANT result;
-
-	long szInputs;
-	if (FAILED (SafeArrayGetUBound (saInputs, 1, &szInputs))) {
-		TRACE ("UDF stub: SafeArrayGetUBound failed");
-		goto error;
-	}
-	szInputs++;
-	LARGE_INTEGER t2;
-	QueryPerformanceCounter (&t2);
-	// get TLS call instance.
-	ICall *pCall = (ICall *) TlsGetValue (g_dwTlsIndex);
-	if (pCall == NULL) {
-		if (FAILED (g_pJvm->getJvm ()->CreateCall (&pCall))) {
-			TRACE ("UDF stub: CreateCall failed on JVM");
-			return FALSE;
-		}
-		TlsSetValue (g_dwTlsIndex, pCall);
-	}
-	//TRACE ("UDF stub: Prior to invocation saInputs has %d elements (post trimming)", szInputs);
-	if (FAILED(hr = pCall->call (&result, exportNumber, saInputs))) {
-		_com_error err (hr);
-		TRACE ("UDF stub: call failed %s.", err.ErrorMessage ());
-		goto error;
-	}
-	SafeArrayDestroy (saInputs); // should recursively deallocate
-	LARGE_INTEGER t3;
-	QueryPerformanceCounter (&t3);
-	XLOPER12 *pResult = (XLOPER12 *) malloc (sizeof (XLOPER12));
-	hr = g_pConverter->convert (&result, pResult);
-	if (FAILED (hr)) {
-		TRACE ("UDF stub: Result conversion failed");
-		goto error;
-	}
-	VariantClear (&result); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
-	pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
-	TRACE ("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
-	//if (pResult->xltype == xltypeMulti) {
-	//	TRACE ("UDF stub: returning multi: columns = %d, rows = %d, arr = %p", pResult->val.array.columns, pResult->val.array.rows, pResult->val.array.lparray);
-	//	XLOPER12 *arr = pResult->val.array.lparray;
-	//	if (arr->xltype == xltypeNum) {
-	//		TRACE ("first element in array is number %f", arr->val.num);
-	//	} else if (arr->xltype == xltypeStr) {
-	//		TRACE ("first element is string");
-	//	} else {
-	//		TRACE ("Unrecognised xltype %d (0x%x)", arr->xltype, arr->xltype);
-	//	}
-	//}
-	LARGE_INTEGER t4;
-	QueryPerformanceCounter (&t4);
-	LARGE_INTEGER TicksPerSec;
-	QueryPerformanceFrequency (&TicksPerSec);
-	long long usecsTotal = ((t4.QuadPart - t1.QuadPart) * 1000000 ) / TicksPerSec.QuadPart;
-	long long safeArray = ((t2.QuadPart - t1.QuadPart) * 1000000 ) / TicksPerSec.QuadPart;
-	long long call = ((t3.QuadPart - t2.QuadPart) * 1000000) / TicksPerSec.QuadPart;
-	long long resultConv = ((t4.QuadPart - t3.QuadPart) * 1000000) / TicksPerSec.QuadPart;
-	//Debug::odprintf (TEXT ("total %lld, SAFEARRAY %lld, call %lld, result conv %lld\n"), usecsTotal, safeArray, call, resultConv);
-	return pResult;
-error:
-	if (saInputs) {
-		SafeArrayDestroy (saInputs);
-	}
-	// free result...
-	XLOPER12 *pErrVal = TempErr12 (xlerrValue);
-	return pErrVal;
+//	LOGTRACE ("Acquiring Lock");
+	AcquireSRWLockShared (&g_JvmEnvLock);
+//	LOGTRACE ("Lock Acquired");
+	LPXLOPER12 result = g_pJvmEnv->_UDF (exportNumber, first, ap);
+//	LOGTRACE ("Releasing Lock");
+	ReleaseSRWLockShared (&g_JvmEnvLock);
+	return result;
 }
 
 
@@ -736,33 +509,12 @@ error:
 // History:  Date       Author        Reason
 ///***************************************************************************
 
-__declspec(dllexport) int WINAPI fExit (void)
-{
-	XLOPER12  xDLL,    // The name of this DLL //
-		xFunc;             // The name of the function //
-
-	//
-	// This code gets the DLL name. It then uses this along with information
-	// from g_rgFuncs[] to obtain a REGISTER.ID() for each function. The
-	// register ID is then used to unregister each function. Then the code
-	// frees the DLL name and calls xlAutoClose.
-	//
-
-	// Make xFunc a string //
-	xFunc.xltype = xltypeStr;
-
-	Excel12f (xlGetName, &xDLL, 0);
-
-	// TODO: unregister worksheet functions
-
-	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
-
+__declspec(dllexport) int WINAPI fExit (void) {
 	return xlAutoClose ();
 }
 
-__declspec(dllexport) void WINAPI xlAutoFree12 (LPXLOPER12 oper) 
-{
-	TRACE ("xlAutoFree12 called");
+__declspec(dllexport) void WINAPI xlAutoFree12 (LPXLOPER12 oper) {
+	LOGTRACE ("xlAutoFree12 called");
 	if (oper->xltype & xlbitDLLFree) {
 		FreeXLOper12T (oper);
 		free (oper);
