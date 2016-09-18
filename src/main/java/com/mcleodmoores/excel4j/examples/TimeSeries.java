@@ -33,16 +33,33 @@ public final class TimeSeries implements Operation<TimeSeries> {
   public static final TimeSeries EMPTY = new TimeSeries(new LocalDate[0], new Double[0], false);
 
   /**
-   * Excel function that creates a time series from date, value pairs. The array can be either two rows
+   * A function that creates a time series from date, value pairs or from a row or column of dates and a row or column of values
+   * In the first case, the array can be either two rows or two columns. Otherwise, the time series can be created from a row or
+   * column of dates and a row or column of values with an equal number of dates and values.
+   * @param datesAndValues  the dates and values, not null
+   * @return  a time series
+   */
+  @XLFunction(name = "TimeSeries",
+      description = "Create a time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  public static TimeSeries of(@XLArgument(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
+    ArgumentChecker.notNull(datesAndValues, "datesAndValues");
+    if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
+      return ofRange((XLArray) datesAndValues[0]);
+    } else if (datesAndValues.length == 2 && datesAndValues[0] instanceof XLArray && datesAndValues[1] instanceof XLArray) {
+      return ofRowsOrColumns((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
+    }
+    throw new Excel4JRuntimeException("Cannot create time series from input");
+  }
+
+  /**
+   * A function that creates a time series from date, value pairs. The array can be either two rows
    * or two columns.
    * @param datesAndValuesArray  the dates and values, not null
    * @return  a time series
    */
-  @XLFunction(name = "TimeSeries",
-              description = "Create a time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries of(@XLArgument(name = "datesAndValues", description = "The dates and values")final XLArray datesAndValuesArray) {
+  private static TimeSeries ofRange(final XLArray datesAndValuesArray) {
     ArgumentChecker.notNull(datesAndValuesArray, "datesAndValuesArray");
     final TypeConverter dateConverter =
         ExcelFactory.getInstance().getTypeConverterRegistry().findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, LocalDate.class));
@@ -77,18 +94,13 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   /**
-   * Excel function that creates a time series from a row or column of dates and a row or column of values.
+   * A function that creates a time series from a row or column of dates and a row or column of values.
    * There must be an equal number of dates and values.
    * @param datesArray  the dates, must be either a row or column, not null
    * @param valuesArray  the values, must be either a row or column, not null
    * @return  a time series
    */
-  @XLFunction(name = "TimeSeries",
-              description = "Create a time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries of(@XLArgument(name = "dates", description = "The dates")final XLArray datesArray,
-                              @XLArgument(name = "values", description = "The values")final XLArray valuesArray) {
+  private static TimeSeries ofRowsOrColumns(final XLArray datesArray, final XLArray valuesArray) {
     ArgumentChecker.notNull(datesArray, "dates");
     ArgumentChecker.notNull(valuesArray, "values");
     ArgumentChecker.isFalse(datesArray.isArea(), "The date array must be either a column or row");

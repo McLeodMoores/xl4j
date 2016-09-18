@@ -14,19 +14,26 @@ import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.heap.Heap;
 import com.mcleodmoores.excel4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.excel4j.values.XLArray;
+import com.mcleodmoores.excel4j.values.XLBoolean;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLObject;
 import com.mcleodmoores.excel4j.values.XLValue;
 
 /**
- *
+ * Tests the example time series functions.
  */
 public class ExcelTimeSeriesFunctionsTest {
+  /** The object heap */
   private static final Heap HEAP = ExcelFactory.getInstance().getHeap();
+  /** The function processor */
   private static final MockFunctionProcessor PROCESSOR = MockFunctionProcessor.getInstance();
+  /** An Excel object containing a time series */
   private static final XLObject XL_TS_1;
+  /** An Excel object containing a time series */
   private static final XLObject XL_TS_2;
+  /** A time series */
   private static final TimeSeries TS_1;
+  /** A time series */
   private static final TimeSeries TS_2;
 
   static {
@@ -49,6 +56,9 @@ public class ExcelTimeSeriesFunctionsTest {
     TS_2 = (TimeSeries) HEAP.getObject(XL_TS_2.getHandle());
   }
 
+  /**
+   * Tests the addition of two time series.
+   */
   @Test
   public void testAdd() {
     final XLValue xlValue = PROCESSOR.invoke("add", XL_TS_1, XL_TS_2);
@@ -56,6 +66,9 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.add(TS_2));
   }
 
+  /**
+   * Tests the subtraction of two time series.
+   */
   @Test
   public void testSubtract() {
     final XLValue xlValue = PROCESSOR.invoke("subtract", XL_TS_1, XL_TS_2);
@@ -63,6 +76,9 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.subtract(TS_2));
   }
 
+  /**
+   * Tests the multiplication of two time series.
+   */
   @Test
   public void testMultiply() {
     final XLValue xlValue = PROCESSOR.invoke("multiply", XL_TS_1, XL_TS_2);
@@ -70,6 +86,9 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.multiply(TS_2));
   }
 
+  /**
+   * Tests the division of two time series.
+   */
   @Test
   public void testDivide() {
     final XLValue xlValue = PROCESSOR.invoke("divide", XL_TS_1, XL_TS_2);
@@ -77,6 +96,9 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.divide(TS_2));
   }
 
+  /**
+   * Tests the scaling of a time series.
+   */
   @Test
   public void testScale() {
     final XLValue xlValue = PROCESSOR.invoke("scale", XL_TS_1, XLNumber.of(5));
@@ -84,6 +106,9 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.scale(5));
   }
 
+  /**
+   * Tests the absolute operation.
+   */
   @Test
   public void testAbs() {
     final XLValue xlValue = PROCESSOR.invoke("abs", XL_TS_1);
@@ -91,10 +116,38 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.abs());
   }
 
+  /**
+   * Tests the reciprocal operation.
+   */
   @Test
   public void testReciprocal() {
     final XLValue xlValue = PROCESSOR.invoke("reciprocal", XL_TS_1);
     assertTrue(xlValue instanceof XLObject);
     assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.reciprocal());
+  }
+
+  /**
+   * Tests the mean and covariance calculators.
+   */
+  @Test
+  public void testMeanAndCovariance() {
+    XLValue xlValue = PROCESSOR.invoke("MeanCalculator.apply", XL_TS_1);
+    assertTrue(xlValue instanceof XLObject);
+    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), new MeanCalculator().apply(TS_1));
+    xlValue = PROCESSOR.invoke("CovarianceCalculator.apply", XL_TS_1, XL_TS_2);
+    assertTrue(xlValue instanceof XLObject);
+    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), new CovarianceCalculator().apply(TS_1, TS_2));
+  }
+
+  /**
+   * Tests the return function calculators.
+   */
+  @Test
+  public void testReturnFunction() {
+    final XLValue xlValue = PROCESSOR.newInstance("ReturnCalculator", XLBoolean.FALSE);
+    assertTrue(xlValue instanceof XLObject);
+    final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
+    assertTrue(object instanceof ReturnCalculator);
+    //xlValue = PROCESSOR.invoke(functionName, args);
   }
 }

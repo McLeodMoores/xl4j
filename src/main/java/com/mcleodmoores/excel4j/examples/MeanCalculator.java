@@ -11,8 +11,7 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 /**
  * Calculates the arithmetic mean of a time series of values.
  */
-@XLClass(name = "Mean",
-         description = "Calculates the mena of a time series",
+@XLClass(description = "Calculates the mean of a time series",
          category = "Time series")
 public class MeanCalculator implements Function<TimeSeries, Double> {
 

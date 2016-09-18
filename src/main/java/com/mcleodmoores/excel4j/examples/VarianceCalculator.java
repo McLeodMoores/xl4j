@@ -5,15 +5,14 @@ package com.mcleodmoores.excel4j.examples;
 
 import java.util.function.Function;
 
-import com.mcleodmoores.excel4j.XLClass;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
 
 /**
  *
  */
-@XLClass(name = "Variance",
-         description = "Calculates the sample variance of a time series",
-         category = "Time series")
+//@XLClass(name = "Variance",
+//         description = "Calculates the sample variance of a time series",
+//         category = "Time series")
 public class VarianceCalculator implements Function<TimeSeries, Double> {
 
   @Override
