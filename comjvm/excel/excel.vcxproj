@@ -88,7 +88,7 @@
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetExt>.xll</TargetExt>
-    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>true</LinkIncremental>
@@ -97,7 +97,7 @@
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetExt>.xll</TargetExt>
-    <LibraryPath>$(OutDir);C:\Program Files (x86)\Java\jdk1.8.0_20\lib;C:\2013 Office System Developer Resources\Excel2013XLLSDK\LIB;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -106,7 +106,7 @@
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
     <TargetExt>.xll</TargetExt>
-    <LibraryPath>$(OutDir);C:\Program Files\Java\jdk1.8.0_20\lib;C:\2013 Office System Developer Resources\Excel2013XLLSDK\LIB\x64;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -151,7 +151,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-i386;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
       <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -209,7 +209,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-i386;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
       <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>

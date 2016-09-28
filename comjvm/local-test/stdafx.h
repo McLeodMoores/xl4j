@@ -26,6 +26,6 @@
 #include "utils/Debug.h"
 
 // Headers for CppUnitTest:
-#include "CppUnitTest.h"
+#include <CppUnitTest.h>
 
 #endif /* ifndef _STDAFX_H_ */

@@ -9,6 +9,12 @@
 
 #define SETTINGS_JVM_TEMPLATE	TEXT ("JvmTemplate")
 
+#ifdef COMJVM_SETTINGS_EXPORT
+# define COMJVM_SETTINGS_API __declspec(dllexport)
+#else
+# define COMJVM_SETTINGS_API __declspec(dllimport)
+#endif /* ifndef COMJVM_DEBUG_API */
+
 #ifdef _UNICODE
 typedef std::wstring _std_string_t;
 #else /* ifdef _UNICODE */
@@ -39,7 +45,7 @@ public:
 /// <summary>Configuration settings.</summary>
 ///
 /// <para>Configuration may be defined in the registry or on disk alongside the DLL.</para>
-class CSettings {
+class COMJVM_SETTINGS_API CSettings {
 private:
 	CSettingsImpl *m_pImpl;
 public:

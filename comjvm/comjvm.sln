@@ -134,7 +134,8 @@ Global
 		{A9BC44B6-35C2-440D-A6A1-DA59305740E2}.Debug|x64.Build.0 = Debug|x64
 		{A9BC44B6-35C2-440D-A6A1-DA59305740E2}.Release|Win32.ActiveCfg = Release|Win32
 		{A9BC44B6-35C2-440D-A6A1-DA59305740E2}.Release|Win32.Build.0 = Release|Win32
-		{A9BC44B6-35C2-440D-A6A1-DA59305740E2}.Release|x64.ActiveCfg = Release|Win32
+		{A9BC44B6-35C2-440D-A6A1-DA59305740E2}.Release|x64.ActiveCfg = Release|x64
+		{A9BC44B6-35C2-440D-A6A1-DA59305740E2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
