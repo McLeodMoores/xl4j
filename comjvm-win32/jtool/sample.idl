@@ -1,0 +1,4 @@
+#ifndef __INC_JavaLang_idl
+# define __INC_JavaLang_idl
+# include "target/test-output/sample/JavaLang.idl"
+#endif

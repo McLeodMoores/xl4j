@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5F107926-37EF-4A62-8B62-686A6D8F31D2}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>localtest</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
+    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetExt>.xll</TargetExt>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <EmbedManifest>true</EmbedManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
+    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetExt>.xll</TargetExt>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
+    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetExt>.xll</TargetExt>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
+    <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <PostBuildEventUseInBuild>true</PostBuildEventUseInBuild>
+    <TargetExt>.xll</TargetExt>
+    <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UseFullPaths>true</UseFullPaths>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-i386;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
+      <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
+      <Message>Copies the test files to the target folder</Message>
+    </PostBuildEvent>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UseFullPaths>true</UseFullPaths>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
+      <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
+      <Message>Copies the test files to the target folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UseFullPaths>true</UseFullPaths>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-i386;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
+      <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
+      <Message>Copies the test files to the target folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <UseFullPaths>true</UseFullPaths>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
+      <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
+    </Link>
+    <PostBuildEvent>
+      <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
+      <Message>Copies the test files to the target folder</Message>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="AddinEnvironment.h" />
+    <ClInclude Include="Converter.h" />
+    <ClInclude Include="JvmEnvironment.h" />
+    <ClInclude Include="Excel.h" />
+    <ClInclude Include="ExcelUtils.h" />
+    <ClInclude Include="FunctionRegistry.h" />
+    <ClInclude Include="GarbageCollector.h" />
+    <ClInclude Include="Jvm.h" />
+    <ClInclude Include="Progress.h" />
+    <ClInclude Include="Lifecycle.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AddinEnvironment.cpp" />
+    <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="JvmEnvironment.cpp" />
+    <ClCompile Include="Excel.cpp" />
+    <ClCompile Include="ExcelUtils.cpp" />
+    <ClCompile Include="Exports.cpp" />
+    <ClCompile Include="FunctionRegistery.cpp" />
+    <ClCompile Include="GarbageCollector.cpp" />
+    <ClCompile Include="Jvm.cpp" />
+    <ClCompile Include="Progress.cpp" />
+    <ClCompile Include="Lifecycle.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\core\core.vcxproj">
+      <Project>{9e596700-1153-46a5-b3b8-ca386ffd9b16}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\helper\helper.vcxproj">
+      <Project>{58075407-c624-49e9-9776-6a2831db8152}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\jni\jni.vcxproj">
+      <Project>{7007c71a-7b07-489e-b1b8-5b760252a6f7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\local\local.vcxproj">
+      <Project>{c0d7a35b-7195-4541-bb35-6cd51ea739bd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\settings\settings.vcxproj">
+      <Project>{a9bc44b6-35c2-440d-a6a1-da59305740e2}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\utils\utils.vcxproj">
+      <Project>{a0cda5b6-5edd-4324-b09e-aee599b41b74}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Excel.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="excel.xll.manifest">
+      <SubType>Designer</SubType>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="excel.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="icon1.ico" />
+    <Image Include="settings.ico" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

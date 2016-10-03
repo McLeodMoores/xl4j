@@ -1,0 +1,10 @@
+; settings.def : Declares the module parameters for the DLL.
+
+LIBRARY; Settings.dll
+
+EXPORTS
+    ; Explicit exports can go here
+	;?Create@CSettingsDialogFactory@@SAJPAPAVISettingsDialog@@@Z
+	;?Create@CSettingsDialogFactory@@SAJPAVCSettings@@PAPAVISettingsDialog@@@Z
+	;_afxForceUSRDLL DATA
+	;DllMain PRIVATE

@@ -1,0 +1,16 @@
+HKCR
+{
+    NoRemove CLSID
+    {
+        ForceRemove {34B9DE97-D756-4D18-A65C-E7A688CDF3E7} = s 'BeerDragon.JvmSupport.1'
+        {
+            ForceRemove Programmable
+            InprocServer32 = s '%MODULE%'
+            {
+                val ThreadingModel = s 'Both'
+            }
+            TypeLib = s '{0E07A0B8-0FA3-4497-BC66-6D2AF2A0B9C8}'
+            Version = s '1.0'
+        }
+    }
+}
