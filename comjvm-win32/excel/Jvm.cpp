@@ -44,17 +44,29 @@ Jvm::Jvm () : m_lRefCount (1) {
 	wchar_t szLibPath[MAX_PATH];
 	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szLibPath, MAX_PATH, TEXT ("..\\lib\\")))) {
 		LOGERROR ("Could not create add-in relative path");
+		MessageBox(nullptr, L"Could not create path for lib directory.  Please report as a bug and close Excel", L"Unexpected failure", MB_OK);
 		_com_raise_error (hr);
 	}
 	LOGTRACE ("Calling ClasspathUtils::AddEntries with %s", szLibPath);
-	ClasspathUtils::AddEntries (entries, szLibPath);
+	try {
+		ClasspathUtils::AddEntries(entries, szLibPath);
+	}
+	catch (_com_error& e) {
+		LOGERROR("Could not find Java lib directory at %s", szLibPath);
+	}
 	wchar_t szXL4JPath[MAX_PATH];
-	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szXL4JPath, MAX_PATH, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar")))) {
-		LOGERROR ("Could not crate add-in relative path for xl4j jar");
-		_com_raise_error (hr);
+	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szXL4JPath, MAX_PATH, TEXT ("..\\..\\..\\target\\xll-core-0.1.0-SNAPSHOT.jar")))) {
+		LOGERROR ("Could not create path for xll-core jar in neighbouring project");
+		MessageBox(nullptr, L"Could not create path for xll-core jar in neighbouring project.  Please report as a bug and close Excel", L"Unexpected failure", MB_OK);
+		_com_raise_error(hr);
 	}
 	LOGTRACE ("Calling Classpathutils::AddEntries with %s", szXL4JPath);
-	ClasspathUtils::AddEntry (entries, szXL4JPath);
+	try {
+		ClasspathUtils::AddEntry(entries, szXL4JPath);
+	}
+	catch (_com_error& e) {
+		LOGERROR("Could not add xll-core jar in neighbouring project.  This is fine if you're working from a command line build.");
+	}
 	// Load settings.
 	hr = m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm);
 	if (FAILED (hr)) {

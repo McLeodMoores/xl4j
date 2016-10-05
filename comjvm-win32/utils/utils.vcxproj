@@ -104,7 +104,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_DEBUG_EXPORT;COMJVM_FILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include;C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <BrowseInformation>true</BrowseInformation>
@@ -125,7 +125,7 @@
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the targets</Message>
     </PostBuildEvent>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -143,7 +143,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_DEBUG_EXPORT;COMJVM_FILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Java\jdk1.8.0_20\include\win32;C:\Program Files (x86)\Java\jdk1.8.0_20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,7 +155,7 @@
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the targets</Message>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>utils.dll.file.manifest</AdditionalManifestFiles>
@@ -172,6 +172,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_DEBUG_EXPORT;COMJVM_FILEUTILS_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
+      <AdditionalIncludeDirectories>$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -186,7 +187,7 @@
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the targets</Message>
     </PostBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>utils.dll.file.manifest</AdditionalManifestFiles>
@@ -206,7 +207,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_USRDLL;COMJVM_DEBUG_EXPORT;COMJVM_FILEUTILS_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <GenerateXMLDocumentationFiles>true</GenerateXMLDocumentationFiles>
-      <AdditionalIncludeDirectories>C:\Program Files\Java\jdk1.8.0_20\include\win32;C:\Program Files\Java\jdk1.8.0_20\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -221,7 +222,7 @@
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the targets</Message>
     </PostBuildEvent>
     <Midl>
       <OutputDirectory>$(IntDir)</OutputDirectory>

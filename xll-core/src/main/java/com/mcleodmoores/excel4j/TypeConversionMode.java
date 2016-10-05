@@ -17,7 +17,12 @@ public enum TypeConversionMode {
    */
   OBJECT_RESULT,
   /**
-   * Parameters and results are not converted at all.
+   * Parameters are not converted at all but result is simplified.
    */
-  PASSTHROUGH
+  SIMPLEST_RESULT_PASSTHROUGH,
+  /**
+   * Parameters are not converted at all but result is returned as object handle.
+   */
+  OBJECT_RESULT_PASSTHROUGH,
+  
 }

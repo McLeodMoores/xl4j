@@ -106,6 +106,10 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		MessageBox(nullptr, L"Could not create JVM, have you got a 32-bit Java 8 installed?", L"JVM Creation Error", MB_OK);
 		return 1;
 	}
+	catch (_com_error& e) {
+		MessageBox(nullptr, L"Could not create JVM (com error, see logs), have you got a 32-bit Java 8 installed?", L"JVM Creation Error", MB_OK);
+		return 1;
+	}
 }
 
 DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {

@@ -93,7 +93,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             invokers[index] = new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
           }
         }
-      } else if (typeConversionMode == TypeConversionMode.PASSTHROUGH) {
+      } else if (typeConversionMode == TypeConversionMode.OBJECT_RESULT_PASSTHROUGH || typeConversionMode == TypeConversionMode.SIMPLEST_RESULT_PASSTHROUGH) {
         if (isAssignableFrom(parameterTypes, argTypes)) {
           // put var arg constructors at end of list, as matching on more specific constructors is better
           final int index;
@@ -196,7 +196,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             }
           }
         }
-      } else if (typeConversionMode == TypeConversionMode.PASSTHROUGH) {
+      } else if (typeConversionMode == TypeConversionMode.OBJECT_RESULT_PASSTHROUGH || typeConversionMode == TypeConversionMode.SIMPLEST_RESULT_PASSTHROUGH) {
         if (isAssignableFrom(parameterTypes, argTypes)) {
           // put var arg methods at end of list, as matching on more specific methods is better
           final int index;
@@ -260,6 +260,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       }
       if (resultType == TypeConversionMode.SIMPLEST_RESULT) {
         return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+      } else if (resultType == TypeConversionMode.SIMPLEST_RESULT_PASSTHROUGH || resultType == TypeConversionMode.OBJECT_RESULT_PASSTHROUGH) {
+    	return new PassthroughResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
       }
       return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
     } catch (final Excel4JRuntimeException e) {

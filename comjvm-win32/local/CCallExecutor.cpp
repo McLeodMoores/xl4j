@@ -122,18 +122,18 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 	VARIANT result;
 	jclass jcXLValue = pEnv->GetObjectClass (joXLValue);
 	if (pJniCache->IsXLObject(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLObject");
+		LOGTRACE ("XLObject");
 		jstring joStringValue = pJniCache->XLObject_getValue (pEnv, joXLValue);
 		V_VT (&result) = VT_BSTR;
 		storeBSTR (pEnv, joStringValue, &V_BSTR (&result));
 	} else if (pJniCache->IsXLString (pEnv, jcXLValue)) {
-		//LOGTRACE ("XLString");
+		LOGTRACE ("XLString");
 		jstring joStringValue = pJniCache->XLString_getValue (pEnv, joXLValue);
 		V_VT (&result) = VT_BSTR;
 		storeBSTR (pEnv, joStringValue, &V_BSTR (&result));
-		//LOGTRACE ("String is %s", V_BSTR (&result));
+		LOGTRACE ("String is %s", V_BSTR (&result));
 	} else if (pJniCache->IsXLNumber (pEnv, jcXLValue)) {
-		//LOGTRACE ("XLNumber");
+		LOGTRACE ("XLNumber");
 		jdouble value = pJniCache->XLNumber_getValue (pEnv, joXLValue);
 		V_VT (&result) = VT_R8;
 		V_R8 (&result) = value;
@@ -284,7 +284,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		V_VT (&result) = VT_ARRAY;
 		V_ARRAY (&result) = psa;
 	} else {
-		//LOGTRACE ("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLValue"));
+		LOGTRACE ("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLValue"));
 		jclass jcObject = pEnv->FindClass ("java/lang/Object");
 		jmethodID jmObject_getClass = pEnv->GetMethodID (jcObject, "getClass", "()Ljava/lang/Class;");
 		jobject joClass = pEnv->CallObjectMethod (joXLValue, jmObject_getClass);

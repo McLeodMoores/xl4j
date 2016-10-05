@@ -40,63 +40,63 @@
             <configuration>
               <executables>
                 <executable>
-                  <arch>i386</arch>
-                  <path>target/Release-Win32</path>
+                  <arch>x86</arch>
+                  <path>${project.basedir}/target/Release-Win32</path>
                   <pattern>*.dll</pattern>
                 </executable>
 		        <executable>
-                  <arch>i386</arch>
-                  <path>target/Release-Win32</path>
+                  <arch>x86</arch>
+                  <path>${project.basedir}/target/Release-Win32</path>
                   <pattern>*.xll</pattern>
                 </executable>
 		        <executable>
-                  <arch>i386</arch>
-                  <path>target/Release-Win32</path>
+                  <arch>x86</arch>
+                  <path>${project.basedir}/target/Release-Win32</path>
                   <pattern>*.tlb</pattern>
                 </executable>
                 <executable>
                   <arch>x64</arch>
-                  <path>target/Release-x64</path>
+                  <path>${project.basedir}/target/Release-x64</path>
                   <pattern>*.dll</pattern>
                 </executable>
 	            <executable>
                   <arch>x64</arch>
-                  <path>target/Release-x64</path>
+                  <path>${project.basedir}/target/Release-x64</path>
                   <pattern>*.xll</pattern>
                 </executable>
                 <executable>
                   <arch>x64</arch>
-                  <path>target/Release-x64</path>
+                  <path>${project.basedir}/target/Release-x64</path>
                   <pattern>*.tlb</pattern>
                 </executable>
 				<executable>
-                  <arch>i386-debug</arch>
-                  <path>target/Debug-Win32</path>
+                  <arch>x86-debug</arch>
+                  <path>${project.basedir}/target/Debug-Win32</path>
                   <pattern>*.dll</pattern>
                 </executable>
 		        <executable>
-                  <arch>i386-debug</arch>
-                  <path>target/Debug-Win32</path>
+                  <arch>x86-debug</arch>
+                  <path>${project.basedir}/target/Debug-Win32</path>
                   <pattern>*.xll</pattern>
                 </executable>
 		        <executable>
-                  <arch>i386-debug</arch>
-                  <path>target/Debug-Win32</path>
+                  <arch>x86-debug</arch>
+                  <path>${project.basedir}/target/Debug-Win32</path>
                   <pattern>*.tlb</pattern>
                 </executable>
                 <executable>
                   <arch>x64-debug</arch>
-                  <path>target/Debug-x64</path>
+                  <path>${project.basedir}/target/Debug-x64</path>
                   <pattern>*.dll</pattern>
                 </executable>
 	            <executable>
                   <arch>x64-debug</arch>
-                  <path>target/Debug-x64</path>
+                  <path>${project.basedir}/target/Debug-x64</path>
                   <pattern>*.xll</pattern>
                 </executable>
                 <executable>
                   <arch>x64-debug</arch>
-                  <path>target/Debug-x64</path>
+                  <path>${project.basedir}/target/Debug-x64</path>
                   <pattern>*.tlb</pattern>
                 </executable>
               </executables>
