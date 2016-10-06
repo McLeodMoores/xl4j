@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.examples;
+package com.mcleodmoores.excel4j.examples.timeseries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +13,7 @@ import com.mcleodmoores.excel4j.ExcelFactory;
 import com.mcleodmoores.excel4j.TypeConversionMode;
 import com.mcleodmoores.excel4j.XLArgument;
 import com.mcleodmoores.excel4j.XLFunction;
+import com.mcleodmoores.excel4j.examples.Operation;
 import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.TypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;

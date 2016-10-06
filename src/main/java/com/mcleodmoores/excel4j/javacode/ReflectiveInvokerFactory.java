@@ -148,7 +148,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (typeConversionMode == TypeConversionMode.OBJECT_RESULT || typeConversionMode == TypeConversionMode.SIMPLEST_RESULT) {
         TypeConverter[] argumentConverters = null;
         if (argTypes.length == 0) {
-          if (parameterTypes.length == 0) {
+          if (parameterTypes.length == 0 || isVarArgs) {
             // found no-args method
             if (typeConversionMode == TypeConversionMode.OBJECT_RESULT) {
               invokers[0] = new ObjectResultMethodInvoker(method, EMPTY_CONVERTER_ARRAY, resultConverter, _objectXlObjectConverter);

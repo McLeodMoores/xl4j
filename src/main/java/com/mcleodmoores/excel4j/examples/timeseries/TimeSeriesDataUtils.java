@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.examples;
+package com.mcleodmoores.excel4j.examples.timeseries;
 
 import java.util.ArrayList;
 import java.util.List;

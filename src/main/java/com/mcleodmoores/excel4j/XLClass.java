@@ -20,6 +20,13 @@ public @interface XLClass {
   // CHECKSTYLE:OFF  - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
 
   /**
+   * The name of the user-defined function as used on the worksheet. If this is not specified, the class name
+   * is used.
+   * @return  the name
+   */
+  String name() default "";
+
+  /**
    * The category that the constructors and methods should be registered in.
    * If this is not specified, it defaults to the class name.
    * @return the category
@@ -44,4 +51,6 @@ public @interface XLClass {
    * @return  true or false
    */
   boolean includeObjectMethods() default false;
+
+  String[] excludedMethods() default {};
 }

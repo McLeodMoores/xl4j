@@ -11,7 +11,7 @@ import com.mcleodmoores.excel4j.util.ArgumentChecker;
 public final class ConstructorMetadata {
   /** The prefix for constructor names */
   private final XLNamespace _namespace;
-  /** Infomation about the constructor */
+  /** Information about the constructor */
   private final XLConstructor _constructorSpec;
   /** The arguments of the constructor */
   private final XLArgument[] _arguments;

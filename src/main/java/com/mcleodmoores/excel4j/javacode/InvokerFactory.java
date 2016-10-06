@@ -47,7 +47,7 @@ public interface InvokerFactory {
 
   /**
    * Return a method type converter read to process calls for a given method.
-   * This method is used when you already know the correct method to bind, such is when scanning annotated methods.
+   * This method is used when you already know the correct method to bind, such as when scanning annotated methods.
    * @param method  the method to be bound to
    * @param typeConversionMode  whether the result should be an object, simplified if possible or passed through unchanged
    * @return a MethodTypeConverter that can perform the necessary type conversions each time the method is invoked

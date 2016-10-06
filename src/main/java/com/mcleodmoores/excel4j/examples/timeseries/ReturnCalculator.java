@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.examples;
+package com.mcleodmoores.excel4j.examples.timeseries;
 
 import java.util.function.Function;
 
@@ -24,7 +24,7 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
    * Creates an instance.
    * @param continuous  true if continuous returns are required
    */
-  @XLConstructor(name = "ReturnCalculator",
+  @XLConstructor(name = "TimeSeriesReturn",
                  description = "Calculates returns of a time series",
                  category = "Time series")
   public ReturnCalculator(final boolean continuous) {
