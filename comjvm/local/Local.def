@@ -1,7 +1,0 @@
-LIBRARY	local
-EXPORTS
-	DllCanUnloadNow PRIVATE
-	DllGetClassObject PRIVATE
-	DllGetImplementingCLSID PRIVATE
-	DllRegisterServer PRIVATE
-	DllUnregisterServer PRIVATE

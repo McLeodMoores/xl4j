@@ -1,0 +1,886 @@
+/*
+ * JVM as a COM object
+ *
+ * Copyright 2014 by Andrew Ian William Griffin <griffin@beerdragon.co.uk>
+ * Released under the GNU General Public License.
+ */
+
+import "unknwn.idl";
+import "oaidl.idl";
+
+interface IClassFolder;
+interface IClasspath;
+interface IClasspathEntries;
+interface IClasspathEntry;
+interface IDirectoryWriter;
+interface IFileWriter;
+interface IJarFile;
+interface IJDispatch;
+interface IJObject;
+interface IJvm;
+interface IJvmConnector;
+interface IJvmContainer;
+interface IJvmSupport;
+interface IJvmTemplate;
+interface IScan;
+interface ICall;
+interface ICollect;
+
+/// <summary>Folder, on disk, containing Java class files.</summary>
+///
+/// <para>An IClassFolder instance may contribute towards an IClasspath when
+/// constructing a JVM</para>
+[
+	object,
+	uuid (b646b5bb-26e9-4ac2-abc3-863eaf4f5348)
+] interface IClassFolder : IClasspathEntry {
+	/// <summary>Absolute local path of the folder.</summary>
+	///
+	/// <para>Gets the absolute path, local to the object instance and not the
+	/// caller.</para>
+	///
+	/// <param name="pbstrPath">Receives the path</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
+	/// <summary>Queries the caching/validity testing information.</summary>
+	///
+	/// <para>The caller may have a matching local path; the information here
+	/// is used to test whether the files held in that location match that of
+	/// the object instance.</para>
+	///
+	/// <param name="pbstrHost">Receives the host name</param>
+	/// <param name="plFiles">Receives the number of files in the folder</param>
+	/// <param name="plLength">Receives the total size of the files in the folder</param>
+	/// <param name="puTimestampHash">Receives a hash of the timestamps of the files</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT CacheInfo ([out] BSTR *pbstrHost, [out] long *plFiles, [out] long *plLength, [out] unsigned hyper *puTimestampHash);
+	/// <summary>Writes the content of this folder to a file system.</summary>
+	///
+	/// <para>If the IFileSystemWriter is local to host A and the IClassFolder is local
+	/// to host B then this method can be used to transfer data from A to B.</para>
+	///
+	/// <param name="pWriter">Destination to write to</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Write ([in] IDirectoryWriter *pWriter);
+};
+
+/// <summary>Classpath that will be used to construct a JVM.</summary>
+///
+/// <para>The JVM must be created with classpath entries that are applicable to the
+/// available class loaders. A typical instance will recognise contributing IClassFolder
+/// and IJarFile instances as either "local" or "remote". The referenced locations can
+/// be used directly for the former case. Class file, or JAR, payload must be
+/// transferred to a suitable "local" location in order to handle the "remote" case
+/// correctly.</para>
+///
+/// <para>Instances of IClasspath are created by the component that is about to create
+/// a JVM. Instances of IClasspathEntry are then required to contribute towards it.</para>
+[
+	object,
+	uuid (f0f716d2-27d9-4679-8d05-7889f7959ff4)
+] interface IClasspath : IUnknown {
+	/// <summary>Adds a class folder to this path.</summary>
+	///
+	/// <para>If the class folder is available locally to this instance then it may be
+	/// used directly. If the folder is remote then it will be requested as a binary JAR
+	/// that can be used by the local JVM invocation.</para>
+	///
+	/// <param name="pFolder">The folder to add</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT AddFolder ([in] IClassFolder *pFolder);
+	/// <summary>Adds a JAR to this path.</summary>
+	///
+	/// <para>If the JAR is available locally to this instance then it may be used
+	/// directly. If the JAR is remote then a binary copy will be requested that can be
+	/// used by the local JVM invocation.</para>
+	///
+	/// <param name="pJar">The JAR to add</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT AddJar ([in] IJarFile *pJar);
+	/// <summary>Local classpath value.</summary>
+	///
+	/// <para>Gets the resolved classpath, local to the object instance and not the
+	/// caller.</para>
+	///
+	/// <param name="pbstrPath">Receives the resolved classpath</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
+};
+
+/// <summary>Collection of IClasspathEntry instances.</summary>
+///
+/// <para>One or more IClasspathEntry instances can be used to populate a
+/// IClasspath when constructing a JVM.</para>
+[
+	object,
+	uuid (7087cf73-6691-4a27-b54a-b1ae4a9fab35)
+] interface IClasspathEntries : IUnknown {
+	/// <summary>Number of entries in the collection.</summary>
+	///
+	/// <param name="plCount">Receives the number of entries</param>
+	/// <returns>S_OK if successful, an error code otherwise</summary>
+	[propget] HRESULT Count ([out, retval] long *plCount);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Returns the item at the given index.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="ppEntry">Receives the element from the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Item ([in] long lIndex, [out, retval] IClasspathEntry **ppEntry);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Sets the item at the given index. If the index already exists then the
+	/// element at that index is replaced. If the index is the first unallocated value
+	/// then the collection is extended ni the same was as if Add was called.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Item ([in] long lIndex, [in] IClasspathEntry *pEntry);
+	/// <summary>Adds an element to the collection.</summary>
+	///
+	/// <para>The element is appended to the end of the collection.</para>
+	///
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Add ([in] IClasspathEntry *pEntry);
+	/// <summary>Empties the collection.</summary>
+	///
+	/// <para>The collection is reset to its initial/empty state.</para>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Clear ();
+	/// <summary>Removes an element from the collection</summary>
+	///
+	/// <para>The element at the given index is removed and all elements at
+	/// greater indices are shifted down.</para>
+	///
+	/// <param name="lIndex">The 1-based index of the element to remove</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Remove ([in] long lIndex);
+};
+
+/// <summary>Fragment contributing towards an IClasspath.</summary>
+///
+/// <para>The full JVM class path is comprised of JAR files and folders of classes
+/// that are local to the JVM library. An IClasspathEntry instance can contribute
+/// one or more of these to an IClasspath for the JVM to be constructed.</para>
+///
+/// <para>An instance may itself implement IJarFile or IClassFolder. Alternatively
+/// it might just deliver appropriate implementations of these interfaces to the
+/// IClasspath when requested.</para>
+[
+	object,
+	uuid (9e95046b-1a36-4d05-838e-e44f11213503)
+] interface IClasspathEntry : IUnknown {
+	/// <summary>Displayable/construction name of the entry.</summary>
+	///
+	/// <para>Entries are typically created by IJvmSupport#CreateClasspathEntry. The
+	/// name of the entry corresponds to the string passed to that method. This might
+	/// be a local path, but only with respect to the host of the IJvmSupport instance
+	/// that created it.</para>
+	///
+	/// <param name="pbstrName">Receives the name of this entry</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Name ([out, retval] BSTR *pbstrName);
+	/// <summary>Adds this entry to the given classpath.</summary>
+	///
+	/// <para>If this entry corresponds to a Jar file or class folder then it may simply
+	/// call IClasspath#AddJar or IClasspath#AddFolder respectively. If this is a more
+	/// complex entry then this might result in multiple calls to methods on the IClasspath
+	/// instance.</para>
+	///
+	/// <param name="pClasspath">The classpath to append this entry to</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT AddToClasspath ([in] IClasspath *pClasspath);
+};
+
+/// <summary>Output folder, allowing other folders and files to be written.</summary>
+///
+/// <para>This is used in place of more complete file system access (such as Scripting.FilesystemObject)
+/// to simplify implementations supporting JVMs outside of the Win32 environment.</para>
+[
+	object,
+	uuid (1f894bf1-99a4-4c25-8dab-e212d9d46ae3)
+] interface IDirectoryWriter : IUnknown {
+	/// <summary>Creates a sub-folder.</summary>
+	///
+	/// <para>The returned value is positioned in the newly created (or already existing) folder.</para>
+	///
+	/// <param name="bstrFolder">Folder to open or create</param>
+	/// <param name="ppWriter">Receives the writing instance to use for the sub-folder</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Directory ([in] BSTR bstrFolder, [out, retval] IDirectoryWriter **ppWriter);
+	/// <summary>Creates a file.</summary>
+	///
+	/// <para>If the file already exists then it is truncated.</para>
+	///
+	/// <param name="bstrFile">File name to create</param>
+	/// <param name="ppWriter">Receives the writing instance to use for the file</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT File ([in] BSTR bstrFile, [out, retval] IFileWriter **ppWriter);
+};
+
+/// <summary>Output stream, writing binary data to a file on disk.</summary>
+///
+/// <para>This is used in place of more complete file system access (such as Scripting.FilesystemObject)
+/// to simplify implementations supporting JVMs outside of the Win32 environment.</para>
+[
+	object,
+	uuid (e0a6756d-b91a-497f-9980-7de1213b9243)
+] interface IFileWriter : IUnknown {
+	/// <summary>Closes the stream.</summary>
+	///
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Close ();
+	/// <summary>Writes a block of data to the stream.</summary>
+	///
+	/// <param name="pData">Data to write</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Write ([in] BYTE_SIZEDARR *pData);
+};
+
+/// <summary>JAR file, on disk, containing Java class files.</summary>
+///
+/// <para>An IJarFile instance may contribute towards an IClasspath when
+/// constructing a JVM</param>
+[
+	object,
+	uuid (e9fee3f8-f1b7-47c7-b85e-4e40259fc43f)
+] interface IJarFile : IClasspathEntry {
+	/// <summary>Absolute local path of the file.</summary>
+	///
+	/// <para>Gets the absolute path, local to the object instance and not the
+	/// caller.</para>
+	///
+	/// <param name="pbstrPath">Receives the path</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT LocalPath ([out, retval] BSTR *pbstrPath);
+	/// <summary>Queries the caching/validity testing information.</summary>
+	///
+	/// <para>The caller may have a matching local path; the information here
+	/// is used to test whether the files held in that location match that of
+	/// the object instance.</para>
+	///
+	/// <param name="pbstrHost">Receives the host name</param>
+	/// <param name="plLength">Receives the length of the file</param>
+	/// <param name="puTimestamp">Receives the timestamp of the file</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT CacheInfo ([out] BSTR *pbstrHost, [out] long *plLength, [out] unsigned hyper *puTimestamp);
+	/// <summary>Writes the JAR contents.</summary>
+	///
+	/// <para>If the IFileWriter is local to host A and the IClassFolder is local to host B
+	/// then this method can be used to transfer data from A to B.</para>
+	///
+	/// <param name="pWriter">Destination to write to</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Write ([in] IFileWriter *pWriter);
+};
+
+/// <summary>Callback instance exposed to the JVM.</summary>
+///
+/// <para>A COM implementation of a Java class or interface may be exposed to the JVM via
+/// this dispatch interface. The dispatcher is responsible for stating which Java class it
+/// is supporting and the methods available on the target COM instance.</para>
+[
+	object,
+	uuid (c94232d5-085a-4741-a971-25c525af5a1f)
+] interface IJDispatch : IUnknown {
+	/// <summary>Java class or interface name.</summary>
+	///
+	/// <para>The class name must be specified as a Java class literal, for example
+	/// `java.util.Set`. It is only possible to expose classes which are not final
+	/// and have a visible default constructor.</para>
+	///
+	/// <para>Refer to the `jtool` documentation for more details, or generation of
+	/// IJDispatch instances for existing Java classes.</para>
+	///
+	/// <param name="pbstrClass">Receives the Java class or interface name</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Class ([out, retval] BSTR *pbstrClass);
+	/// <summary>Supported methods.</summary>
+	///
+	/// <para>The supported methods are returned in `dispid` order. The tooling at
+	/// the Java side will pair these method signatures with those in the Java class
+	/// definition and translate all calls to use the appropriate `dispid` value.</para>
+	///
+	/// <param name="paMethods">Receives the method signatures</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Methods ([out, retval] SAFEARRAY(BSTR) *paMethods);
+	/// <summary>Invokes a method.</summary>
+	///
+	/// <para>The dispatch identifier is the zero-based index into the original method
+	/// array corresponding to the method to be invoked.</para>
+	///
+	/// <param name="lDispId">Dispatch identifier</param>
+	/// <param name="cArgs">Number of parameters</param>
+	/// <param name="pvArgs">Parameters</param>
+	/// <param name="pvResult">Receives the result</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Invoke ([in] long lDispId, [in] long cArgs, [in, size_is (cArgs)] VARIANT *pvArgs, [out, retval] VARIANT *pvResult);
+};
+
+
+
+midl_pragma warning (disable: 2362)
+
+
+/// <summary>Wrapper around a `jobject` global reference.</summary>
+///
+/// <para>When a Java object is returned from a JNI sequence it will be wrapped by IJObject
+/// which will manage the lifecycle of the underlying reference.</para>
+[
+	object,
+	uuid (73eea66c-0194-4db0-a157-41dca0fc167a)
+] interface IJObject : IUnknown {
+	/// <summary>JVM containing the underlying Java object.</summary>
+	///
+	/// <para>Returns the parent JVM; this is the IJvm instance which ran the IJniSequence
+	/// that created this instance.</para>
+	///
+	/// <para>It is normally only correct to use a IJObject with its parent JVM; attempting
+	/// to pass it to a sequence created for another JVM will normally result in an error.
+	/// The exception to this rule is if the object also implements IJDispatch.</para>
+	///
+	/// <para>It is possible for a IJObject to not have a parent JVM. This occurs when the
+	/// object is defined in COM and only a stub is present in one or more JVMs that calls
+	/// back to the real object using IJDispatch. The parent property will be NULL in this
+	/// case, but the object identifier will be defined for any JVMs which have an
+	/// appropriate stub.</para>
+	///
+	/// <param name="pJvm">Receives the parent JVM, or NULL if there is none</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Parent ([out, retval] IJvm *pJvm);
+	/// <summary>JVM object reference index.</summary>
+	///
+	/// <para>Returns the index of the underlying JNI `jobject` for use at execution time.</para>
+	///
+	/// <para>If there is no index defined for the JVM this will return E_INVALIDARG.</para>
+	///
+	/// <param name="pguidJVM">JVM identifier</param>
+	/// <param name="plIndex">JVM specific index</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Index ([in] GUID *pguidJVM, [out, retval] long *plIndex);
+	/// <summary>JVM object reference index.</summary>
+	///
+	/// <para>Sets the index of the underlying JNI `jobject` for use at execution time.</para>
+	///
+	/// <param name="pguidJVM">JVM identifier</param>
+	/// <param name="lIndex">JVM specific index</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Index ([in] GUID *pguidJVM, [in] long lIndex);
+};
+
+/// <summary>Collection of strings representing command line options.</summary>
+///
+/// <para>One or more ICommandLineOption instances can be used to populate a
+/// IClasspath when constructing a JVM.</para>
+[
+	object,
+	uuid (959bdc8c-71c1-425e-bdbf-14ea5a486746)
+] interface IJvmOptionEntries : IUnknown {
+	/// <summary>Number of entries in the collection.</summary>
+	///
+	/// <param name="plCount">Receives the number of entries</param>
+	/// <returns>S_OK if successful, an error code otherwise</summary>
+	[propget] HRESULT Count ([out, retval] long *plCount);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Returns the item at the given index.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="ppEntry">Receives the element from the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Item ([in] long lIndex, [out, retval] BSTR *ppEntry);
+	/// <summary>An item within the collection.</summary>
+	///
+	/// <para>Sets the item at the given index. If the index already exists then the
+	/// element at that index is replaced. If the index is the first unallocated value
+	/// then the collection is extended ni the same was as if Add was called.</para>
+	///
+	/// <param name="lIndex">The 1-based index into the collection</param>
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Item ([in] long lIndex, [in] BSTR pEntry);
+	/// <summary>Adds an element to the collection.</summary>
+	///
+	/// <para>The element is appended to the end of the collection.</para>
+	///
+	/// <param name="pEntry">The element to add to the collection</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Add ([in] BSTR pEntry);
+	/// <summary>Empties the collection.</summary>
+	///
+	/// <para>The collection is reset to its initial/empty state.</para>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Clear ();
+	/// <summary>Removes an element from the collection</summary>
+	///
+	/// <para>The element at the given index is removed and all elements at
+	/// greater indices are shifted down.</para>
+	///
+	/// <param name="lIndex">The 1-based index of the element to remove</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Remove ([in] long lIndex);
+};
+
+/*
+** XL 12 Basic Datatypes
+**/
+
+typedef INT32 BOOL;			/* Boolean */
+typedef WCHAR XCHAR;			/* Wide Character */
+typedef INT32 RW;			/* XL 12 Row */
+typedef INT32 COL;	 	      	/* XL 12 Column */
+typedef DWORD_PTR IDSHEET;		/* XL12 Sheet ID */
+typedef unsigned short WORD;
+
+/*
+** Flow data types
+**
+** Used for val.flow.xlflow field of XLOPER and XLOPER12 structures
+** when constructing flow-control XLOPERs and XLOPER12s
+**/
+
+const byte xl4jflowHalt = 1;
+const byte xl4jflowGoto = 2;
+const byte xl4jflowRestart = 8;
+const byte xl4jflowPause = 16;
+const byte xl4jflowResume = 64;
+
+/*
+** Error codes
+**
+** Used for val.err field of XLOPER and XLOPER12 structures
+** when constructing error XLOPERs and XLOPER12s
+*/
+
+const long xl4jerrNull = 0;
+const long xl4jerrDiv0 = 7;
+const long xl4jerrValue = 15;
+const long xl4jerrRef = 23;
+const long xl4jerrName = 29;
+const long xl4jerrNum = 36;
+const long xl4jerrNA = 42;
+const long xl4jerrGettingData = 43;
+
+struct XL4JREFERENCE {
+	RW rwFirst;
+	RW rwLast;
+	COL colFirst;
+	COL colLast;
+} ;
+//typedef struct XL4JREFERENCE XL4JREFERENCE;
+
+
+struct XL4JMULTIREFERENCE {
+	IDSHEET idSheet;
+	SAFEARRAY (struct XL4JREFERENCE) refs;
+};
+//typedef struct XL4JMULTIREFERENCE XL4JMULTIREFERENCE;
+
+
+
+/// <summary>JVM abstraction.</summary>
+///
+/// <para>The main JNI functions are exposed through an instance of IJvm. The instance
+/// is typically obtained through, and managed by, an IJvmContainer instance. The
+/// container is capable of handling restart and re-connection events that are not part
+/// of a local JNI session but may be necessary to consider for the case of a JVM in a
+/// remote or shared process.</para>
+[
+	object,
+	uuid (cf3b6bca-afc3-4337-9529-e340a9b7808e)
+] interface IJvm : IUnknown {
+	/// <summary>JVM physical identifier.</summary>
+	///
+	/// <para>Returns the unique identifier allocated for the JNI session this instance
+	/// encapsulates.</para>
+	///
+	/// <para>It is possible to obtain different IJvm instances that correspond to the
+	/// same JVM, depending on the implementation of the IJvmConnector used by the
+	/// managing IJvmContainer. If two instances correspond to the same physical JVM then
+	/// the identifiers returned by each will be the same.</para>
+	///
+	/// <para>It is possible to obtain IJvm instances, from the same IJvmContainer, that
+	/// correspond to different physical JVMs because of a fault which required the
+	/// container construct a new physical JVM for that logical configuration.</para>
+	///
+	/// <param name="pguidIdentifier">Receives the JVM identifier</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Identifier ([out, retval] GUID *pguidIdentifier);
+	/// <summary>JVM template.</summary>
+	///
+	/// <para>Returns the configuration template used to create this JVM, or the effective
+	/// template if the JVM supports modification while it is running.</para>
+	///
+	/// <para>This is a copy of the template. Any changes to the template returned by this
+	/// method will not affect the behaviour of the JVM.</para>
+	///
+	/// <param name="ppTemplate">Receives the configuration template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Template ([out, retval] IJvmTemplate **ppTemplate);
+	/// <summary>Tests if the JVM is operational.</summary>
+	///
+	/// <para>This is a "cheap" method (no parameter or result marshalling) that can be used
+	/// to test the COM infrastructure as to whether the JVM is available for use. There may
+	/// be internal checks from the JVM - such as whether it has been shutdown by the Java
+	/// code - but more likely this will only fail if there is a COM proxy error for the case
+	/// when the JVM is running out-of-process.</para>
+	///
+	/// <returns>S_OK if the JVM is available, an error code otherwise</returns>
+	HRESULT Heartbeat ();
+
+	HRESULT CreateScan ([out, retval] IScan **ppScan);
+	HRESULT CreateCall ([out, retval] ICall **ppCall);
+	HRESULT CreateCollect ([out, retval] ICollect **ppCollect);
+	//HRESULT scan ([out, retval] SAFEARRAY (FUNCTIONINFO) *result);
+}
+
+/// <summary>JVM resolution and connection abstraction.</summary>
+///
+/// <para>An implementation, selected by the connection type from the template used to
+/// construct an IJvmContainer, determines how the JVM is resolved or a new JVM started
+/// if there is no existing one.</para>
+[
+	object,
+	uuid (e41afc88-0617-485a-9de8-393619d921b9)
+] interface IJvmConnector : IUnknown {
+	/// <summary>Acquires the connector's lock.</summary>
+	///
+	/// <para>Connectors are used to first check for existing JVMs and then create a new
+	/// JVM using the FindJvm and CreateJVM methods while holding this lock.</para>
+	///
+	/// <para>Successful calls must be matched with a call to Unlock. Implementations may
+	/// need to be implemented with a level of resiliance if they are out-of-process COM
+	/// servers and time-out any locks from clients which have not released the lock and
+	/// not used the connector for a period.</para>
+	///
+	/// <returns>S_OK if the lock was acquired, an error code otherwise</returns>
+	HRESULT Lock ();
+	/// <summary>Enumerates existing JVM instances.</summary>
+	///
+	/// <para>JVMs are referenced by their logical identifier - the identifier of the
+	/// IJvmContainer using this connector. There may be multiple, incompatible, JVMs
+	/// available for the same logical identifier which are distinguished by a 1-based
+	/// index. This may occur if there are multiple versions of an application
+	/// running which are using the same logical JVM name but use different configuration
+	/// templates.</para>
+	///
+	/// <para>A container should normally verify the JVM is operational using the IJvm#Heartbeat
+	/// method before returning it as the active JVM instance.</para>
+	///
+	/// <param name="lIndex">1-based index to distinguish multiple JVMs</param>
+	/// <param name="bstrLogicalIdentifier">Logical JVM identifier, omit for anonymous JVMs</param>
+	/// <param name="ppJvm">Receives the JVM instance</param>
+	/// <returns>S_OK if a JVM was found, an error code otherwise</returns>
+	HRESULT FindJvm ([in] long lIndex, [in, optional] BSTR bstrLogicalIdentifier, [out, retval] IJvm **ppJvm);
+	/// <summary>Creates a new JVM instance.</summary>
+	///
+	/// <para>This will always create a new JVM. It is the caller's responsibilty to have checked
+	/// for any existing, compatible, JVMs using the FindJvm method.</para>
+	///
+	/// <para>A container should normally verify the JVM is operational using the IJvm#Heartbeat
+	/// method before returning it as the active JVM instance.</para>
+	///
+	/// <param name="pTemplate">Configuration template</param>
+	/// <param name="bstrLogicalIdentifier">Logical JVM identifier, omit for anonymous JVMs</param>
+	/// <param name="ppJvm">Receives the JVM instance</param>
+	/// <returns>S_OK if a JVM was created, an error code otherwise</returns>
+	HRESULT CreateJvm ([in] IJvmTemplate *pTemplate, [in, optional] BSTR bstrLogicalIdentifier, [out, retval] IJvm **ppJvm);
+	/// <summary>Releases the connector's lock.</summary>
+	///
+	/// <para>Although it is possible for this method to fail, this should only occur in the event
+	/// of COM proxy errors for out-of-process connect instances. Such cases cannot be reasonably
+	/// recovered from by the client. It is the out-of-process' server's responsibility to use a
+	/// mechanism such as time-out to release the lock and allow other clients to progress and
+	/// not be blocked indefinately.</para>
+	///
+	/// <returns>S_OK if the lock was released, an error code otherwise</returns>
+	HRESULT Unlock ();
+}
+
+/// <summary>Provides access to an IJvm instance.</summary>
+///
+/// <para>A container may manage either a JVM directly or a connection to a JVM
+/// in an external process depending on the connection type requested by the
+/// template and defaults for the JVM identifier.</para>
+///
+/// <para>The JVM, and any COM objects it returns are only valid while a reference is held
+/// to the managing container. For example, releasing the last reference to the container may
+/// cause DLLs to be unloaded or other system resources to be released which may result in
+/// unstable behaviour from any orphaned JVM instances.</para>
+[
+	object,
+	uuid (249d1804-c433-4e15-a1c8-f7158e316e1e)
+] interface IJvmContainer : IUnknown {
+	/// <summary>JVM configuration template.</summary>
+	///
+	/// <para>Returns either the configuration template used to establish this container
+	/// or the one from an existing container that was compatible with the one requested
+	/// for the connection.</para>
+	///
+	/// <para>This is a copy of the template. Any changes to the template returned by this
+	/// method will not affect the behaviour of the JVM.</para>
+	///
+	/// <param name="ppTemplate">Receives the configuration template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Template ([out, retval] IJvmTemplate **ppTemplate);
+	/// <summary>JVM logical identifier.</summary>
+	///
+	/// <para>Returns the logical name of the JVM. This may be used in conjunction with certain
+	/// JVM connection types to manage JVM instances shared by multiple processes. If this is
+	/// an anonymous JVM that cannot be shared then this may be NULL.</para>
+	///
+	/// <param name="pbstrIdentifier">Receives the JVM identifier</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Identifier ([out, retval] BSTR *pbstrIdentifier);
+	/// <summary>Returns a connection to the JVM.</summary>
+	///
+	/// <para>Calls to this method may result in either the JVM being constructed or a
+	/// reference to the already running JVM, managed by this container, being returned.</para>
+	///
+	/// <param name="ppJvm">Receives the JVM instance</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Jvm ([out, retval] IJvm **ppJvm);
+};
+
+/// <summary>Library entrypoint instance.</summary>
+///
+/// <para>Using members of this object are equivalent to calling the exported
+/// functions from the DLL. An instance is typically obtained through either an
+/// object factory, or by loading the DLL and calling the ComJvmCreateInstance
+/// method on it.</para>
+[
+	object,
+	uuid (9d2641b2-579d-4a15-8b63-3cb01ddcc0c4)
+] interface IJvmSupport : IUnknown {
+	/// <summary>Logical host name.</summary>
+	///
+	/// <para>The name of this host can be used along with any host information available
+	/// from other object instances (for example IJarFile and IClassFolder) to determine
+	/// whether the instances are local or not.</para>
+	///
+	/// <param name="pbstrHost">Receives the host name</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Host ([out, retval] BSTR *pbstrHost);
+	/// <summary>Creates an ITemplate instance.</summary>
+	///
+	/// <para>The template will be either initially empty, or pre-populated with
+	/// any local definitions for the supplied identifier. It may also have
+	/// associated over-rides.</para>
+	///
+	/// <param name="bstrIdentifier">Template identifier, omit for an empty template</param>
+	/// <param name="ppTemplate">Receives the created template instance</param>
+	/// <returns>S_OK if the template was created, an error code otherwise</returns>
+	HRESULT CreateTemplate ([in, optional] BSTR bstrIdentifier, [out, retval] IJvmTemplate **ppTemplate);
+	/// <summary>Copies an ITemplate instance.</summary>
+	///
+	/// <para>A new, empty, template is created and the configuration from the
+	/// supplied one copied into it.</para>
+	///
+	/// <para>Note that any over-rides associated with the source template are
+	/// not copied.</para>
+	///
+	/// <param name="pSource">Source template to copy details from</param>
+	/// <param name="ppDest">Receives the new template instance</param>
+	/// <returns>S_OK if the template was copied, an error code otherwise</returns>
+	HRESULT CopyTemplate ([in] IJvmTemplate *pSource, [out, retval] IJvmTemplate **ppDest);
+	/// <summary>Connects to a JVM container</summary>
+	///
+	/// <para>If an identifier is specified then an existing JVM, with that identifier, that
+	/// is compatible with the requested template may be connected to. The returned container
+	/// will manage that connection.</para>
+	///
+	/// <para>If no identifier is specified or the template is not compatible with an existing
+	/// JVM, with that identifier, or the caller does not have sufficient rights to access that
+	/// existing JVM then a new JVM will be created. The returned container will manage that
+	/// creation.</para>
+	///
+	/// <para>Local configuation may dictate template defaults for a given identifier. For
+	/// example, an application identifier may be configured to mandate a particular JVM type
+	/// or classpath configuration to over-ride anything provided programatically.</para>
+	///
+	/// <param name="bstrIdentifier">JVM identifier, omit if an anonymous JVM is required</param>
+	/// <param name="pTemplate">JVM configuration template, omit for defaults mandated by the identifier or to connect to an existing JVM</param>
+	/// <param name="ppJvmContainer">Receives the IJvmContainer instance which will give access to the underlying JVM</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	HRESULT Connect ([in, optional] BSTR bstrIdentifier, [in, optional] IJvmTemplate *pTemplate, [out, retval] IJvmContainer **ppJvmContainer);
+	/// <summary>Creates an IClasspathEntry instance.</summary>
+	///
+	/// <para>The type of instance created will depend on the path.</para>
+	///
+	/// <para>If the path is to a folder then an IClassFolder instance will be created.</para>
+	///
+	/// <para>If the path is to a file then an IJarFile instance will be created.</para>
+	///
+	/// <para>If the path contains one or more wild-card characters then an instance
+	/// will be returned that can deliver the corresponding IClassFolder and IJarFile instances
+	/// when it is used to construct an IClasspath.</para>
+	///
+	/// <param name="bstrLocalPath">Path to create the instance for, local to the host where this IJvmSupport instance resides</param>
+	/// <param name="ppEntry">Receives the new IClasspathEntry instance</param>
+	/// <returns>S_OK if the entry was created, an error code otherwise</returns>
+	HRESULT CreateClasspathEntry ([in] BSTR bstrLocalPath, [out, retval] IClasspathEntry **ppEntry);
+};
+
+/// <summary>Describes a JVM's construction configuration.</summary>
+///
+/// <para>JVMs are created by a container based on a template. The template
+/// defines all configurable parameters such as the classpath.</para>
+[
+	object,
+	uuid (9c3c1f6f-eb49-4b4d-b57c-2eaa66ed2920)
+] interface IJvmTemplate : IUnknown {
+	/// <summary>Classpath settings.</summary>
+	///
+	/// <para>The classpath is held as a collection of IClasspathEntry instances that
+	/// can be resolved to an IClasspath at the point of JVM construction.</para>
+	///
+	/// <param name="ppClasspath">Receives the classpath</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Classpath ([out, retval] IClasspathEntries **ppClasspath);
+	/// <summary>JVM Options.</summary>
+	///
+	/// <para>The options are held as a collection of BSTR instances that
+	/// can be accessed at the point of JVM construction.</para>
+	///
+	/// <param name="ppJvmOptions">Receives the options</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Options ([out, retval] IJvmOptionEntries **ppJvmOptions);
+	/// <summary>JVM connection/container vendor.</summary>
+	///
+	/// <para>Queries the vendor of the JVM.</para>
+	///
+	/// <param name="pbstrVendor">Receives the JVM vendor, or NULL if none is specified in the template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Vendor ([out, retval] BSTR *pbstrVendor);
+	/// <summary>JVM connection/container vendor.</summary>
+	///
+	/// <para>Sets the vendor of the JVM. This may be NULL
+	/// if the template does not mandate any particular vendor.</para>
+	///
+	/// <param name="bstrVendor">The JVM vendor, or NULL if this template should not specify any</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Vendor ([in] BSTR bstrVendor);
+	/// <summary>JVM connection/container version.</summary>
+	///
+	/// <para>Queries the version of the JVM.</para>
+	///
+	/// <param name="pbstrVersion">Receives the JVM version, or NULL if none is specified in the template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Version ([out, retval] BSTR *pbstrVersion);
+	/// <summary>JVM connection/container version.</summary>
+	///
+	/// <para>Sets the version of the JVM. This may be NULL
+	/// if the template does not mandate any particular version.</para>
+	///
+	/// <param name="bstrVersion">The JVM version, or NULL if this template should not specify any</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Version ([in] BSTR bstrVersion);
+	/// <summary>JVM connection/container type.</summary>
+	///
+	/// <para>Queries the method used to construct/connect to a JVM, if mandated
+	/// by this template.</para>
+	///
+	/// <param name="pbstrType">Receives the JVM type, or NULL if none is specified in the template</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propget] HRESULT Type ([out, retval] BSTR *pbstrType);
+	/// <summary>JVM connection/container type.</summary>
+	///
+	/// <para>Sets the method used to construct/connect to a JVM. This may be NULL
+	/// if the template does not mandate any particular connection type.</para>
+	///
+	/// <param name="bstrType">The JVM type, or NULL if this template should not specify any</param>
+	/// <returns>S_OK if successful, an error code otherwise</returns>
+	[propput] HRESULT Type ([in] BSTR bstrType);
+	/// <summary>Updates this template with any over-ride settings.</summary>
+	///
+	/// <para>When a template is created from a named identifier it may include
+	/// one or more over-rides which will always take precedence over anything set
+	/// programatically. Practical uses of this include allowing an end-user to
+	/// force the classpath to include a particular debugging JAR.</para>
+	///
+	/// <returns>S_OK if over-rides were applied, S_FALSE if no over-rides were defined, or an error code otherwise</returns>
+	HRESULT AppendDefaults ();
+};
+
+
+
+typedef 
+[
+	uuid(dff6d900-b72f-4f06-a1ad-0466ad25c352),
+	version(1.0),
+	helpstring("Information about a UDF")
+]
+struct FUNCTIONINFO {
+	int iRegisterId;
+	int iExportNumber;
+	BSTR bsFunctionExportName;
+	boolean bIsVarArgs;
+	BSTR bsFunctionSignature;
+	BSTR bsFunctionWorksheetName;
+	BSTR bsArgumentNames;
+	int iFunctionType;
+	BSTR bsFunctionCategory;
+	BSTR bsAcceleratorKey;
+	BSTR bsHelpTopic;
+	BSTR bsDescription;
+	SAFEARRAY (BSTR) saArgsHelp;
+} FUNCTIONINFO;
+
+[
+	object,
+	uuid (c9e3e9e1-a28e-4ce3-8bd2-6d72fba2b7c1)
+] interface IScan : IUnknown {
+	HRESULT Scan ([retval, out] SAFEARRAY (FUNCTIONINFO) *psaResult);
+};
+
+[
+	object,
+	uuid(1edb5111-1544-4a2c-b99e-b65e5813a48a)
+]
+interface ICall : IUnknown {
+	HRESULT Call ([out] VARIANT *pvResult, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) saArgs);
+}
+
+[
+	object,
+	uuid(1b60bc5e-8aff-4746-8d3d-5e0a9cf4694a)
+]
+interface ICollect : IUnknown {
+	HRESULT Collect ([in] SAFEARRAY (hyper) saFoundIds, [retval, out] hyper *piAllocations); // hyper is 64-bit integer.
+}
+
+[
+	uuid (0e07a0b8-0fa3-4497-bc66-6d2af2a0b9c8),
+	helpstring ("Core JVM Support 1.0 Type Library"),
+	version (1.0)
+] library ComJvmCore {
+	typedef [uuid (470dd302-0bd5-4e23-9f82-a425b73af0da)] struct XL4JREFERENCE XL4JREFERENCE;
+	typedef [uuid (5c20fd94-3101-475f-8036-bed8ec47a061)] struct XL4JMULTIREFERENCE XL4JMULTIREFERENCE;
+	interface IClassFolder;
+	interface IClasspath;
+	interface IClasspathEntries;
+	interface IClasspathEntry;
+	interface IDirectoryWriter;
+	interface IFileWriter;
+	interface IJarFile;
+	interface IJDispatch;
+	interface IJObject;
+	interface IJvm;
+	interface IJvmConnector;
+	interface IJvmContainer;
+	interface IJvmSupport;
+	interface IJvmTemplate;
+	interface IScan;
+	interface ICall;
+	interface ICollect;
+	[
+		uuid (34b9de97-d756-4d18-a65c-e7a688cdf3e7),
+		helpstring ("Library entry point"),
+	] coclass JvmSupport {
+		[default] interface IJvmSupport;
+	};
+
+};
