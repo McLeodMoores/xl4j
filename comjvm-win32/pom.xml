@@ -16,6 +16,9 @@
     <maven-native-packing.version>0.2.3</maven-native-packing.version>
     <java.version>1.8.0</java.version>
     <excelsdk.version>2013</excelsdk.version>
+	<!-- path to Visual Studio VsDevCmd.bat, which sets up environment for Visual Studio builds -->
+	<!-- this is for VS2015 (aka version 14.0), you might need to change it for newer versions -->  
+	<vsdevcmd>${env.VS140COMNTOOLS}VsDevCmd.bat</vsdevcmd>
   </properties>
   
   <build>
@@ -32,7 +35,7 @@
 		  <execution>
             <id>default-build</id>
             <configuration>
-              <command>${project.basedir}/build.bat</command>
+              <command>${vsdevcmd} &amp; ${project.basedir}/build.bat</command>
             </configuration>
           </execution>
           <execution>

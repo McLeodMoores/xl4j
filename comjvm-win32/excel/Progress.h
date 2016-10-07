@@ -9,6 +9,10 @@ private:
 	HWND m_hwndParent;
 	~Progress ();
 	void Destroy ();
+	bool IsSplashOpen();
+	void Show();
+	void Hide();
+	void HideIfSplashOpen();
 public:
 	Progress ();
 	void Update (int iProgress);

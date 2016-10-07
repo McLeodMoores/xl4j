@@ -18,6 +18,7 @@ Progress::~Progress () {
 
 void Progress::Update (int iRegistered) {
 	SendMessage (m_hwndProgress, PBM_SETPOS, iRegistered, 0);
+	HideIfSplashOpen();
 }
 
 void Progress::Destroy () {
@@ -43,12 +44,40 @@ void Progress::Open (HWND hwndParent, HINSTANCE hInst) {
 	cyVScroll = GetSystemMetrics (SM_CYVSCROLL);
 	int width = rcClient.right - rcClient.left;
 	m_hwndProgress = CreateWindowEx (0, PROGRESS_CLASS, (LPTSTR)NULL,
-		WS_POPUP/*CHILD*/ | WS_VISIBLE | WS_BORDER | PBS_SMOOTH | PBS_MARQUEE, rcClient.left  + (width / 6),
+		WS_POPUP/*CHILD*/ | WS_HIDDEN | WS_BORDER | PBS_SMOOTH | PBS_MARQUEE, rcClient.left  + (width / 6),
 		((rcClient.top + rcClient.bottom) / 2) - cyVScroll,
 		(width * 2) / 3, cyVScroll * 2,
 		hwndParent, (HMENU)0, hInst, NULL);
+	HideIfSplashOpen();
 }
 
+bool Progress::IsSplashOpen() {
+	HWND hSplash = FindWindowExW(m_hwndParent, nullptr, L"MsoSplash", nullptr);
+	if (hSplash) {
+		ShowWindowAsync(m_hwndProgress, SW_SHOW);
+	}
+}
+
+void Progress::Show() {
+	if (m_hwndProgress) {
+		ShowWindowAsync(m_hwndProgress, SW_SHOW);
+	}
+}
+
+void Progress::Hide() {
+	if (m_hwndProgress) {
+		ShowWindowAsync(m_hwndProgress, SW_HIDE);
+	}
+}
+
+void Progress::HideIfSplashOpen() {
+	if (IsSplashOpen()) {
+		Hide();
+	}
+	else {
+		Show();
+	}
+}
 void Progress::SetMax (int iMax) {
 	SendMessage (m_hwndProgress, PBM_SETRANGE, 0, MAKELPARAM (0, iMax));
 }
@@ -59,10 +88,12 @@ void Progress::SetStep (int iStep) {
 
 void Progress::Increment () {
 	SendMessage (m_hwndProgress, PBM_STEPIT, 0, MAKELPARAM (0, 0));
+	HideIfSplashOpen();
 }
 
 void Progress::SetMarquee () {
 	SendMessage (m_hwndProgress, PBM_SETMARQUEE, 0, 0);
+	HideIfSplashOpen();
 }
 
 ULONG Progress::AddRef () {

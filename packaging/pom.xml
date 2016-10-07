@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.mcleodmoores.xl4j</groupId>
+    <artifactId>xl4j-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>com.mcleodmoores.xl4j</groupId>
+  <artifactId>packaging</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Packaging</name>
+  <description>The Complete package</description>
+  <url>http://mcleodmoores.com/Excel4J</url>
+  
+  <inceptionYear>1 Jul 2014</inceptionYear>
+  <organization>
+  	<name>McLeod Moores Software Limited</name>
+  	<url>http://mcleodmoores.com</url>
+  </organization>
+  
+  <licenses>
+    <license>
+      <name>Dual License GPLv3/Commercial License</name>
+      <url>http://mcleodmoores.com/licenses/LICENSE.txt</url>
+      <distribution>repo</distribution>
+      <comments>GPLv3 or Commercial License Terms</comments>
+    </license>
+  </licenses>
+  
+  <scm>
+    <connection>scm:git:git://github.com/mcleodmoores/excel4j</connection>
+    <developerConnection>scm:git:git://github.com/mcleodmoores/excel4j</developerConnection>
+    <url>http://github.com/mcleodmoores/excel4j</url>
+  </scm>
+   
+  <properties>
+     <!-- Properties for buildnumber-maven-plugin -->
+    <maven.buildNumber.getRevisionOnlyOnce>true</maven.buildNumber.getRevisionOnlyOnce>
+    <!-- Version properties -->
+    <gpg.skip>true</gpg.skip>
+  </properties>
+    <build>
+    <plugins>
+      <!-- plug-in for staging to Nexus -->
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>1.6.2</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.8</version>
+      </plugin>
+	  <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.6</version>
+		<executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+		    <configuration>
+              <descriptors>
+                <descriptor>src/assembly/xl4j-assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+	  </plugin>
+	</plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>com.mcleodmoores.xl4j</groupId>
+	  <artifactId>comjvm-win32</artifactId>
+	  <version>0.1.0-SNAPSHOT</version>
+	  <type>zip</type>
+	  <exclusions>
+	    <exclusion>
+          <groupId>com.oracle.jdk</groupId>
+          <artifactId>win32</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.microsoft.excel</groupId>
+          <artifactId>xllsdk</artifactId>
+        </exclusion>
+	  </exclusions>
+    </dependency>
+	<dependency>
+	  <groupId>com.mcleodmoores.xl4j</groupId>
+	  <artifactId>core-xll</artifactId>
+	  <version>0.1.0-SNAPSHOT</version>
+	</dependency>
+  </dependencies>
+
+</project>
