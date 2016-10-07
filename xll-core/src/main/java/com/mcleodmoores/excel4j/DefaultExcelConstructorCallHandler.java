@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.excel4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLString;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -43,14 +44,25 @@ public class DefaultExcelConstructorCallHandler implements ExcelConstructorCallH
         }
       }
     }
-    final ConstructorDefinition constructorDefinition = _registry.getConstructorDefinition(exportNumber);
-    LOGGER.info("constructorDefinition = {}", constructorDefinition.getConstructorMetadata().getConstructorSpec().name());
-    final ConstructorInvoker constructorInvoker = constructorDefinition.getConstructorInvoker();
+    ConstructorInvoker constructorInvoker = null;
+    try {
+      // see if the object was registered with a constructor annotation
+      final ConstructorDefinition constructorDefinition = _registry.getConstructorDefinition(exportNumber);
+      LOGGER.info("constructorDefinition = {}", constructorDefinition.getConstructorMetadata().getConstructorSpec().name());
+      constructorInvoker = constructorDefinition.getConstructorInvoker();
+    } catch (final Excel4JRuntimeException e) {
+      // see if the object was registered with a class annotation
+      final ClassConstructorDefinition classDefinition = _registry.getClassConstructorDefinition(exportNumber);
+      LOGGER.info("classConstructorDefinition = {}", classDefinition.getClassMetadata().getClassSpec().name());
+      constructorInvoker = classDefinition.getConstructorInvoker();
+    }
+    if (constructorInvoker == null) {
+      throw new Excel4JRuntimeException("Could not get constructor invoker for with export number " + exportNumber);
+    }
     LOGGER.info("constructor invoker = {}", constructorInvoker.getDeclaringClass().getSimpleName());
     try {
       return constructorInvoker.newInstance(args);
     } catch (final Exception e) {
-      e.printStackTrace();
       LOGGER.info("Exception occurred while instantiating class, returning XLError: {}", e.getMessage());
       return XLError.Null;
     }

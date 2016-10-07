@@ -26,4 +26,6 @@ public @interface XLClass {
   String helpTopic() default "";
 
   boolean includeObjectMethods() default false;
+
+  String[] excludedMethods() default {};
 }

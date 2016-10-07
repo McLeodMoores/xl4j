@@ -6,7 +6,6 @@ import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -119,12 +118,12 @@ public class Heap {
   /**
    * Remove any objects that aren't live, minimizing locking period.
    */
-  private void endGC(long[] activeHandles) {
+  private void endGC(final long[] activeHandles) {
     Arrays.sort(activeHandles);
-    Iterator<Entry<Long, Object>> iterator = _handleToObj.entrySet().iterator();
+    final Iterator<Entry<Long, Object>> iterator = _handleToObj.entrySet().iterator();
     long removed = 0;
     while (iterator.hasNext()) {
-      Entry<Long, Object> next = iterator.next();
+      final Entry<Long, Object> next = iterator.next();
       if (next.getKey() >= _snapHandle) {
         continue; // skip as we might have missed it in our scan because it was created after we started
       }
@@ -136,14 +135,14 @@ public class Heap {
     }
     LOGGER.info(removed + " objects removed during GC pass");
   }
-  
+
   /**
-   * 
+   *
    * @param activeHandles  list of identifiers for objects that have been seen since the last snap
    * @return the number of handles created since the last snap, gives measure of churn to adjust GC frequency
    */
-  public long cycleGC(long[] activeHandles) {
-    long snapBefore = _snapHandle;
+  public long cycleGC(final long[] activeHandles) {
+    final long snapBefore = _snapHandle;
     endGC(activeHandles);
     startGC();
     return _snapHandle - snapBefore; // object allocated during cycle

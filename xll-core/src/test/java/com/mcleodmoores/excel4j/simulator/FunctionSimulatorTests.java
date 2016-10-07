@@ -90,16 +90,22 @@ public class FunctionSimulatorTests {
 
   @Test
   public void testArraysAsList() throws Exception {
-//    final Object temp1 = Arrays.asList();
-//    final Object temp2 = Arrays.asList(new Object[]{1, 2});
-//    final Object temp3 = Arrays.asList(1, 2, 3);
-//    final Method temp4 = Arrays.class.getMethod("asList", Object[].class);
-//    final Object temp8 = temp4.invoke(null, 1, 2, 3, 4);
-//    final Object temp5 = temp4.invoke(null, new Object[] {1, 2, 3, 4});
-//    final Object temp6 = temp4.invoke(null, new Object[0]);
-//    final Object temp7 = temp4.invoke(null, (Object[]) null);
     // empty list
-    final XLValue list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"));
+    XLValue list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"));
     assertTrue(list instanceof XLObject);
+    List<?> listObject = (List<?>) ExcelFactory.getInstance().getHeap().getObject(((XLObject) list).getHandle());
+    Assert.assertEquals(listObject, Arrays.asList());
+    // populated with single values
+    list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"),
+        XLNumber.of(1.), XLNumber.of(2.), XLNumber.of(3.), XLNumber.of(4.));
+    assertTrue(list instanceof XLObject);
+    listObject = (List<?>) ExcelFactory.getInstance().getHeap().getObject(((XLObject) list).getHandle());
+    Assert.assertEquals(listObject, Arrays.asList(1., 2., 3., 4.));
+    // populated with arrays
+    list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"),
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1.), XLNumber.of(2.)}}), XLArray.of(new XLValue[][] {new XLValue[]{XLString.of("3"), XLString.of("4")}}));
+    assertTrue(list instanceof XLObject);
+    listObject = (List<?>) ExcelFactory.getInstance().getHeap().getObject(((XLObject) list).getHandle());
+    Assert.assertEquals(listObject, Arrays.asList(1., 2., 3., 4.));
   }
 }
