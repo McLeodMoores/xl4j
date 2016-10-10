@@ -106,6 +106,6 @@ public class FunctionSimulatorTests {
         XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1.), XLNumber.of(2.)}}), XLArray.of(new XLValue[][] {new XLValue[]{XLString.of("3"), XLString.of("4")}}));
     assertTrue(list instanceof XLObject);
     listObject = (List<?>) ExcelFactory.getInstance().getHeap().getObject(((XLObject) list).getHandle());
-    Assert.assertEquals(listObject, Arrays.asList(1., 2., 3., 4.));
+    Assert.assertEquals(listObject, Arrays.asList(new double[] {1., 2.}, new String[] {"3", "4"}));
   }
 }
