@@ -95,8 +95,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             }
           }
           break;
-        case OBJECT_RESULT_PASSTHROUGH:
-        case SIMPLEST_RESULT_PASSTHROUGH:
+        case PASSTHROUGH:
           if (isAssignableFrom(parameterTypes, argTypes)) {
             // put var arg constructors at end of list, as matching on more specific constructors is better
             final int index;
@@ -203,8 +202,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             }
           }
           break;
-        case OBJECT_RESULT_PASSTHROUGH:
-        case SIMPLEST_RESULT_PASSTHROUGH:
+        case PASSTHROUGH:
           if (isAssignableFrom(parameterTypes, argTypes)) {
             // put var arg methods at end of list, as matching on more specific methods is better
             final int index;
@@ -270,8 +268,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       switch (resultType) {
         case SIMPLEST_RESULT:
           return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
-        case SIMPLEST_RESULT_PASSTHROUGH:
-        case OBJECT_RESULT_PASSTHROUGH:
+        case PASSTHROUGH:
           return new PassthroughResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
         case OBJECT_RESULT:
           return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
