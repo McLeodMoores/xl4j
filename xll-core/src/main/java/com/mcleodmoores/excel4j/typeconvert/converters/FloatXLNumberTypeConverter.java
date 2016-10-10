@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLNumber;
 
 /**
@@ -20,7 +21,14 @@ public final class FloatXLNumberTypeConverter extends AbstractTypeConverter {
   @Override
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return XLNumber.of((Float) from);
+    final Float f = (Float) from;
+    if (f.isInfinite()) {
+      return XLError.Div0;
+    }
+    if (f.isNaN()) {
+      return XLError.NA;
+    }
+    return XLNumber.of(f);
   }
 
   @Override
