@@ -7,6 +7,7 @@
 #include "ExcelUtils.h"
 #include "Progress.h"
 #include "../settings/SettingsDialog.h"
+#include "../settings/SplashScreenInterface.h"
 #include "../core/Settings.h"
 #include "../core/internal.h"
 #include "../utils/FileUtils.h"
@@ -19,7 +20,8 @@ class CJvmEnvironment {
 	Jvm *m_pJvm;
 	FunctionRegistry *m_pFunctionRegistry;
 	GarbageCollector *m_pCollector;
-	Progress *m_pProgress;
+	//Progress *m_pProgress;
+	ISplashScreen *m_pSplashScreen;
 	static DWORD WINAPI MarqueeTickThread (LPVOID param);
 	static DWORD WINAPI BackgroundJvmThread (LPVOID param);
 	void Unregister ();
@@ -32,5 +34,5 @@ public:
 	inline Jvm *GetJvm () const { return m_pJvm; }
 	inline FunctionRegistry *GetFunctionRegistry () const { return m_pFunctionRegistry; }
 	inline GarbageCollector *GetGarbageCollector () const { return m_pCollector; }
-	inline Progress *GetProgress () const { return m_pProgress; }
+	inline ISplashScreen *GetSplashScreen() const { return m_pSplashScreen; }
 };

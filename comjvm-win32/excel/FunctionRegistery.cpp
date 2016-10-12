@@ -75,8 +75,10 @@ HRESULT FunctionRegistry::Scan () {
 	for (int i = 0; i < cFunctions; i++) {
 		FUNCTIONINFO fi = pFunctionInfos[i];
 		if (fi.iExportNumber >= cFunctions) {
-			LOGERROR ("unexpectedly large export number, this shouldn't happen and is a code assumption error");
-			return E_ABORT;
+			LOGERROR ("Unexpectedly large export number (%d), this shouldn't happen and is a code assumption error (it's >= %d - the number of functions returned)", fi.iExportNumber, cFunctions);
+			LOGERROR ("This almost certainly happens if you register more than one function with the same name - the second will overwrite the first - there is no overloading!");
+			LOGERROR ("Problem function is %s", fi.bsFunctionWorksheetName);
+			//return E_ABORT;
 		}
 		m_pFunctions[fi.iExportNumber] = fi;
 	}

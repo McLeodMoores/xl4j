@@ -25,6 +25,7 @@
 *.sdf
 *.opensdf
 *.unsuccessfulbuild
+*.tlog/
 ipch/
 [Oo]bj/
 [Bb]in
@@ -68,6 +69,10 @@ packages/
 
 #Test files
 *.testsettings
+/test-output
+/comjvm-win32/test-output/
+/xll-core/test-output/
+/packaging/test-output/
 
 # Java
 *.class
@@ -82,3 +87,4 @@ packages/
 /target/
 /comjvm-win32/target/
 /xll-core/target/
+/packaging/target/

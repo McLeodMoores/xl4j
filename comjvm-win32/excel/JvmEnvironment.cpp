@@ -1,23 +1,29 @@
 #include "stdafx.h"
 #include "JvmEnvironment.h"
 #include "Excel.h"
+#include "../settings/SplashScreenInterface.h"
 
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
-	m_pProgress = new Progress ();
+	HRESULT hr;
+	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public Licese v3 Applies\nto linked code", &m_pSplashScreen))) {
+		_com_error err(hr);
+		LOGERROR("Could not open splash screen, failing: %s", err.ErrorMessage());
+		return;
+	}
 	HWND hWnd;
 	if (!ExcelUtils::GetHWND (&hWnd)) {
 		LOGERROR ("Could not get Excel window handle");
 		return;
 	}
-	m_pProgress->Open (hWnd, static_cast<HINSTANCE>(g_hInst));
+	m_pSplashScreen->Open(hWnd);
 	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
 	m_pCollector = nullptr; // this means an already registered GarbageCollect() command will see that the collector hasn't been created yet.
-	HANDLE hThread = CreateThread (nullptr, 2048 * 1024, MarqueeTickThread, static_cast<LPVOID>(this), 0, nullptr);
-	if (!hThread) {
-		LOGTRACE ("CreateThread (marquee tick)failed %d", GetLastError ());
-		return;
-	}
-	CloseHandle (hThread); // doesn't close the thread, just the handle
+	//HANDLE hThread = CreateThread (nullptr, 2048 * 1024, MarqueeTickThread, static_cast<LPVOID>(this), 0, nullptr);
+	//if (!hThread) {
+	//	LOGTRACE ("CreateThread (marquee tick)failed %d", GetLastError ());
+	//	return;
+	//}
+	//CloseHandle (hThread); // doesn't close the thread, just the handle
 	HANDLE hJvmThread = CreateThread (nullptr, 4096 * 1024, BackgroundJvmThread, static_cast<LPVOID>(this), 0, nullptr);
 	if (!hJvmThread) {
 		LOGTRACE ("CreateThread (background JVM) failed %d", GetLastError ());
@@ -37,8 +43,8 @@ CJvmEnvironment::~CJvmEnvironment () {
 	LOGTRACE ("Deleting garbage collector");
 	delete m_pCollector;
 	m_pCollector = nullptr;
-	m_pProgress->Release ();
-	m_pProgress = nullptr;
+	m_pSplashScreen->Release ();
+	m_pSplashScreen = nullptr;
 }
 
 BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
@@ -55,15 +61,15 @@ BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 			int iRegistered;
 			m_pFunctionRegistry->GetNumberRegistered (&iRegistered);
 			LOGTRACE ("RegisterFunctions returned S_FALSE, GetNumberRegsitered returned %d", iRegistered);
-			m_pProgress->Update (iRegistered);
+			m_pSplashScreen->Update (iRegistered);
 			return false;
 		} else {
 			int iRegistered;
 			m_pFunctionRegistry->GetNumberRegistered (&iRegistered);
 			LOGTRACE ("GetNumberRegsitered returned %d", iRegistered);
-			m_pProgress->Update (iRegistered);
+			m_pSplashScreen->Update (iRegistered);
 			Sleep (100); // allow UI to show completed status.
-			m_pProgress->Release ();
+			m_pSplashScreen->Close();
 			return true; // StartGC ();
 		}
 	} else {
@@ -87,6 +93,7 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		LOGTRACE("Calling scan from registry thread");
 		if (FAILED(pThis->m_pFunctionRegistry->Scan())) {
 			LOGERROR("scan failed");
+			MessageBoxW(nullptr, L"Error scanning for functions, please check debug logs with DebugView and/or report error.  You will need to restart Excel.", L"Unexpected Error", MB_OK);
 			return 1;
 		}
 		LOGTRACE("Initialising GC");
@@ -118,7 +125,7 @@ DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {
 		return 1;
 	}
 	CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
-	Progress *pProgress = pThis->m_pProgress;
+	ISplashScreen *pProgress = pThis->m_pSplashScreen;
 	if (pProgress) {
 		//pProgress->AddRef ();
 		while (pThis->m_pFunctionRegistry && !pThis->m_pFunctionRegistry->IsScanComplete ()) {
@@ -129,7 +136,7 @@ DWORD WINAPI CJvmEnvironment::MarqueeTickThread (LPVOID param) {
 		if (pThis->m_pFunctionRegistry) {
 			pThis->m_pFunctionRegistry->GetNumberRegistered (&iNumberRegistered);
 			pProgress->SetMax (iNumberRegistered);
-			pProgress->Release ();
+			pProgress->Close ();
 		}
 		return 0;
 	} else {

@@ -55,7 +55,7 @@ Jvm::Jvm () : m_lRefCount (1) {
 		LOGERROR("Could not find Java lib directory at %s", szLibPath);
 	}
 	wchar_t szXL4JPath[MAX_PATH];
-	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szXL4JPath, MAX_PATH, TEXT ("..\\..\\..\\target\\xll-core-0.1.0-SNAPSHOT.jar")))) {
+	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szXL4JPath, MAX_PATH, TEXT ("..\\..\\..\\xll-core\\target\\xll-core-0.1.0-SNAPSHOT.jar")))) {
 		LOGERROR ("Could not create path for xll-core jar in neighbouring project");
 		MessageBox(nullptr, L"Could not create path for xll-core jar in neighbouring project.  Please report as a bug and close Excel", L"Unexpected failure", MB_OK);
 		_com_raise_error(hr);

@@ -44,7 +44,7 @@ void Progress::Open (HWND hwndParent, HINSTANCE hInst) {
 	cyVScroll = GetSystemMetrics (SM_CYVSCROLL);
 	int width = rcClient.right - rcClient.left;
 	m_hwndProgress = CreateWindowEx (0, PROGRESS_CLASS, (LPTSTR)NULL,
-		WS_POPUP/*CHILD*/ | WS_HIDDEN | WS_BORDER | PBS_SMOOTH | PBS_MARQUEE, rcClient.left  + (width / 6),
+		WS_POPUP/*CHILD*/ | /*WS_VISIBLE | */ WS_BORDER | PBS_SMOOTH | PBS_MARQUEE, rcClient.left  + (width / 6),
 		((rcClient.top + rcClient.bottom) / 2) - cyVScroll,
 		(width * 2) / 3, cyVScroll * 2,
 		hwndParent, (HMENU)0, hInst, NULL);
@@ -53,9 +53,7 @@ void Progress::Open (HWND hwndParent, HINSTANCE hInst) {
 
 bool Progress::IsSplashOpen() {
 	HWND hSplash = FindWindowExW(m_hwndParent, nullptr, L"MsoSplash", nullptr);
-	if (hSplash) {
-		ShowWindowAsync(m_hwndProgress, SW_SHOW);
-	}
+	return hSplash != nullptr;
 }
 
 void Progress::Show() {
@@ -93,7 +91,7 @@ void Progress::Increment () {
 
 void Progress::SetMarquee () {
 	SendMessage (m_hwndProgress, PBM_SETMARQUEE, 0, 0);
-	HideIfSplashOpen();
+
 }
 
 ULONG Progress::AddRef () {
