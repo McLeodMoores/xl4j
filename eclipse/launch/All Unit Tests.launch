@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.testng.eclipse.launchconfig">
+<listAttribute key="com.mountainminds.eclemma.core.SCOPE_IDS">
+<listEntry value="=excel4j/src\/main\/java"/>
+</listAttribute>
+<booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.testng.remote.RemoteTestNG"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="excel4j"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dlogback.configurationFile=com/mcleodmoores/excel4j/debug-logback.xml"/>
+<mapAttribute key="org.testng.eclipse.ALL_CLASS_METHODS"/>
+<listAttribute key="org.testng.eclipse.CLASS_TEST_LIST"/>
+<booleanAttribute key="org.testng.eclipse.DEBUG" value="false"/>
+<listAttribute key="org.testng.eclipse.GROUP_LIST"/>
+<listAttribute key="org.testng.eclipse.GROUP_LIST_CLASS"/>
+<stringAttribute key="org.testng.eclipse.LOG_LEVEL" value="2"/>
+<listAttribute key="org.testng.eclipse.PACKAGE_TEST_LIST">
+<listEntry value="com.mcleodmoores.xl4j"/>
+<listEntry value="com.mcleodmoores.xl4j.examples"/>
+<listEntry value="com.mcleodmoores.xl4j.javacode"/>
+<listEntry value="com.mcleodmoores.xl4j.simulator"/>
+<listEntry value="com.mcleodmoores.xl4j.typeconvert.converters"/>
+<listEntry value="com.mcleodmoores.xl4j.typeconvert"/>
+</listAttribute>
+<stringAttribute key="org.testng.eclipse.PROTOCOL" value="object"/>
+<intAttribute key="org.testng.eclipse.TYPE" value="5"/>
+<booleanAttribute key="org.testng.eclipse.VERBOSE" value="false"/>
+</launchConfiguration>

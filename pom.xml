@@ -20,6 +20,8 @@
   <modules>
     <module>comjvm-win32</module>
     <module>xll-core</module>
+	<module>xll-java</module>
+	<module>xll-examples</module>
     <module>packaging</module>
   </modules>
   

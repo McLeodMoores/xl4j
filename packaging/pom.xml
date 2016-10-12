@@ -12,7 +12,7 @@
 
   <name>Packaging</name>
   <description>The Complete package</description>
-  <url>http://mcleodmoores.com/Excel4J</url>
+  <url>http://mcleodmoores.com/xl4j</url>
   
   <inceptionYear>1 Jul 2014</inceptionYear>
   <organization>
@@ -30,9 +30,9 @@
   </licenses>
   
   <scm>
-    <connection>scm:git:git://github.com/mcleodmoores/excel4j</connection>
-    <developerConnection>scm:git:git://github.com/mcleodmoores/excel4j</developerConnection>
-    <url>http://github.com/mcleodmoores/excel4j</url>
+    <connection>scm:git:git://github.com/mcleodmoores/xl4j</connection>
+    <developerConnection>scm:git:git://github.com/mcleodmoores/xl4j</developerConnection>
+    <url>http://github.com/mcleodmoores/xl4j</url>
   </scm>
    
   <properties>
@@ -113,9 +113,20 @@
     </dependency>
 	<dependency>
 	  <groupId>com.mcleodmoores.xl4j</groupId>
-	  <artifactId>core-xll</artifactId>
+	  <artifactId>xll-core</artifactId>
 	  <version>0.1.0-SNAPSHOT</version>
 	</dependency>
+	<dependency>
+	  <groupId>com.mcleodmoores.xl4j</groupId>
+	  <artifactId>xll-java</artifactId>
+	  <version>0.1.0-SNAPSHOT</version>
+	</dependency>
+	<dependency>
+	  <groupId>com.mcleodmoores.xl4j</groupId>
+	  <artifactId>xll-examples</artifactId>
+	  <version>0.1.0-SNAPSHOT</version>
+	</dependency>
+
   </dependencies>
 
 </project>

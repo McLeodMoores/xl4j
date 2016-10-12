@@ -72,6 +72,8 @@ packages/
 /test-output
 /comjvm-win32/test-output/
 /xll-core/test-output/
+/xll-java/test-output/
+/xll-examples/test-output/
 /packaging/test-output/
 
 # Java
@@ -87,4 +89,6 @@ packages/
 /target/
 /comjvm-win32/target/
 /xll-core/target/
+/xll-java/target/
+/xll-examples/target/
 /packaging/target/
