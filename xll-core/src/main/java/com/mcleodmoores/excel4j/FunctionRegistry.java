@@ -220,6 +220,7 @@ public class FunctionRegistry {
       if (clazz.isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
       }
+      final int constructorNumber = 1;
       for (final Constructor<?> constructor : constructors) {
         // build a constructor invoker
         try {
@@ -227,7 +228,9 @@ public class FunctionRegistry {
           // build the meta-data data structure and store it all in a FunctionDefinition
           final int allocatedExportNumber = allocateExport();
           final ClassMetadata constructorMetadata = ClassMetadata.of(classAnnotation, namespaceAnnotation);
-          final ClassConstructorDefinition constructorDefinition = ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, allocatedExportNumber);
+          final ClassConstructorDefinition constructorDefinition = constructors.length == 1 ?
+              ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, allocatedExportNumber) :
+              ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, constructorNumber, allocatedExportNumber);
           // put the definition in some look-up tables.
           LOGGER.info("Allocating export number {} to ", allocatedExportNumber, constructorInvoker.getClass().getSimpleName());
           _classConstructorDefinitionLookup.put(allocatedExportNumber, constructorDefinition);

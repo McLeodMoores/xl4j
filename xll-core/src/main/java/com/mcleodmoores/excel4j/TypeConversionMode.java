@@ -12,17 +12,13 @@ public enum TypeConversionMode {
    */
   SIMPLEST_RESULT,
   /**
-   * Results should be returned as object handles.  This means you can return e.g. doubles with NaN/Inf, denormals, etc. 
+   * Results should be returned as object handles.  This means you can return e.g. doubles with NaN/Inf, denormals, etc.
    * with no loss of precision.
    */
   OBJECT_RESULT,
   /**
-   * Parameters are not converted at all but result is simplified.
+   * Parameters are not converted.
    */
-  SIMPLEST_RESULT_PASSTHROUGH,
-  /**
-   * Parameters are not converted at all but result is returned as object handle.
-   */
-  OBJECT_RESULT_PASSTHROUGH,
-  
+  PASSTHROUGH,
+
 }

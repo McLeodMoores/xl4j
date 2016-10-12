@@ -41,7 +41,7 @@ public final class JMethod {
   @XLFunction(name = "Method",
               description = "Call a named Java method",
               category = "Java",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT_PASSTHROUGH)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethod(@XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
                         @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
                         @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
@@ -102,7 +102,7 @@ public final class JMethod {
   @XLFunction(name = "MethodX",
               description = "Call a named Java method",
               category = "Java",
-              typeConversionMode = TypeConversionMode.OBJECT_RESULT_PASSTHROUGH)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethodX(@XLArgument(name = "object reference", description = "The object reference")
                                final XLObject objectReference,
                                @XLArgument(name = "method name", description = "The method name without parentheses")
@@ -166,7 +166,7 @@ public final class JMethod {
   @XLFunction(name = "StaticMethod",
               description = "Call a named Java method",
               category = "Java",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT_PASSTHROUGH)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticMethod(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered")
                            final XLString className,
                            @XLArgument(name = "method name", description = "The method name without parentheses")
@@ -227,7 +227,7 @@ public final class JMethod {
   @XLFunction(name = "StaticMethodX",
               description = "Call a named Java method",
               category = "Java",
-              typeConversionMode = TypeConversionMode.OBJECT_RESULT_PASSTHROUGH)
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticMethodX(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered")
                            final XLString className,
                            @XLArgument(name = "method name", description = "The method name without parentheses")

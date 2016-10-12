@@ -4,6 +4,7 @@ import java.lang.reflect.Type;
 
 import com.mcleodmoores.excel4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.excel4j.util.ArgumentChecker;
+import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLNumber;
 
 /**
@@ -20,7 +21,14 @@ public final class DoubleXLNumberTypeConverter extends AbstractTypeConverter {
   @Override
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return XLNumber.of((Double) from);
+    final Double d = (Double) from;
+    if (d.isInfinite()) {
+      return XLError.Div0;
+    }
+    if (d.isNaN()) {
+      return XLError.NA;
+    }
+    return XLNumber.of(d);
   }
 
   @Override

@@ -15,6 +15,7 @@ import com.mcleodmoores.excel4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.excel4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.excel4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.excel4j.values.XLBoolean;
+import com.mcleodmoores.excel4j.values.XLError;
 import com.mcleodmoores.excel4j.values.XLInteger;
 import com.mcleodmoores.excel4j.values.XLNumber;
 import com.mcleodmoores.excel4j.values.XLValue;
@@ -160,4 +161,23 @@ public class DoubleXLNumberTypeConverterTest {
     assertEquals(doub, DOUBLE);
   }
 
+  /**
+   * Tests the behaviour when the Double is infinite.
+   */
+  @Test
+  public void testInfinite() {
+    Object converted = CONVERTER.toXLValue(Double.class, Double.POSITIVE_INFINITY);
+    assertEquals(converted, XLError.Div0);
+    converted = CONVERTER.toXLValue(Double.class, Double.NEGATIVE_INFINITY);
+    assertEquals(converted, XLError.Div0);
+  }
+
+  /**
+   * Tests the behaviour when the Double is a NaN.
+   */
+  @Test
+  public void testNaN() {
+    final Object converted = CONVERTER.toXLValue(Double.class, Double.NaN);
+    assertEquals(converted, XLError.NA);
+  }
 }

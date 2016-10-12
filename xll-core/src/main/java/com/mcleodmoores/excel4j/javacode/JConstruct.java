@@ -37,7 +37,7 @@ public final class JConstruct {
   @XLFunction(name = "Construct",
       description = "Construct a named Java class instance",
       category = "Java",
-      typeConversionMode = TypeConversionMode.OBJECT_RESULT_PASSTHROUGH)
+      typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static XLValue jconstruct(
       @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
       @XLArgument(name = "args", description = "") final XLValue... args) {

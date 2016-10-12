@@ -98,7 +98,8 @@ public class DefaultExcelCallback implements ExcelCallback {
     final XLNamespace namespaceAnnotation = classMetadata.getNamespace();
     final XLClass classAnnotation = classMetadata.getClassSpec();
     final String exportName = classDefinition.getExportName();
-    final String className = buildConstructorName(constructorInvoker, namespaceAnnotation, classAnnotation);
+    final Integer constructorNumber = classDefinition.getConstructorNumber();
+    final String className = buildConstructorName(constructorInvoker, namespaceAnnotation, classAnnotation, constructorNumber);
     final boolean isVarArgs = constructorInvoker.isVarArgs();
     final String argumentNames = ""; //TODO
     final Integer functionTypeInt = getConstructorType();
@@ -111,6 +112,7 @@ public class DefaultExcelCallback implements ExcelCallback {
                              functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
+  @Override
   public void registerMethodsForClass(final ClassMethodDefinition classDefinition) {
 
   }
@@ -194,12 +196,12 @@ public class DefaultExcelCallback implements ExcelCallback {
     final StringBuilder signature = new StringBuilder();
     final Class<?> excelReturnType = methodInvoker.getExcelReturnType();
     final Class<?>[] parameterTypes = methodInvoker.getExcelParameterTypes();
-    final boolean isVolatile = (functionAnnotation != null) ? functionAnnotation.isVolatile() : false; // default
-    final boolean isMTSafe = (functionAnnotation != null) ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
-    final boolean isMacroEquivalent = (functionAnnotation != null) ? functionAnnotation.isMacroEquivalent() : false; // default
-    final boolean isAsynchronous = (functionAnnotation != null) ? functionAnnotation.isAsynchronous() : false; // default
-    final FunctionType functionType = (functionAnnotation != null) ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
-    if ((isVolatile && isMTSafe) || (isMTSafe && isMacroEquivalent)) {
+    final boolean isVolatile = functionAnnotation != null ? functionAnnotation.isVolatile() : false; // default
+    final boolean isMTSafe = functionAnnotation != null ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
+    final boolean isMacroEquivalent = functionAnnotation != null ? functionAnnotation.isMacroEquivalent() : false; // default
+    final boolean isAsynchronous = functionAnnotation != null ? functionAnnotation.isAsynchronous() : false; // default
+    final FunctionType functionType = functionAnnotation != null ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
+    if (isVolatile && isMTSafe || isMTSafe && isMacroEquivalent) {
       throw new Excel4JRuntimeException("Illegal combination of XLFunction attributes, cannot be volatile & thread-safe or macro-equivalent & thread-safe");
     }
     // Return type character
@@ -333,7 +335,8 @@ public class DefaultExcelCallback implements ExcelCallback {
     return functionName.toString();
   }
 
-  private static String buildConstructorName(final ConstructorInvoker constructorInvoker, final XLNamespace namespaceAnnotation, final XLClass classAnnotation) {
+  private static String buildConstructorName(final ConstructorInvoker constructorInvoker, final XLNamespace namespaceAnnotation, final XLClass classAnnotation,
+      final Integer constructorNumber) {
     final StringBuilder functionName = new StringBuilder();
     if (namespaceAnnotation != null) {
       functionName.append(namespaceAnnotation.value());
@@ -345,6 +348,10 @@ public class DefaultExcelCallback implements ExcelCallback {
         //TODO doesn't this just set the name to ObjectConstructorInvoker?
         functionName.append(constructorInvoker.getClass().getSimpleName());
       }
+    }
+    if (constructorNumber != null) {
+      functionName.append("$");
+      functionName.append(constructorNumber);
     }
     return functionName.toString();
   }

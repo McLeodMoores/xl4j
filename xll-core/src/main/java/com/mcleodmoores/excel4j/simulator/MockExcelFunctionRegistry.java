@@ -19,12 +19,12 @@ import com.mcleodmoores.excel4j.values.XLValue;
  * FunctionRegistry, which stores the definitions on the Java side.
  */
 public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
-  private ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>(); 
-  
+  private final ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>();
+
   // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
   public int xlfRegister(
-      final int exportNumber, 
+      final int exportNumber,
       final String functionExportName,
       final boolean isVarArgs,
       final String functionSignature,
@@ -36,28 +36,27 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
       final String helpTopic,
       final String description,
       final String... argsHelp) {
-    Method method = getMethod(functionExportName, argumentNames);
-    String[] argNames = getArgumentNames(argumentNames);
-    Class<?>[] argumentTypes = getArgumentTypes(functionSignature);
-    Class<?> returnType = getReturnType(functionSignature);
-    String[] argumentsHelp = getArgumentsHelp(argsHelp);
-    FunctionType xlFunctionType = getFunctionType(functionType);
-    boolean isAsynchronous = functionSignature.contains(">X");
-    boolean isMacroEquivalent = functionSignature.endsWith("#");
+    final Method method = getMethod(functionExportName, argumentNames);
+    final String[] argNames = getArgumentNames(argumentNames);
+    final Class<?>[] argumentTypes = getArgumentTypes(functionSignature);
+    final Class<?> returnType = getReturnType(functionSignature);
+    final String[] argumentsHelp = getArgumentsHelp(argsHelp);
+    final FunctionType xlFunctionType = getFunctionType(functionType);
+    final boolean isAsynchronous = functionSignature.contains(">X");
+    final boolean isMacroEquivalent = functionSignature.endsWith("#");
     // REVIEW: t might be a mistake to make isVolatile based on isMacroEquivalent here because we haven't elsewhere.
-    boolean isVolatile = isMacroEquivalent || functionSignature.endsWith("!");
-    boolean isMultiThreadSafe = functionSignature.endsWith("$");
+    final boolean isVolatile = isMacroEquivalent || functionSignature.endsWith("!");
+    final boolean isMultiThreadSafe = functionSignature.endsWith("$");
     //XLResultType resultType = functionSignature.startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
-    FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, 
+    final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile,
         isMacroEquivalent, isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
-    FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType, 
+    final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType,
         argumentsHelp, description.toString(), functionAttributes, method);
-    FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName, functionEntry);
+    final FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName, functionEntry);
     if (existing == null) {
       return functionWorksheetName.hashCode();
-    } else {
-      return -1;
     }
+    return -1;
   }
   // CHECKSTYLE:ON
 
@@ -69,7 +68,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   public FunctionEntry getFunctionEntry(final String functionName) {
     return _functions.get(functionName);
   }
-  
+
   /**
    * @param functionType either an XLString or XLInteger containing 1 or 2 (1=Function, 2=Command
    * @return an XLFunctionType instance
@@ -99,7 +98,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   }
 
   private String[] getArgumentsHelp(final String[] argsHelp) {
-    String[] results = new String[argsHelp.length];
+    final String[] results = new String[argsHelp.length];
     for (int i = 0; i < argsHelp.length; i++) {
       if (argsHelp[i] != null) {
         results[i] = argsHelp[i];
@@ -110,7 +109,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     return results;
   }
   private Class<?> getReturnType(final String functionSignature) {
-    char returnCode = functionSignature.charAt(0);
+    final char returnCode = functionSignature.charAt(0);
     switch (returnCode) {
       case 'T':
         return Integer.TYPE;
@@ -124,9 +123,9 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
         throw new Excel4JRuntimeException("Unknown return type code " + returnCode);
     }
   }
-  
+
   private Class<?>[] getArgumentTypes(final String functionSignature) {
-    char[] functionSig = functionSignature.toCharArray();
+    final char[] functionSig = functionSignature.toCharArray();
     boolean special;
     switch (functionSig[functionSig.length - 1]) {
       case '!':
@@ -138,10 +137,10 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
         special = false;
         break;
     }
-    int length = functionSig.length - (special ? 2 : 1);
-    Class<?>[] results  = new Class<?>[length];
+    final int length = functionSig.length - (special ? 2 : 1);
+    final Class<?>[] results  = new Class<?>[length];
     // -1 if not special (omit return type), -2 if special (omit return type and special char)
-    for (int i = 0; i < length; i++) { 
+    for (int i = 0; i < length; i++) {
       switch (functionSig[i + 1]) { // skip the return type
         case 'Q':
         case 'R':
@@ -153,14 +152,14 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     }
     return results;
   }
-  
+
   private String[] getArgumentNames(final String argumentNames) {
     return argumentNames.split(",");
   }
-  
+
   private Method getMethod(final String functionExportName, final String argumentNames) {
-    int numArgs = argumentNames.split(",").length;
-    Class<?>[] parameterTypes = new Class[numArgs];
+    final int numArgs = argumentNames.split(",").length;
+    final Class<?>[] parameterTypes = new Class[numArgs];
     for (int i = 0; i < numArgs; i++) {
       parameterTypes[i] = XLValue.class;
     }
