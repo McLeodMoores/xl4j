@@ -29,7 +29,7 @@ public:
 		GetCurrentDirectory (MAX_PATH, szCurrentDir);
 		LOGTRACE ("Current dir is %s", szCurrentDir);
 		ClasspathUtils::AddEntries (entries, TEXT ("..\\lib\\"));
-		ClasspathUtils::AddEntry (entries, TEXT ("..\\..\\..\\target\\excel4j-0.1.0-SNAPSHOT.jar"));
+		ClasspathUtils::AddEntry (entries, TEXT ("..\\..\\..\\target\\xl4j-0.1.0-SNAPSHOT.jar"));
 		//AddEntries (entries);
 		Assert::AreEqual (S_OK, m_pConnector->CreateJvm (pTemplate, NULL, &m_pJvm));
 		pTemplate->Release ();

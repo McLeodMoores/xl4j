@@ -19,8 +19,8 @@
 
   <modules>
     <module>comjvm-win32</module>
-	<module>xll-core</module>
-	<module>packaging</module>
+    <module>xll-core</module>
+    <module>packaging</module>
   </modules>
   
   <properties>

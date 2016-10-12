@@ -76,9 +76,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 //		TEST_METHOD (CreateXLNumberAndReadValue) {
 //			JniSequenceHelper *pHelper = new JniSequenceHelper (m_pJvm);
 //			long lDoubleRef = pHelper->DoubleConstant (7.6);
-//			long lXLNumberRef = pHelper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/excel4j/values/XLNumber"), TEXT ("of"), TEXT ("(D)Lcom/mcleodmoores/excel4j/values/XLNumber;"), 1, lDoubleRef);
+//			long lXLNumberRef = pHelper->CallStaticMethod (JTYPE_OBJECT, TEXT ("com/mcleodmoores/xl4j/values/XLNumber"), TEXT ("of"), TEXT ("(D)Lcom/mcleodmoores/xl4j/values/XLNumber;"), 1, lDoubleRef);
 //			long lIntegerRef = pHelper->NewObject (TEXT ("java/lang/Integer"), TEXT ("(I)V"), 1, pHelper->IntegerConstant (6));
-//			long lValueRef = pHelper->CallMethod (JTYPE_DOUBLE, lXLNumberRef, pHelper->GetMethodID (TEXT ("com/mcleodmoores/excel4j/values/XLNumber"), TEXT ("getValue"), TEXT ("()D")), 0);
+//			long lValueRef = pHelper->CallMethod (JTYPE_DOUBLE, lXLNumberRef, pHelper->GetMethodID (TEXT ("com/mcleodmoores/xl4j/values/XLNumber"), TEXT ("getValue"), TEXT ("()D")), 0);
 //			pHelper->Result (lValueRef);
 //			VARIANT aResults[1];
 //			pHelper->Execute (0, NULL, 1, aResults);

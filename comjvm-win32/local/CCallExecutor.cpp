@@ -284,7 +284,7 @@ VARIANT CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLV
 		V_VT (&result) = VT_ARRAY;
 		V_ARRAY (&result) = psa;
 	} else {
-		LOGTRACE ("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass ("com/mcleodmoores/excel4j/values/XLValue"));
+		LOGTRACE ("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass ("com/mcleodmoores/xl4j/values/XLValue"));
 		jclass jcObject = pEnv->FindClass ("java/lang/Object");
 		jmethodID jmObject_getClass = pEnv->GetMethodID (jcObject, "getClass", "()Ljava/lang/Class;");
 		jobject joClass = pEnv->CallObjectMethod (joXLValue, jmObject_getClass);

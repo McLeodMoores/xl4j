@@ -137,8 +137,8 @@
       <type>native-static</type>
     </dependency>
     <dependency>
-      <groupId>com.mcleodmoores</groupId>
-      <artifactId>excel4j</artifactId>
+      <groupId>com.mcleodmoores.xl4j</groupId>
+      <artifactId>xll-core</artifactId>
       <version>0.1.0-SNAPSHOT</version>
     </dependency>
   </dependencies>

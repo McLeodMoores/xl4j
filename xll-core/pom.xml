@@ -7,10 +7,10 @@
     <version>0.1.0-SNAPSHOT</version>
   </parent>
   <groupId>com.mcleodmoores.xl4j</groupId>
-  <artifactId>core-xll</artifactId>
+  <artifactId>xll-core</artifactId>
   <packaging>jar</packaging>
 
-  <name>CoreXLL</name>
+  <name>XLL Core Functionality</name>
   <description>The Java side of the XLL system including type system</description>
   <url>http://mcleodmoores.com/Excel4J</url>
   

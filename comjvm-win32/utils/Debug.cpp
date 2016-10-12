@@ -14,7 +14,7 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 {
 	va_list argptr;
 	va_start (argptr, sFormat);
-	//static FILE *logFile = _tfopen (_T ("excel4j.log"), _T ("w"));
+	//static FILE *logFile = _tfopen (_T ("xl4j.log"), _T ("w"));
 	TCHAR buffer[2000];
 	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
 	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
@@ -34,7 +34,7 @@ size_t Debug::m_cMaxFunctionNameLength = 0;
 void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
 	va_list argptr;
 	va_start (argptr, sFormat);
-	//static FILE *logFile = _tfopen (_T ("excel4j.log"), _T ("w"));
+	//static FILE *logFile = _tfopen (_T ("xl4j.log"), _T ("w"));
 	m_cMaxFileNameLength = max (m_cMaxFileNameLength, strnlen (sFileName, FILENAME_MAX));
 	m_cMaxFunctionNameLength = max (m_cMaxFunctionNameLength, strnlen (sFunctionName, FILENAME_MAX));
 	const int LINE_MAX = 2000;

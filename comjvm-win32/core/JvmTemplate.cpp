@@ -160,7 +160,7 @@ HRESULT CJvmTemplate::LoadOptions (const CSettings &oSettings) {
 		_std_string_t strLogback (JVM_TEMPLATE_AUTO_OPTIONS_LOGBACK);
 		if (!(!(bstr = oSettings.GetString (strAutoOptions, strLogback)))) {
 			if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
-			_bstr_t logback (_T ("-Dlogback.configurationFile=com/mcleodmoores/excel4j/"));
+			_bstr_t logback (_T ("-Dlogback.configurationFile=com/mcleodmoores/xl4j/"));
 			CComBSTR logLevel (bstr.GetBSTR()); // because it has a ToLower method...
 			logLevel.ToLower ();
 			logback += _bstr_t(logLevel.Detach());
