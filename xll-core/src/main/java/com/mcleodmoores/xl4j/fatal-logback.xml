@@ -28,7 +28,7 @@
   
   <!--appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /-->
    
-  <root level="debug">
+  <root level="fatal">
     <appender-ref ref="FILE" />
   </root>
 
