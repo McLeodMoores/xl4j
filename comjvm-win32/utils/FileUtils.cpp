@@ -62,3 +62,11 @@ HRESULT FileUtils::GetDllFileName (wchar_t *szFilename, size_t cFilename) {
 	return S_OK;
 }
 
+HRESULT FileUtils::GetTempFileName(const wchar_t *pszLeafFilename, wchar_t *pszBuffer, size_t cBuffer) {
+	wchar_t buffer[MAX_PATH];
+	if (!GetTempPathW(cBuffer, pszBuffer)) {
+		return HRESULT_FROM_WIN32(GetLastError());
+	}
+	return StringCchCat(buffer, MAX_PATH, pszLeafFilename);
+}
+

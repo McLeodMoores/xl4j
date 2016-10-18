@@ -16,6 +16,7 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment
 		return;
 	}
 	m_pSplashScreen->Open(hWnd);
+	m_pSplashScreen->SetMarquee();
 	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
 	m_pCollector = nullptr; // this means an already registered GarbageCollect() command will see that the collector hasn't been created yet.
 	//HANDLE hThread = CreateThread (nullptr, 2048 * 1024, MarqueeTickThread, static_cast<LPVOID>(this), 0, nullptr);
@@ -43,6 +44,7 @@ CJvmEnvironment::~CJvmEnvironment () {
 	LOGTRACE ("Deleting garbage collector");
 	delete m_pCollector;
 	m_pCollector = nullptr;
+	m_pSplashScreen->Close();
 	m_pSplashScreen->Release ();
 	m_pSplashScreen = nullptr;
 }
@@ -53,6 +55,7 @@ BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 	Excel12f (xlGetName, &xDLL, 0);
 	if (m_pFunctionRegistry && m_pFunctionRegistry->IsRegistrationComplete ()) {
 		LOGTRACE ("Called after registration complete");
+		m_pSplashScreen->Close();
 		return 1; // erroneous call
 	}
 	if (m_pFunctionRegistry && m_pFunctionRegistry->IsScanComplete ()) {

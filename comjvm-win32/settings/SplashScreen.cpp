@@ -133,7 +133,9 @@ void CSplashScreen::Increment() {
 }
 
 void CSplashScreen::SetMarquee() {
-	m_prProgress.SetMarquee(true, 50); // number is millis between updates: 50 ~ 20Hz
+	m_prProgress.SetMarquee(TRUE, 50); // number is millis between updates: 50 ~ 20Hz
+	m_prProgress.StepIt();
+	HideIfSplashOpen();
 }
 
 ULONG CSplashScreen::AddRef() {

@@ -30,11 +30,14 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 
 size_t Debug::m_cMaxFileNameLength = 0;
 size_t Debug::m_cMaxFunctionNameLength = 0;
+LOGLEVEL Debug::m_logLevel = LOGLEVEL_ERROR;
+LOGTARGET Debug::m_logTarget = LOGTARGET_WINDEBUG;
+FILE *Debug::m_fdLogFile = nullptr;
+
 
 void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
 	va_list argptr;
 	va_start (argptr, sFormat);
-	//static FILE *logFile = _tfopen (_T ("xl4j.log"), _T ("w"));
 	m_cMaxFileNameLength = max (m_cMaxFileNameLength, strnlen (sFileName, FILENAME_MAX));
 	m_cMaxFunctionNameLength = max (m_cMaxFunctionNameLength, strnlen (sFunctionName, FILENAME_MAX));
 	const int LINE_MAX = 2000;
@@ -47,16 +50,17 @@ void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sF
 			wchar_t finalBuffer[LINE_MAX];
 			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, sFileName, iLineNum, sFunctionName, buffer);
 			if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
-				OutputDebugString (finalBuffer);
+				if (Debug::m_logTarget == LOGTARGET_WINDEBUG) {
+					OutputDebugString(finalBuffer);
+				} else {
+					_ftprintf(m_fdLogFile, finalBuffer);
+					fflush(m_fdLogFile);
+				}
 				return;
 			}
 		}
-		//_ftprintf (logFile, buffer);
-		//fflush (logFile);
 	}
 	OutputDebugString (_T ("StringCbVPrintf error."));
-		//_ftprintf (logFile, _T ("StringCbVPrintf error."));
-		//fflush (logFile);
 }
 
 HRESULT Debug::print_HRESULT (HRESULT hResult) {
@@ -173,6 +177,27 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 		mid_throwable_toString,
 		mid_frame_toString);
 	OutputDebugStringA (error_msg.c_str());
+}
+
+void Debug::SetLogTarget(LOGTARGET logTarget) {
+	if (logTarget == LOGTARGET_FILE) {
+		wchar_t buffer[MAX_PATH];
+		HRESULT hr = FileUtils::GetTempFileName(TEXT("xl4j-cpp.log"), buffer, MAX_PATH);
+		if (SUCCEEDED(hr)) {
+			m_fdLogFile = _tfopen(buffer, _T("w"));
+		}
+		else {
+			OutputDebugString(TEXT("Error getting temporary filename"));
+			m_fdLogFile = _tfopen(TEXT("nul"), _T("w"));
+		}
+	}
+	else /* if (logTarget == LOGTARGET_WINDEBUG) */ {
+		if (m_fdLogFile) {
+			fclose(m_fdLogFile);
+		}
+		m_fdLogFile = nullptr;
+	}
+	m_logTarget = logTarget;
 }
 
 //

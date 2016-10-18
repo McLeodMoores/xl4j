@@ -29,6 +29,7 @@ protected:
 	CButton m_bGarbageCollection;
 	// Control to determine whether to save heap in the worksheet file
 	CButton m_cbSaveHeap;
+	// Edit box containing path to program used for editing logs
 	
 	DECLARE_MESSAGE_MAP()
 public:
@@ -36,4 +37,17 @@ public:
 	void SetSelectedJvm (LPCTSTR szValue) {
 		m_lbJvms.SelectString (-1, szValue);
 	}
+	// Edit box containing path to program used for viewing logs
+	CEdit m_edLogViewer;
+	// Button control for browsing for a program that can view log files.
+	CButton m_btBrowseLogVIewer;
+	// Checkbox used to enable/disable whether or not a toolbar is shown.
+	CButton m_cbShowToolbar;
+	// Log Level for C++ components
+	CComboBox m_cbCppLogLevel;
+	// Radio button for choosing a file for C++ logs
+	CButton m_rdLogFileRadio;
+	// Radio button for selecting window debugging output for C++ debugging.
+	CButton m_rdWinDebugRadio;
+	afx_msg void OnBnClickedLogviewerbrowse();
 };

@@ -105,76 +105,6 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	return TRUE;
 }
 
-__declspec(dllexport) void AddToolbar () {
-	IPicture *pIcon;
-	PICTDESC icon;
-	ZeroMemory (&icon, sizeof (icon));
-	icon.cbSizeofstruct = sizeof (icon);
-	icon.picType = PICTYPE_BITMAP;
-	HICON hIcon = LoadIcon (static_cast<HMODULE>(g_hInst), MAKEINTRESOURCE (IDI_SETTINGSICON));
-	if (!hIcon) {
-		_com_error err (HRESULT_FROM_WIN32 (GetLastError ()));
-		LOGERROR ("Couldn't load icon: %s", err.ErrorMessage());
-	}
-	ICONINFO iconInfo;
-	GetIconInfo (hIcon, &iconInfo);
-	HRESULT hr;
-	if (FAILED(hr = OleCreatePictureIndirect (&icon, IID_IPicture, FALSE, (PVOID*)&pIcon))) {
-		_com_error err (hr);
-		LOGERROR ("Problem creating picture: %s", err.ErrorMessage());
-	}
-	XLOPER12 xTest;
-	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
-	if (xTest.xltype == xltypeErr) {
-		const int ROWS = 1;
-		XLOPER12 xlaToolRef[9 * ROWS];
-		XLOPER12 xlArr;
-		xlArr.xltype = xltypeMulti;
-		xlArr.val.array.columns = 9;
-		xlArr.val.array.rows = ROWS;
-		xlArr.val.array.lparray = &xlaToolRef[0];
-		for (int i = 0; i < ROWS; i++) {
-			int j = i * 9;
-			xlaToolRef[j + 0].xltype = xltypeStr;
-			xlaToolRef[j + 0].val.str = TempStr12 (L"211")->val.str;
-			xlaToolRef[j + 1].xltype = xltypeStr;
-			xlaToolRef[j + 1].val.str = TempStr12 (L"Settings")->val.str;
-			xlaToolRef[j + 2].xltype = xltypeStr;
-			xlaToolRef[j + 2].val.str = TempStr12 (L"FALSE")->val.str;;
-			xlaToolRef[j + 3].xltype = xltypeStr;
-			xlaToolRef[j + 3].val.str = TempStr12 (L"TRUE")->val.str;
-			xlaToolRef[j + 4].xltype = xltypeInt;
-			int rnd = rand ();
-			xlaToolRef[j + 4].val.w = rnd;// TempStr12 (L"943")->val.str; // Gears face (face means icon in office-speak)
-			LOGTRACE ("%d", rnd);
-			xlaToolRef[j + 5].xltype = xltypeStr;
-			xlaToolRef[j + 5].val.str = TempStr12 (L"Settings desc")->val.str;
-			xlaToolRef[j + 6].xltype = xltypeStr;
-			xlaToolRef[j + 6].val.str = TempStr12 (L"")->val.str;
-			xlaToolRef[j + 7].xltype = xltypeStr;
-			xlaToolRef[j + 7].val.str = TempStr12 (L"")->val.str;
-			xlaToolRef[j + 8].xltype = xltypeStr;
-			xlaToolRef[j + 8].val.str = TempStr12 (L"")->val.str;
-		}
-		int retVal = Excel12f (xlfAddToolbar, NULL, 2, TempStr12 (TEXT ("XL4J")), &xlArr);
-		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
-		Excel12f (xlcShowToolbar, NULL, 10, TempStr12 (L"XL4J"), TempBool12 (1),
-			TempInt12 (5), TempMissing12 (), TempMissing12 (), TempInt12 (999), TempInt12(0), // no protection, 
-			TempBool12(TRUE), TempBool12(TRUE), TempBool12(TRUE));
-	}
-	Excel12f (xlFree, 0, 1, &xTest); 
-}
-
-__declspec(dllexport) void RemoveToolbar () {
-	XLOPER12 xTest;
-	Excel12f (xlfGetToolbar, &xTest, 2, TempInt12 (1), TempStr12 (L"XL4J"));
-	if (xTest.xltype != xltypeErr) {
-		int retVal = Excel12f (xlfDeleteToolbar, NULL, 1, TempStr12 (TEXT ("XL4J")));
-		LOGTRACE ("xlfAddToolbar retval = %d", retVal);
-	}
-	Excel12f (xlFree, 0, 1, &xTest);
-}
-
 __declspec(dllexport) int Settings () {
 	HWND hwndExcel;
 	if (!ExcelUtils::GetHWND (&hwndExcel)) {
@@ -200,8 +130,9 @@ __declspec(dllexport) int Settings () {
 		} break;
 		case IDOK:
 			LOGTRACE ("Settings OK clicked, restarting JVM");
-			MessageBox (hwndExcel, _T ("Restart Required"), _T ("You will need to restart Excel before changes take effect"), MB_OK);
+			MessageBox (hwndExcel, _T ("Restart Required"), _T ("You will need to restart Excel before any JVM changes take effect"), MB_OK);
 			//RestartJvm ();
+			g_pAddinEnv->RefreshSettings ();
 			break;
 		case IDCANCEL:
 			LOGTRACE ("Settings Cancel clicked");
@@ -276,7 +207,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	InitAddin ();
 	InitJvm ();
 	if (ExcelUtils::IsAddinSettingEnabled (L"ShowToolbar", TRUE)) {
-		AddToolbar ();
+		g_pAddinEnv->AddToolbar ();
 	}
 	FreeAllTempMemory ();
 	return 1;
@@ -330,7 +261,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	ShutdownJvm ();
 	ShutdownAddin ();
-	RemoveToolbar ();
+	g_pAddinEnv->RemoveToolbar ();
 	g_shudown = true;
 	return 1;
 }
@@ -434,7 +365,7 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	{
 		xInfo.xltype = xltypeStr;
 		
-		xInfo.val.str = TempStr12 (addinName)->val.str;// L"\013Excel4J DLL";
+		xInfo.val.str = TempStr12 (addinName)->val.str;
 	}
 	else
 	{

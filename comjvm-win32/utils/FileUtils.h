@@ -25,6 +25,7 @@ public:
 	static HRESULT GetAddinAbsolutePath (wchar_t *szFullPath, size_t cFullPath, const wchar_t *szFileName);
 	static HRESULT GetAddinDirectory (wchar_t *pszDirectory, size_t cDirectory);
 	static HRESULT GetDllFileName (wchar_t *pszFilename, size_t cFilename);
+	static HRESULT GetTempFileName(const wchar_t *pszLeafFilename, wchar_t *pszBuffer, size_t cBuffer);
 };
 
 //#ifdef __cplusplus
