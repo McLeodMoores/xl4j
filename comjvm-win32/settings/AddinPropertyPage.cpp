@@ -80,12 +80,17 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 		} else {
 			m_edLogViewer.SetWindowTextW(TEXT("NOTEPAD.EXE"));
 		}
-		_bstr_t bstrCppLogOutput = m_pSettings->GetString(TEXT("Addin"), TEXT("LogOutput"));
-		const _bstr_t ENABLED(TEXT("File"));
-		if (bstrCppLogOutput.length() > 0) {
-			m_rdLogFileRadio.SetCheck(BST_CHECKED);
-			m_rdWinDebugRadio.SetCheck(BST_UNCHECKED);
-		} else {
+		_bstr_t bstrCppLogTarget = m_pSettings->GetString(TEXT("Addin"), TEXT("LogTarget"));
+		const _bstr_t FILE(TEXT("File"));
+		if (bstrCppLogTarget.length() > 0) {
+			if (bstrCppLogTarget == FILE) {
+				m_rdLogFileRadio.SetCheck(BST_CHECKED);
+				m_rdWinDebugRadio.SetCheck(BST_UNCHECKED);
+			} else /* bstrCppLogTarget == WINDEBUG */ {
+				m_rdLogFileRadio.SetCheck(BST_UNCHECKED);
+				m_rdWinDebugRadio.SetCheck(BST_CHECKED);
+			}
+		} else { // no entry, default to WinDebug
 			m_rdLogFileRadio.SetCheck(BST_UNCHECKED);
 			m_rdWinDebugRadio.SetCheck(BST_CHECKED);
 		}
@@ -96,7 +101,7 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 		if (bstrCppLogLevel.length() > 0) {
 			m_cbCppLogLevel.SelectString(0, bstrCppLogLevel);
 		} else {
-			m_cbCppLogLevel.SelectString(0, TEXT("NONE"));
+			m_cbCppLogLevel.SelectString(0, TEXT("ERROR")); // no entry, default to ERROR
 		}
 
 	}
@@ -123,9 +128,9 @@ void CAddinPropertyPage::OnOK () {
 		m_cbCppLogLevel.GetLBText(m_cbCppLogLevel.GetCurSel(), csLogLevel);
 		m_pSettings->PutString(TEXT("Addin"), TEXT("LogLevel"), csLogLevel.GetBuffer());
 		if (m_rdLogFileRadio.GetState() == BST_PUSHED) {
-			m_pSettings->PutString(TEXT("Addin"), TEXT("LogOutput"), TEXT("File"));
+			m_pSettings->PutString(TEXT("Addin"), TEXT("LogTarget"), TEXT("File"));
 		} else {
-			m_pSettings->PutString(TEXT("Addin"), TEXT("LogOutput"), TEXT("WinDbg"));
+			m_pSettings->PutString(TEXT("Addin"), TEXT("LogTarget"), TEXT("WinDebug"));
 		}
 	}
 }

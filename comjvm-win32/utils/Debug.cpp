@@ -182,16 +182,22 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 void Debug::SetLogTarget(LOGTARGET logTarget) {
 	if (logTarget == LOGTARGET_FILE) {
 		wchar_t buffer[MAX_PATH];
-		HRESULT hr = FileUtils::GetTempFileName(TEXT("xl4j-cpp.log"), buffer, MAX_PATH);
+		HRESULT hr = FileUtils::GetTemporaryFileName(TEXT("xl4j-cpp.log"), buffer, MAX_PATH);
 		if (SUCCEEDED(hr)) {
+			OutputDebugStringW(TEXT("Full log path is:"));
+			OutputDebugStringW(buffer);
 			m_fdLogFile = _tfopen(buffer, _T("w"));
-		}
-		else {
-			OutputDebugString(TEXT("Error getting temporary filename"));
+			if (!m_fdLogFile) {
+				OutputDebugStringW(TEXT("Could not open log file"));
+				m_fdLogFile = _tfopen(TEXT("nul"), _T("w"));
+			}
+		} else {
+			OutputDebugString(TEXT("Error getting temporary filename:"));
+			_com_error err(hr);
+			OutputDebugString(err.ErrorMessage());
 			m_fdLogFile = _tfopen(TEXT("nul"), _T("w"));
 		}
-	}
-	else /* if (logTarget == LOGTARGET_WINDEBUG) */ {
+	} else /* if (logTarget == LOGTARGET_WINDEBUG) */ {
 		if (m_fdLogFile) {
 			fclose(m_fdLogFile);
 		}

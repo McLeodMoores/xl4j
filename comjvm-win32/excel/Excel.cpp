@@ -394,12 +394,14 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
 	LOGTRACE ("Lock Acquired");
-	if (g_pJvmEnv->_RegisterSomeFunctions ()) {
+	if (g_pJvmEnv && g_pJvmEnv->_RegisterSomeFunctions ()) {
 		LOGTRACE ("Releasing Lock");
+		LOGTRACE ("Registration complete, starting GC");
 		ReleaseSRWLockShared (&g_JvmEnvLock);
 		ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
 	} else {
 		LOGTRACE ("Releasing Lock");
+		LOGTRACE ("Registration not complete, scheduling another go");
 		ReleaseSRWLockShared (&g_JvmEnvLock);
 		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
 	}

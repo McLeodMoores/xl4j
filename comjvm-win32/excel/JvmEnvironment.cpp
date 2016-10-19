@@ -56,7 +56,7 @@ BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 	if (m_pFunctionRegistry && m_pFunctionRegistry->IsRegistrationComplete ()) {
 		LOGTRACE ("Called after registration complete");
 		m_pSplashScreen->Close();
-		return 1; // erroneous call
+		return true; // erroneous call
 	}
 	if (m_pFunctionRegistry && m_pFunctionRegistry->IsScanComplete ()) {
 		HRESULT hr = m_pFunctionRegistry->RegisterFunctions (xDLL, 20 * 5);
@@ -76,6 +76,7 @@ BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 			return true; // StartGC ();
 		}
 	} else {
+		LOGTRACE("Scan not yet complete");
 		return false;
 	}
 }
