@@ -132,7 +132,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
       <EnableDpiAwareness />
       <AdditionalManifestFiles>settings.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
@@ -180,7 +180,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
       <EnableDpiAwareness>
       </EnableDpiAwareness>
       <AdditionalManifestFiles>settings.dll.file.manifest</AdditionalManifestFiles>
@@ -217,7 +217,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -248,7 +248,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>

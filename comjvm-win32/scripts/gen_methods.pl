@@ -7,14 +7,14 @@ my $header = <<'END';
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j.javacode;
+package com.mcleodmoores.xl4j.javacode;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.excel4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunction;
 
 /**
  * Class containing various combinations of parameter types.

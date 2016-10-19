@@ -10,9 +10,9 @@
   </appender>
   
   <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <file>${TEMP}/excel4j-java.log</file>
+    <file>${TEMP}/xl4j-java.log</file>
     <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
-      <fileNamePattern>excel4j-java.%i.log.gz</fileNamePattern>
+      <fileNamePattern>xl4j-java.%i.log.gz</fileNamePattern>
       <minIndex>1</minIndex>
       <maxIndex>9</maxIndex>
     </rollingPolicy>
@@ -25,20 +25,9 @@
       </layout>
     </encoder>
   </appender>
-  
-  <!--appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /-->
-   
+    
   <root level="info">
     <appender-ref ref="FILE" />
   </root>
-
-  <!--logger name="com.mcleodmoores.xl4j.heap" level="INFO"/-->
-
-  <!-- <appender name="BRIDGE" class="com.opengamma.util.log.LogbackBridgeAppender" /> -->
-
-  <!-- <root level="debug"> -->
-  <!--   <appender-ref ref="STDOUT" /> -->
-  <!--   <appender-ref ref="BRIDGE" /> -->
-  <!-- </root> -->
   
 </configuration>

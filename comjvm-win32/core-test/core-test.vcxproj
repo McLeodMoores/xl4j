@@ -128,7 +128,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>core-test,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core-test,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core-test.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -152,7 +152,7 @@
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>core-test,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core-test,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core-test.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -180,7 +180,7 @@
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>core-test,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core-test,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core-test.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -208,7 +208,7 @@
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>core-test,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core-test,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core-test.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>

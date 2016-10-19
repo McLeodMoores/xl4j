@@ -143,7 +143,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>jni,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>jni,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>jni.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -186,7 +186,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>jni,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>jni,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>jni.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -230,7 +230,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>jni,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>jni,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>jni.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
     </Manifest>
@@ -278,7 +278,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>jni,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>jni,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>jni.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
     </Manifest>

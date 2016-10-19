@@ -149,7 +149,7 @@
     <Manifest>
       <ComponentFileName>core.dll</ComponentFileName>
       <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
-      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -199,7 +199,7 @@
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
       <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
       <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
@@ -250,7 +250,7 @@
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
       <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
@@ -306,7 +306,7 @@
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>core,type=win32,version=1.0.0.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
       <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>

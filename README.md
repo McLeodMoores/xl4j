@@ -1,5 +1,5 @@
-excel4j
-=======
+xl4j
+====
 
 # Two distinct modes of use
 

@@ -8,11 +8,11 @@ my $header = <<'END';
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.excel4j;
+package com.mcleodmoores.xl4j;
 
-import com.mcleodmoores.excel4j.values.XLObject;
-import com.mcleodmoores.excel4j.values.XLValue;
-import com.mcleodmoores.excel4j.ExcelCallhandler;
+import com.mcleodmoores.xl4j.values.XLObject;
+import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.ExcelCallhandler;
 
 /**
  * Class to mock the DLL exports table.

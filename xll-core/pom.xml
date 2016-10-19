@@ -12,7 +12,7 @@
 
   <name>XLL Core Functionality</name>
   <description>The Java side of the XLL system including type system</description>
-  <url>http://mcleodmoores.com/Excel4J</url>
+  <url>http://mcleodmoores.com/xl4j</url>
   
   <licenses>
     <license>
@@ -41,16 +41,16 @@
   </developers>
 
   <scm>
-    <connection>scm:git:git://github.com/mcleodmoores/excel4j</connection>
-    <developerConnection>scm:git:git://github.com/mcleodmoores/excel4j</developerConnection>
-    <url>http://github.com/mcleodmoores/excel4j</url>
+    <connection>scm:git:git://github.com/mcleodmoores/xl4j</connection>
+    <developerConnection>scm:git:git://github.com/mcleodmoores/xl4j</developerConnection>
+    <url>http://github.com/mcleodmoores/xl4j</url>
   </scm>
    
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Properties for maven-javadoc-plugin -->
-    <windowtitle>Excel4J API</windowtitle>
-    <doctitle>&lt;h1&gt;Excel4J API&lt;/h1&gt;</doctitle>
+    <windowtitle>XL4J API</windowtitle>
+    <doctitle>&lt;h1&gt;XL4J API&lt;/h1&gt;</doctitle>
     <bottom>&lt;i&gt;Copyright 2014-Present McLeod Moores Limited&lt;/i&gt;&lt;br/&gt;&lt;i&gt;${javadoc.footer.license}&lt;/i&gt;</bottom>
     <!-- Properties for buildnumber-maven-plugin -->
     <maven.buildNumber.getRevisionOnlyOnce>true</maven.buildNumber.getRevisionOnlyOnce>

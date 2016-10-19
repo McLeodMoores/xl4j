@@ -4,9 +4,9 @@ Specification
 # Standard UDFs
 So an Excel function like `MyJavaFunction(Number1, Number2)`->`Number` would be:
 ``` java
-package com.mcleodmoores.excel4j.example;
+package com.mcleodmoores.xl4j.example;
 
-import com.mcelodmoores.excel4j.*;
+import com.mcelodmoores.xl4j.*;
 
 class MyFunctions {
   @XLFunction(name = "MyJavaFunction", category = StandardCategories.Financial, 
@@ -40,9 +40,9 @@ To allow a degree of namespaceing we need another anotation. In the case of a pa
 
 ``` java
 @XLNamespace("Ex")
-package com.mcleodmoores.excel4j.examples;
+package com.mcleodmoores.xl4j.examples;
 
-import com.mcleodmoores.excel4j.XLNamespace;
+import com.mcleodmoores.xl4j.XLNamespace;
 ```
 
 which for the above example would lead to the functions being registered as `ExMyJavaFunction`.  Note the import after the package declaration.  In the case of a class if would be:
@@ -50,7 +50,7 @@ which for the above example would lead to the functions being registered as `ExM
 ``` java
 package com.mcleodmoores.examples;
 
-import com.mcleodmoores.excel4j.*;
+import com.mcleodmoores.xl4j.*;
 
 @XLNamespace("Ex1")
 public class Example1 {
