@@ -353,3 +353,21 @@ void ExcelUtils::PrintExcel12Error (int err) {
 		break;
 	}
 }
+
+void ExcelUtils::PasteTool(LPCWSTR lpBitmapName, int index) {
+	HBITMAP hBitmap = LoadBitmapW((HINSTANCE)g_hInst, lpBitmapName);
+	if (hBitmap == nullptr) {
+		_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+		LOGERROR("Problem loading settings icon bitmap: %s", err.ErrorMessage());
+		return;
+	}
+	if (!OpenClipboard(nullptr)) { LOGERROR("Could not open clipboard"); return; }
+	if (!EmptyClipboard()) { LOGERROR("Could not empty clipboard"); CloseClipboard();  return; }
+	if (!SetClipboardData(CF_BITMAP, hBitmap)) { LOGERROR("Could not put settings icon bitmap onto clipboard"); }
+	if (!CloseClipboard()) { LOGERROR("Could not close clipboard"); return; }
+	Excel12f(xlcPasteTool, 0, 2, TempStr12(L"XL4J"), TempInt12(index));
+	LOGTRACE("Called xlcPasteTool");
+	if (!OpenClipboard(nullptr)) { LOGERROR("Could not open clipboard"); return; }
+	if (!EmptyClipboard()) { LOGERROR("Could not empty clipboard"); }
+	if (!CloseClipboard()) { LOGERROR("Could not close clipboard"); return; }
+}

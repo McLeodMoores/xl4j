@@ -26,6 +26,7 @@ public:
 	static HRESULT GetAddinDirectory (wchar_t *pszDirectory, size_t cDirectory);
 	static HRESULT GetDllFileName (wchar_t *pszFilename, size_t cFilename);
 	static HRESULT GetTemporaryFileName(const wchar_t *pszLeafFilename, wchar_t *pszBuffer, size_t cBuffer);
+	static bool FileUtils::FileExists(const wchar_t *szPath);
 };
 
 //#ifdef __cplusplus

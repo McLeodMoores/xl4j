@@ -115,5 +115,14 @@
     <Image Include="icon1.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="spanner.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="cpplog.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="javalog.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

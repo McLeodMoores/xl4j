@@ -16,6 +16,8 @@ EXPORTS
 	GarbageCollect
 	RegisterSomeFunctions
 	Settings
+	ViewJavaLogs
+	ViewCppLogs
 	g_shudown DATA
 	UDF
 	UDF_0

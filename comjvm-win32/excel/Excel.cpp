@@ -105,6 +105,16 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	return TRUE;
 }
 
+__declspec(dllexport) int ViewJavaLogs() {
+	g_pAddinEnv->ViewLogs(TEXT("xl4j-java.log"));
+	return 1;
+}
+
+_declspec(dllexport) int ViewCppLogs() {
+	g_pAddinEnv->ViewLogs(TEXT("xl4j-cpp.log"));
+	return 1;
+}
+
 __declspec(dllexport) int Settings () {
 	HWND hwndExcel;
 	if (!ExcelUtils::GetHWND (&hwndExcel)) {

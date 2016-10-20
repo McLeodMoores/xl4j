@@ -300,8 +300,11 @@
     <ResourceCompile Include="excel.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="cpplog.bmp" />
     <Image Include="icon1.ico" />
+    <Image Include="javalog.bmp" />
     <Image Include="settings.ico" />
+    <Image Include="spanner.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

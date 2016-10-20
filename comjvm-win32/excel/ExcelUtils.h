@@ -21,4 +21,5 @@ public:
 	static void PrintExcel12Error (int err);
 	static BOOL IsAddinSettingEnabled (const wchar_t *wsSettingName, const BOOL bDefaultIfMissing);
 	static _bstr_t GetAddinSetting (const wchar_t* wsSettingName, const wchar_t* wsDefaultIfMissing);
+	static void PasteTool(LPCWSTR lpBitmapName, int index);
 };

@@ -70,3 +70,8 @@ HRESULT FileUtils::GetTemporaryFileName(const wchar_t *pszLeafFilename, wchar_t 
 	return StringCchCatW(pszBuffer, cBuffer, pszLeafFilename);
 }
 
+bool FileUtils::FileExists(const wchar_t *szPath) {
+	DWORD dwAttrib = GetFileAttributes(szPath);
+	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+

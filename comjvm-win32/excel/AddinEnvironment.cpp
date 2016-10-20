@@ -3,6 +3,7 @@
 #include "AddinEnvironment.h"
 #include "../helper/TypeLib.h"
 #include "resource.h"
+#include <shellapi.h>
 
 CAddinEnvironment::CAddinEnvironment () {
 	m_pTypeLib = new TypeLib ();
@@ -10,12 +11,14 @@ CAddinEnvironment::CAddinEnvironment () {
 	InitFromSettings();
 	m_pConverter = new Converter (m_pTypeLib);
 	// Register polling command that registers chunks of functions
-	g_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (TEXT ("RegisterSomeFunctions"));
+	m_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (TEXT ("RegisterSomeFunctions"));
 	// Schedule polling command to start in 0.1 secs.  This will reschedule itself until all functions registered.
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
 	// Register command to display MFC settings dialog
-	g_idSettings = ExcelUtils::RegisterCommand (TEXT ("Settings"));
-	g_idGarbageCollect = ExcelUtils::RegisterCommand (TEXT ("GarbageCollect"));
+	m_idSettings = ExcelUtils::RegisterCommand (TEXT ("Settings"));
+	m_idGarbageCollect = ExcelUtils::RegisterCommand (TEXT ("GarbageCollect"));
+	m_idViewJavaLogs = ExcelUtils::RegisterCommand(TEXT("ViewJavaLogs"));
+	m_idViewCppLogs = ExcelUtils::RegisterCommand(TEXT("ViewCppLogs"));
 }
 
 CAddinEnvironment::~CAddinEnvironment () {
@@ -25,19 +28,29 @@ CAddinEnvironment::~CAddinEnvironment () {
 	if (m_pTypeLib) delete m_pTypeLib;
 	LOGTRACE ("Deleting settings object");
 	if (m_pSettings) delete m_pSettings;
-	if (g_idGarbageCollect) {
-		if (FAILED(ExcelUtils::UnregisterFunction (_T ("GarbageCollect"), g_idGarbageCollect))) {
+	if (m_idGarbageCollect) {
+		if (FAILED(ExcelUtils::UnregisterFunction (_T ("GarbageCollect"), m_idGarbageCollect))) {
 			LOGTRACE ("Error while unregistering GarbageCollect command");
 		}
 	}
-	if (g_idRegisterSomeFunctions) {
-		if (FAILED (ExcelUtils::UnregisterFunction (_T ("RegisterSomeFunctions"), g_idRegisterSomeFunctions))) {
+	if (m_idRegisterSomeFunctions) {
+		if (FAILED (ExcelUtils::UnregisterFunction (_T ("RegisterSomeFunctions"), m_idRegisterSomeFunctions))) {
 			LOGTRACE ("Error while unregistering RegisterSomeFunctions command");
 		}
 	}
-	if (g_idSettings) {
-		if (FAILED (ExcelUtils::UnregisterFunction (_T ("Settings"), g_idSettings))) {
+	if (m_idSettings) {
+		if (FAILED (ExcelUtils::UnregisterFunction (_T ("Settings"), m_idSettings))) {
 			LOGTRACE ("Error while unregistering Settings command");
+		}
+	}
+	if (m_idViewJavaLogs) {
+		if (FAILED(ExcelUtils::UnregisterFunction(_T("ViewJavaLogs"), m_idViewJavaLogs))) {
+			LOGTRACE("Error while unregistering Settings command");
+		}
+	}
+	if (m_idViewCppLogs) {
+		if (FAILED(ExcelUtils::UnregisterFunction(_T("ViewCppLogs"), m_idViewCppLogs))) {
+			LOGTRACE("Error while unregistering Settings command");
 		}
 	}
 }
@@ -88,35 +101,36 @@ void CAddinEnvironment::InitFromSettings() {
 }
 
 void CAddinEnvironment::AddToolbar() {
-	IPicture *pIcon;
-	PICTDESC icon;
-	ZeroMemory(&icon, sizeof(icon));
-	icon.cbSizeofstruct = sizeof(icon);
-	icon.picType = PICTYPE_BITMAP;
-	HICON hIcon = LoadIcon(static_cast<HMODULE>(g_hInst), MAKEINTRESOURCE(IDI_SETTINGSICON));
-	if (!hIcon) {
-		_com_error err(HRESULT_FROM_WIN32(GetLastError()));
-		LOGERROR("Couldn't load icon: %s", err.ErrorMessage());
-	}
-	ICONINFO iconInfo;
-	GetIconInfo(hIcon, &iconInfo);
-	HRESULT hr;
-	if (FAILED(hr = OleCreatePictureIndirect(&icon, IID_IPicture, FALSE, (PVOID*)&pIcon))) {
-		_com_error err(hr);
-		LOGERROR("Problem creating picture: %s", err.ErrorMessage());
-	}
+	//IPicture *pIcon;
+	//PICTDESC icon;
+	//ZeroMemory (&icon, sizeof (icon));
+	//icon.cbSizeofstruct = sizeof (icon);
+	//icon.picType = PICTYPE_BITMAP;
+	//HICON hIcon = LoadIcon (static_cast<HMODULE>(g_hInst), MAKEINTRESOURCE (IDI_SETTINGSICON));
+	//if (!hIcon) {
+	//	_com_error err (HRESULT_FROM_WIN32 (GetLastError ()));
+	//	LOGERROR ("Couldn't load icon: %s", err.ErrorMessage());
+	//}
+	//ICONINFO iconInfo;
+	//GetIconInfo (hIcon, &iconInfo);
+	//HRESULT hr;
+	//if (FAILED(hr = OleCreatePictureIndirect (&icon, IID_IPicture, FALSE, (PVOID*)&pIcon))) {
+	//	_com_error err (hr);
+	//	LOGERROR ("Problem creating picture: %s", err.ErrorMessage());
+	//}
+
 	XLOPER12 xTest;
 	Excel12f(xlfGetToolbar, &xTest, 2, TempInt12(1), TempStr12(L"XL4J"));
 	if (xTest.xltype == xltypeErr) {
-		const int ROWS = 1;
+		const int ROWS = 3;
 		XLOPER12 xlaToolRef[9 * ROWS];
 		XLOPER12 xlArr;
 		xlArr.xltype = xltypeMulti;
 		xlArr.val.array.columns = 9;
 		xlArr.val.array.rows = ROWS;
 		xlArr.val.array.lparray = &xlaToolRef[0];
-		for (int i = 0; i < ROWS; i++) {
-			int j = i * 9;
+		{
+			int j = 0;
 			xlaToolRef[j + 0].xltype = xltypeStr;
 			xlaToolRef[j + 0].val.str = TempStr12(L"211")->val.str;
 			xlaToolRef[j + 1].xltype = xltypeStr;
@@ -125,26 +139,88 @@ void CAddinEnvironment::AddToolbar() {
 			xlaToolRef[j + 2].val.str = TempStr12(L"FALSE")->val.str;;
 			xlaToolRef[j + 3].xltype = xltypeStr;
 			xlaToolRef[j + 3].val.str = TempStr12(L"TRUE")->val.str;
-			xlaToolRef[j + 4].xltype = xltypeInt;
-			int rnd = rand();
-			xlaToolRef[j + 4].val.w = rnd;// TempStr12 (L"943")->val.str; // Gears face (face means icon in office-speak)
-			LOGTRACE("%d", rnd);
+			xlaToolRef[j + 4].xltype = xltypeMissing;
 			xlaToolRef[j + 5].xltype = xltypeStr;
-			xlaToolRef[j + 5].val.str = TempStr12(L"Settings desc")->val.str;
+			xlaToolRef[j + 5].val.str = TempStr12(L"Open XL4J Settings Dialog")->val.str;
 			xlaToolRef[j + 6].xltype = xltypeStr;
-			xlaToolRef[j + 6].val.str = TempStr12(L"")->val.str;
+			xlaToolRef[j + 6].val.str = TempStr12(L"Open XL4J Settings")->val.str;
 			xlaToolRef[j + 7].xltype = xltypeStr;
-			xlaToolRef[j + 7].val.str = TempStr12(L"")->val.str;
+			xlaToolRef[j + 7].val.str = TempStr12(L"XL4J")->val.str;
 			xlaToolRef[j + 8].xltype = xltypeStr;
-			xlaToolRef[j + 8].val.str = TempStr12(L"")->val.str;
+			xlaToolRef[j + 8].val.str = TempStr12(L"XL4J Settings")->val.str;
+		}
+		{
+			int j = 1 * 9;
+			xlaToolRef[j + 0].xltype = xltypeStr;
+			xlaToolRef[j + 0].val.str = TempStr12(L"211")->val.str;
+			xlaToolRef[j + 1].xltype = xltypeStr;
+			xlaToolRef[j + 1].val.str = TempStr12(L"ViewJavaLogs")->val.str;
+			xlaToolRef[j + 2].xltype = xltypeStr;
+			xlaToolRef[j + 2].val.str = TempStr12(L"FALSE")->val.str;;
+			xlaToolRef[j + 3].xltype = xltypeStr;
+			xlaToolRef[j + 3].val.str = TempStr12(L"TRUE")->val.str;
+			xlaToolRef[j + 4].xltype = xltypeMissing;
+			xlaToolRef[j + 5].xltype = xltypeStr;
+			xlaToolRef[j + 5].val.str = TempStr12(L"Open Java log file for viewing")->val.str;
+			xlaToolRef[j + 6].xltype = xltypeStr;
+			xlaToolRef[j + 6].val.str = TempStr12(L"Open Java log file")->val.str;
+			xlaToolRef[j + 7].xltype = xltypeStr;
+			xlaToolRef[j + 7].val.str = TempStr12(L"XL4J")->val.str;
+			xlaToolRef[j + 8].xltype = xltypeStr;
+			xlaToolRef[j + 8].val.str = TempStr12(L"Java Log Files")->val.str;
+		}
+		{
+			int j = 2 * 9;
+			xlaToolRef[j + 0].xltype = xltypeStr;
+			xlaToolRef[j + 0].val.str = TempStr12(L"211")->val.str;
+			xlaToolRef[j + 1].xltype = xltypeStr;
+			xlaToolRef[j + 1].val.str = TempStr12(L"ViewCppLogs")->val.str;
+			xlaToolRef[j + 2].xltype = xltypeStr;
+			xlaToolRef[j + 2].val.str = TempStr12(L"FALSE")->val.str;;
+			xlaToolRef[j + 3].xltype = xltypeStr;
+			xlaToolRef[j + 3].val.str = TempStr12(L"TRUE")->val.str;
+			xlaToolRef[j + 4].xltype = xltypeMissing;
+			xlaToolRef[j + 5].xltype = xltypeStr;
+			xlaToolRef[j + 5].val.str = TempStr12(L"Open C++ log file for viewing")->val.str;
+			xlaToolRef[j + 6].xltype = xltypeStr;
+			xlaToolRef[j + 6].val.str = TempStr12(L"Open C++ log file")->val.str;
+			xlaToolRef[j + 7].xltype = xltypeStr;
+			xlaToolRef[j + 7].val.str = TempStr12(L"XL4J")->val.str;
+			xlaToolRef[j + 8].xltype = xltypeStr;
+			xlaToolRef[j + 8].val.str = TempStr12(L"C++ Log Files")->val.str;
 		}
 		int retVal = Excel12f(xlfAddToolbar, NULL, 2, TempStr12(TEXT("XL4J")), &xlArr);
+		// put icon on clipboard
+		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_SPANNER), 1);
+		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_VIEWJAVALOGS), 2);
+		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_VIEWCPPLOGS), 3);
 		LOGTRACE("xlfAddToolbar retval = %d", retVal);
 		Excel12f(xlcShowToolbar, NULL, 10, TempStr12(L"XL4J"), TempBool12(1),
-			TempInt12(5), TempMissing12(), TempMissing12(), TempInt12(999), TempInt12(0), // no protection, 
-			TempBool12(TRUE), TempBool12(TRUE), TempBool12(TRUE));
+			TempInt12(2), TempMissing12(), TempMissing12(), TempMissing12()/*TempInt12 (999)*/, TempInt12(0), // no protection, 
+			TempBool12(TRUE), TempBool12(FALSE), TempBool12(FALSE));
 	}
 	Excel12f(xlFree, 0, 1, &xTest);
+}
+
+
+
+void CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
+	HWND hWnd;
+	ExcelUtils::GetHWND(&hWnd);
+	wchar_t buffer[MAX_PATH];
+	HRESULT hr = FileUtils::GetTemporaryFileName(szFileName, buffer, MAX_PATH);
+	if (SUCCEEDED(hr)) {
+		LOGTRACE("Full log path is %s", buffer);
+		if (FileUtils::FileExists(buffer)) {
+			ShellExecute(hWnd, L"open", buffer, nullptr, nullptr, SW_SHOWNORMAL);
+		} else {
+			MessageBoxW(hWnd, L"No log file present.  Have you enabled logging in the Settings dialog accessed via the toolbar?", L"File not found", MB_OK);
+		}
+	} else {
+		_com_error err(hr);
+		LOGERROR("Error getting temporary filename: %s", err.ErrorMessage());
+		MessageBoxW(hWnd, err.ErrorMessage(), L"Error building log file name", MB_OK);
+	}
 }
 
 void CAddinEnvironment::RemoveToolbar() {

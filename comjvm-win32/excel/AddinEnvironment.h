@@ -8,7 +8,11 @@ private:
 	Converter *m_pConverter;
 	TypeLib *m_pTypeLib;
 	CSettings *m_pSettings;
-
+	int m_idRegisterSomeFunctions;
+	int m_idSettings;
+	int m_idGarbageCollect;
+	int m_idViewJavaLogs;
+	int m_idViewCppLogs;
 	bool m_bToolbarEnabled;
 	void InitFromSettings();
 public:
@@ -21,5 +25,6 @@ public:
 	bool IsToolbarEnabled() const { return m_bToolbarEnabled; }
 	void RefreshSettings() { InitFromSettings(); }
 	void AddToolbar();
+	void ViewLogs(const wchar_t *szFileName);
 	void RemoveToolbar();
 };
