@@ -74,12 +74,6 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 			LOGTRACE("bstrShowToolbar.length() <= 0, switching toolbar on");
 			m_cbShowToolbar.SetCheck(BST_CHECKED);
 		}
-		_bstr_t bstrLogViewerPath = m_pSettings->GetString(TEXT("Addin"), TEXT("LogViewer"));
-		if (bstrLogViewerPath.length() > 0) {
-			m_edLogViewer.SetWindowTextW(bstrLogViewerPath);
-		} else {
-			m_edLogViewer.SetWindowTextW(TEXT("NOTEPAD.EXE"));
-		}
 		_bstr_t bstrCppLogTarget = m_pSettings->GetString(TEXT("Addin"), TEXT("LogTarget"));
 		const _bstr_t FILE(TEXT("File"));
 		if (bstrCppLogTarget.length() > 0) {
@@ -121,9 +115,6 @@ void CAddinPropertyPage::OnOK () {
 		} else {
 			m_pSettings->PutString (TEXT("Addin"), TEXT("ShowToolbar"), TEXT("Disabled"));
 		}
-		CString csLogViewerPath;
-		m_edLogViewer.GetWindowTextW(csLogViewerPath);
-		m_pSettings->PutString(TEXT("Addin"), TEXT("LogViewer"), csLogViewerPath.GetBuffer());
 		CString csLogLevel;
 		m_cbCppLogLevel.GetLBText(m_cbCppLogLevel.GetCurSel(), csLogLevel);
 		m_pSettings->PutString(TEXT("Addin"), TEXT("LogLevel"), csLogLevel.GetBuffer());
@@ -140,8 +131,6 @@ void CAddinPropertyPage::DoDataExchange(CDataExchange* pDX)
 	CPropertyPage::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_CHECK_GARBAGE_COLLECTION, m_bGarbageCollection);
 	DDX_Control(pDX, IDC_CHECK_HEAP_IN_WORKSHEET, m_cbSaveHeap);
-	DDX_Control(pDX, IDC_LOGVIEWEREDIT, m_edLogViewer);
-	DDX_Control(pDX, IDC_LOGVIEWERBROWSE, m_btBrowseLogVIewer);
 	DDX_Control(pDX, IDC_SHOWTOOLBARCHECK, m_cbShowToolbar);
 	DDX_Control(pDX, IDC_LOGLEVELCOMBO, m_cbCppLogLevel);
 	DDX_Control(pDX, IDC_LOGFILERADIO, m_rdLogFileRadio);
@@ -149,17 +138,5 @@ void CAddinPropertyPage::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CAddinPropertyPage, CPropertyPage)
-	ON_BN_CLICKED(IDC_LOGVIEWERBROWSE, &CAddinPropertyPage::OnBnClickedLogviewerbrowse)
 END_MESSAGE_MAP()
 
-void CAddinPropertyPage::OnBnClickedLogviewerbrowse()
-{
-	CFileDialog fileDialog(TRUE, _T("exe"), _T("*.exe"), OFN_PATHMUSTEXIST, _T("Executable Programs (*.exe)|*.exe|All Files (*.*)|*.*||"));
-	if (fileDialog.DoModal() == IDOK) {
-		POSITION pos = fileDialog.GetStartPosition();
-    	if (pos != NULL) {
-	    	CString nextPathName = fileDialog.GetNextPathName(pos);
-			m_edLogViewer.SetWindowTextW(nextPathName);
-		}
-	}
-}

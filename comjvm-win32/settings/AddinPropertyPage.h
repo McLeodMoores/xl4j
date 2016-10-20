@@ -37,10 +37,6 @@ public:
 	void SetSelectedJvm (LPCTSTR szValue) {
 		m_lbJvms.SelectString (-1, szValue);
 	}
-	// Edit box containing path to program used for viewing logs
-	CEdit m_edLogViewer;
-	// Button control for browsing for a program that can view log files.
-	CButton m_btBrowseLogVIewer;
 	// Checkbox used to enable/disable whether or not a toolbar is shown.
 	CButton m_cbShowToolbar;
 	// Log Level for C++ components
@@ -49,5 +45,4 @@ public:
 	CButton m_rdLogFileRadio;
 	// Radio button for selecting window debugging output for C++ debugging.
 	CButton m_rdWinDebugRadio;
-	afx_msg void OnBnClickedLogviewerbrowse();
 };
