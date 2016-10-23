@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
@@ -13,8 +13,7 @@ import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
- * Calculates the returns of a time series, either assuming continuous compounding or at the
- * frequency of the time series data.
+ * Calculates the returns of a time series, either assuming continuous compounding or at the frequency of the time series data.
  */
 public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
   /** True if continuous returns are required */
@@ -22,11 +21,11 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
 
   /**
    * Creates an instance.
-   * @param continuous  true if continuous returns are required
+   *
+   * @param continuous
+   *          true if continuous returns are required
    */
-  @XLConstructor(name = "TimeSeriesReturn",
-                 description = "Calculates returns of a time series",
-                 category = "Time series")
+  @XLConstructor(name = "TimeSeriesReturn", description = "Calculates returns of a time series", category = "Time series")
   public ReturnCalculator(final boolean continuous) {
     _continuous = continuous;
   }

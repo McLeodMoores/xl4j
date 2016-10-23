@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
@@ -23,8 +23,8 @@ import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * A simple implementation of a time series, defined as a list of LocalDate, double pairs that
- * is increasing in time. This class is immutable.
+ * A simple implementation of a time series, defined as a list of LocalDate, double pairs that is increasing in time. This class is
+ * immutable.
  */
 public final class TimeSeries implements Operation<TimeSeries> {
 
@@ -34,16 +34,18 @@ public final class TimeSeries implements Operation<TimeSeries> {
   public static final TimeSeries EMPTY = new TimeSeries(new LocalDate[0], new Double[0], false);
 
   /**
-   * A function that creates a time series from date, value pairs or from a row or column of dates and a row or column of values
-   * In the first case, the array can be either two rows or two columns. Otherwise, the time series can be created from a row or
-   * column of dates and a row or column of values with an equal number of dates and values.
-   * @param datesAndValues  the dates and values, not null
-   * @return  a time series
+   * A function that creates a time series from date, value pairs or from a row or column of dates and a row or column of values In the
+   * first case, the array can be either two rows or two columns. Otherwise, the time series can be created from a row or column of dates
+   * and a row or column of values with an equal number of dates and values.
+   *
+   * @param datesAndValues
+   *          the dates and values, not null
+   * @return a time series
    */
   @XLFunction(name = "TimeSeries",
-      description = "Create a time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Create a time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static TimeSeries of(@XLArgument(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
     ArgumentChecker.notNull(datesAndValues, "datesAndValues");
     if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
@@ -55,17 +57,18 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   /**
-   * A function that creates a time series from date, value pairs. The array can be either two rows
-   * or two columns.
-   * @param datesAndValuesArray  the dates and values, not null
-   * @return  a time series
+   * A function that creates a time series from date, value pairs. The array can be either two rows or two columns.
+   *
+   * @param datesAndValuesArray
+   *          the dates and values, not null
+   * @return a time series
    */
   private static TimeSeries ofRange(final XLArray datesAndValuesArray) {
     ArgumentChecker.notNull(datesAndValuesArray, "datesAndValuesArray");
-    final TypeConverter dateConverter =
-        ExcelFactory.getInstance().getTypeConverterRegistry().findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, LocalDate.class));
-    final TypeConverter doubleConverter =
-        ExcelFactory.getInstance().getTypeConverterRegistry().findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, Double.class));
+    final TypeConverter dateConverter = ExcelFactory.getInstance().getTypeConverterRegistry()
+        .findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, LocalDate.class));
+    final TypeConverter doubleConverter = ExcelFactory.getInstance().getTypeConverterRegistry()
+        .findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, Double.class));
     final XLValue[][] xlDatesAndValues = datesAndValuesArray.getArray();
     final LocalDate[] dates;
     final Double[] values;
@@ -95,26 +98,29 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   /**
-   * A function that creates a time series from a row or column of dates and a row or column of values.
-   * There must be an equal number of dates and values.
-   * @param datesArray  the dates, must be either a row or column, not null
-   * @param valuesArray  the values, must be either a row or column, not null
-   * @return  a time series
+   * A function that creates a time series from a row or column of dates and a row or column of values. There must be an equal number of
+   * dates and values.
+   *
+   * @param datesArray
+   *          the dates, must be either a row or column, not null
+   * @param valuesArray
+   *          the values, must be either a row or column, not null
+   * @return a time series
    */
   @XLFunction(name = "TimeSeries",
               description = "Create a time series",
               category = "Time series",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static TimeSeries of(@XLArgument(name = "dates", description = "The dates") final XLArray datesArray,
-                              @XLArgument(name = "values", description = "The values") final XLArray valuesArray) {
+      @XLArgument(name = "values", description = "The values") final XLArray valuesArray) {
     ArgumentChecker.notNull(datesArray, "dates");
     ArgumentChecker.notNull(valuesArray, "values");
     ArgumentChecker.isFalse(datesArray.isArea(), "The date array must be either a column or row");
     ArgumentChecker.isFalse(valuesArray.isArea(), "The values array must be either a column or row");
-    final TypeConverter dateConverter =
-        ExcelFactory.getInstance().getTypeConverterRegistry().findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, LocalDate.class));
-    final TypeConverter doubleConverter =
-        ExcelFactory.getInstance().getTypeConverterRegistry().findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, Double.class));
+    final TypeConverter dateConverter = ExcelFactory.getInstance().getTypeConverterRegistry()
+        .findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, LocalDate.class));
+    final TypeConverter doubleConverter = ExcelFactory.getInstance().getTypeConverterRegistry()
+        .findConverter(ExcelToJavaTypeMapping.of(XLNumber.class, Double.class));
     final XLValue[][] xlDates = datesArray.getArray();
     final XLValue[][] xlValues = valuesArray.getArray();
     final LocalDate[] dates;
@@ -153,9 +159,12 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Creates a time series. The inputs are copied and then sorted. The values can contain nulls.
-   * @param dates  the dates, not null, cannot contain any null values, can be empty
-   * @param values  the values, not null, can be empty
-   * @return  the time series
+   *
+   * @param dates
+   *          the dates, not null, cannot contain any null values, can be empty
+   * @param values
+   *          the values, not null, can be empty
+   * @return the time series
    */
   public static TimeSeries of(final LocalDate[] dates, final Double[] values) {
     return new TimeSeries(dates, values, true);
@@ -163,9 +172,12 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Creates a time series. The inputs are copied and then sorted. The values can contain nulls.
-   * @param dates  the dates, not null, cannot contain any null values, can be empty
-   * @param values  the values, not null, can be empty
-   * @return  the time series
+   *
+   * @param dates
+   *          the dates, not null, cannot contain any null values, can be empty
+   * @param values
+   *          the values, not null, can be empty
+   * @return the time series
    */
   public static TimeSeries of(final List<LocalDate> dates, final List<Double> values) {
     return new TimeSeries(dates.toArray(new LocalDate[dates.size()]), values.toArray(new Double[values.size()]), true);
@@ -178,10 +190,14 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Creates a time series.
-   * @param dates  the dates
-   * @param values  the values
-   * @param sort  should be true if the dates are not guaranteed to be sorted. Note that not sorting also assumes
-   * that there are no duplicate dates in the series
+   *
+   * @param dates
+   *          the dates
+   * @param values
+   *          the values
+   * @param sort
+   *          should be true if the dates are not guaranteed to be sorted. Note that not sorting also assumes that there are no duplicate
+   *          dates in the series
    */
   private TimeSeries(final LocalDate[] dates, final Double[] values, final boolean sort) {
     ArgumentChecker.notNullArray(dates, "dates");
@@ -199,7 +215,8 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets all dates in the series.
-   * @return  the dates
+   *
+   * @return the dates
    */
   public LocalDate[] getDates() {
     return _dates;
@@ -207,7 +224,8 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets all values in the series.
-   * @return  the values
+   *
+   * @return the values
    */
   public Double[] getValues() {
     return _values;
@@ -215,8 +233,10 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets the ith date of the series (zero-indexed).
-   * @param i  the index
-   * @return  the date
+   *
+   * @param i
+   *          the index
+   * @return the date
    */
   public LocalDate getDate(final int i) {
     return _dates[i];
@@ -224,8 +244,10 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets the ith value of the series (zero-indexed).
-   * @param i  the index
-   * @return  the value
+   *
+   * @param i
+   *          the index
+   * @return the value
    */
   public Double getValue(final int i) {
     return _values[i];
@@ -233,8 +255,10 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets the value for the date, or throws an exception if this value is not available.
-   * @param date  the date, not null
-   * @return  the value if present
+   *
+   * @param date
+   *          the date, not null
+   * @return the value if present
    */
   public double getValue(final LocalDate date) {
     ArgumentChecker.notNull(date, "date");
@@ -247,8 +271,10 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets the index of a date. The result will be negative if this date is not present.
-   * @param date  the date, not null
-   * @return  the index
+   *
+   * @param date
+   *          the date, not null
+   * @return the index
    */
   public int indexOf(final LocalDate date) {
     ArgumentChecker.notNull(date, "date");
@@ -257,16 +283,17 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Gets the size of the time series.
-   * @return  the size
+   *
+   * @return the size
    */
   public int size() {
     return _dates.length;
   }
 
   @XLFunction(name = "add",
-      description = "Element-by-element addition of two time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Element-by-element addition of two time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries add(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -274,9 +301,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "subtract",
-      description = "Element-by-element substraction of two time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Element-by-element substraction of two time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries subtract(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -284,9 +311,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "multiply",
-      description = "Element-by-element multiplication of two time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Element-by-element multiplication of two time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries multiply(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -294,9 +321,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "divide",
-      description = "Element-by-element division of two time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Element-by-element division of two time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries divide(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -304,9 +331,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "scale",
-      description = "Scale the time series by a constant value",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Scale the time series by a constant value",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries scale(final double scale) {
     final Double[] scaled = new Double[size()];
@@ -317,9 +344,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "abs",
-      description = "Absolute values of entries in the time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Absolute values of entries in the time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries abs() {
     final Double[] abs = new Double[size()];
@@ -330,9 +357,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "reciprocal",
-      description = "Reciprocal values of entries in the time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+              description = "Reciprocal values of entries in the time series",
+              category = "Time series",
+              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries reciprocal() {
     final Double[] reciprocal = new Double[size()];
@@ -344,9 +371,12 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Performs the operation.
-   * @param other  the other series
-   * @param operation  operation switch: 1 = add, 2 = subtract, 3 = multiply, 4 = divide
-   * @return  the series
+   *
+   * @param other
+   *          the other series
+   * @param operation
+   *          operation switch: 1 = add, 2 = subtract, 3 = multiply, 4 = divide
+   * @return the series
    */
   private TimeSeries operate(final TimeSeries other, final int operation) {
     final List<LocalDate> resultDates = new ArrayList<>(other.size() + size());
@@ -440,14 +470,19 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Simple quicksort implementation.
-   * @param dates  the dates
-   * @param values  the values
-   * @param left  the left index of the partition
-   * @param right  the right index of the partition
+   *
+   * @param dates
+   *          the dates
+   * @param values
+   *          the values
+   * @param left
+   *          the left index of the partition
+   * @param right
+   *          the right index of the partition
    */
   private static void sort(final LocalDate[] dates, final Double[] values, final int left, final int right) {
     if (right > left) {
-      final int pivot = (left + right) >> 1;
+      final int pivot = left + right >> 1;
       final int newPivot = partition(dates, values, left, right, pivot);
       sort(dates, values, left, newPivot - 1);
       sort(dates, values, newPivot + 1, right);
@@ -456,12 +491,18 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Partitions the arrays.
-   * @param dates  the dates
-   * @param values  the values
-   * @param left  the left index
-   * @param right  the right index
-   * @param pivot  the pivot
-   * @return  the next pivot value
+   *
+   * @param dates
+   *          the dates
+   * @param values
+   *          the values
+   * @param left
+   *          the left index
+   * @param right
+   *          the right index
+   * @param pivot
+   *          the pivot
+   * @return the next pivot value
    */
   private static int partition(final LocalDate[] dates, final Double[] values, final int left, final int right, final int pivot) {
     final LocalDate pivotDate = dates[pivot];
@@ -482,10 +523,15 @@ public final class TimeSeries implements Operation<TimeSeries> {
 
   /**
    * Swaps elements in an array.
-   * @param dates  the dates
-   * @param values  the values
-   * @param i  the first index to be swapped
-   * @param j  the second index to be swapped
+   *
+   * @param dates
+   *          the dates
+   * @param values
+   *          the values
+   * @param i
+   *          the first index to be swapped
+   * @param j
+   *          the second index to be swapped
    */
   private static void swap(final LocalDate[] dates, final Double[] values, final int i, final int j) {
     final LocalDate temp1 = dates[i];
