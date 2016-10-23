@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -7,8 +7,8 @@ import com.mcleodmoores.xl4j.simulator.SimulatedExcel;
 import com.mcleodmoores.xl4j.xll.NativeExcel;
 
 /**
- * Factory for getting instances of the Excel interface.
- * This should not be called directly from application code, instances should be injected as required.
+ * Factory for getting instances of the Excel interface. This should not be called directly from application code, instances should be
+ * injected as required.
  */
 public final class ExcelFactory {
   /** Test mode property name */
@@ -47,8 +47,8 @@ public final class ExcelFactory {
   }
 
   /**
-   * Get an instance of the Excel interface.
-   * Thread-safe.
+   * Get an instance of the Excel interface. Thread-safe.
+   * 
    * @return an instance of the Excel interface.
    */
   public static Excel getInstance() {

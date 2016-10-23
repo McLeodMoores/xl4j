@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert;
 
@@ -36,24 +36,27 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
 
   /**
    * Construct a TypeResolver.
-   * @param excel  the excel context, allowing access to the heap.
+   * 
+   * @param excel
+   *          the excel context, allowing access to the heap.
    */
   public ScanningTypeConverterRegistry(final Excel excel) {
-    final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
-        .addScanners(new SubTypesScanner(true)));
+    final Reflections reflections = new Reflections(
+        new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath()).addScanners(new SubTypesScanner(true)));
     scanAndCreateTypeConverters(reflections, excel);
   }
 
   /**
-   * Construct a TypeResolver for a particular package.  Useful for testing.
-   * @param excel  the excel context, allowing access to the heap.
-   * @param packageName  restrict scanning of implementations to a particular package
+   * Construct a TypeResolver for a particular package. Useful for testing.
+   * 
+   * @param excel
+   *          the excel context, allowing access to the heap.
+   * @param packageName
+   *          restrict scanning of implementations to a particular package
    */
   public ScanningTypeConverterRegistry(final Excel excel, final String packageName) {
     final Reflections reflections = new Reflections(
-        new ConfigurationBuilder()
-        .addUrls(ClasspathHelper.forPackage(packageName))
-        .addScanners(new SubTypesScanner(true)));
+        new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage(packageName)).addScanners(new SubTypesScanner(true)));
     scanAndCreateTypeConverters(reflections, excel);
   }
 
@@ -96,9 +99,10 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
   }
 
   /**
-   * Find a type converter to perform the required conversion, searching linearly in priority order
-   * and returning the first match.
-   * @param requiredMapping the required conversion
+   * Find a type converter to perform the required conversion, searching linearly in priority order and returning the first match.
+   * 
+   * @param requiredMapping
+   *          the required conversion
    * @return a type converter to perform the conversion
    */
   @Override
@@ -115,10 +119,11 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
   }
 
   /**
-   * Find a type converter to perform the required conversion, searching linearly in priority order.
-   * This method is used to find a converter from Java back into Excel, when you don't know the target Excel type.
-   * and returning the first match.
-   * @param requiredJava the Java type required to convert from.
+   * Find a type converter to perform the required conversion, searching linearly in priority order. This method is used to find a converter
+   * from Java back into Excel, when you don't know the target Excel type. and returning the first match.
+   * 
+   * @param requiredJava
+   *          the Java type required to convert from.
    * @return a type converter to perform the conversion
    */
   @Override
@@ -133,6 +138,5 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
     }
     return null;
   }
-
 
 }

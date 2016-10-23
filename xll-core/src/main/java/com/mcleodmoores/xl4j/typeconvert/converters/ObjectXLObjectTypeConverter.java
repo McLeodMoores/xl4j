@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
@@ -12,8 +12,8 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.values.XLObject;
 
 /**
- * Type converter for general objects into XLObject handles.  Note the lower priority,
- * which means all the other converters get a crack at doing something nicer first.
+ * Type converter for general objects into XLObject handles. Note the lower priority, which means all the other converters get a crack at
+ * doing something nicer first.
  */
 public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
   /** The priority */
@@ -23,7 +23,9 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   /**
    * Default constructor.
-   * @param excel  the excel object to allow heap access
+   * 
+   * @param excel
+   *          the excel object to allow heap access
    */
   public ObjectXLObjectTypeConverter(final Excel excel) {
     super(Object.class, XLObject.class, OBJECT_CONVERTER_PRIORITY);

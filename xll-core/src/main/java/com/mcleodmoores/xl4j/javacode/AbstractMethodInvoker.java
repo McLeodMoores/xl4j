@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.javacode;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,12 +28,15 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
 
   /**
    * Constructor.
-   * @param method  the method to call.
-   * @param argumentConverters  the converters required to call the method
-   * @param returnConverter  the converter required to convert he result back to an Excel type
+   * 
+   * @param method
+   *          the method to call.
+   * @param argumentConverters
+   *          the converters required to call the method
+   * @param returnConverter
+   *          the converter required to convert he result back to an Excel type
    */
-  public AbstractMethodInvoker(final Method method, final TypeConverter[] argumentConverters,
-                       final TypeConverter returnConverter) {
+  public AbstractMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter) {
     _method = method;
     _argumentConverters = argumentConverters;
     _returnConverter = returnConverter;
@@ -54,7 +60,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       final int varArgIndex = _method.getParameterCount() - 1;
       final int nVarArgs = arguments.length - varArgIndex;
       for (int i = 0; i < varArgIndex; i++) {
-        //TODO not sure about this logic - isArray() never seems to be true.
+        // TODO not sure about this logic - isArray() never seems to be true.
         // what was the intended use?
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
@@ -65,13 +71,13 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       }
       final XLValue[] varArgs = new XLValue[nVarArgs];
       System.arraycopy(arguments, varArgIndex, varArgs, 0, nVarArgs);
-      final XLValue[][] varArgsAsArray = new XLValue[][] {varArgs};
+      final XLValue[][] varArgsAsArray = new XLValue[][] { varArgs };
       final Type expectedClass = _method.getParameterTypes()[varArgIndex];
       args[args.length - 1] = _argumentConverters[_argumentConverters.length - 1].toJavaObject(expectedClass, XLArray.of(varArgsAsArray));
     } else {
       args = new Object[arguments.length];
       for (int i = 0; i < _argumentConverters.length; i++) {
-        //TODO not sure about this logic - isArray() never seems to be true.
+        // TODO not sure about this logic - isArray() never seems to be true.
         // what was the intended use?
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
@@ -82,7 +88,8 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       }
     }
     try {
-      LOGGER.info("invoking method {} on {} with {}", _method, object == null ? "null" : object.getClass().getSimpleName(), Arrays.toString(args));
+      LOGGER.info("invoking method {} on {} with {}", _method, object == null ? "null" : object.getClass().getSimpleName(),
+          Arrays.toString(args));
       final Object result = _method.invoke(object, args);
       return convertResult(result, _returnConverter);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -91,9 +98,12 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
   }
 
   /**
-   * Processes the result object into the object returned by excel.  Could be an object or an Excel type.
-   * @param object  the result object to process
-   * @param returnConverter  the simplifying return converter
+   * Processes the result object into the object returned by excel. Could be an object or an Excel type.
+   * 
+   * @param object
+   *          the result object to process
+   * @param returnConverter
+   *          the simplifying return converter
    * @return an XLValue type
    */
   protected abstract XLValue convertResult(final Object object, final TypeConverter returnConverter);

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -18,9 +18,13 @@ public final class FunctionMetadata {
 
   /**
    * Creates an instance.
-   * @param namespace  the namespace
-   * @param functionSpec  the function specification
-   * @param arguments  the arguments to the function
+   * 
+   * @param namespace
+   *          the namespace
+   * @param functionSpec
+   *          the function specification
+   * @param arguments
+   *          the arguments to the function
    */
   private FunctionMetadata(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
     _namespace = namespace;
@@ -30,10 +34,14 @@ public final class FunctionMetadata {
 
   /**
    * Create an instance given a namespace, functionSpec and arguments.
-   * @param namespace  an XLNamespace annotation or null if no name space
-   * @param functionSpec  an XLFunction annotation, not null
-   * @param arguments  a non-null array of XLArgument annotations, must be same length as method parameter list.
-   *                   The array itself may contain nulls to signify missing XLArgument annotations.
+   * 
+   * @param namespace
+   *          an XLNamespace annotation or null if no name space
+   * @param functionSpec
+   *          an XLFunction annotation, not null
+   * @param arguments
+   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLArgument annotations.
    * @return an instance of a FunctionSpec
    */
   public static FunctionMetadata of(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
@@ -44,9 +52,12 @@ public final class FunctionMetadata {
 
   /**
    * Create an instance when no namespace is declared given a functionSpec and arguments.
-   * @param functionSpec  an XLFunction annotation, not null
-   * @param arguments  a non-null array of XLArgument annotations, must be same length as method parameter list.
-   *                   The array itself may contain nulls to signify missing XLArgument annotations.
+   * 
+   * @param functionSpec
+   *          an XLFunction annotation, not null
+   * @param arguments
+   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLArgument annotations.
    * @return an instance of a FunctionSpec
    */
   public static FunctionMetadata of(final XLFunction functionSpec, final XLArgument[] arguments) {
@@ -70,7 +81,7 @@ public final class FunctionMetadata {
   }
 
   /**
-   * @return an array of XLArgument, not null, but possibly containing null elements.  Will be same length as method argument list.
+   * @return an array of XLArgument, not null, but possibly containing null elements. Will be same length as method argument list.
    */
   public XLArgument[] getArguments() {
     return _arguments;

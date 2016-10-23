@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.javacode;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,12 +18,14 @@ import com.mcleodmoores.xl4j.values.XLValue;
  * A class holding the converters required to convert arguments into the appropriate types and convert the result.
  */
 public class PassthroughMethodInvoker implements MethodInvoker {
-  private static final Logger s_logger = LoggerFactory.getLogger(PassthroughMethodInvoker.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(PassthroughMethodInvoker.class);
   private final Method _method;
 
   /**
    * Constructor.
-   * @param method  the method to call.
+   * 
+   * @param method
+   *          the method to call.
    */
   public PassthroughMethodInvoker(final Method method) {
     _method = method;
@@ -30,13 +35,12 @@ public class PassthroughMethodInvoker implements MethodInvoker {
   public XLValue invoke(final Object object, final XLValue[] arguments) {
     // note that the seemingly obvious invariant of arguments.length == _argumentConverters.length is not
     // always true because of a VarArgs might have no arguments to its converter may be surplus to
-    // requirements.  For this reason we base the conversion on the length of arguments.
+    // requirements. For this reason we base the conversion on the length of arguments.
 
     try {
-      s_logger.info("invoking " + object + " with " + Arrays.toString(arguments));
+      LOGGER.info("invoking " + object + " with " + Arrays.toString(arguments));
       return (XLValue) _method.invoke(object, new Object[] { arguments });
-    } catch (IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException e) {
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new Excel4JRuntimeException("Error invoking method", e);
     }
   }

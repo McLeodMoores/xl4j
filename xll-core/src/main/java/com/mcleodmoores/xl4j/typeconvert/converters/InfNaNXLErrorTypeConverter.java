@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
@@ -11,8 +11,8 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLError;
 
 /**
- * Converts {@link XLError#Div0} to <code>Double#POSITIVE_INFINITY</code> and {@link XLError#NA} to <code>Double#NaN</code>.
- * All other errors are passed through.
+ * Converts {@link XLError#Div0} to <code>Double#POSITIVE_INFINITY</code> and {@link XLError#NA} to <code>Double#NaN</code>. All other
+ * errors are passed through.
  */
 public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
   /** Priority for this converter */

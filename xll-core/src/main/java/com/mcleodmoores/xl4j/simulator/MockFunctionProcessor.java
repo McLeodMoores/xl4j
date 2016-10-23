@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.simulator;
 
@@ -21,7 +21,7 @@ import com.mcleodmoores.xl4j.xll.XLLAccumulatingFunctionRegistry;
 import com.mcleodmoores.xl4j.xll.XLLAccumulatingFunctionRegistry.LowLevelEntry;
 
 /**
- *
+ * A mock function processor that
  */
 public final class MockFunctionProcessor {
   /** The logger */
@@ -31,7 +31,8 @@ public final class MockFunctionProcessor {
 
   /**
    * Gets an instance.
-   * @return  an instance
+   *
+   * @return an instance
    */
   public static MockFunctionProcessor getInstance() {
     return INSTANCE;
@@ -47,12 +48,18 @@ public final class MockFunctionProcessor {
    */
   private MockFunctionProcessor() {
     _excel.getFunctionRegistry().registerFunctions(_excel.getExcelCallback());
-    final XLLAccumulatingFunctionRegistry excelFunctionRegistry = (XLLAccumulatingFunctionRegistry) _excel.getExcelCallback().getLowLevelExcelCallback();
+    final XLLAccumulatingFunctionRegistry excelFunctionRegistry = (XLLAccumulatingFunctionRegistry) _excel.getExcelCallback()
+        .getLowLevelExcelCallback();
     _entries = excelFunctionRegistry.getEntries();
     _excelCallHandler = _excel.getExcelCallHandler();
     _excelConstructorCallHandler = _excel.getExcelConstructorCallHandler();
   }
 
+  /**
+   * @param objectName
+   * @param args
+   * @return
+   */
   public XLValue newInstance(final String objectName, final XLValue... args) {
     final List<Integer> exportNumbers = new ArrayList<>();
     // might have more than one constructor called the same thing
@@ -90,8 +97,11 @@ public final class MockFunctionProcessor {
 
   /**
    * Invoke a function.
-   * @param functionName the name of the function
-   * @param args the arguments
+   *
+   * @param functionName
+   *          the name of the function
+   * @param args
+   *          the arguments
    * @return the result
    */
   public XLValue invoke(final String functionName, final XLValue... args) {

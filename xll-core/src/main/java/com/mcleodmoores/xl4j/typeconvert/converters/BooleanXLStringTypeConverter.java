@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
@@ -10,8 +10,8 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.values.XLString;
 
 /**
- * Type converter to convert from Booleans to Excel strings and back again. This converter
- * has a low priority, as it is more likely that conversion to and from XLBooleans is required.
+ * Type converter to convert from Booleans to Excel strings and back again. This converter has a low priority, as it is more likely that
+ * conversion to and from XLBooleans is required.
  */
 public final class BooleanXLStringTypeConverter extends AbstractTypeConverter {
   /** The priority */

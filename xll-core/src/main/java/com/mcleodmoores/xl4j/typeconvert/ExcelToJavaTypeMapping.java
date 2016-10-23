@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert;
 
@@ -20,8 +20,10 @@ public final class ExcelToJavaTypeMapping {
   private final Class<?> _javaClass;
 
   /**
-   * @param excelType the Excel type, not null
-   * @param javaType the Java type, not null
+   * @param excelType
+   *          the Excel type, not null
+   * @param javaType
+   *          the Java type, not null
    */
   private ExcelToJavaTypeMapping(final Class<?> excelType, final Type javaType) {
     ArgumentChecker.notNull(excelType, "excelType");
@@ -33,8 +35,11 @@ public final class ExcelToJavaTypeMapping {
 
   /**
    * Static factory method.
-   * @param excelType the Excel type
-   * @param javaType the Java type
+   * 
+   * @param excelType
+   *          the Excel type
+   * @param javaType
+   *          the Java type
    * @return an instance
    */
   public static ExcelToJavaTypeMapping of(final Class<?> excelType, final Type javaType) {
@@ -63,9 +68,10 @@ public final class ExcelToJavaTypeMapping {
   }
 
   /**
-   * Checks whether both the excel type and java type are assignable from
-   * the other type (i.e. are the types compatible).
-   * @param other  the ExcelToJavaTypeMapping to compare against
+   * Checks whether both the excel type and java type are assignable from the other type (i.e. are the types compatible).
+   * 
+   * @param other
+   *          the ExcelToJavaTypeMapping to compare against
    * @return true, if both the excel and java types are assignable from
    */
   public boolean isAssignableFrom(final ExcelToJavaTypeMapping other) {

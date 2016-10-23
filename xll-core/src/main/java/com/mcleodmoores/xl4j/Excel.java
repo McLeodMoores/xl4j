@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -16,6 +16,7 @@ public interface Excel {
 
   /**
    * Get the local invoker factory to allow Excel types to be bound to java constructors, methods and fields.
+   * 
    * @return an instance of an invoker factory
    */
   InvokerFactory getInvokerFactory();

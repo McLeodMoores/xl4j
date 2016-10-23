@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
@@ -20,8 +20,8 @@ import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLString;
 
 /**
- * Class containing set of static inner classes for identity converters at higher
- * priority.  This will bind e.g. XLString to XLString if available rather than String.
+ * Class containing set of static inner classes for identity converters at higher priority. This will bind e.g. XLString to XLString if
+ * available rather than String.
  */
 public class XLValueIdentityConverters {
   /** The priority of identity converters */
@@ -33,7 +33,8 @@ public class XLValueIdentityConverters {
   private abstract static class AbstractXLValueIdentityConverter extends AbstractTypeConverter {
 
     /**
-     * @param xlType  the Excel type to convert
+     * @param xlType
+     *          the Excel type to convert
      */
     public AbstractXLValueIdentityConverter(final Class<?> xlType) {
       super(xlType, xlType, IDENTITY_CONVERTER_PRIORITY);

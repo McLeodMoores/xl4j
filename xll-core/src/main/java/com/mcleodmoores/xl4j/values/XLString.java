@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -7,8 +7,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 
 /**
- * Java representation of the xloper type xltypeStr.
- * Holds an Excel String.
+ * Java representation of the xloper type xltypeStr. Holds an Excel String.
  */
 public final class XLString implements XLValue {
 
@@ -21,7 +20,9 @@ public final class XLString implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * @param value the string, not null
+   * 
+   * @param value
+   *          the string, not null
    * @return an instance
    */
   public static XLString of(final String value) {
@@ -42,14 +43,14 @@ public final class XLString implements XLValue {
   public boolean isXLObject() {
     return _value.startsWith(OBJECT_PREFIX);
   }
-  
+
   /**
-   * @return XLObject if string contains object handle, throws Excel4JRuntimeException otherwise
-   * Check with isXLObject before calling.  Note this does not check validity on heap.
+   * @return XLObject if string contains object handle, throws Excel4JRuntimeException otherwise Check with isXLObject before calling. Note
+   *         this does not check validity on heap.
    */
   public XLObject toXLObject() {
     if (isXLObject()) {
-      String[] split = _value.split("-");
+      final String[] split = _value.split("-");
       if (split.length != 2) {
         throw new Excel4JRuntimeException("String has object prefix character but cannot split on hyphen");
       }
@@ -57,7 +58,7 @@ public final class XLString implements XLValue {
     }
     throw new Excel4JRuntimeException("XLString is not object handle");
   }
-  
+
   @Override
   public <E> E accept(final XLValueVisitor<E> visitor) {
     return visitor.visitXLString(this);

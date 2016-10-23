@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -7,7 +7,9 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 
 /**
  * Adapter containing method to throw Excel4JRuntimeException if a visitor is not implemented, but called.
- * @param <T> the type of data returned by the visitor
+ * 
+ * @param <T>
+ *          the type of data returned by the visitor
  */
 public class XLValueVisitorAdapter<T> implements XLValueVisitor<T> {
 

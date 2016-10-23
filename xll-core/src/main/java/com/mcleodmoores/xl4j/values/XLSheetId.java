@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -7,21 +7,23 @@ package com.mcleodmoores.xl4j.values;
  * Simple wrapper for an Excel sheet ID.
  */
 public final class XLSheetId {
-  private int _sheetId;
+  private final int _sheetId;
 
   private XLSheetId(final int sheetId) {
     _sheetId = sheetId;
   }
-  
+
   /**
    * Static factory method to create and instance of an XLSheetId.
-   * @param sheetId the sheet ID
+   * 
+   * @param sheetId
+   *          the sheet ID
    * @return an instance
    */
   public static XLSheetId of(final int sheetId) {
     return new XLSheetId(sheetId);
   }
-  
+
   /**
    * @return the sheet id
    */
@@ -48,7 +50,7 @@ public final class XLSheetId {
     if (!(obj instanceof XLSheetId)) {
       return false;
     }
-    XLSheetId other = (XLSheetId) obj;
+    final XLSheetId other = (XLSheetId) obj;
     if (_sheetId != other._sheetId) {
       return false;
     }
@@ -58,6 +60,6 @@ public final class XLSheetId {
   @Override
   public String toString() {
     return "XLSheetId[sheetId=" + _sheetId + "]";
-  } 
-  
+  }
+
 }

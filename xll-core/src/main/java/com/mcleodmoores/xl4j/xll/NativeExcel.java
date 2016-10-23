@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.xll;
 
 import com.mcleodmoores.xl4j.DefaultExcelConstructorCallHandler;
@@ -65,6 +68,7 @@ public class NativeExcel implements Excel {
 
   /**
    * Get the low level callback handler so we can get accumulated registrations without callbacks.
+   * 
    * @return the low level callback accumulator
    */
   @Override

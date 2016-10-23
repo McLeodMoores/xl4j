@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -27,8 +27,11 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
 
   /**
    * Create a default call handler.
-   * @param functionRegistry  the function registry, not null
-   * @param heap  the heap, not null
+   * 
+   * @param functionRegistry
+   *          the function registry, not null
+   * @param heap
+   *          the heap, not null
    */
   public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final Heap heap) {
     ArgumentChecker.notNull(functionRegistry, "functionRegistry");

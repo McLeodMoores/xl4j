@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -8,8 +8,7 @@ import java.util.Objects;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
- * Special version of XLString that holds a String with unprintable characters
- * at the start that encodes an object handle.
+ * Special version of XLString that holds a String with unprintable characters at the start that encodes an object handle.
  */
 public final class XLObject implements XLValue {
   /** The object prefix */
@@ -20,8 +19,10 @@ public final class XLObject implements XLValue {
   private final long _handle;
 
   /**
-   * @param clazz  the simple name
-   * @param handle  the handle
+   * @param clazz
+   *          the simple name
+   * @param handle
+   *          the handle
    */
   private XLObject(final String clazz, final long handle) {
     _clazz = clazz;
@@ -30,8 +31,11 @@ public final class XLObject implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * @param clazz the Class that this object points to
-   * @param handle the object handle
+   * 
+   * @param clazz
+   *          the Class that this object points to
+   * @param handle
+   *          the object handle
    * @return an instance
    */
   public static XLObject of(final String clazz, final long handle) {
@@ -41,8 +45,11 @@ public final class XLObject implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * @param clazz the Class that this object points to
-   * @param handle the object handle
+   * 
+   * @param clazz
+   *          the Class that this object points to
+   * @param handle
+   *          the object handle
    * @return an instance
    */
   public static XLObject of(final Class<?> clazz, final long handle) {
@@ -65,10 +72,9 @@ public final class XLObject implements XLValue {
   }
 
   /**
-   * Convert this XLObject into an XLString for passing back to Excel.
-   * It adds a ^Z control character to the front of the string so Excel
-   * users cannot create arbitrary object references, but can read them.
-   * The string produced is in the form ClassName-000000000000000000000.
+   * Convert this XLObject into an XLString for passing back to Excel. It adds a ^Z control character to the front of the string so Excel
+   * users cannot create arbitrary object references, but can read them. The string produced is in the form ClassName-000000000000000000000.
+   * 
    * @return an XLString object containing the object handle and class name.
    */
   public XLString toXLString() {

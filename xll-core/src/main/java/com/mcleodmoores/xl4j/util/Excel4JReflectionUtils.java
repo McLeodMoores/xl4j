@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.util;
 
@@ -17,15 +17,18 @@ import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.TypeConverterRegistry;
 
 /**
- * Some common utility methods for reflection-based operations.
- * Called Excel4JReflectionUtils so it didn't clash with ReflectionUtils of the Reflections framework.
+ * Some common utility methods for reflection-based operations. Called Excel4JReflectionUtils so it didn't clash with ReflectionUtils of the
+ * Reflections framework.
  */
 public final class Excel4JReflectionUtils {
   private Excel4JReflectionUtils() {
   }
+
   /**
    * Reduce a generic Type to its Class erasure.
-   * @param type the generic type
+   * 
+   * @param type
+   *          the generic type
    * @return it's underlying Class
    */
   public static Class<?> reduceToClass(final Type type) {
@@ -59,7 +62,8 @@ public final class Excel4JReflectionUtils {
         final Class<?> excelClass = converter.getJavaToExcelTypeMapping().getExcelClass();
         excelTypes[i] = excelClass;
       } else {
-        throw new Excel4JRuntimeException("Can't find Java->Excel converter for parameter type " + parameterType + " (arg " + i + ") of method " + method);
+        throw new Excel4JRuntimeException(
+            "Can't find Java->Excel converter for parameter type " + parameterType + " (arg " + i + ") of method " + method);
       }
       i++;
     }

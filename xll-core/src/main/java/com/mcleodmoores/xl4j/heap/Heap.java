@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.heap;
 
 import java.net.NetworkInterface;
@@ -31,7 +34,7 @@ public class Heap {
   private final AtomicLong _sequence;
   private long _snapHandle;
 
-  //TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
+  // TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
   /**
    * Construct a heap.
    */
@@ -68,44 +71,45 @@ public class Heap {
 
   /**
    * Get a handle for an object, or allocate one if not currently in the heap.
-   * @param object the object to store
+   *
+   * @param object
+   *          the object to store
    * @return the object's handle
    */
   public long getHandle(final Object object) {
     final Long key = _objToHandle.get(object);
     if (key != null) {
       return key;
-    } else {
-      synchronized (object) { // should be low contention at least, can we get rid of this lock?
-        // check no one snuck in while we were waiting with the same object.
-        final Long keyAgain = _objToHandle.get(object);
-        if (keyAgain != null) {
-          return keyAgain;
-        }
-        final long newKey = _sequence.getAndIncrement();
-        // we don't need locking here because no one has the key yet.
-        // theoretically the user passing getHandle could concurrently call it twice with the same object, but
-        // that's why we synchronize on object and re-check once we have the lock.
-        _handleToObj.put(newKey, object);
-        _objToHandle.put(object, newKey);
-        return newKey;
-      }
     }
-
+    synchronized (object) { // should be low contention at least, can we get rid of this lock?
+      // check no one snuck in while we were waiting with the same object.
+      final Long keyAgain = _objToHandle.get(object);
+      if (keyAgain != null) {
+        return keyAgain;
+      }
+      final long newKey = _sequence.getAndIncrement();
+      // we don't need locking here because no one has the key yet.
+      // theoretically the user passing getHandle could concurrently call it twice with the same object, but
+      // that's why we synchronize on object and re-check once we have the lock.
+      _handleToObj.put(newKey, object);
+      _objToHandle.put(object, newKey);
+      return newKey;
+    }
   }
 
   /**
    * Get an object, given the handle.
-   * @param handle the handle for the object
+   *
+   * @param handle
+   *          the handle for the object
    * @return the object referred to by the handle
    */
   public Object getObject(final long handle) {
     final Object object = _handleToObj.get(handle);
     if (object != null) {
       return object;
-    } else {
-      throw new Excel4JRuntimeException("Cannot find object with handle " + handle);
     }
+    throw new Excel4JRuntimeException("Cannot find object with handle " + handle);
   }
 
   /**
@@ -138,7 +142,8 @@ public class Heap {
 
   /**
    *
-   * @param activeHandles  list of identifiers for objects that have been seen since the last snap
+   * @param activeHandles
+   *          list of identifiers for objects that have been seen since the last snap
    * @return the number of handles created since the last snap, gives measure of churn to adjust GC frequency
    */
   public long cycleGC(final long[] activeHandles) {

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -12,9 +12,12 @@ public interface ExcelConstructorCallHandler {
 
   /**
    * Creation of a new instance.
-   * @param exportNumber  the number of the export in this block with the same number of parameters
-   * @param args  the arguments to pass to the constructor
-   * @return  the object to pass back to Excel
+   * 
+   * @param exportNumber
+   *          the number of the export in this block with the same number of parameters
+   * @param args
+   *          the arguments to pass to the constructor
+   * @return the object to pass back to Excel
    */
   XLValue newInstance(int exportNumber, XLValue... args);
 }

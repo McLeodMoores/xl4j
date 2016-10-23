@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -18,9 +18,13 @@ public final class ConstructorMetadata {
 
   /**
    * Creates an instance.
-   * @param namespace  the namespace
-   * @param constructorSpec  the constructor specification
-   * @param arguments  the arguments to the constructor
+   * 
+   * @param namespace
+   *          the namespace
+   * @param constructorSpec
+   *          the constructor specification
+   * @param arguments
+   *          the arguments to the constructor
    */
   private ConstructorMetadata(final XLNamespace namespace, final XLConstructor constructorSpec, final XLArgument[] arguments) {
     _namespace = namespace;
@@ -30,11 +34,15 @@ public final class ConstructorMetadata {
 
   /**
    * Create an instance given a namespace, constructor specification and arguments.
-   * @param namespace  an XLNamespace annotation or null if no name space
-   * @param constructorSpec  an XLConstructor annotation, not null
-   * @param arguments  a non-null array of XLArgument annotations, must be same length as method parameter list.
-   * The array itself may contain nulls to signify missing XLArgument annotations.
-   * @return  an instance of a ConstructorDefinition
+   * 
+   * @param namespace
+   *          an XLNamespace annotation or null if no name space
+   * @param constructorSpec
+   *          an XLConstructor annotation, not null
+   * @param arguments
+   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLArgument annotations.
+   * @return an instance of a ConstructorDefinition
    */
   public static ConstructorMetadata of(final XLNamespace namespace, final XLConstructor constructorSpec, final XLArgument[] arguments) {
     ArgumentChecker.notNull(constructorSpec, "constructorSpec");
@@ -44,10 +52,13 @@ public final class ConstructorMetadata {
 
   /**
    * Create an instance given a constructor specification and arguments.
-   * @param constructorSpec  an XLConstructor annotation, not null
-   * @param arguments  a non-null array of XLArgument annotations, must be same length as method parameter list.
-   * The array itself may contain nulls to signify missing XLArgument annotations.
-   * @return  an instance of a ConstructorDefinition
+   * 
+   * @param constructorSpec
+   *          an XLConstructor annotation, not null
+   * @param arguments
+   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLArgument annotations.
+   * @return an instance of a ConstructorDefinition
    */
   public static ConstructorMetadata of(final XLConstructor constructorSpec, final XLArgument[] arguments) {
     ArgumentChecker.notNull(constructorSpec, "constructorSpec");
@@ -56,21 +67,21 @@ public final class ConstructorMetadata {
   }
 
   /**
-   * @return  the XLNamespace annotation or null if no namespace
+   * @return the XLNamespace annotation or null if no namespace
    */
   public XLNamespace getNamespace() {
     return _namespace;
   }
 
   /**
-   * @return  the XLConstructor annotation, not null
+   * @return the XLConstructor annotation, not null
    */
   public XLConstructor getConstructorSpec() {
     return _constructorSpec;
   }
 
   /**
-   * @return  an array of XLArgument, not null, but possibly containing null elements.  Will be same length as method argument list.
+   * @return an array of XLArgument, not null, but possibly containing null elements. Will be same length as method argument list.
    */
   public XLArgument[] getArguments() {
     return _arguments;

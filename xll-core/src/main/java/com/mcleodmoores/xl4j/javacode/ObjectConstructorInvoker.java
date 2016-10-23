@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.javacode;
 
 import java.lang.reflect.Constructor;
@@ -19,9 +22,13 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
 
   /**
    * Constructor.
-   * @param constructor the constructor to call.
-   * @param argumentConverters the converters required to call the method
-   * @param returnConverter the converter required to convert he result back to an Excel type
+   *
+   * @param constructor
+   *          the constructor to call.
+   * @param argumentConverters
+   *          the converters required to call the method
+   * @param returnConverter
+   *          the converter required to convert he result back to an Excel type
    */
   public ObjectConstructorInvoker(final Constructor<?> constructor, final TypeConverter[] argumentConverters,
       final TypeConverter returnConverter) {
@@ -30,9 +37,6 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
     _returnConverter = returnConverter;
   }
 
-  /* (non-Javadoc)
-   * @see com.mcleodmoores.xl4j.javacode.ConstructorInvokerI#invoke(com.mcleodmoores.xl4j.values.XLValue[])
-   */
   @Override
   public XLValue newInstance(final XLValue[] arguments) {
     Object[] args;
@@ -41,7 +45,7 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
       final int varArgIndex = _constructor.getParameterCount() - 1;
       final int nVarArgs = arguments.length - varArgIndex;
       for (int i = 0; i < varArgIndex; i++) {
-        //TODO not sure about this logic - isArray() never seems to be true.
+        // TODO not sure about this logic - isArray() never seems to be true.
         // what was the intended use?
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
@@ -52,13 +56,13 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
       }
       final XLValue[] varArgs = new XLValue[nVarArgs];
       System.arraycopy(arguments, varArgIndex, varArgs, 0, nVarArgs);
-      final XLValue[][] varArgsAsArray = new XLValue[][] {varArgs};
+      final XLValue[][] varArgsAsArray = new XLValue[][] { varArgs };
       final Type expectedClass = _constructor.getParameterTypes()[varArgIndex];
       args[args.length - 1] = _argumentConverters[_argumentConverters.length - 1].toJavaObject(expectedClass, XLArray.of(varArgsAsArray));
     } else {
       args = new Object[arguments.length];
       for (int i = 0; i < _argumentConverters.length; i++) {
-        //TODO not sure about this logic - isArray() never seems to be true.
+        // TODO not sure about this logic - isArray() never seems to be true.
         // what was the intended use?
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
@@ -74,15 +78,11 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
         throw new Excel4JRuntimeException("Return of array types not supported");
       }
       return (XLValue) _returnConverter.toXLValue(null, result);
-    } catch (IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | InstantiationException e) {
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor: " + e.getMessage(), e);
     }
   }
 
-  /* (non-Javadoc)
-   * @see com.mcleodmoores.xl4j.javacode.ConstructorInvokerI#getExcelParameterTypes()
-   */
   @Override
   public Class<?>[] getExcelParameterTypes() {
     final Class<?>[] parameterTypes = new Class[_argumentConverters.length];
@@ -93,9 +93,6 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
     return parameterTypes;
   }
 
-  /* (non-Javadoc)
-   * @see com.mcleodmoores.xl4j.javacode.ConstructorInvokerI#getExcelReturnType()
-   */
   @Override
   public Class<?> getExcelReturnType() {
     return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();

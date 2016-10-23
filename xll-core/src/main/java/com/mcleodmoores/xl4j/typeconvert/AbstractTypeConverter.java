@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.typeconvert;
 
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -14,9 +17,13 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
   /**
    * Convenience constructor, produces converter with default priority.
-   * @param javaType the Java type, any object type
-   * @param excelType the Excel type
-   * @param priority the priority level, with larger values indicating higher priority
+   * 
+   * @param javaType
+   *          the Java type, any object type
+   * @param excelType
+   *          the Excel type
+   * @param priority
+   *          the priority level, with larger values indicating higher priority
    */
   protected AbstractTypeConverter(final Class<?> javaType, final Class<?> excelType, final int priority) {
     ArgumentChecker.notNull(javaType, "javaType");
@@ -28,8 +35,11 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
   /**
    * Convenience constructor, produces converter with default priority.
-   * @param javaType the Java type, any object type
-   * @param excelType the Excel type
+   * 
+   * @param javaType
+   *          the Java type, any object type
+   * @param excelType
+   *          the Excel type
    */
   protected AbstractTypeConverter(final Class<?> javaType, final Class<?> excelType) {
     this(javaType, excelType, DEFAULT_PRIORITY);

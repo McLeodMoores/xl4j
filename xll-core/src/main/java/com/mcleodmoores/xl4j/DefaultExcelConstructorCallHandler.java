@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -24,7 +24,9 @@ public class DefaultExcelConstructorCallHandler implements ExcelConstructorCallH
 
   /**
    * Create a default call handler.
-   * @param registry  the function and constructor registry, not null
+   * 
+   * @param registry
+   *          the function and constructor registry, not null
    */
   public DefaultExcelConstructorCallHandler(final FunctionRegistry registry) {
     ArgumentChecker.notNull(registry, "registry");

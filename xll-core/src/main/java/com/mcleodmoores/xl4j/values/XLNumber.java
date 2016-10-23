@@ -1,28 +1,29 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
 /**
- * Java representation of the xloper type xltypeNum.
- * This holds an Excel Number, which is an integer or floating point number, with slightly lower precision
- * than IEEE-754 floating point (no Inf/NaN or denormal).
+ * Java representation of the xloper type xltypeNum. This holds an Excel Number, which is an integer or floating point number, with slightly
+ * lower precision than IEEE-754 floating point (no Inf/NaN or denormal).
  */
 public final class XLNumber implements XLValue {
   /** The value as a double */
   private final double _value;
 
   /**
-   * @param value  the value
+   * @param value
+   *          the value
    */
   private XLNumber(final double value) {
     _value = value;
   }
 
   /**
-   * Static factory method to create an instance of an XLNumber.
-   * NOTE: currently accepts NaN/Inf even though Excel doesn't support them.
-   * @param value the value
+   * Static factory method to create an instance of an XLNumber. NOTE: currently accepts NaN/Inf even though Excel doesn't support them.
+   * 
+   * @param value
+   *          the value
    * @return XLNumber
    */
   public static XLNumber of(final double value) {
@@ -31,7 +32,9 @@ public final class XLNumber implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLNumber.
-   * @param value the value
+   * 
+   * @param value
+   *          the value
    * @return XLNumber
    */
   public static XLNumber of(final int value) {
@@ -40,7 +43,9 @@ public final class XLNumber implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLNumber.
-   * @param value the value
+   * 
+   * @param value
+   *          the value
    * @return XLNumber
    */
   public static XLNumber of(final long value) {
@@ -49,6 +54,7 @@ public final class XLNumber implements XLValue {
 
   /**
    * Gets the value as stored.
+   * 
    * @return the value
    */
   public double getValue() {
@@ -57,7 +63,8 @@ public final class XLNumber implements XLValue {
 
   /**
    * Casts the value to a short.
-   * @return  the value as a short
+   * 
+   * @return the value as a short
    */
   public short getAsShort() {
     return (short) _value;
@@ -65,7 +72,8 @@ public final class XLNumber implements XLValue {
 
   /**
    * Casts the value to an int.
-   * @return  the value as an int
+   * 
+   * @return the value as an int
    */
   public int getAsInt() {
     return (int) _value;
@@ -73,7 +81,8 @@ public final class XLNumber implements XLValue {
 
   /**
    * Casts the value to a long.
-   * @return  the value as a long
+   * 
+   * @return the value as a long
    */
   public long getAsLong() {
     return (long) _value;
@@ -81,7 +90,8 @@ public final class XLNumber implements XLValue {
 
   /**
    * Casts the value to a float.
-   * @return  the value as a float
+   * 
+   * @return the value as a float
    */
   public float getAsFloat() {
     return (float) _value;
@@ -89,7 +99,8 @@ public final class XLNumber implements XLValue {
 
   /**
    * Gets the value as a double.
-   * @return  the value as a double
+   * 
+   * @return the value as a double
    */
   public double getAsDouble() {
     return _value;
@@ -106,7 +117,7 @@ public final class XLNumber implements XLValue {
     int result = 1;
     long temp;
     temp = Double.doubleToLongBits(_value);
-    result = prime * result + (int) (temp ^ (temp >>> 32));
+    result = prime * result + (int) (temp ^ temp >>> 32);
     return result;
   }
 

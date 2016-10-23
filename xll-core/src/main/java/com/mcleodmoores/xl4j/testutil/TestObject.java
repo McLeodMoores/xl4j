@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.testutil;
 
 import java.util.Arrays;
@@ -6,13 +9,13 @@ import java.util.Objects;
 /**
  *
  */
-//CHECKSTYLE:OFF
+// CHECKSTYLE:OFF
 public class TestObject {
   private final int _number;
   private final Double[] _doubles;
   private final String _name;
 
-  //TODO add a builder
+  // TODO add a builder
 
   public static TestObject of() {
     return new TestObject(-1000, new Double[0], "static no args constructor");
@@ -21,9 +24,9 @@ public class TestObject {
   public static TestObject of(final Object doubleObject) {
     Double[] doubles = new Double[1];
     if (doubleObject instanceof Number) {
-      doubles = new Double[] {((Number) doubleObject).doubleValue()};
+      doubles = new Double[] { ((Number) doubleObject).doubleValue() };
     } else if (doubleObject instanceof String) {
-      doubles = new Double[] {Double.parseDouble((String) doubleObject)};
+      doubles = new Double[] { Double.parseDouble((String) doubleObject) };
     } else {
       throw new IllegalArgumentException();
     }
@@ -31,11 +34,11 @@ public class TestObject {
   }
 
   public static TestObject of(final String doubleString) {
-    return new TestObject(-3000, new Double[] {Double.parseDouble(doubleString)}, "static String constructor");
+    return new TestObject(-3000, new Double[] { Double.parseDouble(doubleString) }, "static String constructor");
   }
 
   public static TestObject of(final Double doubleValue) {
-    return new TestObject(-4000, new Double[] {doubleValue}, "static Double constructor");
+    return new TestObject(-4000, new Double[] { doubleValue }, "static Double constructor");
   }
 
   public static TestObject of(final int number) {
@@ -43,19 +46,19 @@ public class TestObject {
   }
 
   public static TestObject of(final int number, final String doubleString) {
-    return new TestObject(number, new Double[] {Double.parseDouble(doubleString)}, "static int, String constructor");
+    return new TestObject(number, new Double[] { Double.parseDouble(doubleString) }, "static int, String constructor");
   }
 
   public static TestObject of(final int number, final Double doubleValue) {
-    return new TestObject(number, new Double[] {doubleValue}, "static int, Double constructor");
+    return new TestObject(number, new Double[] { doubleValue }, "static int, Double constructor");
   }
 
   public static TestObject of(final int number, final Object doubleObject) {
     Double[] doubles = new Double[1];
     if (doubleObject instanceof Number) {
-      doubles = new Double[] {((Number) doubleObject).doubleValue()};
+      doubles = new Double[] { ((Number) doubleObject).doubleValue() };
     } else if (doubleObject instanceof String) {
-      doubles = new Double[] {Double.parseDouble((String) doubleObject)};
+      doubles = new Double[] { Double.parseDouble((String) doubleObject) };
     } else {
       throw new IllegalArgumentException();
     }
@@ -147,9 +150,9 @@ public class TestObject {
   public TestObject(final Object doubleObject) {
     _number = -200;
     if (doubleObject instanceof Number) {
-      _doubles = new Double[] {((Number) doubleObject).doubleValue()};
+      _doubles = new Double[] { ((Number) doubleObject).doubleValue() };
     } else if (doubleObject instanceof String) {
-      _doubles = new Double[] {Double.parseDouble((String) doubleObject)};
+      _doubles = new Double[] { Double.parseDouble((String) doubleObject) };
     } else {
       throw new IllegalArgumentException();
     }
@@ -158,13 +161,13 @@ public class TestObject {
 
   public TestObject(final String doubleString) {
     _number = -300;
-    _doubles = new Double[] {Double.parseDouble(doubleString)};
+    _doubles = new Double[] { Double.parseDouble(doubleString) };
     _name = "String constructor";
   }
 
   public TestObject(final Double doubleValue) {
     _number = -400;
-    _doubles = new Double[] {doubleValue};
+    _doubles = new Double[] { doubleValue };
     _name = "Double constructor";
   }
 
@@ -176,22 +179,22 @@ public class TestObject {
 
   public TestObject(final int number, final String doubleString) {
     _number = number;
-    _doubles = new Double[] {Double.parseDouble(doubleString)};
+    _doubles = new Double[] { Double.parseDouble(doubleString) };
     _name = "int, String constructor";
   }
 
   public TestObject(final int number, final Double doubleValue) {
     _number = number;
-    _doubles = new Double[] {doubleValue};
+    _doubles = new Double[] { doubleValue };
     _name = "int, Double constructor";
   }
 
   public TestObject(final int number, final Object doubleObject) {
     _number = number;
     if (doubleObject instanceof Number) {
-      _doubles = new Double[] {((Number) doubleObject).doubleValue()};
+      _doubles = new Double[] { ((Number) doubleObject).doubleValue() };
     } else if (doubleObject instanceof String) {
-      _doubles = new Double[] {Double.parseDouble((String) doubleObject)};
+      _doubles = new Double[] { Double.parseDouble((String) doubleObject) };
     } else {
       throw new IllegalArgumentException();
     }

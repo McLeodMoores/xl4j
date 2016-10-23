@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.javacode;
 
 import java.lang.reflect.Constructor;
@@ -14,7 +17,9 @@ public class PassthroughConstructorInvoker implements ConstructorInvoker {
 
   /**
    * Constructor.
-   * @param constructor the constructor to call.
+   * 
+   * @param constructor
+   *          the constructor to call.
    */
   public PassthroughConstructorInvoker(final Constructor<?> constructor) {
     _constructor = constructor;
@@ -22,15 +27,16 @@ public class PassthroughConstructorInvoker implements ConstructorInvoker {
 
   /**
    * Actually execute a method, performing the necessary type conversions.
-   * @param arguments the arguments to pass to the method
+   * 
+   * @param arguments
+   *          the arguments to pass to the method
    * @return the value to return to Excel
    */
   @Override
   public XLValue newInstance(final XLValue[] arguments) {
     try {
       return (XLValue) _constructor.newInstance(new Object[] { arguments });
-     } catch (IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | InstantiationException e) {
+    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor", e);
     }
   }
