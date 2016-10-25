@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -16,29 +16,31 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.CONSTRUCTOR })
 public @interface XLConstructor {
-  // CHECKSTYLE:OFF  - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
+  // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
   /**
-   * The name of the user-defined function as used on the worksheet. If this is not specified, the class name
-   * is used.
-   * @return  the name
+   * The name of the user-defined function as used on the worksheet. If this is not specified, the class name is used.
+   * 
+   * @return the name
    */
   String name() default "";
 
   /**
-   * The category this constructor should be registered in.
-   * If this is not specified, it defaults to the class name.
+   * The category this constructor should be registered in. If this is not specified, it defaults to the class name.
+   * 
    * @return the category
    */
   String category() default "";
 
   /**
    * The description of this constructor.
+   * 
    * @return the description
    */
   String description() default "";
 
   /**
    * The help topic.
+   * 
    * @return the help topic
    */
   String helpTopic() default "";

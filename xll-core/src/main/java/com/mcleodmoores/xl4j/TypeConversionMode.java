@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -12,8 +12,8 @@ public enum TypeConversionMode {
    */
   SIMPLEST_RESULT,
   /**
-   * Results should be returned as object handles.  This means you can return e.g. doubles with NaN/Inf, denormals, etc.
-   * with no loss of precision.
+   * Results should be returned as object handles. This means you can return e.g. doubles with NaN/Inf, denormals, etc. with no loss of
+   * precision.
    */
   OBJECT_RESULT,
   /**

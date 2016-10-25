@@ -1,13 +1,12 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
- * Java representation of the xloper type xltypeSRef
- * It represents a reference to a single block of cells on the current sheet.
+ * Java representation of the xloper type xltypeSRef. It represents a reference to a single block of cells on the current sheet.
  */
 public final class XLLocalReference implements XLValue {
 
@@ -19,7 +18,9 @@ public final class XLLocalReference implements XLValue {
 
   /**
    * Static factory method to create an instance of XLLocalReference.
-   * @param range a single contiguous 2D range of cells
+   *
+   * @param range
+   *          a single contiguous 2D range of cells
    * @return an instance of XLLocalReference
    */
   public static XLLocalReference of(final XLRange range) {
@@ -69,6 +70,5 @@ public final class XLLocalReference implements XLValue {
   public String toString() {
     return "XLLocalReference[range=" + _range + "]";
   }
-
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -31,11 +31,13 @@ import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.xl4j.javacode.InvokerFactory;
 import com.mcleodmoores.xl4j.javacode.MethodInvoker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+
 /**
  * Class to scan for @XLFunction annotations and register each function with Excel.
  */
 public class FunctionRegistry {
   private static final Set<String> EXCLUDED_METHOD_NAMES = new HashSet<>();
+
   static {
     EXCLUDED_METHOD_NAMES.add("clone");
     EXCLUDED_METHOD_NAMES.add("equals");
@@ -47,11 +49,13 @@ public class FunctionRegistry {
     EXCLUDED_METHOD_NAMES.add("toString");
     EXCLUDED_METHOD_NAMES.add("wait");
   }
+
   private static final Logger LOGGER = LoggerFactory.getLogger(FunctionRegistry.class);
   // REVIEW: is this the best structure to use?
   private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
   private final Set<ConstructorDefinition> _constructorDefinitions = Collections.synchronizedSet(new HashSet<ConstructorDefinition>());
-  private final Set<ClassConstructorDefinition> _classConstructorDefinitions = Collections.synchronizedSet(new HashSet<ClassConstructorDefinition>());
+  private final Set<ClassConstructorDefinition> _classConstructorDefinitions = Collections
+      .synchronizedSet(new HashSet<ClassConstructorDefinition>());
   private final Set<ClassMethodDefinition> _classMethodDefinitions = Collections.synchronizedSet(new HashSet<ClassMethodDefinition>());
   private final AtomicInteger _exportCounter = new AtomicInteger();
   private final ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
@@ -62,9 +66,12 @@ public class FunctionRegistry {
   private final BlockingQueue<Collection<ClassConstructorDefinition>> _finishedClassConstructorScan = new ArrayBlockingQueue<>(1);
   private final ConcurrentMap<Integer, ClassMethodDefinition> _classMethodDefinitionLookup = new ConcurrentHashMap<>();
   private final BlockingQueue<Collection<ClassMethodDefinition>> _finishedClassMethodScan = new ArrayBlockingQueue<>(1);
+
   /**
    * Default constructor.
-   * @param invokerFactory  invoker factory used to create method and constructor invokers to perform type conversions
+   * 
+   * @param invokerFactory
+   *          invoker factory used to create method and constructor invokers to perform type conversions
    */
   public FunctionRegistry(final InvokerFactory invokerFactory) {
     final Thread scanningThread = new Thread(new ReflectionScanner(invokerFactory));
@@ -72,8 +79,8 @@ public class FunctionRegistry {
   }
 
   /**
-   * Thread (well, Runnable) that scans the annotations in the background and sends the results to registerFunctions,
-   * which will block until the results arrive.  We could make it streaming fairly easily.
+   * Thread (well, Runnable) that scans the annotations in the background and sends the results to registerFunctions, which will block until
+   * the results arrive. We could make it streaming fairly easily.
    */
   private class ReflectionScanner implements Runnable {
     private final InvokerFactory _invokerFactory;
@@ -99,7 +106,9 @@ public class FunctionRegistry {
 
   /**
    * Register functions and constructors.
-   * @param callback the Excel callback interface
+   * 
+   * @param callback
+   *          the Excel callback interface
    */
   public void registerFunctions(final ExcelCallback callback) {
     LOGGER.info("registerFunctions called with {}", callback);
@@ -149,11 +158,9 @@ public class FunctionRegistry {
   }
 
   private void scanAndCreateFunctions(final InvokerFactory invokerFactory) {
-    //TODO: don't limit to our package when scanning for functions. #45
+    // TODO: don't limit to our package when scanning for functions. #45
     final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
-        .addScanners(new MethodAnnotationsScanner(),
-                     new MethodParameterScanner(),
-                     new TypeAnnotationsScanner()));
+        .addScanners(new MethodAnnotationsScanner(), new MethodParameterScanner(), new TypeAnnotationsScanner()));
     final Set<Method> methodsAnnotatedWith = reflections.getMethodsAnnotatedWith(XLFunction.class);
     @SuppressWarnings("rawtypes")
     final Set<Constructor> constructorsAnnotatedWith = reflections.getConstructorsAnnotatedWith(XLConstructor.class);
@@ -228,9 +235,9 @@ public class FunctionRegistry {
           // build the meta-data data structure and store it all in a FunctionDefinition
           final int allocatedExportNumber = allocateExport();
           final ClassMetadata constructorMetadata = ClassMetadata.of(classAnnotation, namespaceAnnotation);
-          final ClassConstructorDefinition constructorDefinition = constructors.length == 1 ?
-              ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, allocatedExportNumber) :
-              ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, constructorNumber, allocatedExportNumber);
+          final ClassConstructorDefinition constructorDefinition = constructors.length == 1
+              ? ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, allocatedExportNumber)
+              : ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, constructorNumber, allocatedExportNumber);
           // put the definition in some look-up tables.
           LOGGER.info("Allocating export number {} to ", allocatedExportNumber, constructorInvoker.getClass().getSimpleName());
           _classConstructorDefinitionLookup.put(allocatedExportNumber, constructorDefinition);
@@ -297,6 +304,7 @@ public class FunctionRegistry {
 
   /**
    * This allocates an export number.
+   * 
    * @return the allocated export number
    */
   private int allocateExport() {
@@ -306,9 +314,10 @@ public class FunctionRegistry {
 
   /**
    * Look up the function definition, from the allocated.
-   * @param exportNumber  the number of the export in the parameter size block
-   * @return the function definition, not null
-   * throws Excel4JRuntimeException if function definition could not be found
+   * 
+   * @param exportNumber
+   *          the number of the export in the parameter size block
+   * @return the function definition, not null throws Excel4JRuntimeException if function definition could not be found
    */
   public FunctionDefinition getFunctionDefinition(final int exportNumber) {
     final FunctionDefinition functionDefinition = _functionDefinitionLookup.get(exportNumber);

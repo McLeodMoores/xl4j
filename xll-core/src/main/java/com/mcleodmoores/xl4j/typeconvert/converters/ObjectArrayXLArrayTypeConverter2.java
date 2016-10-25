@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
@@ -19,9 +19,8 @@ import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Type converter to convert from arrays of Objects to Excel arrays and back again. This converter converts
- * every Java object to an XLObject. If the most specific type is required, {@link ObjectArrayXLArrayTypeConverter}
- * should be used, which is at a higher priority.
+ * Type converter to convert from arrays of Objects to Excel arrays and back again. This converter converts every Java object to an
+ * XLObject. If the most specific type is required, {@link ObjectArrayXLArrayTypeConverter} should be used, which is at a higher priority.
  */
 public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverter {
   /** The priority */
@@ -31,7 +30,9 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
 
   /**
    * Default constructor.
-   * @param excel  the excel context object, used to access the type converter registry, not null
+   * 
+   * @param excel
+   *          the excel context object, used to access the type converter registry, not null
    */
   public ObjectArrayXLArrayTypeConverter2(final Excel excel) {
     super(Object[].class, XLArray.class, PRIORITY);
@@ -52,10 +53,10 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
       // REVIEW: this will never fail because of the isArray() test
       if (componentType == null) {
         throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
-        //REVIEW: why was this commented out? it isn't in the other array tests
-        //      } else if (expectedType instanceof GenericArrayType) {
-        //        final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-        //        componentType = genericArrayType.getGenericComponentType();
+        // REVIEW: why was this commented out? it isn't in the other array tests
+        // } else if (expectedType instanceof GenericArrayType) {
+        // final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
+        // componentType = genericArrayType.getGenericComponentType();
       }
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");

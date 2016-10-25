@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
 import java.lang.reflect.GenericArrayType;
@@ -14,9 +17,9 @@ import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Type converter to convert from arrays of booleans to Excel arrays and back again. The input
- * array from Excel can contain any type of {@link XLValue} (e.g. <code>XLBoolean</code>,
- * <code>XLString("true")</code>) and an attempt will be made to convert this value to a boolean.
+ * Type converter to convert from arrays of booleans to Excel arrays and back again. The input array from Excel can contain any type of
+ * {@link XLValue} (e.g. <code>XLBoolean</code>, <code>XLString("true")</code>) and an attempt will be made to convert this value to a
+ * boolean.
  */
 public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTypeConverter {
   /** The Excel context */
@@ -24,7 +27,9 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
 
   /**
    * Default constructor.
-   * @param excel  the excel context object, used to access the type converter registry, not null
+   * 
+   * @param excel
+   *          the excel context object, used to access the type converter registry, not null
    */
   public PrimitiveBooleanArrayXLArrayTypeConverter(final Excel excel) {
     super(boolean[].class, XLArray.class);
@@ -83,7 +88,7 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
       for (int i = 0; i < arr[0].length; i++) {
         final XLValue val = arr[0][i];
         // This is a rather weak attempt at optimizing converter lookup - other options seemed to have greater overhead.
-        if (lastConverter == null || (!val.getClass().equals(lastClass))) {
+        if (lastConverter == null || !val.getClass().equals(lastClass)) {
           lastClass = val.getClass();
           lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, componentType));
         }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -19,7 +19,9 @@ public enum XLBoolean implements XLValue {
 
   /**
    * Create an XLBoolean from a boolean.
-   * @param value the value to embed
+   * 
+   * @param value
+   *          the value to embed
    * @return an instance
    */
   public static XLBoolean from(final boolean value) {
@@ -31,6 +33,7 @@ public enum XLBoolean implements XLValue {
 
   /**
    * Get the value of the embedded boolean.
+   * 
    * @return the value of the embedded boolean
    */
   public boolean getValue() {

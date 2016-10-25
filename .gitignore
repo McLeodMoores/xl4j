@@ -92,3 +92,14 @@ packages/
 /xll-java/target/
 /xll-examples/target/
 /packaging/target/
+
+# Eclipse
+.settings
+.project
+.classpath
+/xll-core/.settings/
+/xll-examples/.settings/
+/xll-java/.settings/
+/xll-core/.classpath
+/xll-examples/.classpath
+/xll-java/.classpath

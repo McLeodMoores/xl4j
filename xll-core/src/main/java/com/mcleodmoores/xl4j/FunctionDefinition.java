@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -20,9 +20,13 @@ public final class FunctionDefinition {
 
   /**
    * Creates an instance.
-   * @param functionMetadata  the meta-data
-   * @param methodInvoker  the method invoker
-   * @param exportNumber  the export number
+   * 
+   * @param functionMetadata
+   *          the meta-data
+   * @param methodInvoker
+   *          the method invoker
+   * @param exportNumber
+   *          the export number
    */
   private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {
     _functionMetadata = functionMetadata;
@@ -32,9 +36,13 @@ public final class FunctionDefinition {
 
   /**
    * Static factory method to create an instance.
-   * @param functionMetadata  the annotation-based meta-data about the function, not null
-   * @param methodInvoker  the type conversion and method invocation binding for this function, not null
-   * @param exportNumber  the number of the DLL export that handles this function (only unique to the number of parameters used)
+   * 
+   * @param functionMetadata
+   *          the annotation-based meta-data about the function, not null
+   * @param methodInvoker
+   *          the type conversion and method invocation binding for this function, not null
+   * @param exportNumber
+   *          the number of the DLL export that handles this function (only unique to the number of parameters used)
    * @return an instance of a FunctionDefinition
    */
   public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {

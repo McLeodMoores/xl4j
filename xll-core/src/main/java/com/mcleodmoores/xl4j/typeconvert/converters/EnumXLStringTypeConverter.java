@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
 import java.lang.reflect.Type;
@@ -8,8 +11,8 @@ import com.mcleodmoores.xl4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.xl4j.values.XLString;
 
 /**
- * Type converter for general objects into XLObject handles.  Note the lower priority,
- * which means all the other converters get a crack at doing something nicer first.
+ * Type converter for general objects into XLObject handles. Note the lower priority, which means all the other converters get a crack at
+ * doing something nicer first.
  */
 public class EnumXLStringTypeConverter extends AbstractTypeConverter {
   /** The converter priority */

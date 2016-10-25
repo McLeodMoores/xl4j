@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.heap;
 
 import java.net.NetworkInterface;
@@ -32,7 +35,7 @@ public class Heap {
   private long _snapHandle;
   private int _maxCollectionCount = 3;
 
-  //TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
+  // TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
   /**
    * Construct a heap.
    */
@@ -70,7 +73,9 @@ public class Heap {
 
   /**
    * Get a handle for an object, or allocate one if not currently in the heap.
-   * @param object the object to store
+   *
+   * @param object
+   *          the object to store
    * @return the object's handle
    */
   public long getHandle(final Object object) {
@@ -94,12 +99,13 @@ public class Heap {
         return newKey;
       }
     }
-
   }
 
   /**
    * Get an object, given the handle.
-   * @param handle the handle for the object
+   *
+   * @param handle
+   *          the handle for the object
    * @return the object referred to by the handle
    */
   public Object getObject(final long handle) {
@@ -107,7 +113,7 @@ public class Heap {
     if (object != null) {
       return object;
     } else {
-      throw new Excel4JRuntimeException("Cannot find object with handle " + Long.toUnsignedString(handle));
+      throw new Excel4JRuntimeException("Cannot find object with handle " + handle);
     }
   }
 
@@ -158,7 +164,8 @@ public class Heap {
 
   /**
    *
-   * @param activeHandles  list of identifiers for objects that have been seen since the last snap
+   * @param activeHandles
+   *          list of identifiers for objects that have been seen since the last snap
    * @return the number of handles created since the last snap, gives measure of churn to adjust GC frequency
    */
   public long cycleGC(final long[] activeHandles) {

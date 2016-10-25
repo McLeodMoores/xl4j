@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.xll;
 
@@ -16,6 +16,7 @@ import com.mcleodmoores.xl4j.lowlevel.LowLevelExcelCallback;
  */
 public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   private static final Logger LOGGER = LoggerFactory.getLogger(XLLAccumulatingFunctionRegistry.class);
+
   /**
    * Native accessed data structure (public fields for speed).
    */
@@ -42,9 +43,8 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   @Override
   // CHECKSTYLE:OFF can't control signature.
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final String functionSignature,
-      final String functionWorksheetName, final String argumentNames, final int functionType,
-      final String functionCategory, final String acceleratorKey, final String helpTopic,
-      final String description, final String... argsHelp) {
+      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
+      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final LowLevelEntry entry = new LowLevelEntry();
     entry._exportNumber = exportNumber;
     entry._functionExportName = functionExportName;
@@ -68,6 +68,9 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     return 0;
   }
 
+  /**
+   * @return the function entries
+   */
   public LowLevelEntry[] getEntries() {
     final LowLevelEntry[] array = _entries.toArray(new LowLevelEntry[] {});
     LOGGER.info("getEntries() called, returning {} items", array.length);

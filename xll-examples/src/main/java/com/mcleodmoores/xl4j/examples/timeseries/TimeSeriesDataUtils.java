@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
@@ -34,11 +34,13 @@ public final class TimeSeriesDataUtils {
   }
 
   /**
-   * Creates a new time series any null values filled with values from the previous date. If the first value in the time series
-   * is null, throws an exception, as there is no value that can be inserted. This function pads multiple missing values, so
-   * the result contains no null values.
-   * @param xlTimeSeries  the Excel time series object, not null
-   * @return  a time series with missing values filled with the previous value
+   * Creates a new time series any null values filled with values from the previous date. If the first value in the time series is null,
+   * throws an exception, as there is no value that can be inserted. This function pads multiple missing values, so the result contains no
+   * null values.
+   *
+   * @param xlTimeSeries
+   *          the Excel time series object, not null
+   * @return a time series with missing values filled with the previous value
    */
   @XLFunction(name = "FillTimeSeriesWithPreviousValue",
               description = "Fill missing values in a time series with the previous value",
@@ -64,11 +66,13 @@ public final class TimeSeriesDataUtils {
   }
 
   /**
-   * Creates a new time series with any negative values replaced with nulls or removed from the time series, depending
-   * on the option.
-   * @param xlTimeSeries  the Excel time series object, not null
-   * @param removeNegativeValues  if true, removes the negative date and value, otherwise replaces the value for that date with null
-   * @return  a time series with negative values removed and replaced with null
+   * Creates a new time series with any negative values replaced with nulls or removed from the time series, depending on the option.
+   *
+   * @param xlTimeSeries
+   *          the Excel time series object, not null
+   * @param removeNegativeValues
+   *          if true, removes the negative date and value, otherwise replaces the value for that date with null
+   * @return a time series with negative values removed and replaced with null
    */
   @XLFunction(name = "FilterNegativeValues",
               description = "Remove negative values in a time series",
@@ -102,9 +106,12 @@ public final class TimeSeriesDataUtils {
 
   /**
    * Creates a new time series with any values that lie in the range +/- 1E-9 replaced with nulls.
-   * @param xlTimeSeries  the Excel time series object, not null
-   * @param removeZeroes  if true, removes the zero date and value, otherwise replaces the value for that date with null
-   * @return  a time series with zero values removed and replaced with null
+   *
+   * @param xlTimeSeries
+   *          the Excel time series object, not null
+   * @param removeZeroes
+   *          if true, removes the zero date and value, otherwise replaces the value for that date with null
+   * @return a time series with zero values removed and replaced with null
    */
   @XLFunction(name = "FilterZeroes",
               description = "Remove values that lie in the range +/-1E-9",
@@ -116,10 +123,14 @@ public final class TimeSeriesDataUtils {
 
   /**
    * Creates a new time series with any values that equal zero to within a tolerance replaced with nulls.
-   * @param xlTimeSeries  the Excel time series object, not null
-   * @param tolerance  the tolerance, must be positive
-   * @param removeZeroes  if true, removes the zero date and value, otherwise replaces the value for that date with null
-   * @return  a time series with zero values removed and replaced with null
+   *
+   * @param xlTimeSeries
+   *          the Excel time series object, not null
+   * @param tolerance
+   *          the tolerance, must be positive
+   * @param removeZeroes
+   *          if true, removes the zero date and value, otherwise replaces the value for that date with null
+   * @return a time series with zero values removed and replaced with null
    */
   @XLFunction(name = "FilterZeroes",
               description = "Remove values that lie in the range +/-tolerance",
@@ -154,25 +165,29 @@ public final class TimeSeriesDataUtils {
     return TimeSeries.of(dateList.toArray(new LocalDate[dateList.size()]), valueList.toArray(new Double[dateList.size()]));
   }
 
-
   /**
-   * Creates a new time series containing sampled values of the original at a given frequency. If there is no value
-   * for a sampling date, the value can either be null or the point not added to the sampled series, depending on the option.
-   * If fromStart is true, the sampling starts at the beginning of the series, otherwise it is performed back through the
-   * dates.
+   * Creates a new time series containing sampled values of the original at a given frequency. If there is no value for a sampling date, the
+   * value can either be null or the point not added to the sampled series, depending on the option. If fromStart is true, the sampling
+   * starts at the beginning of the series, otherwise it is performed back through the dates.
    * <p>
    * The sampled series is the same as the original if daily sampling is selected, as the granularity of time series is daily.
-   * @param xlTimeSeries  the Excel time series object, not null
-   * @param samplingType  the sampling type, not null
-   * @param fromStart  if true, sampling is performed forward in time
-   * @param removeMissing  if true, missing values are removed, otherwise a null value is added for the date
-   * @return  a sampled series
+   *
+   * @param xlTimeSeries
+   *          the Excel time series object, not null
+   * @param samplingType
+   *          the sampling type, not null
+   * @param fromStart
+   *          if true, sampling is performed forward in time
+   * @param removeMissing
+   *          if true, missing values are removed, otherwise a null value is added for the date
+   * @return a sampled series
    */
   @XLFunction(name = "Sample",
               description = "Sample time series",
               category = "Time series",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries sample(final XLObject xlTimeSeries, final XLString samplingType, final XLBoolean fromStart, final XLBoolean removeMissing) {
+  public static TimeSeries sample(final XLObject xlTimeSeries, final XLString samplingType, final XLBoolean fromStart,
+      final XLBoolean removeMissing) {
     ArgumentChecker.notNull(xlTimeSeries, "xlTimeSeries");
     ArgumentChecker.notNull(samplingType, "samplingType");
     ArgumentChecker.notNull(fromStart, "fromStart");
@@ -208,7 +223,8 @@ public final class TimeSeriesDataUtils {
         if (forward) {
           startDate = firstDate.with(TemporalAdjusters.lastDayOfMonth());
         } else {
-          startDate = lastDate.getDayOfMonth() == lastDate.lengthOfMonth() ? lastDate : lastDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+          startDate = lastDate.getDayOfMonth() == lastDate.lengthOfMonth() ? lastDate
+              : lastDate.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         }
         return sampleSeries(ts, startDate, forward, remove, Period.ofMonths(1), TemporalAdjusters.lastDayOfMonth());
       }
@@ -219,7 +235,8 @@ public final class TimeSeriesDataUtils {
       case START_OF_YEAR: {
         LocalDate startDate;
         if (forward) {
-          startDate = firstDate.getMonthValue() == 1 && firstDate.getDayOfMonth() == 1 ? firstDate : firstDate.with(TemporalAdjusters.firstDayOfNextYear());
+          startDate = firstDate.getMonthValue() == 1 && firstDate.getDayOfMonth() == 1 ? firstDate
+              : firstDate.with(TemporalAdjusters.firstDayOfNextYear());
         } else {
           startDate = lastDate.with(TemporalAdjusters.firstDayOfYear());
         }
@@ -231,8 +248,8 @@ public final class TimeSeriesDataUtils {
           startDate = firstDate.with(TemporalAdjusters.lastDayOfYear());
         } else {
           // shouldn't really hard-code 12 in here, but it's for examples
-          startDate = lastDate.getMonthValue() == 12 && lastDate.getDayOfMonth() == lastDate.lengthOfMonth()
-              ? lastDate : lastDate.minusYears(1).with(TemporalAdjusters.lastDayOfYear());
+          startDate = lastDate.getMonthValue() == 12 && lastDate.getDayOfMonth() == lastDate.lengthOfMonth() ? lastDate
+              : lastDate.minusYears(1).with(TemporalAdjusters.lastDayOfYear());
         }
         return sampleSeries(ts, startDate, forward, remove, Period.ofYears(1), TemporalAdjusters.lastDayOfYear());
       }
@@ -243,13 +260,20 @@ public final class TimeSeriesDataUtils {
 
   /**
    * Samples the time series.
-   * @param ts  the time series
-   * @param startDate  the date from which to start counting forwards or backwards
-   * @param start  true to sample forward through time
-   * @param removeMissing  true to excluding points with missing values from the result
-   * @param amount  the amount by which to adjust the time
-   * @param adjuster  the date adjuster
-   * @return  a sampled series
+   *
+   * @param ts
+   *          the time series
+   * @param startDate
+   *          the date from which to start counting forwards or backwards
+   * @param start
+   *          true to sample forward through time
+   * @param removeMissing
+   *          true to excluding points with missing values from the result
+   * @param amount
+   *          the amount by which to adjust the time
+   * @param adjuster
+   *          the date adjuster
+   * @return a sampled series
    */
   private static TimeSeries sampleSeries(final TimeSeries ts, final LocalDate startDate, final boolean start, final boolean removeMissing,
       final TemporalAmount amount, final TemporalAdjuster adjuster) {
@@ -257,7 +281,7 @@ public final class TimeSeriesDataUtils {
     final List<Double> values = new ArrayList<>();
     final int size = ts.size();
     if (start) {
-      LocalDate date = startDate; //adjuster == null ? ts.getDate(0) : ts.getDate(0).with(adjuster);
+      LocalDate date = startDate; // adjuster == null ? ts.getDate(0) : ts.getDate(0).with(adjuster);
       final LocalDate lastDate = ts.getDate(size - 1);
       while (!date.isAfter(lastDate)) {
         final int index = ts.indexOf(date);
@@ -278,7 +302,7 @@ public final class TimeSeriesDataUtils {
       }
       return TimeSeries.of(dates.toArray(new LocalDate[dates.size()]), values.toArray(new Double[dates.size()]));
     }
-    LocalDate date = startDate; //adjuster == null ? ts.getDate(size - 1) : ts.getDate(size - 1).with(adjuster);
+    LocalDate date = startDate; // adjuster == null ? ts.getDate(size - 1) : ts.getDate(size - 1).with(adjuster);
     final LocalDate firstDate = ts.getDate(0);
     while (!date.isBefore(firstDate)) {
       final int index = ts.indexOf(date);

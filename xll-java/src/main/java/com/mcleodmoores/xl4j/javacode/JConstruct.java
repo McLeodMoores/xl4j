@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.javacode;
 
@@ -28,26 +28,30 @@ public final class JConstruct {
 
   private JConstruct() {
   }
+
   /**
    * Construct an instance of a class.
-   * @param className the name of the class, either fully qualified or with a registered short name
-   * @param args a vararg list of arguments
+   *
+   * @param className
+   *          the name of the class, either fully qualified or with a registered short name
+   * @param args
+   *          a vararg list of arguments
    * @return the constructed object
    */
   @XLFunction(name = "Construct",
-      description = "Construct a named Java class instance",
-      category = "Java",
-      typeConversionMode = TypeConversionMode.PASSTHROUGH)
+              description = "Construct a named Java class instance",
+              category = "Java",
+              typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static XLValue jconstruct(
       @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
       @XLArgument(name = "args", description = "") final XLValue... args) {
     try {
       final Excel excelFactory = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      final ConstructorInvoker[] constructorTypeConverters =
-          invokerFactory.getConstructorTypeConverter(resolveClass(className), TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
+      final ConstructorInvoker[] constructorTypeConverters = invokerFactory.getConstructorTypeConverter(resolveClass(className),
+          TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       int i = 0;
-      //TODO remove any constructor with Object or Object[] types and try them last?
+      // TODO remove any constructor with Object or Object[] types and try them last?
       for (; i < constructorTypeConverters.length; i++) {
         final ConstructorInvoker constructorTypeConverter = constructorTypeConverters[i];
         if (constructorTypeConverter == null) {
@@ -87,8 +91,7 @@ public final class JConstruct {
 
   private static Class<? extends XLValue>[] getArgTypes(final XLValue... args) {
     @SuppressWarnings("unchecked")
-    final
-    Class<? extends XLValue>[] result = new Class[args.length];
+    final Class<? extends XLValue>[] result = new Class[args.length];
     for (int i = 0; i < args.length; i++) {
       result[i] = args[i].getClass();
     }
@@ -96,8 +99,9 @@ public final class JConstruct {
   }
 
   /**
-   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String).
-   * Note this is duplicated in JMethod
+   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String). Note this is duplicated in
+   * JMethod
+   *
    * @param className
    * @return a resolved class
    * @throws ClassNotFoundException

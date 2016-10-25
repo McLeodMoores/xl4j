@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j;
 
@@ -16,8 +16,11 @@ public final class ClassMetadata {
 
   /**
    * Creates an instance.
-   * @param classSpec  the class annotation
-   * @param namespace  the namespace
+   * 
+   * @param classSpec
+   *          the class annotation
+   * @param namespace
+   *          the namespace
    */
   private ClassMetadata(final XLClass classSpec, final XLNamespace namespace) {
     _classSpec = classSpec;
@@ -26,9 +29,12 @@ public final class ClassMetadata {
 
   /**
    * Create an instance given a namespace, constructor specification and arguments.
-   * @param classSpec  an XLClass annotation, not null
-   * @param namespace  an XLNamespace annotation or null if no name space
-   * @return  an instance of a ClassMetadata
+   * 
+   * @param classSpec
+   *          an XLClass annotation, not null
+   * @param namespace
+   *          an XLNamespace annotation or null if no name space
+   * @return an instance of a ClassMetadata
    */
   public static ClassMetadata of(final XLClass classSpec, final XLNamespace namespace) {
     ArgumentChecker.notNull(classSpec, "classSpec");
@@ -36,14 +42,14 @@ public final class ClassMetadata {
   }
 
   /**
-   * @return  the XLClass annotation, not null
+   * @return the XLClass annotation, not null
    */
   public XLClass getClassSpec() {
     return _classSpec;
   }
 
   /**
-   * @return  the XLNamespace annotation or null if no namespace
+   * @return the XLNamespace annotation or null if no namespace
    */
   public XLNamespace getNamespace() {
     return _namespace;

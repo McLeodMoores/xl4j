@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -7,15 +7,14 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 
 /**
- * Represents a single rectangular range in Excel.  
- * This class is usually passed into the factory method (of()) of XLLocalReference or XLMultiReference.
- * Note that this class lives outside the XLValue hierarchy, but is used as arguments to some of it's factory methods.
+ * Represents a single rectangular range in Excel. This class is usually passed into the factory method (of()) of XLLocalReference or
+ * XLMultiReference. Note that this class lives outside the XLValue hierarchy, but is used as arguments to some of it's factory methods.
  */
 public final class XLRange {
-  private int _rowFirst;
-  private int _rowLast;
-  private int _columnFirst;
-  private int _columnLast;
+  private final int _rowFirst;
+  private final int _rowLast;
+  private final int _columnFirst;
+  private final int _columnLast;
 
   private XLRange(final int rowFirst, final int rowLast, final int columnFirst, final int columnLast) {
     _rowFirst = rowFirst;
@@ -23,13 +22,18 @@ public final class XLRange {
     _columnFirst = columnFirst;
     _columnLast = columnLast;
   }
-  
+
   /**
    * Static factory method for creating ranges.
-   * @param rowFirst the first row in the range.
-   * @param rowLast the last row in the range.
-   * @param columnFirst the first column in the range.
-   * @param columnLast the last column in the range.
+   * 
+   * @param rowFirst
+   *          the first row in the range.
+   * @param rowLast
+   *          the last row in the range.
+   * @param columnFirst
+   *          the first column in the range.
+   * @param columnLast
+   *          the last column in the range.
    * @return an instance representing the range.
    */
   public static XLRange of(final int rowFirst, final int rowLast, final int columnFirst, final int columnLast) {
@@ -45,11 +49,14 @@ public final class XLRange {
     }
     return new XLRange(rowFirst, rowLast, columnFirst, columnLast);
   }
-  
+
   /**
    * Static factory method for creating ranges of just a single cell.
-   * @param row the row
-   * @param column the column
+   * 
+   * @param row
+   *          the row
+   * @param column
+   *          the column
    * @return an instance representing the range.
    */
   public static XLRange ofCell(final int row, final int column) {
@@ -57,7 +64,7 @@ public final class XLRange {
     ArgumentChecker.notNegative(column, "column");
     return new XLRange(row, row, column, column);
   }
-  
+
   /**
    * @return the rowFirst
    */
@@ -85,27 +92,27 @@ public final class XLRange {
   public int getColumnLast() {
     return _columnLast;
   }
-  
+
   /**
    * @return true, if the range is a single column or single cell
    */
   public boolean isSingleColumn() {
     return _columnFirst == _columnLast;
   }
-  
+
   /**
    * @return true, if the range is a single row or single cell
    */
   public boolean isSingleRow() {
     return _rowFirst == _rowLast;
   }
-  
+
   /**
    * @return true, if the range is for a single cell
    */
   public boolean isSingleCell() {
     return _rowFirst == _rowLast && _columnFirst == _columnLast;
-  }  
+  }
 
   @Override
   public int hashCode() {
@@ -129,7 +136,7 @@ public final class XLRange {
     if (!(obj instanceof XLRange)) {
       return false;
     }
-    XLRange other = (XLRange) obj;
+    final XLRange other = (XLRange) obj;
     if (_columnFirst != other._columnFirst) {
       return false;
     }
@@ -158,5 +165,5 @@ public final class XLRange {
     }
     return "XLRange[Range rows=" + _rowFirst + " to " + _rowLast + ", columns=" + _columnFirst + " to " + _columnLast + "]";
   }
-  
+
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -10,9 +10,8 @@ import java.util.List;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
- * Java representation of the xloper type xltypeRef (aka xltypeMRef).
- * This is usually preferable over XLLocalReference even if you're not referring
- * to multiple ranges because it's keyed to a particular sheetId.
+ * Java representation of the xloper type xltypeRef (aka xltypeMRef). This is usually preferable over XLLocalReference even if you're not
+ * referring to multiple ranges because it's keyed to a particular sheetId.
  */
 public final class XLMultiReference implements XLValue {
 
@@ -26,8 +25,11 @@ public final class XLMultiReference implements XLValue {
 
   /**
    * Static factory method to create an instance of XLReference.
-   * @param sheetId the worksheet ID
-   * @param range a single contiguous 2D range of cells
+   * 
+   * @param sheetId
+   *          the worksheet ID
+   * @param range
+   *          a single contiguous 2D range of cells
    * @return an instance of XLLocalReference
    */
   public static XLMultiReference of(final XLSheetId sheetId, final XLRange range) {
@@ -38,8 +40,11 @@ public final class XLMultiReference implements XLValue {
 
   /**
    * Static factory method to create an instance of XLReference.
-   * @param sheetId the worksheet ID
-   * @param ranges a list of contiguous 2D range of cells
+   * 
+   * @param sheetId
+   *          the worksheet ID
+   * @param ranges
+   *          a list of contiguous 2D range of cells
    * @return an instance of XLReference
    */
   public static XLMultiReference of(final XLSheetId sheetId, final List<XLRange> ranges) {
@@ -50,8 +55,11 @@ public final class XLMultiReference implements XLValue {
 
   /**
    * Static factory method to create an instance of XLReference.
-   * @param sheetId the worksheet ID
-   * @param ranges a vararg of contiguous 2D range of cells
+   * 
+   * @param sheetId
+   *          the worksheet ID
+   * @param ranges
+   *          a vararg of contiguous 2D range of cells
    * @return an instance of XLReference
    */
   public static XLMultiReference of(final XLSheetId sheetId, final XLRange... ranges) {

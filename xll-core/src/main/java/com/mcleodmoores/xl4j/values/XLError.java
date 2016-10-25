@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -9,8 +9,8 @@ package com.mcleodmoores.xl4j.values;
 public enum XLError implements XLValue {
   // NOTE: if you re-order these fields, you will need to change code on the native side (in CCallExecutor::convert)
   /**
-   * #NULL! errors occur when cell references are separated incorrectly within a formula.
-   * A common cause is a space between references rather than an operator or a colon (for ranges)
+   * #NULL! errors occur when cell references are separated incorrectly within a formula. A common cause is a space between references
+   * rather than an operator or a colon (for ranges)
    */
   Null,
   /**
@@ -22,8 +22,7 @@ public enum XLError implements XLValue {
    */
   Value,
   /**
-   * #REF! errors occur when a formula contains invalid cell references, often caused by deleted data
-   * or cut and pasted cells.
+   * #REF! errors occur when a formula contains invalid cell references, often caused by deleted data or cut and pasted cells.
    */
   Ref,
   /**
@@ -31,8 +30,8 @@ public enum XLError implements XLValue {
    */
   Name,
   /**
-   * #NUM! errors occur when a calculation yields a number that is outside of what Excel can represent.  This includes
-   * Infinities and NaNs (although sub-normals are truncated to 0 instead).
+   * #NUM! errors occur when a calculation yields a number that is outside of what Excel can represent. This includes Infinities and NaNs
+   * (although sub-normals are truncated to 0 instead).
    */
   Num,
   /**

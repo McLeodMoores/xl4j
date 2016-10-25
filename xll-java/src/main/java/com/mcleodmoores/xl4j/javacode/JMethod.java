@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.javacode;
 
@@ -33,9 +33,13 @@ public final class JMethod {
 
   /**
    * Invoke a method on a class, converting the result to an Excel type if possible.
-   * @param objectReference the object reference
-   * @param methodName the name of the method
-   * @param args a vararg list of arguments
+   *
+   * @param objectReference
+   *          the object reference
+   * @param methodName
+   *          the name of the method
+   * @param args
+   *          a vararg list of arguments
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "Method",
@@ -43,24 +47,25 @@ public final class JMethod {
               category = "Java",
               typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethod(@XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
-                        @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
-                        @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
+      @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
+      @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excel.getInvokerFactory();
       final Heap heap = excel.getHeap();
       final Object object = heap.getObject(objectReference.getHandle());
       final Class<?> clazz = object.getClass();
-      final MethodInvoker[] methodTypeConverters =
-          invokerFactory.getMethodTypeConverter(clazz, methodName, TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
+      final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(clazz, methodName,
+          TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
       int i = 0;
-      //TODO remove any method with Object or Object[] types and try them last?
+      // TODO remove any method with Object or Object[] types and try them last?
       for (; i < methodTypeConverters.length; i++) {
         final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
-            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
+                Arrays.toString(args));
             return XLError.Null;
           }
           // go to where it will try any methods that are at the end of the array
@@ -84,7 +89,8 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
+          Arrays.toString(args));
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", objectReference.getClazz());
@@ -94,37 +100,39 @@ public final class JMethod {
 
   /**
    * Invoke a method on a class, leaving the result as an object reference.
-   * @param objectReference the object reference
-   * @param methodName the name of the method
-   * @param args a vararg list of arguments
+   *
+   * @param objectReference
+   *          the object reference
+   * @param methodName
+   *          the name of the method
+   * @param args
+   *          a vararg list of arguments
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "MethodX",
               description = "Call a named Java method",
               category = "Java",
               typeConversionMode = TypeConversionMode.PASSTHROUGH)
-  public static Object jMethodX(@XLArgument(name = "object reference", description = "The object reference")
-                               final XLObject objectReference,
-                               @XLArgument(name = "method name", description = "The method name without parentheses")
-                               final XLString methodName,
-                               @XLArgument(name = "args", description = "the method arguments")
-                               final XLValue... args) {
+  public static Object jMethodX(@XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
+      @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
+      @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excel.getInvokerFactory();
       final Heap heap = excel.getHeap();
       final Object object = heap.getObject(objectReference.getHandle());
       final Class<?> clazz = object.getClass();
-      final MethodInvoker[] methodTypeConverters =
-          invokerFactory.getMethodTypeConverter(clazz, methodName, TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
+      final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(clazz, methodName,
+          TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       int i = 0;
-      //TODO remove any method with Object or Object[] types and try them last?
+      // TODO remove any method with Object or Object[] types and try them last?
       for (; i < methodTypeConverters.length; i++) {
         final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
-            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
+                Arrays.toString(args));
             return XLError.Null;
           }
           // go to where it will try any methods that are at the end of the array
@@ -148,7 +156,8 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), Arrays.toString(args));
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
+          Arrays.toString(args));
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", objectReference.getClazz());
@@ -158,34 +167,37 @@ public final class JMethod {
 
   /**
    * Invoke a static method on a class, converting the result to an Excel type if possible.
-   * @param className the name of the class, either fully qualified or with a registered short name
-   * @param methodName the name of the method
-   * @param args a vararg list of arguments
+   *
+   * @param className
+   *          the name of the class, either fully qualified or with a registered short name
+   * @param methodName
+   *          the name of the method
+   * @param args
+   *          a vararg list of arguments
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "StaticMethod",
               description = "Call a named Java method",
               category = "Java",
               typeConversionMode = TypeConversionMode.PASSTHROUGH)
-  public static Object jStaticMethod(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered")
-                           final XLString className,
-                           @XLArgument(name = "method name", description = "The method name without parentheses")
-                           final XLString methodName,
-                           @XLArgument(name = "args", description = "the method arguments")
-                           final XLValue... args) {
+  public static Object jStaticMethod(
+      @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
+      @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
+      @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excel.getInvokerFactory();
-      final MethodInvoker[] methodTypeConverters =
-          invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
+      final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName,
+          TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
       int i = 0;
-      //TODO remove any method with Object or Object[] types and try them last?
+      // TODO remove any method with Object or Object[] types and try them last?
       for (; i < methodTypeConverters.length; i++) {
         final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
-            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(), Arrays.toString(args));
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(),
+                Arrays.toString(args));
             return XLError.Null;
           }
           // go to where it will try any methods that are at the end of the array
@@ -219,34 +231,37 @@ public final class JMethod {
 
   /**
    * Invoke a static method on a class, leaving the result as an object reference.
-   * @param className the name of the class, either fully qualified or with a registered short name
-   * @param methodName the name of the method
-   * @param args a vararg list of arguments
+   *
+   * @param className
+   *          the name of the class, either fully qualified or with a registered short name
+   * @param methodName
+   *          the name of the method
+   * @param args
+   *          a vararg list of arguments
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "StaticMethodX",
               description = "Call a named Java method",
               category = "Java",
               typeConversionMode = TypeConversionMode.PASSTHROUGH)
-  public static Object jStaticMethodX(@XLArgument(name = "class name", description = "The class name, fully qualified or short if registered")
-                           final XLString className,
-                           @XLArgument(name = "method name", description = "The method name without parentheses")
-                           final XLString methodName,
-                           @XLArgument(name = "args", description = "the method arguments")
-                           final XLValue... args) {
+  public static Object jStaticMethodX(
+      @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
+      @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
+      @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excel.getInvokerFactory();
-      final MethodInvoker[] methodTypeConverters =
-          invokerFactory.getMethodTypeConverter(resolveClass(className), methodName, TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
+      final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(resolveClass(className), methodName,
+          TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       int i = 0;
-      //TODO remove any method with Object or Object[] types and try them last?
+      // TODO remove any method with Object or Object[] types and try them last?
       for (; i < methodTypeConverters.length; i++) {
         final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
-            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(), Arrays.toString(args));
+            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(),
+                Arrays.toString(args));
             return XLError.Null;
           }
           // go to where it will try any methods that are at the end of the array
@@ -280,8 +295,7 @@ public final class JMethod {
 
   private static Class<? extends XLValue>[] getArgTypes(final XLValue... args) {
     @SuppressWarnings("unchecked")
-    final
-    Class<? extends XLValue>[] result = new Class[args.length];
+    final Class<? extends XLValue>[] result = new Class[args.length];
     for (int i = 0; i < args.length; i++) {
       result[i] = args[i].getClass();
     }
@@ -289,8 +303,9 @@ public final class JMethod {
   }
 
   /**
-   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String).
-   * Note this is duplicated in JConstruct
+   * This is a separate method so we can do shorthand lookups later on (e.g. String instead of java.util.String). Note this is duplicated in
+   * JConstruct
+   *
    * @param className
    * @return a resolved class
    * @throws ClassNotFoundException

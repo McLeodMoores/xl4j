@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.simulator;
 
@@ -15,27 +15,17 @@ import com.mcleodmoores.xl4j.values.XLReference;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Represents a mock Excel process and it's own internal storage of function definitions, not to be confused with
- * FunctionRegistry, which stores the definitions on the Java side.
+ * Represents a mock Excel process and it's own internal storage of function definitions, not to be confused with FunctionRegistry, which
+ * stores the definitions on the Java side.
  */
 public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   private final ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>();
 
   // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
-  public int xlfRegister(
-      final int exportNumber,
-      final String functionExportName,
-      final boolean isVarArgs,
-      final String functionSignature,
-      final String functionWorksheetName,
-      final String argumentNames,
-      final int functionType,
-      final String functionCategory,
-      final String acceleratorKey,
-      final String helpTopic,
-      final String description,
-      final String... argsHelp) {
+  public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final String functionSignature,
+      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
+      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final Method method = getMethod(functionExportName, argumentNames);
     final String[] argNames = getArgumentNames(argumentNames);
     final Class<?>[] argumentTypes = getArgumentTypes(functionSignature);
@@ -47,11 +37,11 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     // REVIEW: t might be a mistake to make isVolatile based on isMacroEquivalent here because we haven't elsewhere.
     final boolean isVolatile = isMacroEquivalent || functionSignature.endsWith("!");
     final boolean isMultiThreadSafe = functionSignature.endsWith("$");
-    //XLResultType resultType = functionSignature.startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
-    final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile,
-        isMacroEquivalent, isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
-    final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType,
-        argumentsHelp, description.toString(), functionAttributes, method);
+    // XLResultType resultType = functionSignature.startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
+    final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, isMacroEquivalent,
+        isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
+    final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType, argumentsHelp,
+        description.toString(), functionAttributes, method);
     final FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName, functionEntry);
     if (existing == null) {
       return functionWorksheetName.hashCode();
@@ -62,7 +52,9 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
 
   /**
    * Get the function entry for the named function.
-   * @param functionName the function name
+   *
+   * @param functionName
+   *          the function name
    * @return the function entry containing all the registration information
    */
   public FunctionEntry getFunctionEntry(final String functionName) {
@@ -70,34 +62,22 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   }
 
   /**
-   * @param functionType either an XLString or XLInteger containing 1 or 2 (1=Function, 2=Command
+   * @param functionType
+   *          either an XLString or XLInteger containing 1 or 2 (1=Function, 2=Command
    * @return an XLFunctionType instance
    */
-  private FunctionType getFunctionType(final int functionType) {
-//    if (functionType instanceof XLString) {
-//      XLString xlString = (XLString) functionType;
-//      if (xlString.getValue().equals("1")) {
-//        return FunctionType.FUNCTION;
-//      } else if (xlString.getValue().equals("2")) {
-//        return FunctionType.COMMAND;
-//      } else {
-//        throw new Excel4JRuntimeException("Unknown function type " + functionType);
-//      }
- //   } else if (functionType instanceof XLInteger) {
- //     XLInteger xlInteger = (XLInteger) functionType;
-      switch (functionType) {
-        case 0:
-          return FunctionType.FUNCTION;
-        case 1:
-          return FunctionType.COMMAND;
-        default:
-          throw new Excel4JRuntimeException("Unknown function type " + functionType);
-      }
-//    }
-//    throw new Excel4JRuntimeException("Unknown function type " + functionType);
+  private static FunctionType getFunctionType(final int functionType) {
+    switch (functionType) {
+      case 0:
+        return FunctionType.FUNCTION;
+      case 1:
+        return FunctionType.COMMAND;
+      default:
+        throw new Excel4JRuntimeException("Unknown function type " + functionType);
+    }
   }
 
-  private String[] getArgumentsHelp(final String[] argsHelp) {
+  private static String[] getArgumentsHelp(final String[] argsHelp) {
     final String[] results = new String[argsHelp.length];
     for (int i = 0; i < argsHelp.length; i++) {
       if (argsHelp[i] != null) {
@@ -108,7 +88,8 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     }
     return results;
   }
-  private Class<?> getReturnType(final String functionSignature) {
+
+  private static Class<?> getReturnType(final String functionSignature) {
     final char returnCode = functionSignature.charAt(0);
     switch (returnCode) {
       case 'T':
@@ -124,7 +105,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     }
   }
 
-  private Class<?>[] getArgumentTypes(final String functionSignature) {
+  private static Class<?>[] getArgumentTypes(final String functionSignature) {
     final char[] functionSig = functionSignature.toCharArray();
     boolean special;
     switch (functionSig[functionSig.length - 1]) {
@@ -138,7 +119,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
         break;
     }
     final int length = functionSig.length - (special ? 2 : 1);
-    final Class<?>[] results  = new Class<?>[length];
+    final Class<?>[] results = new Class<?>[length];
     // -1 if not special (omit return type), -2 if special (omit return type and special char)
     for (int i = 0; i < length; i++) {
       switch (functionSig[i + 1]) { // skip the return type
@@ -153,11 +134,11 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     return results;
   }
 
-  private String[] getArgumentNames(final String argumentNames) {
+  private static String[] getArgumentNames(final String argumentNames) {
     return argumentNames.split(",");
   }
 
-  private Method getMethod(final String functionExportName, final String argumentNames) {
+  private static Method getMethod(final String functionExportName, final String argumentNames) {
     final int numArgs = argumentNames.split(",").length;
     final Class<?>[] parameterTypes = new Class[numArgs];
     for (int i = 0; i < numArgs; i++) {

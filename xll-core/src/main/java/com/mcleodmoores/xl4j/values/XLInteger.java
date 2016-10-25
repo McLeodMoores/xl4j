@@ -1,11 +1,10 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
 /**
- * Java representation of the xloper type xltypeInt
- * This is never returned by Excel, only occasionally used when calling into Excel.
+ * Java representation of the xloper type xltypeInt. This is never returned by Excel, only occasionally used when calling into Excel.
  */
 public final class XLInteger implements XLValue {
   private final int _value;
@@ -16,7 +15,9 @@ public final class XLInteger implements XLValue {
 
   /**
    * Static factory method to return an instance.
-   * @param value the value
+   * 
+   * @param value
+   *          the value
    * @return an instance
    */
   public static XLInteger of(final int value) {
@@ -25,6 +26,7 @@ public final class XLInteger implements XLValue {
 
   /**
    * Get the value.
+   * 
    * @return the value
    */
   public int getValue() {

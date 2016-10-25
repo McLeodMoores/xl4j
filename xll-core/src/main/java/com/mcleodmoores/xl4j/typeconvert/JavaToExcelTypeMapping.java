@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert;
 
@@ -20,8 +20,10 @@ public final class JavaToExcelTypeMapping {
   private final Class<?> _javaClass;
 
   /**
-   * @param javaType the Java type
-   * @param excelType the Excel type
+   * @param javaType
+   *          the Java type
+   * @param excelType
+   *          the Excel type
    */
   private JavaToExcelTypeMapping(final Type javaType, final Class<?> excelType) {
     ArgumentChecker.notNull(javaType, "javaType");
@@ -33,27 +35,31 @@ public final class JavaToExcelTypeMapping {
 
   /**
    * Static factory method.
-   * @param javaType the Java type
-   * @param excelType the Excel type
+   * 
+   * @param javaType
+   *          the Java type
+   * @param excelType
+   *          the Excel type
    * @return an instance
    */
   public static JavaToExcelTypeMapping of(final Type javaType, final Class<?> excelType) {
     return new JavaToExcelTypeMapping(javaType, excelType);
   }
-  
+
   /**
    * @return the excel Class in this key
    */
   public Class<?> getExcelClass() {
     return _excelType;
   }
+
   /**
    * @return the java class in this key
    */
   public Class<?> getJavaClass() {
     return _javaClass;
   }
-  
+
   /**
    * @return the java type in this key
    */
@@ -62,9 +68,10 @@ public final class JavaToExcelTypeMapping {
   }
 
   /**
-   * Checks whether both the excel type and java type are assignable from
-   * the other type (i.e. are the types compatible).
-   * @param other  the ExcelToJavaTypeMapping to compare against
+   * Checks whether both the excel type and java type are assignable from the other type (i.e. are the types compatible).
+   * 
+   * @param other
+   *          the ExcelToJavaTypeMapping to compare against
    * @return true, if both the excel and java types are assignable from
    */
   public boolean isAssignableFrom(final JavaToExcelTypeMapping other) {

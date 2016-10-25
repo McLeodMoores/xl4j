@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.util;
 
 import java.util.Collection;
@@ -17,8 +20,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is negative.
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static void notNegative(final int argument, final String name) {
     if (argument < 0) {
@@ -29,8 +35,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is negative.
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static void notNegative(final long argument, final String name) {
     if (argument < 0L) {
@@ -41,8 +50,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is negative.
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static void notNegative(final double argument, final String name) {
     if (argument < 0d) {
@@ -53,8 +65,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is null.
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static void notNull(final Object argument, final String name) {
     if (argument == null) {
@@ -65,9 +80,13 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the array argument is null or empty.
-   * @param <E> type of array
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param <E>
+   *          type of array
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static <E> void notNullOrEmpty(final E[] argument, final String name) {
     if (argument == null) {
@@ -81,9 +100,13 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the collection argument is null or empty.
-   * @param <E> type of array
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param <E>
+   *          type of array
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static <E> void notNullOrEmpty(final Collection<E> argument, final String name) {
     if (argument == null) {
@@ -97,8 +120,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the string argument is null or empty.
-   * @param argument the String to check
-   * @param name the name of the parameter
+   * 
+   * @param argument
+   *          the String to check
+   * @param name
+   *          the name of the parameter
    */
   public static void notNullOrEmpty(final String argument, final String name) {
     if (argument == null) {
@@ -112,9 +138,13 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the array argument is null or any of its elements are null.
-   * @param <E> type of array
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param <E>
+   *          type of array
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static <E> void notNullArray(final E[] argument, final String name) {
     if (argument == null) {
@@ -131,9 +161,13 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the array argument is null or any of its elements are null.
-   * @param <E> type of array
-   * @param argument the object to check
-   * @param name the name of the parameter
+   * 
+   * @param <E>
+   *          type of array
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
    */
   public static <E> void notNullCollection(final Collection<E> argument, final String name) {
     if (argument == null) {
@@ -151,8 +185,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the condition is not true.
-   * @param condition  the condition to check
-   * @param message  the message if the condition is false
+   * 
+   * @param condition
+   *          the condition to check
+   * @param message
+   *          the message if the condition is false
    */
   public static void isTrue(final boolean condition, final String message) {
     if (!condition) {
@@ -163,8 +200,11 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the condition is not false.
-   * @param condition  the condition to check
-   * @param message  the message if the condition is true
+   * 
+   * @param condition
+   *          the condition to check
+   * @param message
+   *          the message if the condition is true
    */
   public static void isFalse(final boolean condition, final String message) {
     if (condition) {

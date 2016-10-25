@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
@@ -11,8 +11,8 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLString;
 
 /**
- * Type converter to convert from doubless to Excel strings and back again. This converter
- * has a low priority, as it is more likely that conversion to and from XLNumber is required.
+ * Type converter to convert from doubless to Excel strings and back again. This converter has a low priority, as it is more likely that
+ * conversion to and from XLNumber is required.
  */
 public final class PrimitiveCharXLStringTypeConverter extends AbstractTypeConverter {
   /** The priority */
@@ -35,7 +35,7 @@ public final class PrimitiveCharXLStringTypeConverter extends AbstractTypeConver
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    XLString xlString = (XLString) from;
+    final XLString xlString = (XLString) from;
     if (xlString.getValue().length() == 1) {
       return Character.valueOf(xlString.getValue().charAt(0));
     }

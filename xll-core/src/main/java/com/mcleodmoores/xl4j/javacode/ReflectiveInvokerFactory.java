@@ -1,5 +1,5 @@
 /**
-Ø * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.javacode;
 
@@ -29,8 +29,11 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
 
   /**
    * Default constructor.
-   * @param excel  the excel object to allow heap access
-   * @param typeConverterRegistry  a registry of type converters
+   *
+   * @param excel
+   *          the excel object to allow heap access
+   * @param typeConverterRegistry
+   *          a registry of type converters
    */
   public ReflectiveInvokerFactory(final Excel excel, final TypeConverterRegistry typeConverterRegistry) {
     _objectXlObjectConverter = new ObjectXLObjectTypeConverter(excel);
@@ -39,8 +42,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
 
   @Override
   public ConstructorInvoker[] getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
-      @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes)
-          throws ClassNotFoundException {
+      @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) throws ClassNotFoundException {
     // max number of invokers possible
     final ConstructorInvoker[] invokers = new ConstructorInvoker[argTypes.length == 0 ? 1 : clazz.getConstructors().length];
     int frontIndex = 0, backIndex = invokers.length - 1;
@@ -114,7 +116,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       }
     }
     if (frontIndex == 0 && backIndex == invokers.length - 1) {
-      throw new Excel4JRuntimeException("Could not find matching constructor with args " + Arrays.toString(argTypes) + " for class " + clazz);
+      throw new Excel4JRuntimeException(
+          "Could not find matching constructor with args " + Arrays.toString(argTypes) + " for class " + clazz);
     }
     return invokers;
   }
@@ -132,8 +135,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   }
 
   @Override
-  public MethodInvoker[] getMethodTypeConverter(final Class<?> clazz, final XLString methodName, final TypeConversionMode typeConversionMode,
-      @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes)
+  public MethodInvoker[] getMethodTypeConverter(final Class<?> clazz, final XLString methodName,
+      final TypeConversionMode typeConversionMode, @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes)
           throws ClassNotFoundException {
     // max number of invokers possible
     final MethodInvoker[] invokers = new MethodInvoker[argTypes.length == 0 ? 1 : clazz.getMethods().length];
@@ -282,7 +285,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
   }
 
   @Override
-  public ConstructorInvoker getConstructorTypeConverter(final Constructor constructor) {
+  public ConstructorInvoker getConstructorTypeConverter(final Constructor<?> constructor) {
     final Class<?>[] genericParameterTypes = constructor.getParameterTypes();
     try {
       final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);

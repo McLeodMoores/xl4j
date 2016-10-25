@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.values;
 
@@ -8,8 +8,7 @@ import java.util.Arrays;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
- * Java representation of the xloper type xltypeMulti
- * It can take the form of a two dimensional array of mixed types of xlopers.
+ * Java representation of the xloper type xltypeMulti It can take the form of a two dimensional array of mixed types of xlopers.
  */
 public final class XLArray implements XLReference {
   /** The underlying array */
@@ -22,7 +21,8 @@ public final class XLArray implements XLReference {
   private boolean _isArea;
 
   /**
-   * @param valueRange  the value range
+   * @param valueRange
+   *          the value range
    */
   private XLArray(final XLValue[][] valueRange) {
     _array = valueRange;
@@ -45,7 +45,9 @@ public final class XLArray implements XLReference {
 
   /**
    * Static factory method to create an instance of XLArray.
-   * @param array a two dimensional array containing XLValues
+   * 
+   * @param array
+   *          a two dimensional array containing XLValues
    * @return an instance
    */
   public static XLArray of(final XLValue[][] array) {
@@ -62,7 +64,8 @@ public final class XLArray implements XLReference {
 
   /**
    * Returns true if this array represents a row.
-   * @return  true if the array is a row
+   * 
+   * @return true if the array is a row
    */
   public boolean isRow() {
     return _isRow;
@@ -70,7 +73,8 @@ public final class XLArray implements XLReference {
 
   /**
    * Returns true if this array represents a column.
-   * @return  true if the array is a column
+   * 
+   * @return true if the array is a column
    */
   public boolean isColumn() {
     return _isColumn;
@@ -78,7 +82,8 @@ public final class XLArray implements XLReference {
 
   /**
    * Returns true if this array is neither a row nor column.
-   * @return  true if the array is an area
+   * 
+   * @return true if the array is an area
    */
   public boolean isArea() {
     return _isArea;

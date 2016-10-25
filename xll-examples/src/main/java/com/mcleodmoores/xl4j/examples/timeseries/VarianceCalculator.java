@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
@@ -10,9 +10,9 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 /**
  *
  */
-//@XLClass(name = "Variance",
-//         description = "Calculates the sample variance of a time series",
-//         category = "Time series")
+// @XLClass(name = "Variance",
+// description = "Calculates the sample variance of a time series",
+// category = "Time series")
 public class VarianceCalculator implements Function<TimeSeries, Double> {
 
   @Override

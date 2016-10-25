@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2014 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
 import java.lang.reflect.Array;
@@ -16,10 +19,9 @@ import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Type converter to convert from arrays of Object arrays to Excel arrays and back again. When converting
- * back to Java, the most specific converter that can be found is used (e.g. Boolean -&gt; XLBoolean,
- * rather than an XLObject wrapping a boolean).This converter is higher priority than
- * {@link ObjectArray2DXLArrayTypeConverter2}, which only converts to XLObjects.
+ * Type converter to convert from arrays of Object arrays to Excel arrays and back again. When converting back to Java, the most specific
+ * converter that can be found is used (e.g. Boolean -&gt; XLBoolean, rather than an XLObject wrapping a boolean).This converter is higher
+ * priority than {@link ObjectArray2DXLArrayTypeConverter2}, which only converts to XLObjects.
  * <p>
  * This class assumes that the input array from / to Excel is rectangular.
  */
@@ -29,7 +31,9 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
 
   /**
    * Default constructor.
-   * @param excel  the excel context object, used to access the type converter registry, not null
+   * 
+   * @param excel
+   *          the excel context object, used to access the type converter registry, not null
    */
   public ObjectArray2DXLArrayTypeConverter(final Excel excel) {
     super(Object[][].class, XLArray.class);
@@ -48,7 +52,7 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
       final Class<?> expectedClass = from.getClass();
       componentType = expectedClass.getComponentType().getComponentType(); // as it's 2D
     } else if (expectedType instanceof GenericArrayType) {
-      //REVIEW this is commented out in the 1D version. Which is correct?
+      // REVIEW this is commented out in the 1D version. Which is correct?
       final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
       componentType = genericArrayType.getGenericComponentType(); // yes it's odd that you don't need to do it twice, see ScratchTests.java
     } else {
@@ -96,7 +100,7 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
     final XLArray xlArr = (XLArray) from;
     Type componentType = null;
     if (expectedType instanceof Class) {
-      //TODO making sure it's reduced to a non-array type is not nice here but otherwise the array creation produced a 3D array
+      // TODO making sure it's reduced to a non-array type is not nice here but otherwise the array creation produced a 3D array
       // not sure what the best way to deal with that is
       final Class<?> expectedClass = (Class<?>) expectedType;
       componentType = expectedClass.getComponentType();
@@ -110,8 +114,8 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
     final XLValue[][] arr = xlArr.getArray();
-    final Object[][] targetArr =
-        (Object[][]) Array.newInstance(Excel4JReflectionUtils.reduceToClass(componentType), arr.length, arr.length > 0 ? arr[0].length : 0);
+    final Object[][] targetArr = (Object[][]) Array.newInstance(Excel4JReflectionUtils.reduceToClass(componentType), arr.length,
+        arr.length > 0 ? arr[0].length : 0);
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
