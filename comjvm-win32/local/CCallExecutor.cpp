@@ -24,9 +24,9 @@ void CCallExecutor::SetArguments (/* [out] */ VARIANT *pResult, /* [in] */ int i
 }
 
 jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper) {
-	LOGTRACE ("pJniCache=%p", pJniCache);
-	LOGTRACE ("VARIANT %p", oper);
-	LOGTRACE ("convert type = %d", oper->vt);
+	//LOGTRACE ("pJniCache=%p", pJniCache);
+	//LOGTRACE ("VARIANT %p", oper);
+	//LOGTRACE ("convert type = %d", oper->vt);
 	switch (oper->vt) {
 	case VT_R8:
 		return pJniCache->XLNumber_of (pEnv, oper->dblVal);

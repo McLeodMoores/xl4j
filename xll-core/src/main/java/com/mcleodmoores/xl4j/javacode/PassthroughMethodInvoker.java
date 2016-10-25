@@ -3,6 +3,7 @@ package com.mcleodmoores.xl4j.javacode;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
 import java.util.Arrays;
 
 import org.slf4j.Logger;
@@ -69,5 +70,10 @@ public class PassthroughMethodInvoker implements MethodInvoker {
   @Override
   public Class<?> getMethodDeclaringClass() {
     return _method.getDeclaringClass();
+  }
+
+  @Override
+  public Type getMethodReturnType() {
+    return _method.getGenericReturnType();
   }
 }

@@ -2,7 +2,7 @@
 #include "GarbageCollector.h"
 #include <wchar.h>
 
-#include "../utils/TraceOff.h"
+//#include "../utils/TraceOff.h"
 
 void GarbageCollector::ScanCell (XLOPER12 *cell) {
 	//printXLOPER (cell);
@@ -11,7 +11,7 @@ void GarbageCollector::ScanCell (XLOPER12 *cell) {
 		(cell->val.str[1] == L'\x1A')) {
 		//LOGTRACE ("Found an object ref!");
 		//printXLOPER (cell);
-		__int64 id = ParseId (cell->val.str);
+		unsigned __int64 id = ParseId (cell->val.str);
 		m_vObservedIds.push_back (id);
 	}
 }
@@ -24,7 +24,7 @@ __int64 GarbageCollector::ParseId (XCHAR *pExcelStr) {
 	++pStr; // skip over the dash and point to first digit
 	++iHyphenPos;
 	unsigned __int64 id = 0;
-	while (pStr <= pExcelStr + cChars + 1) {
+	while (pStr <= pExcelStr + cChars) {
 		id *= 10; // shift digit to left
 		id += *pStr - L'0';
 		pStr++;
@@ -159,10 +159,10 @@ void GarbageCollector::Collect () {
 		__int64 allocations;
 		SAFEARRAY *psaIds;
 		if (SUCCEEDED (MakeSafeArray (&psaIds))) {
-			Debug::odprintf (TEXT("Marking %d items still in use"), m_vObservedIds.size ());
+			//Debug::odprintf (TEXT("Marking %d items still in use"), m_vObservedIds.size ());
 			m_pCollector->Collect (psaIds, &allocations);
 			SafeArrayDestroy (psaIds);
-			Debug::odprintf (TEXT("Collection complete, there were %ll allocations since"), allocations);
+			//Debug::odprintf (TEXT("Collection complete, there were %ll allocations since"), allocations);
 			Reset ();
 		} else {
 			LOGTRACE ("Collector returned error");
@@ -172,24 +172,33 @@ void GarbageCollector::Collect () {
 
 HRESULT GarbageCollector::MakeSafeArray (SAFEARRAY **ppsaIds) {
 	HRESULT hr;
+	//std::wstring str(m_vObservedIds.begin(), m_vObservedIds.end());
+	//for (int i = 0; i < m_vObservedIds.size(); i++) {
+	//	LOGTRACE("Found element[%d] = %I64u", i, m_vObservedIds[i]);
+	//}
 	const size_t cElems = m_vObservedIds.size ();
+	//LOGTRACE("cElems = %d", cElems);
 	*ppsaIds = SafeArrayCreateVector (VT_I8, 0, cElems);
 	if (*ppsaIds == NULL) {
 		return E_OUTOFMEMORY;
 	}
-	hyper *pIdData;
+	unsigned hyper *pIdData;
 	hr = SafeArrayAccessData (*ppsaIds, (PVOID *)&pIdData);
 	if (FAILED (hr)) {
+		LOGERROR("SafeArrayAccessData failed");
 		SafeArrayDestroy (*ppsaIds);
 		return hr;
 	}
 	const size_t cbElems = cElems * sizeof (hyper);
 	memcpy_s (pIdData, cbElems, m_vObservedIds.data (), cbElems);
-	SafeArrayUnaccessData (*ppsaIds);
+	hr = SafeArrayUnaccessData (*ppsaIds);
 	if (FAILED (hr)) {
 		SafeArrayDestroy (*ppsaIds);
 		return hr;
 	}
+	//for (int i = 0; i < m_vObservedIds.size(); i++) {
+	//	LOGTRACE("Found element in SAFEARRAY[%d] = %I64u", i, pIdData[i]);
+	//}
 	return S_OK;
 }
 
@@ -221,4 +230,4 @@ GarbageCollector::~GarbageCollector () {
 	m_pCollector->Release ();
 }
 
-#include "../utils/TraceOn.h"
+//#include "../utils/TraceOn.h"

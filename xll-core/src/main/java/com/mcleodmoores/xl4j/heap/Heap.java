@@ -27,9 +27,10 @@ public class Heap {
   private static final int BYTES_IN_64BITS = 8;
   private final ConcurrentHashMap<Long, Object> _handleToObj;
   private final ConcurrentIdentityHashMap<Object, Long> _objToHandle;
-
+  private final ConcurrentHashMap<Long, Integer> _handleToCollectCount;
   private final AtomicLong _sequence;
   private long _snapHandle;
+  private int _maxCollectionCount = 3;
 
   //TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
   /**
@@ -38,6 +39,7 @@ public class Heap {
   public Heap() {
     _handleToObj = new ConcurrentHashMap<>();
     _objToHandle = new ConcurrentIdentityHashMap<>();
+    _handleToCollectCount = new ConcurrentHashMap<>();
     // we try and create the handle counter by combining the local MAC, the time and the sheet id.
     // this should minimize the possibility of stale handles in sheets being interpreted as valid.
     long baseHandle;
@@ -86,6 +88,7 @@ public class Heap {
         // we don't need locking here because no one has the key yet.
         // theoretically the user passing getHandle could concurrently call it twice with the same object, but
         // that's why we synchronize on object and re-check once we have the lock.
+        LOGGER.trace("Creating new object handle " + Long.toUnsignedString(newKey));
         _handleToObj.put(newKey, object);
         _objToHandle.put(object, newKey);
         return newKey;
@@ -104,7 +107,7 @@ public class Heap {
     if (object != null) {
       return object;
     } else {
-      throw new Excel4JRuntimeException("Cannot find object with handle " + handle);
+      throw new Excel4JRuntimeException("Cannot find object with handle " + Long.toUnsignedString(handle));
     }
   }
 
@@ -113,6 +116,7 @@ public class Heap {
    */
   private void startGC() {
     _snapHandle = _sequence.get();
+    LOGGER.trace("GC starting, snapping to " + Long.toUnsignedString(_snapHandle));
   }
 
   /**
@@ -120,20 +124,36 @@ public class Heap {
    */
   private void endGC(final long[] activeHandles) {
     Arrays.sort(activeHandles);
+    for (int i = 0; i < activeHandles.length; i++) {
+      LOGGER.trace("handle[{}] = {}", i, Long.toUnsignedString(activeHandles[i]));
+    }
     final Iterator<Entry<Long, Object>> iterator = _handleToObj.entrySet().iterator();
     long removed = 0;
     while (iterator.hasNext()) {
       final Entry<Long, Object> next = iterator.next();
       if (next.getKey() >= _snapHandle) {
+        LOGGER.trace("Handle {} >= snap {} so skipping", Long.toUnsignedString(next.getKey()), Long.toUnsignedString(_snapHandle));
         continue; // skip as we might have missed it in our scan because it was created after we started
       }
       if (Arrays.binarySearch(activeHandles, next.getKey()) < 0) {
-        iterator.remove(); // didn't find handle, meaning it's not active, gc.
-        _objToHandle.remove(next.getValue());
-        removed++;
+        Integer count = _handleToCollectCount.get(next.getKey());
+        if (count == null) {
+          // we start counting how many times this has been flagged for collection
+          _handleToCollectCount.put(next.getKey(), 1);
+          LOGGER.trace("Started count for handle " + Long.toUnsignedString(next.getKey()) + " at 1");
+        } else if (count < _maxCollectionCount) {
+          LOGGER.trace("Increasing count for handle " + Long.toUnsignedString(next.getKey()) + " to " + count + 1);
+          _handleToCollectCount.put(next.getKey(), count + 1);
+        } else {
+          LOGGER.trace("Count for handle " + Long.toUnsignedString(next.getKey()) + " reached limit so removing");
+          _handleToCollectCount.remove(next.getKey());
+          iterator.remove(); // didn't find handle, meaning it's not active, gc.
+          _objToHandle.remove(next.getValue());
+          removed++;
+        }
       }
     }
-    LOGGER.info(removed + " objects removed during GC pass");
+    LOGGER.trace(removed + " objects removed during GC pass");
   }
 
   /**
@@ -153,7 +173,7 @@ public class Heap {
     final StringBuilder sb = new StringBuilder();
     sb.append("WorksheetHeap[\n");
     for (final Entry<Long, Object> entry : _handleToObj.entrySet()) {
-      final String number = Long.toString(entry.getKey());
+      final String number = Long.toUnsignedString(entry.getKey());
       sb.append("  ");
       sb.append(number);
       sb.append(" = > ");

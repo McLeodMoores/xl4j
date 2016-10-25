@@ -37,7 +37,7 @@ private:
 	LARGE_INTEGER m_liMaxTicks;
 
 	// list observed ids
-	std::vector<hyper> m_vObservedIds;
+	std::vector<unsigned hyper> m_vObservedIds;
 	// Java interface
 	ICollect *m_pCollector;
 

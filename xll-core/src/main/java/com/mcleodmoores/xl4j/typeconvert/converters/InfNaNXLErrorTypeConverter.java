@@ -9,6 +9,7 @@ import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLError;
+import com.mcleodmoores.xl4j.values.XLNumber;
 
 /**
  * Converts {@link XLError#Div0} to <code>Double#POSITIVE_INFINITY</code> and {@link XLError#NA} to <code>Double#NaN</code>.
@@ -27,6 +28,16 @@ public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
 
   @Override
   public Object toXLValue(final Type expectedType, final Object from) {
+    if (from instanceof Double) {
+      Double fromd = (Double) from;
+      if (fromd.isNaN()) {
+        return XLError.NA;
+      } else if (fromd.isInfinite()) {
+        return XLError.Div0;
+      } else {
+        return XLNumber.of(fromd);
+      }
+    }
     throw new Excel4JRuntimeException("Should not attempt to directly convert from a Java object to XLError");
   }
 

@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.xl4j.javacode;
 
+import java.lang.reflect.Type;
+
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
@@ -28,6 +30,11 @@ public interface MethodInvoker {
    */
   Class<?> getExcelReturnType();
 
+  /**
+   * @return the Type returned by this method
+   */
+  Type getMethodReturnType();
+  
   /**
    * @return true, if the underlying method is static
    */

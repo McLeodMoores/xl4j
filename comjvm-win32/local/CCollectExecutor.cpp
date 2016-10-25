@@ -35,6 +35,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 			goto error;
 		}
 		szValidIds++; // upper bound not count, returns -1 for zero length array.
+		//LOGTRACE("Count of valid ids = %d", szValidIds);
 		jlongArray jlaValidIds = pEnv->NewLongArray (szValidIds);
 		//QueryPerformanceCounter (&t2);
 		hyper *pllValidIds;
@@ -43,7 +44,11 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 			goto error;
 		}
 		jlong *plRawArray = pEnv->GetLongArrayElements (jlaValidIds, false);
-		memcpy_s (plRawArray, szValidIds, pllValidIds, szValidIds);
+		//for (int i = 0; i < szValidIds; i++) {
+		//	unsigned long long handle = plRawArray[i];
+		//	LOGTRACE("Element %d is %I64u", i, handle);
+		//}
+		memcpy_s (plRawArray, szValidIds * sizeof (long long), pllValidIds, szValidIds * sizeof (long long));
 		SafeArrayUnaccessData (m_psaValidIds);
 		pEnv->ReleaseLongArrayElements (jlaValidIds, plRawArray, 0); // zero means copy back and free element buffer.
 		//QueryPerformanceCounter (&t3);

@@ -6,7 +6,6 @@
     <artifactId>xl4j-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.mcleodmoores.xl4j</groupId>
   <artifactId>packaging</artifactId>
   <packaging>pom</packaging>
 

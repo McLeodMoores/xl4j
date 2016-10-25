@@ -113,7 +113,7 @@ public final class XLObject implements XLValue {
 
   @Override
   public String toString() {
-    return "XLObject[class=" + _clazz + ", " + _handle + "]";
+    return "XLObject[class=" + _clazz + ", " + Long.toUnsignedString(_handle) + "]";
   }
 
 }

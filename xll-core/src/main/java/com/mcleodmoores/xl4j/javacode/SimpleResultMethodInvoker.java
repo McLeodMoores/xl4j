@@ -24,12 +24,12 @@ public class SimpleResultMethodInvoker extends AbstractMethodInvoker {
 
   @Override
   protected XLValue convertResult(final Object object, final TypeConverter returnConverter) {
-    if (object.getClass().isArray()) {
-      throw new Excel4JRuntimeException("Array types not supported for return types");
-    } else {
+//    if (object.getClass().isArray()) {
+//      throw new Excel4JRuntimeException("Array types not supported for return types");
+//    } else {
       AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) returnConverter;
-      return (XLValue) scalarTypeConverter.toXLValue(null, object);
-    }
+      return (XLValue) scalarTypeConverter.toXLValue(getMethodReturnType(), object);
+//    }
     
   }
 }
