@@ -4,6 +4,7 @@
 #include "../settings/SplashScreenInterface.h"
 
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
+	LOGTRACE("JVM Environment being created");
 	HRESULT hr;
 	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public Licese v3 Applies\nto linked code", &m_pSplashScreen))) {
 		_com_error err(hr);
@@ -15,6 +16,7 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment
 		LOGERROR ("Could not get Excel window handle");
 		return;
 	}
+	LOGTRACE("Opening splash screen");
 	m_pSplashScreen->Open(hWnd);
 	m_pSplashScreen->SetMarquee();
 	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
@@ -55,6 +57,7 @@ BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 	Excel12f (xlGetName, &xDLL, 0);
 	if (m_pFunctionRegistry && m_pFunctionRegistry->IsRegistrationComplete ()) {
 		LOGTRACE ("Called after registration complete");
+		LOGTRACE("Closing splash screen");
 		m_pSplashScreen->Close();
 		return true; // erroneous call
 	}
@@ -70,8 +73,10 @@ BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
 			int iRegistered;
 			m_pFunctionRegistry->GetNumberRegistered (&iRegistered);
 			LOGTRACE ("GetNumberRegsitered returned %d", iRegistered);
+			LOGTRACE("Updating splash screen");
 			m_pSplashScreen->Update (iRegistered);
 			Sleep (100); // allow UI to show completed status.
+			LOGTRACE("Closing splash screen");
 			m_pSplashScreen->Close();
 			return true; // StartGC ();
 		}

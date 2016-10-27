@@ -216,7 +216,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       signature.append("J"); // means int, but we'll convert from XLInteger to make the class hierarchy cleaner.
     } else {
       if (isAsynchronous) {
-        signature.append(">X"); // means void function first parameter is asynchronous callback handle, which we don't expose to the user.
+        signature.append(">"); // means void function is asynchronous callback handle, which we don't expose to the user.
       } else {
         if (excelReturnType.isAssignableFrom(XLLocalReference.class) || excelReturnType.isAssignableFrom(XLMultiReference.class)) {
           // REVIEW: Not sure if this is a valid thing to do.
@@ -251,6 +251,9 @@ public class DefaultExcelCallback implements ExcelCallback {
           signature.append("Q"); // XLOPER12 byval
         }
       }
+    }
+    if (isAsynchronous) {
+      signature.append("X"); // should we allow the other options (below)?
     }
     // Characters on the end -- we checked some invalid states at the start.
     if (isMacroEquivalent) {

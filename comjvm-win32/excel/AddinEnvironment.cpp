@@ -13,6 +13,7 @@ CAddinEnvironment::CAddinEnvironment () {
 	// Register polling command that registers chunks of functions
 	m_idRegisterSomeFunctions = ExcelUtils::RegisterCommand (TEXT ("RegisterSomeFunctions"));
 	// Schedule polling command to start in 0.1 secs.  This will reschedule itself until all functions registered.
+	LOGTRACE("Schedulding RegisterSomeFunctions to run in 0.1 seconds");
 	ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.1);
 	// Register command to display MFC settings dialog
 	m_idSettings = ExcelUtils::RegisterCommand (TEXT ("Settings"));

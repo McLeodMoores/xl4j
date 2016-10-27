@@ -194,6 +194,7 @@ __declspec(dllexport) int Settings () {
 // Returns: int  1 on success, 0 on failure
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
+	LOGTRACE("xlAutoOpen called");
 	if (XLCallVer () < (12 * 256)) {
 		HWND hWnd;
 		ExcelUtils::GetHWND (&hWnd);
@@ -205,6 +206,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		return 0;
 	}
 	if (g_initialized) {
+		LOGTRACE("Already initialised, so don't do anything");
 		return 1;
 	}
 	g_initialized = true;
@@ -214,6 +216,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	wchar_t buf[MAX_PATH + 1];
 	GetCurrentDirectoryW (MAX_PATH, buf);
 	LOGTRACE ("CWD = %s", buf);
+	LOGTRACE("Initializing Add-in, JVM, etc");
 	InitAddin ();
 	InitJvm ();
 	if (ExcelUtils::IsAddinSettingEnabled (L"ShowToolbar", TRUE)) {

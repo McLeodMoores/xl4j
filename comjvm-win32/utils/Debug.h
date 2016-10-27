@@ -24,7 +24,7 @@ extern "C" {
 #define WIDEN(x) WIDEN2(x)
 #define __SHORT_FILE__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
 
-enum LOGLEVEL { LOGLEVEL_TRACE, LOGLEVEL_ERROR, LOGLEVEL_NONE };
+enum LOGLEVEL { LOGLEVEL_NONE = 0, LOGLEVEL_TRACE = 1, LOGLEVEL_DEBUG = 2, LOGLEVEL_INFO = 3, LOGLEVEL_WARN = 4, LOGLEVEL_ERROR = 5, LOGLEVEL_FATAL = 6 };
 enum LOGTARGET { LOGTARGET_FILE, LOGTARGET_WINDEBUG };
 
 class Debug
@@ -64,22 +64,47 @@ public:
 #define LOGTRACE_ON __pragme(pop_macro(LOGTRACE))
 #if 0 //def _DEBUG
 #define LOGTRACE(x, ...) 
+#define LOGDEBUG(x, ...)
+#define LOGINFO(x, ...)
 #else
-//#define LOGTRACE(x, ...) do { Debug::odprintf(TEXT("LOGTRACE:%S:%d:%S ") TEXT(x) TEXT("\n"), __SHORT_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
 #define LOGTRACE(x, ...)\
   do { \
-    if (Debug::GetLogLevel() == LOGLEVEL_TRACE) {\
-      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
+    if (Debug::GetLogLevel() >= LOGLEVEL_TRACE) {\
+      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("TRACE " ## x), __VA_ARGS__);\
     }\
   } while (0)
 #endif
-//#define LOGERROR(x, ...)do { Debug::odprintf(TEXT("LOGTRACE:%S:%d:%S ") TEXT(x) TEXT("\n"), __SHORT_FILE__, __LINE__, __FUNCTION__, __VA_ARGS__); } while (0)
-#define LOGERROR(x, ...)\
+#define LOGDEBUG(x, ...)\
   do { \
-    if (Debug::GetLogLevel() == LOGLEVEL_ERROR) {\
-      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
+    if (Debug::GetLogLevel() >= LOGLEVEL_DEBUG) {\
+      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("DEBUG " ## x), __VA_ARGS__);\
     }\
   } while (0)
+#define LOGINFO(x, ...)\
+  do { \
+    if (Debug::GetLogLevel() >= LOGLEVEL_INFO) {\
+      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("INFO  " ## x), __VA_ARGS__);\
+    }\
+  } while (0)
+#define LOGWARN(x, ...)\
+  do { \
+    if (Debug::GetLogLevel() >= LOGLEVEL_WARN) {\
+      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("WARN  " ## x), __VA_ARGS__);\
+    }\
+  } while (0)
+#define LOGERROR(x, ...)\
+  do { \
+    if (Debug::GetLogLevel() >= LOGLEVEL_ERROR) {\
+      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("ERROR " ## x), __VA_ARGS__);\
+    }\
+  } while (0)
+#define LOGFATAL(x, ...)\
+  do { \
+    if (Debug::GetLogLevel() >= LOGLEVEL_FATAL) {\
+      Debug::PrettyLogPrintf(__SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("FATAL " ## x), __VA_ARGS__);\
+    }\
+  } while (0)
+
 #ifdef __cplusplus
 }
 #endif /* ifdef __cplusplus */
