@@ -2,7 +2,8 @@ xl4j
 ====
 
 # Introduction
-xl4j is a combined Java and native code library that allows developers to build native-quality Excel Add-ins requiring only standard Java tooling (Maven + JDK).
+xl4j is a combined Java and native code library that allows developers to build native-quality Excel Add-ins requiring only standard Java tooling (Maven + JDK).  It supports standard Excel types (numbers, stings, dates, booleans, etc) but also Java objects in the form
+of object handles.  This means you can store any complex object in a single Excel sheet cell, allowing much more complex applications.  A background garbage collector prevents discarded and overwritten objects from hanging around.
 
 # Objectives
  - Make no comprimises 
@@ -23,7 +24,12 @@ xl4j is a combined Java and native code library that allows developers to build 
    - Per developer-seat licensing, no end-user licenses.
 
 # Features
-## 
+## Writing Excel user-defined functions
+ - System will automatically scan your code for @XLFunction annotations and register them with Excel.
+ - Automatic marshalling (conversion) from Java to Excel types and back again.
+   - Primitive types (and Boxed equivalents)
+   - JSR-310/Java 8 dates
+   - Full object handling system
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
    allow hosting installation files on a network share.
