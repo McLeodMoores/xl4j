@@ -1,6 +1,38 @@
 xl4j
 ====
 
+# Introduction
+xl4j is a combined Java and native code library that allows developers to build native-quality Excel Add-ins requiring only standard Java tooling (Maven + JDK).
+
+# Objectives
+ - Make no comprimises 
+   - allowing developers to access any functionality they would be able to through a pure native XLL project written in C++.
+ - Make it easy
+   - hugely increase productivity and reduced development cycles by making it really easy to expose data to users without complex 
+     and inflexible UI engineering.  Put your data where you users are using it.
+   - super easy to start development - just annotate a method with @XLFunction and watch xl4j do the rest.
+   - super easy deployment - just create a Maven project, include a dependency and maven assembly file and build the Add-in directory
+     or deploy to a maven repository.
+ - Production-grade
+   - make consideration of real-world production usage with XCOPY install, access to logs, pre-deployment configuration, etc.
+ - Developer friendly licensing
+   - Dual license GPL/Commerical means you can get you feet wet without an up-front commitment and use in personal or 
+     open source projects without payment.
+   - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase 
+     (like JetBrains).
+   - Per developer-seat licensing, no end-user licenses.
+
+# Features
+## 
+## Deployment features
+ - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
+   allow hosting installation files on a network share.
+ - No manually run background server.
+ - Installation can be custom configured to hide configuration and developer options from end users.
+ - White labelling.
+ - In-build access to logs without digging around in Temp directories or CLI windows.
+   
+
 # Two distinct modes of use
 
 1. Interacting with existing Java code and libraries directly from Excel
