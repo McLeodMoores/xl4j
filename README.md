@@ -35,7 +35,9 @@ of object handles.  This means you can store any complex object in a single Exce
  - Ability to create and call methods on arbitrary java objects from Excel with no code changes:
  ```
  =JConstruct("javax.swing.JFrame", "My Window Title)
+ 
  =JMethod(A1, "setSize", 400, 300)
+ 
  =JMethod(A1, "setVisible", TRUE)
  ```
    
