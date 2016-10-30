@@ -29,7 +29,7 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
 
   /**
    * Default constructor.
-   * 
+   *
    * @param excel
    *          the excel context object, used to access the type converter registry, not null
    */

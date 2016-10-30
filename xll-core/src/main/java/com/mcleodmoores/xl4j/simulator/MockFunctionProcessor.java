@@ -21,7 +21,7 @@ import com.mcleodmoores.xl4j.xll.XLLAccumulatingFunctionRegistry;
 import com.mcleodmoores.xl4j.xll.XLLAccumulatingFunctionRegistry.LowLevelEntry;
 
 /**
- * A mock function processor that
+ * A mock function processor that allows Excel functions to be tested in Java.
  */
 public final class MockFunctionProcessor {
   /** The logger */
@@ -56,9 +56,13 @@ public final class MockFunctionProcessor {
   }
 
   /**
+   * Constructs a new instance of an object.
+   *
    * @param objectName
+   *          the class name
    * @param args
-   * @return
+   *          the constructor parameters
+   * @return  the XLObject that contains a handle to the class
    */
   public XLValue newInstance(final String objectName, final XLValue... args) {
     final List<Integer> exportNumbers = new ArrayList<>();
@@ -145,4 +149,5 @@ public final class MockFunctionProcessor {
     // horrible, but what else can be done?
     return lastError;
   }
+
 }

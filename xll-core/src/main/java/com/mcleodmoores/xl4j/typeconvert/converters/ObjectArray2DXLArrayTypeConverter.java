@@ -31,7 +31,7 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
 
   /**
    * Default constructor.
-   * 
+   *
    * @param excel
    *          the excel context object, used to access the type converter registry, not null
    */

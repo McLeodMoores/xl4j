@@ -17,7 +17,7 @@ import com.mcleodmoores.xl4j.values.XLNumber;
  */
 public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
   /** Priority for this converter */
-  private static final int DEFAULT_PRIORITY = 50; // higher priority than XLValueIdentityConverters
+  private static final int DEFAULT_PRIORITY = 5; // lower priority than XLValueIdentityConverters
 
   /**
    * Constructor.
@@ -29,7 +29,7 @@ public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
   @Override
   public Object toXLValue(final Type expectedType, final Object from) {
     if (from instanceof Double) {
-      Double fromd = (Double) from;
+      final Double fromd = (Double) from;
       if (fromd.isNaN()) {
         return XLError.NA;
       } else if (fromd.isInfinite()) {
