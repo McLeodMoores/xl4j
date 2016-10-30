@@ -8,6 +8,7 @@ import java.util.Iterator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 /**
  * Utility class for checking arguments.
@@ -20,7 +21,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is negative.
-   * 
+   *
    * @param argument
    *          the object to check
    * @param name
@@ -35,7 +36,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is negative.
-   * 
+   *
    * @param argument
    *          the object to check
    * @param name
@@ -50,7 +51,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is negative.
-   * 
+   *
    * @param argument
    *          the object to check
    * @param name
@@ -65,7 +66,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the argument is null.
-   * 
+   *
    * @param argument
    *          the object to check
    * @param name
@@ -79,8 +80,25 @@ public final class ArgumentChecker {
   }
 
   /**
+   * Throws an exception if the argument is null.
+   *
+   * @param argument
+   *          the object to check
+   * @param name
+   *          the name of the parameter
+   * @param args
+   *          the message arguments
+   */
+  public static void notNull(final Object argument, final String name, final Object... args) {
+    if (argument == null) {
+      LOGGER.error("Argument {} was null", name);
+      throw new Excel4JRuntimeException("Value " + name + " was null");
+    }
+  }
+
+  /**
    * Throws an exception if the array argument is null or empty.
-   * 
+   *
    * @param <E>
    *          type of array
    * @param argument
@@ -100,7 +118,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the collection argument is null or empty.
-   * 
+   *
    * @param <E>
    *          type of array
    * @param argument
@@ -120,7 +138,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the string argument is null or empty.
-   * 
+   *
    * @param argument
    *          the String to check
    * @param name
@@ -138,7 +156,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the array argument is null or any of its elements are null.
-   * 
+   *
    * @param <E>
    *          type of array
    * @param argument
@@ -161,7 +179,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the array argument is null or any of its elements are null.
-   * 
+   *
    * @param <E>
    *          type of array
    * @param argument
@@ -185,7 +203,7 @@ public final class ArgumentChecker {
 
   /**
    * Throws an exception if the condition is not true.
-   * 
+   *
    * @param condition
    *          the condition to check
    * @param message
@@ -199,8 +217,25 @@ public final class ArgumentChecker {
   }
 
   /**
+   * Throws an exception if the condition is not true.
+   *
+   * @param condition
+   *          the condition to check
+   * @param message
+   *          the message if the condition is false
+   * @param args
+   *          the message arguments
+   */
+  public static void isTrue(final boolean condition, final String message, final Object... args) {
+    if (!condition) {
+      LOGGER.error(message);
+      throw new Excel4JRuntimeException(MessageFormatter.arrayFormat(message, args).getMessage());
+    }
+  }
+
+  /**
    * Throws an exception if the condition is not false.
-   * 
+   *
    * @param condition
    *          the condition to check
    * @param message
@@ -210,6 +245,23 @@ public final class ArgumentChecker {
     if (condition) {
       LOGGER.error(message);
       throw new Excel4JRuntimeException(message);
+    }
+  }
+
+  /**
+   * Throws an exception if the condition is not false.
+   *
+   * @param condition
+   *          the condition to check
+   * @param message
+   *          the message if the condition is true
+   * @param args
+   *          the message arguments
+   */
+  public static void isFalse(final boolean condition, final String message, final Object... args) {
+    if (condition) {
+      LOGGER.error(message);
+      throw new Excel4JRuntimeException(MessageFormatter.arrayFormat(message, args).getMessage());
     }
   }
 }
