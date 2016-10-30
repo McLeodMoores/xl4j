@@ -5,6 +5,7 @@
 #include "SplashScreenInterface.h"
 #include "SplashScreen.h"
 #include "afxdialogex.h"
+#include "../utils/Debug.h"
 
 
 // CSplashScreen dialog
@@ -59,6 +60,7 @@ HBRUSH CSplashScreen::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 
 void CSplashScreen::Update(int iRegistered) {
+	LOGTRACE("Update");
 	m_prProgress.SetPos(iRegistered);
 	HideIfSplashOpen();
 }
@@ -87,13 +89,16 @@ void CSplashScreen::Update(int iRegistered) {
 //	HideIfSplashOpen();
 //}
 INT_PTR CSplashScreen::Open(HWND hwndParent) {
+	LOGTRACE("Open");
 	Create(IDD_SPLASHWINDOW, CWnd::FromHandle(hwndParent));
 	HideIfSplashOpen();
 	return 0;
 }
 
 void CSplashScreen::Close() {
-	EndDialog(IDOK);
+	LOGTRACE("Closed");
+	DestroyWindow();
+	//EndDialog(IDOK);
 }
 
 bool CSplashScreen::IsSplashOpen() {
@@ -104,14 +109,17 @@ bool CSplashScreen::IsSplashOpen() {
 }
 
 void CSplashScreen::Show() {
+	LOGTRACE("Show");
 	ShowWindow(SW_SHOW);
 }
 
 void CSplashScreen::Hide() {
+	LOGTRACE("Hide");
 	ShowWindow(SW_HIDE);
 }
 
 void CSplashScreen::HideIfSplashOpen() {
+	LOGTRACE("HideIfSplashOpen");
 	if (IsSplashOpen()) {
 		Hide();
 	}
@@ -128,13 +136,14 @@ void CSplashScreen::SetStep(int iStep) {
 }
 
 void CSplashScreen::Increment() {
+	LOGTRACE("Increment");
 	m_prProgress.StepIt();
 	HideIfSplashOpen();
 }
 
 void CSplashScreen::SetMarquee() {
 	m_prProgress.SetMarquee(TRUE, 50); // number is millis between updates: 50 ~ 20Hz
-	m_prProgress.StepIt();
+	//m_prProgress.StepIt();
 	HideIfSplashOpen();
 }
 

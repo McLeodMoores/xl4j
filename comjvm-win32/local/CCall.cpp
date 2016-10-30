@@ -2,6 +2,11 @@
 
 #include "CCall.h"
 #include "Internal.h"
+#if 1
+#include <xlcall.h>
+#include "Framewrk.h"
+#endif // 1
+
 
 
 CCall::CCall (CJvm *pJvm) {
@@ -57,7 +62,20 @@ HRESULT STDMETHODCALLTYPE CCall::Call (/* [out] */ VARIANT *result, /* [in] */ i
 		if (SUCCEEDED (hr)) {
 			LOGTRACE ("vm execute succeeded");
 			// The executor will release RC2
+			#if 1
 			hr = pExecutor->Wait ();
+			#else
+			/*  bool timedOut;
+			do {
+				const int MAX_WAIT_MILLIS = 100;
+				hr = pExecutor->Wait(MAX_WAIT_MILLIS, &timedOut);
+				if (timedOut) {
+					XLOPER12 breakState;
+					LOGTRACE("Calling out to xlAbort");
+					Excel12f(xlAbort, &breakState, 0);
+				}
+			} while (timedOut);*/
+			#endif
 			LOGTRACE ("hr = %x after Wait()", hr);
 		} else {
 			LOGTRACE ("vm execute failed");

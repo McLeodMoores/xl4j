@@ -28,6 +28,7 @@ private:
 	VARIANT *m_pResult;
 	int m_iFunctionNum;
 	SAFEARRAY *m_pArgs;
+	bool m_bAsync;
 	HANDLE m_hSemaphore;
 	HRESULT m_hRunResult;
 	~CCallExecutor ();
@@ -43,8 +44,13 @@ private:
 public:
 	CCallExecutor (CCall *pOwner, JniCache *pJniCache);
 	void SetArguments (VARIANT *result, int iFunctionNum, SAFEARRAY * args);
+	void SetAsynchronous(bool bAsync) { m_bAsync = bAsync; }
 	HRESULT Run (JNIEnv *pEnv);
 	HRESULT Wait ();
+#if 1
+	HRESULT CCallExecutor::Wait(int timeoutMillis, bool *timedOut);
+#endif // 1
+
 	void AddRef ();
 	void Release ();
 };

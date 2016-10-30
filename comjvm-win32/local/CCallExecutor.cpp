@@ -24,9 +24,9 @@ void CCallExecutor::SetArguments (/* [out] */ VARIANT *pResult, /* [in] */ int i
 }
 
 jobject CCallExecutor::convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper) {
-	//LOGTRACE ("pJniCache=%p", pJniCache);
-	//LOGTRACE ("VARIANT %p", oper);
-	//LOGTRACE ("convert type = %d", oper->vt);
+	LOGTRACE ("pJniCache=%p", pJniCache);
+	LOGTRACE ("VARIANT %p", oper);
+	LOGTRACE ("convert type = %d", oper->vt);
 	switch (oper->vt) {
 	case VT_R8:
 		return pJniCache->XLNumber_of (pEnv, oper->dblVal);
@@ -434,6 +434,21 @@ HRESULT CCallExecutor::Wait () {
 	if (dwStatus == WAIT_OBJECT_0) {
 		return m_hRunResult;
 	} else {
+		return E_FAIL;
+	}
+}
+
+HRESULT CCallExecutor::Wait(int timeoutMillis, bool *timedOut) {
+	DWORD dwStatus = WaitForSingleObject(m_hSemaphore, timeoutMillis);
+	if (dwStatus == WAIT_OBJECT_0) {
+		*timedOut = false;
+		return m_hRunResult;
+	}
+	else if (dwStatus == WAIT_TIMEOUT) {
+		*timedOut = true;
+		return S_OK;
+	}
+	else {
 		return E_FAIL;
 	}
 }
