@@ -8,8 +8,6 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
-
 /**
  *
  */

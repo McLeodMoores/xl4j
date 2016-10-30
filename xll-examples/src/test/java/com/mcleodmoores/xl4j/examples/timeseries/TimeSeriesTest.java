@@ -13,7 +13,6 @@ import java.util.List;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 
 /**

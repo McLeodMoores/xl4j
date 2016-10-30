@@ -8,7 +8,6 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.examples.timeseries.ReturnCalculator;
 import com.mcleodmoores.xl4j.heap.Heap;
 import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.values.XLBoolean;
