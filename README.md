@@ -44,18 +44,19 @@ of object handles.  This means you can store any complex object in a single Exce
    - 1D/2D Arrays
    - Full object handling system maintains a garbage collected heap for objects, necessary for long running sheets
    - Support for varargs
- - Ability to create and call methods on arbitrary java objects from Excel with no code changes:
  
-   |   | A                                                      |                          B                        |
-   |---|:------------------------------------------------------:|:-------------------------------------------------:|
-   | 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` | `=JConstruct("javax.swing.JButton", "Click me!")` |
-   | 2 | `=JMethod(A1, "setSize", 300, 200)`                    |                                                   |
-   | 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
-   | 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
-   
-   results in a JFrame appearing:
-   
-   ![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
+## Calling constructors and methods on arbitrary java objects
+ 
+|   | A                                                      |                          B                        |
+|---|:------------------------------------------------------:|:-------------------------------------------------:|
+| 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` | `=JConstruct("javax.swing.JButton", "Click me!")` |
+| 2 | `=JMethod(A1, "setSize", 300, 200)`                    |                                                   |
+| 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
+| 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
+ 
+results in a JFrame appearing:
+
+![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
 
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
