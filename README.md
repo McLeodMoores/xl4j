@@ -37,11 +37,12 @@ of object handles.  This means you can store any complex object in a single Exce
    - Support for varargs
  - Ability to create and call methods on arbitrary java objects from Excel with no code changes:
  
-   |   |                             A                          |     B      |
-   |---| ------------------------------------------------------ |:----------:|
-   | 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` |            |
-   | 2 | `=JMethod(A1, "setSize", 400, 300)`                    |            |
-   | 3 | `=JMethod(A1, "setVisible", TRUE)`                     |            |
+   |   | A                                                      |                          B                        |
+   |---|:------------------------------------------------------:|:-------------------------------------------------:|
+   | 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` | `=JConstruct("javax.swing.JButton", "Click me!")` |
+   | 2 | `=JMethod(A1, "setSize", 400, 300)`                    |                                                   |
+   | 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
+   | 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
 
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
