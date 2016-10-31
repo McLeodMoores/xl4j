@@ -12,7 +12,7 @@ of object handles.  This means you can store any complex object in a single Exce
    - allowing developers to access any functionality they would be able to through a pure native XLL project written in C++.  This 
      means you don't have to choose between convenience and power.
  - Make it easy
-2   - Put your data where you users are using it and hugely increase productivity and reduce development cycles by making it really 
+   - Put your data where you users are using it and hugely increase productivity and reduce development cycles by making it really 
      easy to expose data to users without complex and inflexible UI engineering.  
    - super easy to start development - just annotate a method with @XLFunction and watch XL4J do the rest.
    - super easy deployment - just create a Maven project, include a dependency and maven assembly file and build the Add-in directory
@@ -20,7 +20,8 @@ of object handles.  This means you can store any complex object in a single Exce
  - Production-grade
    - make consideration of real-world production usage with XCOPY install, access to logs, pre-deployment configuration, etc.
  - Developer friendly licensing
-   - Dual license GPL/Commerical means you can get you feet wet without an up-front commitment and use in personal or 
+
+- Dual license GPL/Commerical means you can get you feet wet without an up-front commitment and use in personal or 
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase      (like JetBrains).
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
@@ -53,6 +54,8 @@ of object handles.  This means you can store any complex object in a single Exce
    | 2 | `=JMethod(A1, "setSize", 300, 200)`                    |                                                   |
    | 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
    | 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
+   
+   results in a JFrame appearing:
    
    ![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
 
