@@ -35,7 +35,7 @@ of object handles.  This means you can store any complex object in a single Exce
        return one + two;
      }
   ```
-    
+   ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
    |   | A              | B      |
    |---|:--------------:|:------:|
    | 1 | `=MyAdd(1, 2)` |        |
