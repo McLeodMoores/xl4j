@@ -54,7 +54,7 @@ of object handles.  This means you can store any complex object in a single Exce
    | 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
    | 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
    
-   ![JFrame](https://github.com/McleodMoores/xl4j/raw/master/docs/images/jframe.png "The Resulting JFrame")
+   ![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
 
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
