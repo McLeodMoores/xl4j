@@ -2,16 +2,19 @@ XL4J - Excel Add-ins for Java
 =============================
 
 # Introduction
-xl4j is a combined Java and native code library that allows developers to build native-quality Excel Add-ins requiring only standard Java tooling (Maven + JDK).  It supports standard Excel types (numbers, stings, dates, booleans, etc) but also Java objects in the form
-of object handles.  This means you can store any complex object in a single Excel sheet cell, allowing much more complex applications.  A background garbage collector prevents discarded and overwritten objects from hanging around.
+XL4J is a Java and native code library that allows you to build native-quality Excel Add-ins using only standard Java tooling (Maven + JDK).  It lets you write might performance custom Excel functions and commands for end users, but also to work as a dynamic rapid application development tool in it's own right.
+
+In addition to supporting the standard Excel types (numbers, stings, dates, booleans, etc) it also supports Java objects in the form
+of object handles.  This means you can store any complex object in a single Excel sheet cell, allowing much more complex applications.  A background incremental garbage collector prevents discarded and overwritten objects from hanging around.
 
 # Objectives
  - Make no comprimises 
-   - allowing developers to access any functionality they would be able to through a pure native XLL project written in C++.
+   - allowing developers to access any functionality they would be able to through a pure native XLL project written in C++.  This 
+     means you don't have to choose between convenience and power.
  - Make it easy
-   - hugely increase productivity and reduced development cycles by making it really easy to expose data to users without complex 
-     and inflexible UI engineering.  Put your data where you users are using it.
-   - super easy to start development - just annotate a method with @XLFunction and watch xl4j do the rest.
+   - Put your data where you users are using it and hugely increase productivity and reduce development cycles by making it really 
+     easy to expose data to users without complex and inflexible UI engineering.  
+   - super easy to start development - just annotate a method with @XLFunction and watch XL4J do the rest.
    - super easy deployment - just create a Maven project, include a dependency and maven assembly file and build the Add-in directory
      or deploy to a maven repository.
  - Production-grade
@@ -21,7 +24,7 @@ of object handles.  This means you can store any complex object in a single Exce
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase 
      (like JetBrains).
-   - Per developer-seat licensing, no end-user licenses.
+   - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
 
 # Features
 ## Writing Excel user-defined functions
@@ -33,14 +36,13 @@ of object handles.  This means you can store any complex object in a single Exce
    - Full object handling system maintains a garbage collected heap for objects, necessary for long running sheets
    - Support for varargs
  - Ability to create and call methods on arbitrary java objects from Excel with no code changes:
- ```
- =JConstruct("javax.swing.JFrame", "My Window Title)
  
- =JMethod(A1, "setSize", 400, 300)
- 
- =JMethod(A1, "setVisible", TRUE)
- ```
-   
+   |   |                             A                          |     B      |
+   |---| ------------------------------------------------------ |:----------:|
+   | 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` |            |
+   | 2 | `=JMethod(A1, "setSize", 400, 300)`                    |            |
+   | 3 | `=JMethod(A1, "setVisible", TRUE)`                     |            |
+
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
    allow hosting installation files on a network share.
