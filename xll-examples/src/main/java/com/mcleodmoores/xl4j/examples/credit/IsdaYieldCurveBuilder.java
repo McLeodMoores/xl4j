@@ -3,20 +3,16 @@
  */
 package com.mcleodmoores.xl4j.examples.credit;
 
-import java.util.ArrayList;
-import java.util.List;
+import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.createHolidayCalendar;
+import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePeriod;
 
-import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.opengamma.analytics.date.CalendarAdapter;
-import com.opengamma.analytics.date.SimpleWorkingDayCalendar;
-import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
-import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurveBuild;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAInstrumentTypes;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
@@ -41,13 +37,13 @@ public final class IsdaYieldCurveBuilder {
    * @param swapIntervalName  the swap interval name, in the for "P1Y" or "1Y"
    * @param curveDayCountName  the curve day count name
    * @param businessDayConventionName  the business day convention name
-   * @param spotDate  the spot date, can be null. If null, the trade date is used
-   * @param holidayDates  the holiday dates, can be null. If null, weekend-only holidays are used
+   * @param spotDate  the spot date, can be null. If not supplied, the trade date is used
+   * @param holidayDates  the holiday dates, can be null. If not supplied, weekend-only holidays are used
    * @return  a yield curve constructed using the ISDA model
    */
   @XLFunction(name = "ISDAYieldCurve.BuildCurve", category = "ISDA CDS model",
       description = "Build a yield curve using the ISDA methodology")
-  public static ISDACompliantCurve buildYieldCurve(
+  public static ISDACompliantYieldCurve buildYieldCurve(
       @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
       @XLArgument(description = "Instrument Types", name = "instrumentTypes") final String[] instrumentTypeNames,
       @XLArgument(description = "Tenors", name = "tenors") final String[] tenors,
@@ -85,17 +81,7 @@ public final class IsdaYieldCurveBuilder {
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountName);
     final BusinessDayConvention businessDayConvention = BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName);
     final Period swapInterval = parsePeriod(swapIntervalName);
-    @SuppressWarnings("deprecation")
-    final Calendar calendar;
-    if (holidayDates == null) {
-      calendar = new CalendarAdapter(WeekendWorkingDayCalendar.SATURDAY_SUNDAY);
-    } else {
-      final List<LocalDate> holidays = new ArrayList<>();
-      for (final LocalDate holidayDate : holidayDates) {
-        holidays.add(holidayDate);
-      }
-      calendar = new CalendarAdapter(new SimpleWorkingDayCalendar("Holidays", holidays, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
-    }
+    final Calendar calendar = createHolidayCalendar(holidayDates);
     final ISDACompliantYieldCurveBuild builder;
     if (spotDate == null) {
       builder = new ISDACompliantYieldCurveBuild(tradeDate, tradeDate, instrumentTypes, periods,
@@ -114,7 +100,8 @@ public final class IsdaYieldCurveBuilder {
    */
   @XLFunction(name = "ISDAYieldCurve.Expand", category = "ISDA CDS model",
       description = "Show the nodal times and zero rates of the yield curve")
-  public static Object[][] expandCurve(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve) {
+  public static Object[][] expandCurve(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve) {
     final Object[][] result = new Object[yieldCurve.getNumberOfKnots()][2];
     for (int i = 0; i < yieldCurve.getNumberOfKnots(); i++) {
       final double t = yieldCurve.getTimeAtIndex(i);
@@ -131,7 +118,8 @@ public final class IsdaYieldCurveBuilder {
    */
   @XLFunction(name = "ISDAYieldCurve.ExpandDiscountFactors", category = "ISDA CDS model",
       description = "Show the nodal times and discount factors of the yield curve")
-  public static Object[][] expandDiscountFactors(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve) {
+  public static Object[][] expandDiscountFactors(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve) {
     final Object[][] result = new Object[yieldCurve.getNumberOfKnots()][2];
     for (int i = 0; i < yieldCurve.getNumberOfKnots(); i++) {
       final double t = yieldCurve.getTimeAtIndex(i);
@@ -150,7 +138,8 @@ public final class IsdaYieldCurveBuilder {
    * @return  an array containing a column of times and a column of zero rates
    */
   @XLFunction(name = "ISDAYieldCurve.ExpandForDates", category = "ISDA CDS model", description = "Get times and zero rates for dates")
-  public static Object[][] expandCurve(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve,
+  public static Object[][] expandCurve(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
       @XLArgument(description = "Day Count Convention", name = "dayCountConventionName") final String curveDayCountConventionName,
       @XLArgument(description = "Dates", name = "dates") final LocalDate[] dates) {
@@ -172,8 +161,9 @@ public final class IsdaYieldCurveBuilder {
    * @param dates  the dates
    * @return  an array containing a column of times and a column of discount factors
    */
-  @XLFunction(name = "ISDAYieldCurve.ExpandDiscountFactorsForDates", category = "ISDA CDS model", description = "Get times and zero rates for dates")
-  public static Object[][] expandDiscountFactors(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve,
+  @XLFunction(name = "ISDAYieldCurve.ExpandDiscountFactorsForDates", category = "ISDA CDS model", description = "Get times and discount factors for dates")
+  public static Object[][] expandDiscountFactors(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
       @XLArgument(description = "Day Count Convention", name = "dayCountConventionName") final String curveDayCountConventionName,
       @XLArgument(description = "Dates", name = "dates") final LocalDate[] dates) {
@@ -196,7 +186,8 @@ public final class IsdaYieldCurveBuilder {
    * @return  the zero rate
    */
   @XLFunction(name = "ISDAYieldCurve.ZeroRateForDate", category = "ISDA CDS model", description = "Get zero rate on a date")
-  public static Double getZeroRate(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve,
+  public static Double getZeroRate(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
       @XLArgument(description = "Day Count Convention", name = "curveDayCountConventionName") final String curveDayCountConventionName,
       @XLArgument(description = "Date", name = "date") final LocalDate date) {
@@ -214,7 +205,8 @@ public final class IsdaYieldCurveBuilder {
    * @return  the discount factor
    */
   @XLFunction(name = "ISDAYieldCurve.DiscountFactorForDate", category = "ISDA CDS model", description = "Get discount factor on a date")
-  public static Double getDiscountFactor(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve,
+  public static Double getDiscountFactor(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
       @XLArgument(description = "Day Count Convention", name = "curveDayCountConventionName") final String curveDayCountConventionName,
       @XLArgument(description = "Date", name = "date") final LocalDate date) {
@@ -230,7 +222,8 @@ public final class IsdaYieldCurveBuilder {
    * @return  the zero rate
    */
   @XLFunction(name = "ISDAYieldCurve.ZeroRate", category = "ISDA CDS model", description = "Get zero rate for a time")
-  public static Double getZeroRate(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve,
+  public static Double getZeroRate(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Time", name = "time") final Double t) {
     return yieldCurve.getZeroRate(t);
   }
@@ -242,21 +235,10 @@ public final class IsdaYieldCurveBuilder {
    * @return  the discount factor
    */
   @XLFunction(name = "ISDAYieldCurve.DiscountFactor", category = "ISDA CDS model", description = "Get discount factor for a time")
-  public static Double getDiscountFactor(@XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantCurve yieldCurve,
+  public static Double getDiscountFactor(
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Time", name = "time") final Double t) {
     return yieldCurve.getDiscountFactor(t);
-  }
-
-  /**
-   * Parses a string as a Period. The initial "P" may or may not be included.
-   * @param string  the string
-   * @return  the period
-   */
-  private static Period parsePeriod(final String string) {
-    if (string.toUpperCase().startsWith("P")) {
-      return Period.parse(string);
-    }
-    return Period.parse("P" + string);
   }
 
   /**

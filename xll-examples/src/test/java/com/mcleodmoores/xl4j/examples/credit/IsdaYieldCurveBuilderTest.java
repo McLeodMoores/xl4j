@@ -22,6 +22,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurveBuild;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAInstrumentTypes;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
@@ -30,11 +31,7 @@ import com.opengamma.financial.convention.daycount.DayCountFactory;
 /**
  * Unit tests for {@link IsdaYieldCurveBuilder}.
  */
-public class IsdaYieldCurveBuilderTest {
-  /** The object heap */
-  private static final Heap HEAP = ExcelFactory.getInstance().getHeap();
-  /** The function processor */
-  private static final MockFunctionProcessor PROCESSOR = MockFunctionProcessor.getInstance();
+public class IsdaYieldCurveBuilderTest extends IsdaTests {
   /** The trade date */
   private static final LocalDate TRADE_DATE = LocalDate.of(2016, 10, 3);
   /** The instrument types */
@@ -61,7 +58,7 @@ public class IsdaYieldCurveBuilderTest {
   /** The holidays */
   private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 8, 1)};
   /** The expected curve */
-  private static final ISDACompliantCurve EXPECTED_CURVE;
+  private static final ISDACompliantYieldCurve EXPECTED_CURVE;
   /** The object constructed by the function processor */
   private static final Object XL_RESULT = PROCESSOR.invoke("ISDAYieldCurve.BuildCurve", convertToXlType(TRADE_DATE), convertToXlType(INSTRUMENT_TYPE_STRINGS),
       convertToXlType(TENOR_STRINGS), convertToXlType(QUOTES), convertToXlType(MONEY_MARKET_DAY_COUNT), convertToXlType(SWAP_DAY_COUNT),
