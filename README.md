@@ -29,6 +29,17 @@ of object handles.  This means you can store any complex object in a single Exce
 # Features
 ## Writing Excel user-defined functions
  - System will automatically scan your code for @XLFunction annotations and register them with Excel.
+    ```java
+     @XLFunction(name = "MyAdd")
+     public static double myadd(final double one, final double two) {
+       return one + two;
+     }
+  ```
+    
+   |   | A              | B      |
+   |---|:--------------:|:------:|
+   | 1 | `=MyAdd(1, 2)` |        |
+   
  - Automatic marshalling (conversion) from Java to Excel types and back again.
    - Primitive types (and Boxed equivalents)
    - JSR-310/Java 8 dates
