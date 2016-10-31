@@ -57,6 +57,7 @@ public final class JMethod {
       final Class<?> clazz = object.getClass();
       final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(clazz, methodName,
           TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
+      
       int i = 0;
       // TODO remove any method with Object or Object[] types and try them last?
       for (; i < methodTypeConverters.length; i++) {
@@ -74,6 +75,7 @@ public final class JMethod {
         try {
           return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
         } catch (final Exception e) {
+          LOGGER.trace("trying to invoke method, but exception thrown", e);
           // keep trying until something works
         }
       }
@@ -86,6 +88,7 @@ public final class JMethod {
         try {
           return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
         } catch (final Exception e) {
+          LOGGER.trace("trying to invoke method, but exception thrown", e);
           // keep trying until something works
         }
       }
