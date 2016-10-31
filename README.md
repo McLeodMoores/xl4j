@@ -1,5 +1,5 @@
-XL4J - Excel Add-ins for Java
-=============================
+XL4J - Native Excel XLL Add-ins in Java
+=======================================
 
 # Introduction
 XL4J is a Java and native code library that allows you to build native-quality Excel Add-ins using only standard Java tooling (Maven + JDK).  It lets you write might performance custom Excel functions and commands for end users, but also to work as a dynamic rapid application development tool in it's own right.
