@@ -46,15 +46,30 @@ of object handles.  This means you can store any complex object in a single Exce
    - Support for varargs
  
 ## Calling constructors and methods on arbitrary java objects
- 
+The follwing example allows you to create and show a Swing JFrame with no coding at all:
+
 |   | A                                                      |                          B                        |
 |---|:------------------------------------------------------:|:-------------------------------------------------:|
 | 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` | `=JConstruct("javax.swing.JButton", "Click me!")` |
 | 2 | `=JMethod(A1, "setSize", 300, 200)`                    |                                                   |
 | 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
 | 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
- 
-results in a JFrame appearing:
+
+which looks like this in Excel - note the object handles with the >> prefix followed by the type and the handle number:
+
+![JFrame in Excel](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe-example.PNG "How it looks in Excel")
+
+Breaking this example down:
+ - The `JConstruct` function calls the named classes constructor with any supplied arguments and returns an object handle.  The first
+   constructor that the system is able to convert the argument list for will be chosen.
+ - The `JMethod` function calls a method named in the second argument on the object handle passed in as the first argument with
+   any subsequently supplied parameters.  The first method that the system is able to convert the argument list for will be chosen.
+ - The `After` function is a utility function that allows you to specify that this cell should be evaluated after another one.  In this
+   case it allows us to specify that we want the `add` method called after the `setSize` method, and the `setVisible` method after that.
+   If we don't do this, we can find that Excel can choose an ordering we didn't want.  Note this is only really an issue when we're 
+   side-effecting a java object, which we should generally avoid anyway.
+   
+Evaluating the sheet results JFrame appearing:
 
 ![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
 
