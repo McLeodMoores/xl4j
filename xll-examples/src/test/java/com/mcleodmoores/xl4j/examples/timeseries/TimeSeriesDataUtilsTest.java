@@ -15,9 +15,6 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.examples.timeseries.SamplingType;
-import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
-import com.mcleodmoores.xl4j.examples.timeseries.TimeSeriesDataUtils;
 import com.mcleodmoores.xl4j.heap.Heap;
 import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.values.XLArray;

@@ -29,7 +29,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
 
   /**
    * Constructor.
-   * 
+   *
    * @param method
    *          the method to call.
    * @param argumentConverters
@@ -66,14 +66,14 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
         } else {
-	        final Type expectedClass = _method.getParameterTypes()[i];
-	        // handle the case where nothing is passed and this should be converted to a null
+          final Type expectedClass = _method.getParameterTypes()[i];
+          // handle the case where nothing is passed and this should be converted to a null
           // which happens unless the method is expecting an XLValue.
-	        if ((arguments[i] instanceof XLMissing) && 
-              (!expectedClass.getClass().isAssignableFrom(XLValue.class))) {
+          if (arguments[i] instanceof XLMissing
+              && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
             args[i] = null;
           } else {
-	          args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
+            args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
           }
         }
       }
@@ -87,15 +87,14 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       for (int i = 0; i < _argumentConverters.length; i++) {
         // TODO not sure about this logic - isArray() never seems to be true.
         // what was the intended use?
-        
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
         } else {
           final Type expectedClass = _method.getParameterTypes()[i];
           // handle the case where nothing is passed and this should be converted to a null
           // which happens unless the method is expecting an XLValue.
-          if ((arguments[i] instanceof XLMissing) && 
-              (!expectedClass.getClass().isAssignableFrom(XLValue.class))) {
+          if (arguments[i] instanceof XLMissing
+              && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
             args[i] = null;
           } else {
             args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
@@ -115,7 +114,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
 
   /**
    * Processes the result object into the object returned by excel. Could be an object or an Excel type.
-   * 
+   *
    * @param object
    *          the result object to process
    * @param returnConverter
@@ -138,7 +137,8 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
   public Class<?> getExcelReturnType() {
     return _returnConverter.getJavaToExcelTypeMapping().getExcelClass();
   }
-  
+
+  @Override
   public Type getMethodReturnType() {
     return _method.getGenericReturnType();
   }

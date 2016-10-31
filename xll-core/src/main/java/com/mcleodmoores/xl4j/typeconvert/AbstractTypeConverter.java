@@ -17,7 +17,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
   /**
    * Convenience constructor, produces converter with default priority.
-   * 
+   *
    * @param javaType
    *          the Java type, any object type
    * @param excelType
@@ -35,7 +35,7 @@ public abstract class AbstractTypeConverter implements TypeConverter {
 
   /**
    * Convenience constructor, produces converter with default priority.
-   * 
+   *
    * @param javaType
    *          the Java type, any object type
    * @param excelType

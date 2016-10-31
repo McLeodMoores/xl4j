@@ -14,7 +14,6 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.examples.MyTestFunctions;
 import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLBoolean;

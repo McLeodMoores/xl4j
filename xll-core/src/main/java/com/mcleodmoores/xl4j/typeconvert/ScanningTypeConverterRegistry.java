@@ -29,14 +29,14 @@ import javassist.Modifier;
  * Type resolver.
  */
 public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
-  private static Logger s_logger = LoggerFactory.getLogger(ScanningTypeConverterRegistry.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(ScanningTypeConverterRegistry.class);
 
   // we want highest priority keys first, so we use a reversing comparator.
   private final ConcurrentSkipListMap<Integer, List<TypeConverter>> _converters = new ConcurrentSkipListMap<>(Collections.reverseOrder());
 
   /**
    * Construct a TypeResolver.
-   * 
+   *
    * @param excel
    *          the excel context, allowing access to the heap.
    */
@@ -48,7 +48,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
 
   /**
    * Construct a TypeResolver for a particular package. Useful for testing.
-   * 
+   *
    * @param excel
    *          the excel context, allowing access to the heap.
    * @param packageName
@@ -84,15 +84,15 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
         }
         _converters.get(typeConverter.getPriority()).add(typeConverter);
       } catch (final NoSuchMethodException e) {
-        s_logger.error("Could not find constructor method on TypeConverter {}", typeConverterClass, e);
+        LOGGER.error("Could not find constructor method on TypeConverter {}", typeConverterClass, e);
       } catch (final InstantiationException e) {
-        s_logger.error("Could not find no args constructor on TypeConverter {}", typeConverterClass, e);
+        LOGGER.error("Could not find no args constructor on TypeConverter {}", typeConverterClass, e);
         throw new Excel4JRuntimeException("Could not find static getInstance() method on TypeConverter (see log)", e);
       } catch (final SecurityException e) {
-        s_logger.error("Security Exception while trying to create instance of TypeConverter {}", typeConverterClass, e);
+        LOGGER.error("Security Exception while trying to create instance of TypeConverter {}", typeConverterClass, e);
         throw new Excel4JRuntimeException("Security Exception while trying to create instance of TypeConverter (see log)", e);
       } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-        s_logger.error("Unexpected Exception while trying to create instance of TypeConverter {}", typeConverterClass, e);
+        LOGGER.error("Unexpected Exception while trying to create instance of TypeConverter {}", typeConverterClass, e);
         throw new Excel4JRuntimeException("Unexpected Exception while trying to create instance of TypeConverter (see log)", e);
       }
     }
@@ -100,7 +100,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
 
   /**
    * Find a type converter to perform the required conversion, searching linearly in priority order and returning the first match.
-   * 
+   *
    * @param requiredMapping
    *          the required conversion
    * @return a type converter to perform the conversion
@@ -121,7 +121,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
   /**
    * Find a type converter to perform the required conversion, searching linearly in priority order. This method is used to find a converter
    * from Java back into Excel, when you don't know the target Excel type. and returning the first match.
-   * 
+   *
    * @param requiredJava
    *          the Java type required to convert from.
    * @return a type converter to perform the conversion
