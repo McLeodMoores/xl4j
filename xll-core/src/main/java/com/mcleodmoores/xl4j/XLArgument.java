@@ -24,7 +24,7 @@ public @interface XLArgument {
    * 
    * @return the name
    */
-  String name();
+  String name() default "";
 
   /**
    * The description of the argument, as it is to appear in the function wizard. If not supplied, this will default to the JavaDoc
@@ -32,7 +32,7 @@ public @interface XLArgument {
    * 
    * @return the description
    */
-  String description();
+  String description() default "";
 
   /**
    * Whether the argument is optional. This defaults to false, i.e. not optional.

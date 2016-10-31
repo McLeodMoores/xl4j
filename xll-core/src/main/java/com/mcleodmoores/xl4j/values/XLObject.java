@@ -12,7 +12,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  */
 public final class XLObject implements XLValue {
   /** The object prefix */
-  private static final char OBJECT_PREFIX = '\u001A';
+  private static final char OBJECT_PREFIX = '\u00BB';
   /** The simple name */
   private final String _clazz;
   /** The handle */

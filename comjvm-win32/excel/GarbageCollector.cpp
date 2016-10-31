@@ -8,7 +8,7 @@ void GarbageCollector::ScanCell (XLOPER12 *cell) {
 	//printXLOPER (cell);
 	if ((cell->xltype == xltypeStr) &&
 		(cell->val.str[0] > 0) &&
-		(cell->val.str[1] == L'\x1A')) {
+		(cell->val.str[1] == L'\xBB')) {
 		//LOGTRACE ("Found an object ref!");
 		//printXLOPER (cell);
 		unsigned __int64 id = ParseId (cell->val.str);

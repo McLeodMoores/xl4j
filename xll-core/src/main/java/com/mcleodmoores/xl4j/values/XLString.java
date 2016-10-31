@@ -11,7 +11,7 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
  */
 public final class XLString implements XLValue {
 
-  private static final String OBJECT_PREFIX = "\u001A";
+  private static final String OBJECT_PREFIX = "\u00BB";
   private final String _value;
 
   private XLString(final String value) {
