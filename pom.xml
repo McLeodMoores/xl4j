@@ -15,6 +15,10 @@
       <name>GNU General Public License, Version 3.0</name>
       <url>http://www.gnu.org/licenses/gpl.txt</url>
     </license>
+    <license>
+      <name>McLeod Moores Commercial License</name>
+      <url>http://www.mcleodmoores.com</url>
+    </license>
   </licenses>
   
   <profiles>
