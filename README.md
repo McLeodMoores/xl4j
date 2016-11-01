@@ -20,8 +20,7 @@ of object handles.  This means you can store any complex object in a single Exce
  - Production-grade
    - make consideration of real-world production usage with XCOPY install, access to logs, pre-deployment configuration, etc.
  - Developer friendly licensing
-
-- Dual license GPL/Commerical means you can get you feet wet without an up-front commitment and use in personal or 
+   - Dual license GPL/Commerical means you can get you feet wet without an up-front commitment and use in personal or 
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase      (like JetBrains).
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
@@ -85,6 +84,11 @@ Evaluating the sheet results JFrame appearing:
 
 ![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
 
+## Configuration and Easy Logging Access
+By default there are toolbar icons for opening the settings dialog, and opening the Java and C++ Logs in Notepad (or default 
+`.log` file viewer).  These can be disabled for end users if preferred.
+ - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
+ 
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
    allow hosting installation files on a network share.
