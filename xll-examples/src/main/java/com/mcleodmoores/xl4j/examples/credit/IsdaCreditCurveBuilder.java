@@ -80,27 +80,27 @@ public final class IsdaCreditCurveBuilder {
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
     ArgumentChecker.isTrue(n == recoveryRates.length, "Must have one recovery rate per tenor, have {} tenors and {} recovery rates", n, recoveryRates.length);
     ArgumentChecker.isTrue(n == coupons.length, "Must have one coupon per tenor, have {} tenors and {} quote types", n, coupons.length);
-    final CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
-    cdsFactory.withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName));
-    cdsFactory.withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName));
-    cdsFactory.with(BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName));
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
+    cdsFactory = cdsFactory.withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName));
+    cdsFactory = cdsFactory.withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName));
+    cdsFactory = cdsFactory.with(BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName));
     if (holidayDates != null) {
-      cdsFactory.with(createHolidayCalendar(holidayDates));
+      cdsFactory = cdsFactory.with(createHolidayCalendar(holidayDates));
     }
     if (couponIntervalName != null) {
-      cdsFactory.with(parsePeriod(couponIntervalName));
+      cdsFactory = cdsFactory.with(parsePeriod(couponIntervalName));
     }
     if (stubTypeName != null) {
-      cdsFactory.with(StubType.valueOf(stubTypeName));
+      cdsFactory = cdsFactory.with(StubType.valueOf(stubTypeName));
     }
     if (cashSettlementDays != null) {
-      cdsFactory.withCashSettle(cashSettlementDays);
+      cdsFactory = cdsFactory.withCashSettle(cashSettlementDays);
     }
     if (payAccrualOnDefault != null) {
-      cdsFactory.withPayAccOnDefault(payAccrualOnDefault);
+      cdsFactory = cdsFactory.withPayAccOnDefault(payAccrualOnDefault);
     }
     if (stepInDays != null) {
-      cdsFactory.withStepIn(stepInDays);
+      cdsFactory = cdsFactory.withStepIn(stepInDays);
     }
     final CDSAnalytic[] calibrationCds = new CDSAnalytic[n];
     final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
@@ -227,14 +227,14 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.SurvivalProbabilityForDate", category = "ISDA CDS model", description = "Get survival probability on a date")
   public static Double getSurvivalProbability(
-    @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-    @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
-    @XLArgument(description = "Day Count Convention", name = "curveDayCountConventionName") final String curveDayCountConventionName,
-    @XLArgument(description = "Date", name = "date") final LocalDate date) {
-  final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountConventionName);
-  final double t = curveDayCount.getDayCountFraction(currentDate, date);
-  return creditCurve.getSurvivalProbability(t);
-}
+      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
+      @XLArgument(description = "Day Count Convention", name = "curveDayCountConventionName") final String curveDayCountConventionName,
+      @XLArgument(description = "Date", name = "date") final LocalDate date) {
+    final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountConventionName);
+    final double t = curveDayCount.getDayCountFraction(currentDate, date);
+    return creditCurve.getSurvivalProbability(t);
+  }
 
   /**
    * Gets the hazard rate for a time.
