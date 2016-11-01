@@ -72,38 +72,23 @@
   <repositories> 
     <repository>
       <id>releases</id>
-      <name>McLeod Moores Release</name>
+      <name>McLeod Moores Public Release Repository</name>
       <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
     </repository>
-    <repository> 
-      <id>private</id> 
-      <name>McLeod Moores private maven repository</name> 
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/private</url> 
-    </repository> 
-    <repository> 
-      <id>private-snapshot</id> 
-      <name>McLeod Moores private maven snapshot repository</name> 
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/private-snapshot</url> 
-      <snapshots> 
+	<repository>
+      <id>snapshots</id>
+      <name>McLeod Moores Public Snapshot Repository</name>
+      <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
+	  <snapshots> 
         <enabled>true</enabled> 
       </snapshots> 
-    </repository> 
-    <repository> 
-      <id>og-public</id> 
-      <name>OG Public</name> 
-      <url>http://maven.opengamma.com/nexus/content/groups/public</url> 
-    </repository> 
+    </repository>
   </repositories> 
   <pluginRepositories> 
     <pluginRepository>
       <id>releases</id>
       <name>McLeod Moores Release</name>
       <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
-    </pluginRepository>
-    <pluginRepository> 
-      <id>og-public</id> 
-      <name>OG Public</name> 
-      <url>http://maven.opengamma.com/nexus/content/groups/public</url> 
     </pluginRepository>
   </pluginRepositories> 
 
