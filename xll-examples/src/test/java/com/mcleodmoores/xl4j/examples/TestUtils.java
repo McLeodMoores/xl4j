@@ -7,9 +7,12 @@ import java.lang.reflect.Array;
 
 import org.threeten.bp.LocalDate;
 
+import com.mcleodmoores.xl4j.heap.Heap;
 import com.mcleodmoores.xl4j.util.XlDateUtils;
 import com.mcleodmoores.xl4j.values.XLArray;
+import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLNumber;
+import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -27,6 +30,9 @@ public class TestUtils {
     }
     if (object instanceof LocalDate) {
       return XLNumber.of(XlDateUtils.getDaysFromXlEpoch((LocalDate) object));
+    }
+    if (object instanceof Boolean) {
+      return (boolean) object ? XLBoolean.TRUE : XLBoolean.FALSE;
     }
     if (object.getClass().isArray()) {
       //TODO only works for 1D arrays
@@ -48,5 +54,10 @@ public class TestUtils {
       return XLArray.of(values);
     }
     throw new IllegalArgumentException("Unsupported object type " + object);
+  }
+
+  public static XLValue convertToXlType(final Object object, final Heap heap) {
+    final long handle = heap.getHandle(object);
+    return XLObject.of(object.getClass(), handle);
   }
 }

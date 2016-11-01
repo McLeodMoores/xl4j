@@ -1,5 +1,5 @@
-XL4J - Excel Add-ins for Java
-=============================
+XL4J - Native Excel XLL Add-ins in Java
+=======================================
 
 # Introduction
 XL4J is a Java and native code library that allows you to build native-quality Excel Add-ins using only standard Java tooling (Maven + JDK).  It lets you write might performance custom Excel functions and commands for end users, but also to work as a dynamic rapid application development tool in it's own right.
@@ -12,7 +12,7 @@ of object handles.  This means you can store any complex object in a single Exce
    - allowing developers to access any functionality they would be able to through a pure native XLL project written in C++.  This 
      means you don't have to choose between convenience and power.
  - Make it easy
-2   - Put your data where you users are using it and hugely increase productivity and reduce development cycles by making it really 
+   - Put your data where you users are using it and hugely increase productivity and reduce development cycles by making it really 
      easy to expose data to users without complex and inflexible UI engineering.  
    - super easy to start development - just annotate a method with @XLFunction and watch XL4J do the rest.
    - super easy deployment - just create a Maven project, include a dependency and maven assembly file and build the Add-in directory
@@ -34,28 +34,61 @@ of object handles.  This means you can store any complex object in a single Exce
        return one + two;
      }
   ```
-    
-   |   | A              | B      |
-   |---|:--------------:|:------:|
-   | 1 | `=MyAdd(1, 2)` |        |
+
+  ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
    
+  See the tutorial for more complex examples that return objects and arrays, include documentation and more.
  - Automatic marshalling (conversion) from Java to Excel types and back again.
    - Primitive types (and Boxed equivalents)
    - JSR-310/Java 8 dates
    - 1D/2D Arrays
    - Full object handling system maintains a garbage collected heap for objects, necessary for long running sheets
    - Support for varargs
- - Ability to create and call methods on arbitrary java objects from Excel with no code changes:
+ - All the types of functions and features normally available to Excel XLLs
+   - Volatile functions `@XLFunction(volatile=true)` which are always recalculated (e.g. =TODAY()).
+   - Macro equivalent functions `@XLFunction(isMacroEquivalent=true)` run single-threaded but can call more Excel
+     APIs such as those that modify other cells (useful for dumping data onto a sheet without using an array formula).
+   - Multi-thread safe functions `@XLFunction(isMultiThreadSafe=true)` which Excel can call from multiple calculation threads.
+     This is the default.
+   - Asynchronous functions `@XLFunction(isAsynchronous=true)` which enable long running operations to run while Excel continues
+     and explicitly notify Excel of a result. **CURRENTLY IN DEVELOPMENT**.
+ - Call XLL API from different contexts
+   - XLL API calls can be made from the caller's Excel calculation thread or from the Excel main thread depending on context required.  
+     Excel documentation specifies that many API calls can only be safely made from the main Excel thread. **CURRENTLY IN DEVELOPMENT**
  
-   |   | A                                                      |                          B                        |
-   |---|:------------------------------------------------------:|:-------------------------------------------------:|
-   | 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` | `=JConstruct("javax.swing.JButton", "Click me!")` |
-   | 2 | `=JMethod(A1, "setSize", 300, 200)`                    |                                                   |
-   | 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
-   | 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
-   
-   ![JFrame](https://github.com/McleodMoores/xl4j/raw/master/docs/images/jframe.png "The Resulting JFrame")
+## Calling constructors and methods on arbitrary java objects
+The follwing example allows you to create and show a Swing JFrame with no coding at all:
 
+|   | A                                                      |                          B                        |
+|---|:------------------------------------------------------:|:-------------------------------------------------:|
+| 1 | `=JConstruct("javax.swing.JFrame", "My Window Title")` | `=JConstruct("javax.swing.JButton", "Click me!")` |
+| 2 | `=JMethod(A1, "setSize", 300, 200)`                    |                                                   |
+| 3 | `=After(A2, JMethod(A1, "add", B1))`                   |                                                   |
+| 4 | `=After(A3, JMethod(A1, "setVisible", TRUE))`          |                                                   |
+
+which looks like this in Excel - note the object handles with the >> prefix followed by the type and the handle number:
+
+![JFrame in Excel](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe-example.PNG "How it looks in Excel")
+
+Breaking this example down:
+ - The `JConstruct` function calls the named classes constructor with any supplied arguments and returns an object handle.  The first
+   constructor that the system is able to convert the argument list for will be chosen.
+ - The `JMethod` function calls a method named in the second argument on the object handle passed in as the first argument with
+   any subsequently supplied parameters.  The first method that the system is able to convert the argument list for will be chosen.
+ - The `After` function is a utility function that allows you to specify that this cell should be evaluated after another one.  In this
+   case it allows us to specify that we want the `add` method called after the `setSize` method, and the `setVisible` method after that.
+   If we don't do this, we can find that Excel can choose an ordering we didn't want.  Note this is only really an issue when we're 
+   side-effecting a java object, which we should generally avoid anyway.
+   
+Evaluating the sheet results JFrame appearing:
+
+![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
+
+## Configuration and Easy Logging Access
+By default there are toolbar icons for opening the settings dialog, and opening the Java and C++ Logs in Notepad (or default 
+`.log` file viewer).  These can be disabled for end users if preferred.
+ - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
+ 
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
    allow hosting installation files on a network share.
@@ -63,124 +96,5 @@ of object handles.  This means you can store any complex object in a single Exce
  - Installation can be custom configured to hide configuration and developer options from end users.
  - White labelling.
  - In-build access to logs without digging around in Temp directories or CLI windows.
-   
 
-# Two distinct modes of use
 
-1. Interacting with existing Java code and libraries directly from Excel
-  - Creating object by calling constructors, factory methods, etc.
-  - Invoking methods
-  - Marshall results too and from Excel types where possible, but always have a fallback to explcitily typed objects
-2. Writing and exposing functions specifically designed for Excel.  These would share the same type system but have
-   more refined argument lists, accept ranges, arrays and so on as necessary.
-  - Support for basic non-blocking, fast UDF invocation/calculation.
-  - Support for slower calculations by using
-    - Asynchronous UDFs
-    - Other tricks?  Timeouts, retries, RTD functions?
-  - Support for RTD servers.
-
-# General Notes
-
-## Excel Types
-| Excel Type       | Notes/Values |
-|------------------|--------------|
-| Number           | All floating point, note that it's not IEEE-compliant.  In particular NaN -> #NUM!, Inf -> #NUM! and subnormals are truncated to 0.  The range is 10<sup>307</sup> <= abs(x) < 10<sup>308</sup> |
-| Boolean          | TRUE or FALSE |
-| String (Unicode) | 2<sup>15</sup>-1 unicode characters (UTF-16?).  Only displayed if value >= 32. |
-| Errors | #NULL!, #DIV/0!, #VALUE!, #REF!, #NAME?, #NUM!, #N/A |
-| Arrays | One and two dimensional array of mixed type objects.  Literals are encoded using curly brackets row by row, with commas separating objects, with semi-colons separating rows. |
-
-### Pseudo types
-Dates and times are represented just as numbers, specifically fractions of a day since the epoch (which is not the standard epoch).  Their display is purely a formatting filter.
-
-Percentages to are represented as numbers and their display is just a * 100 formatting filter.  The % symbol is just a unary suffix operator that divides by 100.
-
-## Input evaluation
-Chains of evaluation
-
-1. If string prefix (single quote) => String
-2. If prefixed with plus, minus or equals => Formula
-3. See if the value looks like a date, time, currency amount, percentage or number
- 
-For formulas, the process is then
-
-1. Evaluate function arguments from most nested outwards.  Cell references and ranges are converted to values (unless the function in question expects a reference), which may then be converted to the expected data types if necessary.  If a name is not identifiable as a function or defined name (named range or cell), then it will be replaced with #NAME? and the evaluation will fail.
-2. If the _value has changed_, any dependent inputs will be recalculated. **WE WILL NEED TO TAKE THIS INTO ACCOUNT WHEN USING OBJECT HANDLES**
-3. Circular references are checked and cells may be resized.
- 
-## Type conversion at the Excel level
-Conversions take place as operators are applied to values:
-### The equals operator
-Will convert any cell references into _values_ before invoking functions and will only return one of the basic Excel types listed above
-### Unary minus
-Will convert a string representation of a number to a negated number representation, so double negation converts from String to Number.  Booleans convert to -1 or 0, so an easy Boolean to Number conversion is achieved with double negation. Note that the unary plus operator does not have the same effect.
-### Binary arithmetic operators (`+`, `-`, `*`, `/`, `^`)
-Will try to convert any values to Numbers.  This includes strings in any recognised format, dates and times and percentages.
-### Percentage operators (`%`)
-Higest precendence operator so binds tightly to the operand to it's left.  Will try and convert anything to a Number, so can be applied to dates, times and Booleans as well.
-### String contatenation operator (`&`)
-Convert numbers to strings in a default number format unrelated to display format.
-### Binary Boolean comparison operators (`=`, `<`, `>`, `<=`, `>=`, `<>`)
-Acting on String the comparisons are *case insensitive*.  Internally everything is converted to lower case before comparison. No other conversions are done for these operators.  This means you can't compare string and number representations and expect equality or reasonable comparisons.
-### Binding to functions
-Conversions also take place when binding to function parameters.  Excel will try to convert to the expected type.
-
-## Ranges and Arrays
-### Ranges
-Ranges are treated quite differently from arrays and can have some odd properties when evaluated in a scalar context.
-
-| . |  A |     B      | 
-|---|----|------------|
-| 1 |  2 | =$A$2:$A$5 |
-| 2 |  4 | =$A$2:$A$5 |
-| 3 |  8 | =$A$2:$A$5 |
-| 4 | 16 | =$A$2:$A$5 |
-| 5 | 32 | =$A$2:$A$5 |
-
-yields the values 
-
-|   |  A |     B    | 
-|---|----|----------|
-| 1 |  2 |  #VALUE! |
-| 2 |  4 |        4 |
-| 3 |  8 |        8 |
-| 4 | 16 |       16 |
-| 5 | 32 |       32 |
-
-where each the range is converted into a scalar in a different way for each context using the *current* row/column relative to the range.  Note that if the range does not overlap the current column, the result will be `#VALUE!`
-
-### Arrays
-Scalar operations on arrays are treated as matrix style operations where each element is operated on separately.  Note here that the formulas in B1:B5 are an array formula rather than multiple single formulas.
-
-|   |  A |        B       | 
-|---|----|----------------|
-| 1 |  2 | \{=$A$2:$A$5\} |
-| 2 |  4 | \{=$A$2:$A$5\} |
-| 3 |  8 | \{=$A$2:$A$5\} |
-| 4 | 16 | \{=$A$2:$A$5\} |
-| 5 | 32 | \{=$A$2:$A$5\} |
-
-yields
-
-|   |  A |    B    | 
-|---|----|---------|
-| 1 |  2 |       4 |
-| 2 |  4 |       8 |
-| 3 |  8 |      16 |
-| 4 | 16 |      32 |
-| 5 | 32 | #VALUE! |
-
-### Explicit type conversions
-There are a number of funcitons available to force type conversions
-
-| Function Name | Return Type | Number | String | Boolean | Error |
-|---------------|-------------|--------|--------|---------|-------|
-| N()           | Number/Err  | arg    | 0      | 1/0     | arg   |
-| T()           | String/Err  | ""     | arg    | ""      | arg   |
-| TEXT()        | String/Err  | String rep. of arg | convert to String and back, #VALUE! if fails | "TRUE" or "FALSE" | arg |
-| VALUE()       | Number/Err  | arg    | convert to Number, #VALUE! if fails | #VALUE! | arg |
-
-# Specification
-
-## Primitive Types
-### 

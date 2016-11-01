@@ -1,0 +1,52 @@
+/**
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
+package com.mcleodmoores.xl4j.examples.credit;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.threeten.bp.DayOfWeek;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.Period;
+
+import com.opengamma.analytics.date.CalendarAdapter;
+import com.opengamma.analytics.date.SimpleWorkingDayCalendar;
+import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
+import com.opengamma.financial.convention.calendar.Calendar;
+
+/**
+ * Utilities for the functions that construct ISDA curves.
+ */
+public final class IsdaFunctionUtils {
+
+  /**
+   * Parses a string as a Period. The initial "P" may or may not be included.
+   * @param string  the string
+   * @return  the period
+   */
+  public static Period parsePeriod(final String string) {
+    if (string.toUpperCase().startsWith("P")) {
+      return Period.parse(string);
+    }
+    return Period.parse("P" + string);
+  }
+
+  public static Calendar createHolidayCalendar(final LocalDate[] holidayDates) {
+    @SuppressWarnings("deprecation")
+    final Calendar calendar;
+    if (holidayDates == null) {
+      return new CalendarAdapter(WeekendWorkingDayCalendar.SATURDAY_SUNDAY);
+    }
+    final List<LocalDate> holidays = new ArrayList<>();
+    for (final LocalDate holidayDate : holidayDates) {
+      holidays.add(holidayDate);
+    }
+    return new CalendarAdapter(new SimpleWorkingDayCalendar("Holidays", holidays, DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+  }
+  /**
+   * Restricted constructor.
+   */
+  private IsdaFunctionUtils() {
+  }
+}
