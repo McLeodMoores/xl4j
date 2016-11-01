@@ -38,12 +38,24 @@ of object handles.  This means you can store any complex object in a single Exce
 
   ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
    
+  See the tutorial for more complex examples that return objects and arrays, include documentation and more.
  - Automatic marshalling (conversion) from Java to Excel types and back again.
    - Primitive types (and Boxed equivalents)
    - JSR-310/Java 8 dates
    - 1D/2D Arrays
    - Full object handling system maintains a garbage collected heap for objects, necessary for long running sheets
    - Support for varargs
+ - All the types of functions and features normally available to Excel XLLs
+   - Volatile functions `@XLFunction(volatile=true)` which are always recalculated (e.g. =TODAY()).
+   - Macro equivalent functions `@XLFunction(isMacroEquivalent=true)` run single-threaded but can call more Excel
+     APIs such as those that modify other cells (useful for dumping data onto a sheet without using an array formula).
+   - Multi-thread safe functions `@XLFunction(isMultiThreadSafe=true)` which Excel can call from multiple calculation threads.
+     This is the default.
+   - Asynchronous functions `@XLFunction(isAsynchronous=true)` which enable long running operations to run while Excel continues
+     and explicitly notify Excel of a result. **CURRENTLY IN DEVELOPMENT**.
+ - Call XLL API from different contexts
+   - XLL API calls can be made from the caller's Excel calculation thread or from the Excel main thread depending on context required.  
+     Excel documentation specifies that many API calls can only be safely made from the main Excel thread. **CURRENTLY IN DEVELOPMENT**
  
 ## Calling constructors and methods on arbitrary java objects
 The follwing example allows you to create and show a Swing JFrame with no coding at all:
@@ -80,20 +92,5 @@ Evaluating the sheet results JFrame appearing:
  - Installation can be custom configured to hide configuration and developer options from end users.
  - White labelling.
  - In-build access to logs without digging around in Temp directories or CLI windows.
-   
-
-# Two distinct modes of use
-
-1. Interacting with existing Java code and libraries directly from Excel
-  - Creating object by calling constructors, factory methods, etc.
-  - Invoking methods
-  - Marshall results too and from Excel types where possible, but always have a fallback to explcitily typed objects
-2. Writing and exposing functions specifically designed for Excel.  These would share the same type system but have
-   more refined argument lists, accept ranges, arrays and so on as necessary.
-  - Support for basic non-blocking, fast UDF invocation/calculation.
-  - Support for slower calculations by using
-    - Asynchronous UDFs
-    - Other tricks?  Timeouts, retries, RTD functions?
-  - Support for RTD servers.
 
 
