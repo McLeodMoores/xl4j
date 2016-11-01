@@ -15,16 +15,44 @@
       <name>GNU General Public License, Version 3.0</name>
       <url>http://www.gnu.org/licenses/gpl.txt</url>
     </license>
+    <license>
+      <name>McLeod Moores Commercial License</name>
+      <url>http://www.mcleodmoores.com</url>
+    </license>
   </licenses>
-
-  <modules>
-    <module>comjvm-win32</module>
-    <module>xll-core</module>
-	<module>xll-java</module>
-	<module>xll-examples</module>
-    <module>packaging</module>
-  </modules>
   
+  <profiles>
+    <profile>
+      <id>java</id>
+      <activation>
+        <property>
+	  <name>!env.VCINSTALLDIR</name>
+        </property>  
+      </activation>
+      <modules>
+        <module>xll-core</module>
+        <module>xll-java</module>
+        <module>xll-examples</module>
+        <module>packaging</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>all</id>
+      <activation>
+        <property>
+  	  <name>env.VCINSTALLDIR</name>
+        </property>  
+      </activation>
+      <modules>
+        <module>comjvm-win32</module>
+        <module>xll-core</module>
+        <module>xll-java</module>
+        <module>xll-examples</module>
+        <module>packaging</module>
+      </modules>
+    </profile>
+  </profiles>
+    
   <properties>
     <maven-native-packing.version>0.2.3</maven-native-packing.version>
     <java.version>1.8.0</java.version>
@@ -47,27 +75,17 @@
   <repositories> 
     <repository>
       <id>releases</id>
-      <name>McLeod Moores Release</name>
+      <name>McLeod Moores Public Release Repository</name>
       <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
     </repository>
-    <repository> 
-      <id>private</id> 
-      <name>McLeod Moores private maven repository</name> 
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/private</url> 
-    </repository> 
-    <repository> 
-      <id>private-snapshot</id> 
-      <name>McLeod Moores private maven snapshot repository</name> 
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/private-snapshot</url> 
-      <snapshots> 
+	<repository>
+      <id>snapshots</id>
+      <name>McLeod Moores Public Snapshot Repository</name>
+      <url>http://maven.mcleodmoores.com:8081/content/repositories/snapshots</url>
+	  <snapshots> 
         <enabled>true</enabled> 
       </snapshots> 
-    </repository> 
-    <repository> 
-      <id>og-public</id> 
-      <name>OG Public</name> 
-      <url>http://maven.opengamma.com/nexus/content/groups/public</url> 
-    </repository> 
+    </repository>
   </repositories> 
   <pluginRepositories> 
     <pluginRepository>
@@ -75,14 +93,9 @@
       <name>McLeod Moores Release</name>
       <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
     </pluginRepository>
-    <pluginRepository> 
-      <id>og-public</id> 
-      <name>OG Public</name> 
-      <url>http://maven.opengamma.com/nexus/content/groups/public</url> 
-    </pluginRepository>
   </pluginRepositories> 
 
-    <build>
+  <build>
     <plugins>
       <!-- plug-in for staging to Nexus -->
       <plugin>
