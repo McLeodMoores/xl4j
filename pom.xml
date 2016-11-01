@@ -16,14 +16,39 @@
       <url>http://www.gnu.org/licenses/gpl.txt</url>
     </license>
   </licenses>
-
-  <modules>
-    <module>comjvm-win32</module>
-    <module>xll-core</module>
-	<module>xll-java</module>
-	<module>xll-examples</module>
-    <module>packaging</module>
-  </modules>
+  
+  <profiles>
+    <profile>
+	  <id>java</id>
+	  <activation>
+	    <property>
+		  <name>!env.VCINSTALLDIR</name>
+	    </property>  
+	  </activation>
+	  <modules>
+        <module>xll-core</module>
+	    <module>xll-java</module>
+	    <module>xll-examples</module>
+        <module>packaging</module>
+	  </modules>
+	</profile>
+	<profile>
+	  <id>all</id>
+	  <activation>
+	    <property>
+		  <name>env.VCINSTALLDIR</name>
+	    </property>  
+	  </activation>
+	  <modules>
+		<module>comjvm-win32</module>
+		<module>xll-core</module>
+		<module>xll-java</module>
+		<module>xll-examples</module>
+		<module>packaging</module>
+	  </modules>
+	</profile>
+  </profiles>
+  
   
   <properties>
     <maven-native-packing.version>0.2.3</maven-native-packing.version>
