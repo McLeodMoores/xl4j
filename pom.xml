@@ -91,7 +91,7 @@
     </pluginRepository>
   </pluginRepositories> 
 
-    <build>
+  <build>
     <plugins>
       <!-- plug-in for staging to Nexus -->
       <plugin>
