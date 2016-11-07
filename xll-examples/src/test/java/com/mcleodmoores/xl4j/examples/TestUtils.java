@@ -23,7 +23,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
 /**
  *
  */
-public class TestUtils {
+public final class TestUtils {
 
   public static XLValue convertToXlType(final Object object) {
     if (object instanceof Number) {

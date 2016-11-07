@@ -57,6 +57,8 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
   private static final String BDC = "Modified Following";
   /** The spot date */
   private static final LocalDate SPOT_DATE = LocalDate.of(2016, 10, 5);
+  /** The number of spot days */
+  private static final int SPOT_DAYS = 2;
   /** The holidays */
   private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 8, 1)};
   /** The expected curve */
@@ -64,7 +66,7 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
   /** The object constructed by the function processor */
   private static final Object XL_RESULT = PROCESSOR.invoke("ISDAYieldCurve.BuildCurve", convertToXlType(TRADE_DATE), convertToXlType(INSTRUMENT_TYPE_STRINGS),
       convertToXlType(TENOR_STRINGS), convertToXlType(QUOTES), convertToXlType(MONEY_MARKET_DAY_COUNT), convertToXlType(SWAP_DAY_COUNT),
-      convertToXlType(SWAP_INTERVAL), convertToXlType(CURVE_DAY_COUNT), convertToXlType(BDC), convertToXlType(SPOT_DATE),
+      convertToXlType(SWAP_INTERVAL), convertToXlType(CURVE_DAY_COUNT), convertToXlType(BDC), convertToXlType(SPOT_DATE), XLMissing.INSTANCE,
       convertToXlType(HOLIDAYS));
 
 
@@ -95,6 +97,22 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
   }
 
   @Test
+  public void testConstructionOfCurveWithConvention() {
+    final IsdaYieldCurveConvention convention = IsdaYieldCurveConvention.of(MONEY_MARKET_DAY_COUNT, SWAP_DAY_COUNT, SWAP_INTERVAL,
+        CURVE_DAY_COUNT, BDC, SPOT_DAYS);
+    final Object xlResult = PROCESSOR.invoke("ISDAYieldCurve.BuildCurveFromConvention", convertToXlType(TRADE_DATE),
+        convertToXlType(INSTRUMENT_TYPE_STRINGS), convertToXlType(TENOR_STRINGS), convertToXlType(QUOTES),
+        convertToXlType(convention, HEAP), convertToXlType(SPOT_DATE), convertToXlType(HOLIDAYS));
+    assertTrue(xlResult instanceof XLObject);
+    final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
+    assertTrue(result instanceof ISDACompliantCurve);
+    final ISDACompliantCurve curve = (ISDACompliantCurve) result;
+    // curves won't be equals() because the names will be different
+    assertArrayEquals(curve.getKnotTimes(), EXPECTED_CURVE.getKnotTimes(), 1e-15);
+    assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
+  }
+
+  @Test
   public void testConstructionOfCurveWithoutOptional() {
     final ISDAInstrumentTypes[] instrumentTypes = new ISDAInstrumentTypes[] {
         ISDAInstrumentTypes.MoneyMarket, ISDAInstrumentTypes.MoneyMarket, ISDAInstrumentTypes.MoneyMarket, ISDAInstrumentTypes.Swap,
@@ -103,14 +121,15 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     final Period[] tenors = new Period[] {Period.ofMonths(3), Period.ofMonths(6), Period.ofMonths(9),
         Period.ofYears(1), Period.ofYears(2), Period.ofYears(3), Period.ofYears(4), Period.ofYears(5), Period.ofYears(7),
         Period.ofYears(10)};
-    final ISDACompliantYieldCurveBuild builder = new ISDACompliantYieldCurveBuild(TRADE_DATE, TRADE_DATE, instrumentTypes, tenors,
+    final ISDACompliantYieldCurveBuild builder = new ISDACompliantYieldCurveBuild(TRADE_DATE, SPOT_DATE, instrumentTypes, tenors,
         DayCountFactory.INSTANCE.instance(MONEY_MARKET_DAY_COUNT), DayCountFactory.INSTANCE.instance(SWAP_DAY_COUNT), Period.ofMonths(6),
         DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT), BusinessDayConventionFactory.INSTANCE.instance(BDC),
         new CalendarAdapter(WeekendWorkingDayCalendar.SATURDAY_SUNDAY));
     final ISDACompliantYieldCurve expectedCurve = builder.build(QUOTES);
     final Object xlResult = PROCESSOR.invoke("ISDAYieldCurve.BuildCurve", convertToXlType(TRADE_DATE), convertToXlType(INSTRUMENT_TYPE_STRINGS),
         convertToXlType(TENOR_STRINGS), convertToXlType(QUOTES), convertToXlType(MONEY_MARKET_DAY_COUNT), convertToXlType(SWAP_DAY_COUNT),
-        convertToXlType(SWAP_INTERVAL), convertToXlType(CURVE_DAY_COUNT), convertToXlType(BDC), XLMissing.INSTANCE, XLMissing.INSTANCE);
+        convertToXlType(SWAP_INTERVAL), convertToXlType(CURVE_DAY_COUNT), convertToXlType(BDC), convertToXlType(SPOT_DATE), XLMissing.INSTANCE,
+        XLMissing.INSTANCE);
     assertTrue(xlResult instanceof XLObject);
     final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
     assertTrue(result instanceof ISDACompliantCurve);

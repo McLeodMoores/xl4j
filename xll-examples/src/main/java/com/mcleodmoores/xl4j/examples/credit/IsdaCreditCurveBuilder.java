@@ -30,7 +30,6 @@ import com.opengamma.util.ArgumentChecker;
  */
 public final class IsdaCreditCurveBuilder {
 
-  // build curve from convention
   @XLFunction(name = "ISDACreditCurve.BuildIMMCurveFromConvention")
   public static ISDACompliantCurve buildCreditCurve() {
     return null;

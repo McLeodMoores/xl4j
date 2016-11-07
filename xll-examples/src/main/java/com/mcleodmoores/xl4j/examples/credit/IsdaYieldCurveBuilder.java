@@ -12,9 +12,11 @@ import org.threeten.bp.Period;
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurveBuild;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAInstrumentTypes;
+import com.opengamma.analytics.financial.schedule.ScheduleCalculator;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.calendar.Calendar;
@@ -27,7 +29,67 @@ import com.opengamma.financial.convention.daycount.DayCountFactory;
 public final class IsdaYieldCurveBuilder {
 
   /**
-   * Constructs a yield curve using the ISDA CDS model.
+   * Constructs a yield curve using the ISDA CDS model. If the spot date field
+   * is supplied, this spot date is used in preference to that calculated from
+   * the business day convention and trade date.
+   * @param tradeDate  the trade date
+   * @param instrumentTypeNames  the names of the instrument types: M, MM or MONEY MARKET; S or SWAP, in any case
+   * @param tenors  the instrument tenors, in the form "P3M" or "3M". Must have one per instrument type
+   * @param quotes  the market data quotes. Must have one per instrument type
+   * @param convention  the convention for the curve.
+   * @param spotDate  the spot date, is optional. If not supplied, the trade date is used
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
+   * @return  a yield curve constructed using the ISDA model
+   */
+  @XLFunction(name = "ISDAYieldCurve.BuildCurveFromConvention", category = "ISDA CDS model",
+      description = "Build a yield curve using the ISDA methodology")
+  public static ISDACompliantYieldCurve buildYieldCurve(
+      @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
+      @XLArgument(description = "Instrument Types", name = "instrumentTypes") final String[] instrumentTypeNames,
+      @XLArgument(description = "Tenors", name = "tenors") final String[] tenors,
+      @XLArgument(description = "Quotes", name = "quotes") final double[] quotes,
+      @XLArgument(description = "Convention", name = "convention") final IsdaYieldCurveConvention convention,
+      @XLArgument(description = "Spot Date", name = "spotDate", optional = true) final LocalDate spotDate,
+      @XLArgument(description = "Holidays", name = "holidays", optional = true) final LocalDate[] holidayDates) {
+    final int n = instrumentTypeNames.length;
+    ArgumentChecker.isTrue(n == tenors.length, "Must have one tenor per instrument, have {} tenors and {} instrument types", tenors.length, n);
+    ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per instrument, have {} quotes and {} instrument types", quotes.length, n);
+    final ISDAInstrumentTypes[] instrumentTypes = new ISDAInstrumentTypes[n];
+    final Period[] periods = new Period[n];
+    for (int i = 0; i < instrumentTypes.length; i++) {
+      switch (instrumentTypeNames[i].toUpperCase()) {
+        case "S":
+        case "SWAP":
+          instrumentTypes[i] = ISDAInstrumentTypes.Swap;
+          break;
+        case "M":
+        case "MM":
+        case "MONEY MARKET":
+          instrumentTypes[i] = ISDAInstrumentTypes.MoneyMarket;
+          break;
+        default:
+          throw new IllegalArgumentException("Unsupported instrument type " + instrumentTypeNames[i]);
+      }
+      periods[i] = parsePeriod(tenors[i]);
+    }
+    final Calendar calendar = createHolidayCalendar(holidayDates);
+    final ISDACompliantYieldCurveBuild builder;
+    if (spotDate == null) {
+      final LocalDate spotFromTrade = ScheduleCalculator.getAdjustedDate(tradeDate, convention.getSpotDays(), calendar);
+      builder = new ISDACompliantYieldCurveBuild(tradeDate, spotFromTrade, instrumentTypes, periods,
+          convention.getMoneyMarketDayCount(), convention.getSwapDayCount(), convention.getSwapInterval(),
+          convention.getCurveDayCount(), convention.getBusinessDayConvention(), calendar);
+    } else {
+      builder = new ISDACompliantYieldCurveBuild(tradeDate, spotDate, instrumentTypes, periods,
+          convention.getMoneyMarketDayCount(), convention.getSwapDayCount(), convention.getSwapInterval(),
+          convention.getCurveDayCount(), convention.getBusinessDayConvention(), calendar);
+    }
+    return builder.build(quotes);
+  }
+  /**
+   * Constructs a yield curve using the ISDA CDS model. If both the spot days and spot date field
+   * are supplied, the spot date is used in preference. One of either the spot date or spot days
+   * must be provided.
    * @param tradeDate  the trade date
    * @param instrumentTypeNames  the names of the instrument types: M, MM or MONEY MARKET; S or SWAP, in any case
    * @param tenors  the instrument tenors, in the form "P3M" or "3M". Must have one per instrument type
@@ -37,8 +99,9 @@ public final class IsdaYieldCurveBuilder {
    * @param swapIntervalName  the swap interval name, in the for "P1Y" or "1Y"
    * @param curveDayCountName  the curve day count name
    * @param businessDayConventionName  the business day convention name
-   * @param spotDate  the spot date, can be null. If not supplied, the trade date is used
-   * @param holidayDates  the holiday dates, can be null. If not supplied, weekend-only holidays are used
+   * @param spotDays  the number of spot days, is optional
+   * @param spotDate  the spot date, is optional. If not supplied, the trade date is used
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  a yield curve constructed using the ISDA model
    */
   @XLFunction(name = "ISDAYieldCurve.BuildCurve", category = "ISDA CDS model",
@@ -54,6 +117,7 @@ public final class IsdaYieldCurveBuilder {
       @XLArgument(description = "Curve Day Count", name = "curveDayCount") final String curveDayCountName,
       @XLArgument(description = "Business Day Convention", name = "businessDayConvention") final String businessDayConventionName,
       @XLArgument(description = "Spot Date", name = "spotDate", optional = true) final LocalDate spotDate,
+      @XLArgument(description = "Spot Days", name = "spotDays", optional = true) final Integer spotDays,
       @XLArgument(description = "Holidays", name = "holidays", optional = true) final LocalDate[] holidayDates) {
     final int n = instrumentTypeNames.length;
     ArgumentChecker.isTrue(n == tenors.length, "Must have one tenor per instrument, have {} tenors and {} instrument types", tenors.length, n);
@@ -84,7 +148,11 @@ public final class IsdaYieldCurveBuilder {
     final Calendar calendar = createHolidayCalendar(holidayDates);
     final ISDACompliantYieldCurveBuild builder;
     if (spotDate == null) {
-      builder = new ISDACompliantYieldCurveBuild(tradeDate, tradeDate, instrumentTypes, periods,
+      if (spotDays == null) {
+        throw new Excel4JRuntimeException("Did not supply either spot date or the number of spot days");
+      }
+      final LocalDate spotFromTrade = ScheduleCalculator.getAdjustedDate(tradeDate, spotDays, calendar);
+      builder = new ISDACompliantYieldCurveBuild(tradeDate, spotFromTrade, instrumentTypes, periods,
           moneyMarketDayCount, swapDayCount, swapInterval, curveDayCount, businessDayConvention, calendar);
     } else {
       builder = new ISDACompliantYieldCurveBuild(tradeDate, spotDate, instrumentTypes, periods,
