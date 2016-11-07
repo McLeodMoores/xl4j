@@ -33,7 +33,7 @@ public final class IsdaYieldCurveConvention {
    * @param spotDays  the number of spot days
    * @return  a convention
    */
-  @XLFunction(name = "ISDAYieldCurveConvention")
+  @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
   public static IsdaYieldCurveConvention of(
       @XLArgument(description = "Money Market Day Count", name = "moneyMarketDayCount") final String moneyMarketDayCountName,
       @XLArgument(description = "Swap Day Count", name = "swapDayCount") final String swapDayCountName,

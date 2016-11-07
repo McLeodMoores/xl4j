@@ -110,6 +110,22 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
   }
 
   @Test
+  public void testConstructionOfCurveWithConvention() {
+    final IsdaCdsConvention convention = IsdaCdsConvention.of(ACCRUAL_DAY_COUNT_NAME, CURVE_DAY_COUNT_NAME, BDC_NAME, COUPON_INTERVAL, STUB_TYPE,
+        CASH_SETTLEMENT_DAYS, STEP_IN_DAYS, PAY_ACCRUAL_ON_DEFAULT);
+    final Object xlResult = PROCESSOR.invoke("ISDACreditCurve.BuildIMMCurveFromConvention", convertToXlType(TRADE_DATE), convertToXlType(TENORS),
+        convertToXlType(QUOTE_TYPES), convertToXlType(QUOTES), convertToXlType(RECOVERY_RATES), convertToXlType(COUPONS), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(convention, HEAP), convertToXlType(HOLIDAYS));
+    assertTrue(xlResult instanceof XLObject);
+    final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
+    assertTrue(result instanceof ISDACompliantCreditCurve);
+    final ISDACompliantCreditCurve curve = (ISDACompliantCreditCurve) result;
+    // curves won't be equals() because the names will be different
+    assertArrayEquals(curve.getKnotTimes(), EXPECTED_CURVE.getKnotTimes(), 1e-15);
+    assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
+  }
+
+  @Test
   public void testConstructionOfCurveWithoutOptional() {
     final CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory().withAccrualDCC(DayCountFactory.INSTANCE.instance(ACCRUAL_DAY_COUNT_NAME))
         .withCurveDCC(DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT_NAME))
