@@ -39,11 +39,11 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.BuildCDSFromConvention", category = "ISDA CDS model",
       description = "Build a CDS")
   public static CDSAnalytic createImmCds(
-      @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
-      @XLArgument(description = "Tenor", name = "tenor") final String tenor,
-      @XLArgument(description = "Recovery Rate", name = "recoveryRate") final double recoveryRate,
-      @XLArgument(description = "Convention", name = "convention") final IsdaCdsConvention convention,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
+      @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
+      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
     cdsFactory = cdsFactory.withAccrualDCC(convention.getAccrualDayCount());
     cdsFactory = cdsFactory.withCurveDCC(convention.getCurveDayCount());
@@ -89,17 +89,17 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.BuildCDS", category = "ISDA CDS model",
       description = "Build a CDS")
   public static CDSAnalytic createImmCds(
-      @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
-      @XLArgument(description = "Tenor", name = "tenor") final String tenor,
-      @XLArgument(description = "Recovery Rate", name = "recoveryRate") final double recoveryRate,
-      @XLArgument(description = "Accrual Day Count", name = "accrualDayCount") final String accrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "curveDayCount") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "businessDayConvention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "couponInterval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "stubType") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "cashSettlementDays") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "stepInDays") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Pay Accrual On Default", name = "payAccrualOnDefault") final Boolean payAccrualOnDefault,
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
+      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
+      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLArgument(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
       @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
     cdsFactory = cdsFactory.withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName));
@@ -139,11 +139,11 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.CleanPrice", category = "ISDA CDS model",
       description = "Calculate the clean price of a CDS for the protection buyer")
   public static double cleanPrice(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "notional") final double notional,
-      @XLArgument(description = "CDS", name = "cds") final CDSAnalytic cds,
-      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "coupon") final double coupon) {
+      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
+      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
     return notional * CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.CLEAN);
   }
 
@@ -159,11 +159,11 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.DirtyPrice", category = "ISDA CDS model",
       description = "Calculate the dirty price of a CDS for the protection buyer")
   public static double dirtyPrice(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "notional") final double notional,
-      @XLArgument(description = "CDS", name = "cds") final CDSAnalytic cds,
-      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "coupon") final double coupon) {
+      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
+      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
     return notional * CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.DIRTY);
   }
 

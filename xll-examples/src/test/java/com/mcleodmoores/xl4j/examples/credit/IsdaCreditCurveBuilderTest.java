@@ -74,7 +74,6 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
       convertToXlType(ACCRUAL_DAY_COUNT_NAME), convertToXlType(CURVE_DAY_COUNT_NAME), convertToXlType(BDC_NAME), convertToXlType(COUPON_INTERVAL),
       convertToXlType(STUB_TYPE), convertToXlType(CASH_SETTLEMENT_DAYS), convertToXlType(STEP_IN_DAYS), convertToXlType(PAY_ACCRUAL_ON_DEFAULT),
       convertToXlType(HOLIDAYS));
-
   static {
     final CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
         .withAccrualDCC(DayCountFactory.INSTANCE.instance(ACCRUAL_DAY_COUNT_NAME))

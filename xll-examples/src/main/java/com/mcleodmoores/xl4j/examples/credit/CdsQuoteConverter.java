@@ -27,19 +27,22 @@ public final class CdsQuoteConverter {
 
   /**
    * Converts a CDS quote from one type to another, e.g. points up-front to quoted spread.
+   * @param cds  the CDS
+   * @param yieldCurve  the yield curve
    * @param quote  the quote
+   * @param coupon  the CDS coupon
    * @param quoteType  the original quote type
    * @param convertToType  the type to convert to
    * @return  the converted quote
    */
   @XLFunction(name = "ConvertCDSQuote")
   public static double convertQuote(
-      @XLArgument(description = "CDS", name = "cds") final CDSAnalytic cds,
-      @XLArgument(description = "Yield curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Quote", name = "quote") final double quote,
-      @XLArgument(description = "Coupon", name = "coupon") final double coupon,
-      @XLArgument(description = "Quote Type", name = "quoteType") final String quoteType,
-      @XLArgument(description = "Convert To Type", name = "convertToType") final String convertToType) {
+      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "Yield curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Quote", name = "Quote") final double quote,
+      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
+      @XLArgument(description = "Quote Type", name = "Quote Type") final String quoteType,
+      @XLArgument(description = "Convert To Type", name = "Convert To Type") final String convertToType) {
     switch (quoteType.toUpperCase()) {
       case PUF:
       case POINTS_UPFRONT:

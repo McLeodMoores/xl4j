@@ -35,11 +35,11 @@ public final class IsdaYieldCurveConvention {
    */
   @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
   public static IsdaYieldCurveConvention of(
-      @XLArgument(description = "Money Market Day Count", name = "moneyMarketDayCount") final String moneyMarketDayCountName,
-      @XLArgument(description = "Swap Day Count", name = "swapDayCount") final String swapDayCountName,
-      @XLArgument(description = "Swap Interval", name = "swapInterval") final String swapIntervalName,
-      @XLArgument(description = "Curve Day Count", name = "curveDayCount") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "businessDayConvention") final String businessDayConventionName,
+      @XLArgument(description = "Money Market Day Count", name = "Money Market Day Count") final String moneyMarketDayCountName,
+      @XLArgument(description = "Swap Day Count", name = "Swap Day Count") final String swapDayCountName,
+      @XLArgument(description = "Swap Interval", name = "Swap Interval") final String swapIntervalName,
+      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
       @XLArgument(description = "Spot Days", name = "spotDays") final int spotDays) {
     final DayCount moneyMarketDayCount = DayCountFactory.INSTANCE.instance(moneyMarketDayCountName);
     final DayCount swapDayCount = DayCountFactory.INSTANCE.instance(swapDayCountName);

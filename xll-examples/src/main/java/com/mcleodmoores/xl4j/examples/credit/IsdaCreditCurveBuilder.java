@@ -45,15 +45,15 @@ public final class IsdaCreditCurveBuilder {
   @XLFunction(name = "ISDACreditCurve.BuildIMMCurveFromConvention", category = "ISDA CDS model",
       description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
   public static ISDACompliantCreditCurve buildCreditCurve(
-      @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
-      @XLArgument(description = "Tenors", name = "tenors") final String[] tenors,
-      @XLArgument(description = "Quote Type", name = "quoteTypes") final String[] quoteTypes,
-      @XLArgument(description = "Quotes", name = "quotes") final double[] quotes,
-      @XLArgument(description = "Recovery Rates", name = "recoveryRates") final double[] recoveryRates,
-      @XLArgument(description = "Coupons", name = "coupons") final double[] coupons,
-      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Convention", name = "convention") final IsdaCdsConvention convention,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLArgument(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
+      @XLArgument(description = "Quotes", name = "Quotes") final double[] quotes,
+      @XLArgument(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
+      @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
+      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     final int n = tenors.length;
     ArgumentChecker.isTrue(n == quoteTypes.length, "Must have one quote type per tenor, have {} tenors and {} quote types", n, quoteTypes.length);
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
@@ -115,22 +115,22 @@ public final class IsdaCreditCurveBuilder {
   @XLFunction(name = "ISDACreditCurve.BuildIMMCurve", category = "ISDA CDS model",
       description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
   public static ISDACompliantCreditCurve buildCreditCurve(
-      @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
-      @XLArgument(description = "Tenors", name = "tenors") final String[] tenors,
-      @XLArgument(description = "Quote Type", name = "quoteTypes") final String[] quoteTypes,
-      @XLArgument(description = "Quotes", name = "quotes") final double[] quotes,
-      @XLArgument(description = "Recovery Rates", name = "recoveryRates") final double[] recoveryRates,
-      @XLArgument(description = "Coupons", name = "coupons") final double[] coupons,
-      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Accrual Day Count", name = "accrualDayCount") final String accrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "curveDayCount") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "businessDayConvention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "couponInterval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "stubType") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "cashSettlementDays") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "stepInDays") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Pay Accrual On Default", name = "payAccrualOnDefault") final Boolean payAccrualOnDefault,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLArgument(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
+      @XLArgument(description = "Quotes", name = "Quotes") final double[] quotes,
+      @XLArgument(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
+      @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
+      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLArgument(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
+      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     final int n = tenors.length;
     ArgumentChecker.isTrue(n == quoteTypes.length, "Must have one quote type per tenor, have {} tenors and {} quote types", n, quoteTypes.length);
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
@@ -177,7 +177,7 @@ public final class IsdaCreditCurveBuilder {
   @XLFunction(name = "ISDACreditCurve.Expand", category = "ISDA CDS model",
       description = "Show the nodal times and hazard rates of the credit curve")
   public static Object[][] expandCurve(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     final Object[][] result = new Object[creditCurve.getNumberOfKnots()][2];
     for (int i = 0; i < creditCurve.getNumberOfKnots(); i++) {
       final double t = creditCurve.getTimeAtIndex(i);
@@ -195,7 +195,7 @@ public final class IsdaCreditCurveBuilder {
   @XLFunction(name = "ISDACreditCurve.ExpandSurvivalProbabilities", category = "ISDA CDS model",
       description = "Show the nodal times and survival probabilities of the credit curve")
   public static Object[][] expandSurvivalProbabilities(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     final Object[][] result = new Object[creditCurve.getNumberOfKnots()][2];
     for (int i = 0; i < creditCurve.getNumberOfKnots(); i++) {
       final double t = creditCurve.getTimeAtIndex(i);
@@ -215,10 +215,10 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.ExpandForDates", category = "ISDA CDS model", description = "Get times and hazard rates for dates")
   public static Object[][] expandCurve(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
-      @XLArgument(description = "Day Count Convention", name = "dayCountConventionName") final String curveDayCountConventionName,
-      @XLArgument(description = "Dates", name = "dates") final LocalDate[] dates) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Current Date", name = "Current Date") final LocalDate currentDate,
+      @XLArgument(description = "Day Count Convention", name = "Day Count Convention") final String curveDayCountConventionName,
+      @XLArgument(description = "Dates", name = "Dates") final LocalDate[] dates) {
     final Object[][] result = new Object[dates.length][2];
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountConventionName);
     for (int i = 0; i < dates.length; i++) {
@@ -240,10 +240,10 @@ public final class IsdaCreditCurveBuilder {
   @XLFunction(name = "ISDACreditCurve.ExpandSurvivalProbabilitiesForDates", category = "ISDA CDS model",
       description = "Get times and survival probabilities for dates")
   public static Object[][] expandSurvivalProbabilities(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
-      @XLArgument(description = "Day Count Convention", name = "dayCountConventionName") final String curveDayCountConventionName,
-      @XLArgument(description = "Dates", name = "dates") final LocalDate[] dates) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Current Date", name = "Current Date") final LocalDate currentDate,
+      @XLArgument(description = "Day Count Convention", name = "Day Count Convention") final String curveDayCountConventionName,
+      @XLArgument(description = "Dates", name = "Dates") final LocalDate[] dates) {
     final Object[][] result = new Object[dates.length][2];
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountConventionName);
     for (int i = 0; i < dates.length; i++) {
@@ -264,10 +264,10 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.HazardRateForDate", category = "ISDA CDS model", description = "Get hazard rate on a date")
   public static Double getHazardRate(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
-      @XLArgument(description = "Day Count Convention", name = "curveDayCountConventionName") final String curveDayCountConventionName,
-      @XLArgument(description = "Date", name = "date") final LocalDate date) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Current Date", name = "Current Date") final LocalDate currentDate,
+      @XLArgument(description = "Day Count Convention", name = "Curve Day Count Convention") final String curveDayCountConventionName,
+      @XLArgument(description = "Date", name = "Date") final LocalDate date) {
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountConventionName);
     final double t = curveDayCount.getDayCountFraction(currentDate, date);
     return creditCurve.getHazardRate(t);
@@ -283,10 +283,10 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.SurvivalProbabilityForDate", category = "ISDA CDS model", description = "Get survival probability on a date")
   public static Double getSurvivalProbability(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Current Date", name = "currentDate") final LocalDate currentDate,
-      @XLArgument(description = "Day Count Convention", name = "curveDayCountConventionName") final String curveDayCountConventionName,
-      @XLArgument(description = "Date", name = "date") final LocalDate date) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Current Date", name = "Current Date") final LocalDate currentDate,
+      @XLArgument(description = "Day Count Convention", name = "Curve Day Count Convention") final String curveDayCountConventionName,
+      @XLArgument(description = "Date", name = "Date") final LocalDate date) {
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountConventionName);
     final double t = curveDayCount.getDayCountFraction(currentDate, date);
     return creditCurve.getSurvivalProbability(t);
@@ -300,8 +300,8 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.HazardRate", category = "ISDA CDS model", description = "Get hazard rate for a time")
   public static Double getHazardRate(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Time", name = "time") final Double t) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Time", name = "Time") final Double t) {
     return creditCurve.getHazardRate(t);
   }
 
@@ -314,8 +314,8 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.SurvivalProbability", category = "ISDA CDS model", description = "Get survival probability for a time")
   public static Double getSurvivalProbability(
-      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Time", name = "time") final Double t) {
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Time", name = "Time") final Double t) {
     return creditCurve.getSurvivalProbability(t);
   }
 
