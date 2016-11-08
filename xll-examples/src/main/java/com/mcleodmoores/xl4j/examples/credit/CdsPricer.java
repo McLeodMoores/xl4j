@@ -167,16 +167,58 @@ public final class CdsPricer {
     return notional * CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.DIRTY);
   }
 
-  public static double parSpread() {
-    return 0;
+  /**
+   * Calculate the par spread of a CDS.
+   * @param cds  the CDS
+   * @param yieldCurve  the yield curve
+   * @param creditCurve  the credit curve
+   * @return  the par spread
+   */
+  @XLFunction(name = "CDS.ParSpread", category = "ISDA CDS model",
+      description = "The par spread of a CDS")
+  public static double parSpread(
+      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return CALCULATOR.parSpread(cds, yieldCurve, creditCurve);
   }
 
-  public static double protectionLegPv() {
-    return 0;
+  /**
+   * Calculates the price for the protection buyer of the protection leg given a yield and credit curve.
+   * @param notional  the notional
+   * @param cds  the CDS
+   * @param yieldCurve  the yield curve
+   * @param creditCurve  the credit curve
+   * @return  the protection leg price
+   */
+  @XLFunction(name = "CDS.ProtectionLegPrice", category = "ISDA CDS model",
+      description = "The present value of the protection leg of a CDS for the protection buyer")
+  public static double protectionLegPv(
+      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
+      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return notional * CALCULATOR.protectionLeg(cds, yieldCurve, creditCurve);
   }
 
-  public static double rpv01() {
-    return 0;
+  /**
+   * Calculates the clean price of the premium leg for the protection buyer.
+   * @param notional  the notional
+   * @param cds  the CDS
+   * @param yieldCurve  the yield curve
+   * @param creditCurve  the credit curve
+   * @param coupon  the coupon
+   * @return  the premium leg clean price
+   */
+  @XLFunction(name = "CDS.PremiumLegCleanPrice", category = "ISDA CDS model",
+      description = "The clean price of the premium leg of a CDS for the protection buyer")
+  public static double premiumLegPv(
+      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
+      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
+    return notional * CALCULATOR.annuity(cds, yieldCurve, creditCurve, PriceType.CLEAN) * coupon;
   }
 
   public static double rr01() {

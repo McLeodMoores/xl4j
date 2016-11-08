@@ -119,4 +119,18 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlCleanPrice).getAsDouble(), expectedCleanPrice, EPS);
     assertEquals(((XLNumber) xlDirtyPrice).getAsDouble(), expectedDirtyPrice, EPS);
   }
+
+  @Test
+  public void testParSpread() {
+    final double expectedParSpread = CALCULATOR.parSpread(CDS, YIELD_CURVE, CREDIT_CURVE);
+    final Object xlResult = PROCESSOR.invoke("CDS.ParSpread", convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP));
+    assertTrue(xlResult instanceof XLNumber);
+    assertEquals(((XLNumber) xlResult).getAsDouble(), expectedParSpread, EPS);
+  }
+
+  @Test
+  public void testLegPvs() {
+
+  }
 }
