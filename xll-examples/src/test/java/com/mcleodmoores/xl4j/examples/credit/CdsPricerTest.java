@@ -1,0 +1,97 @@
+/**
+ *
+ */
+package com.mcleodmoores.xl4j.examples.credit;
+import static com.mcleodmoores.xl4j.examples.TestUtils.convertToXlType;
+import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.createHolidayCalendar;
+import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
+
+import org.testng.annotations.Test;
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.Period;
+
+import com.mcleodmoores.xl4j.values.XLMissing;
+import com.mcleodmoores.xl4j.values.XLObject;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
+import com.opengamma.financial.convention.businessday.BusinessDayConventions;
+import com.opengamma.financial.convention.daycount.DayCounts;
+
+/**
+ * Unit tests for {@link CdsPricer}.
+ */
+public class CdsPricerTest extends IsdaTests {
+  /** The trade date */
+  private static final LocalDate TRADE_DATE = LocalDate.of(2016, 10, 3);
+  /** The quote types */
+  private static final String[] CREDIT_QUOTE_TYPES = new String[] {"PAR SPREAD", "PAR SPREAD", "PUF", "QUOTED SPREAD"};
+  /** The tenors */
+  private static final String[] CREDIT_CURVE_TENORS = new String[] {"P1Y", "P2Y", "P5Y", "P10Y"};
+  /** The quotes */
+  private static final double[] CREDIT_CURVE_QUOTES = new double[] {0.008, 0.01, -0.003, 0.025};
+  /** The recovery rates */
+  private static final double[] CREDIT_CURVE_RECOVERY_RATES = new double[] {0.4, 0.4, 0.5, 0.4};
+  /** The coupons */
+  private static final double[] CREDIT_CURVE_COUPONS = new double[] {0.01, 0.01, 0.05, 0.01};
+  /** The instrument types */
+  private static final String[] YIELD_CURVE_TYPES = new String[] {"M", "M", "M", "S", "S",
+      "S", "S", "S", "S", "S"};
+  /** The tenors */
+  private static final String[] YIELD_CURVE_TENORS = new String[] {"3M", "6M", "9M", "1Y", "2Y",
+      "3Y", "4Y", "5Y", "7Y", "10Y"};
+  /** The quotes */
+  private static final double[] YIELD_CURVE_QUOTES = new double[] {0.001, 0.0011, 0.0012, 0.002, 0.0035,
+      0.006, 0.01, 0.015, 0.025, 0.04};
+  /** The yield curve convention */
+  private static final IsdaYieldCurveConvention YIELD_CURVE_CONVENTION = IsdaYieldCurveConvention.of("ACT/365", "ACT/365", "3M", "ACT/365", "Following", 2);
+  /** The CDS convention */
+  private static final IsdaCdsConvention CDS_CONVENTION = IsdaCdsConvention.of("ACT/360", "ACT/365", "Following", "3M", "FRONTSHORT", 3, 1, true);
+  /** Holidays */
+  private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 11, 1)};
+  /** The yield curve */
+  private static final ISDACompliantYieldCurve YIELD_CURVE =
+      IsdaYieldCurveBuilder.buildYieldCurve(TRADE_DATE, YIELD_CURVE_TYPES, YIELD_CURVE_TENORS, YIELD_CURVE_QUOTES,
+          YIELD_CURVE_CONVENTION, null, HOLIDAYS);
+  /** The credit curve */
+  private static final ISDACompliantCreditCurve CREDIT_CURVE =
+      IsdaCreditCurveBuilder.buildCreditCurve(TRADE_DATE, CREDIT_CURVE_TENORS, CREDIT_QUOTE_TYPES, CREDIT_CURVE_QUOTES,
+          CREDIT_CURVE_RECOVERY_RATES, CREDIT_CURVE_COUPONS, YIELD_CURVE, CDS_CONVENTION, HOLIDAYS);
+  /** The tenor */
+  private static final String TENOR = Period.ofYears(3).toString();
+  /** The CDS recovery rate */
+  private static final double RECOVERY_RATE = 0.4;
+  /** The expected CDS */
+  private static final CDSAnalytic CDS;
+
+  static {
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
+    cdsFactory = cdsFactory.withAccrualDCC(DayCounts.ACT_360);
+    cdsFactory = cdsFactory.withCurveDCC(DayCounts.ACT_365);
+    cdsFactory = cdsFactory.with(BusinessDayConventions.FOLLOWING);
+    cdsFactory = cdsFactory.with(createHolidayCalendar(HOLIDAYS));
+    cdsFactory = cdsFactory.withRecoveryRate(RECOVERY_RATE);
+    CDS = cdsFactory.makeIMMCDS(TRADE_DATE, Period.parse(TENOR));
+  }
+
+  @Test
+  public void testCreateCds() {
+    final Object xlResult = PROCESSOR.invoke("CDS.BuildCDS", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType(RECOVERY_RATE),
+        convertToXlType("ACT/360"), convertToXlType("ACT/365"), convertToXlType("Following"), XLMissing.INSTANCE, XLMissing.INSTANCE,
+        XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE, convertToXlType(HOLIDAYS));
+    assertTrue(xlResult instanceof XLObject);
+    final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
+    assertEquals(result, CDS);
+  }
+
+  @Test
+  public void testCreateCdsFromConvention() {
+    final Object xlResult = PROCESSOR.invoke("CDS.BuildCDSFromConvention", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType(RECOVERY_RATE),
+        convertToXlType(CDS_CONVENTION, HEAP), convertToXlType(HOLIDAYS));
+    assertTrue(xlResult instanceof XLObject);
+    final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
+    assertEquals(result, CDS);
+  }
+}

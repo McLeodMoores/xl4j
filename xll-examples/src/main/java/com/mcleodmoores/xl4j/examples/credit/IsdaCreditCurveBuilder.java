@@ -17,7 +17,6 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSQuoteConven
 import com.opengamma.analytics.financial.credit.isdastandardmodel.FastCreditCurveBuilder;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurveBuilder;
-import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
@@ -45,7 +44,7 @@ public final class IsdaCreditCurveBuilder {
    */
   @XLFunction(name = "ISDACreditCurve.BuildIMMCurveFromConvention", category = "ISDA CDS model",
       description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
-  public static ISDACompliantCurve buildCreditCurve(
+  public static ISDACompliantCreditCurve buildCreditCurve(
       @XLArgument(description = "Trade Date", name = "tradeDate") final LocalDate tradeDate,
       @XLArgument(description = "Tenors", name = "tenors") final String[] tenors,
       @XLArgument(description = "Quote Type", name = "quoteTypes") final String[] quoteTypes,
@@ -86,7 +85,7 @@ public final class IsdaCreditCurveBuilder {
     final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
     final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
     for (int i = 0; i < n; i++) {
-      cdsFactory.withRecoveryRate(recoveryRates[i]);
+      cdsFactory = cdsFactory.withRecoveryRate(recoveryRates[i]);
       calibrationCds[i] = cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenors[i]));
       marketQuotes[i] = createQuote(coupons[i], quotes[i], quoteTypes[i]);
     }
@@ -163,7 +162,7 @@ public final class IsdaCreditCurveBuilder {
     final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
     final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
     for (int i = 0; i < n; i++) {
-      cdsFactory.withRecoveryRate(recoveryRates[i]);
+      cdsFactory = cdsFactory.withRecoveryRate(recoveryRates[i]);
       calibrationCds[i] = cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenors[i]));
       marketQuotes[i] = createQuote(coupons[i], quotes[i], quoteTypes[i]);
     }

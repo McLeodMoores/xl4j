@@ -32,6 +32,11 @@ public final class IsdaFunctionUtils {
     return Period.parse("P" + string);
   }
 
+  /**
+   * Creates a holiday calendar from dates. If the dates are null, a weekend-only calendar is returned.
+   * @param holidayDates  the holidays dates, can be null
+   * @return  a calendar
+   */
   public static Calendar createHolidayCalendar(final LocalDate[] holidayDates) {
     @SuppressWarnings("deprecation")
     final Calendar calendar;
