@@ -12,11 +12,14 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
 import com.mcleodmoores.xl4j.values.XLMissing;
+import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
 
@@ -63,8 +66,16 @@ public class CdsPricerTest extends IsdaTests {
   private static final String TENOR = Period.ofYears(3).toString();
   /** The CDS recovery rate */
   private static final double RECOVERY_RATE = 0.4;
+  /** The CDS coupon */
+  private static final double COUPON = 0.05;
+  /** The notional */
+  private static final double NOTIONAL = 100000000;
   /** The expected CDS */
   private static final CDSAnalytic CDS;
+  /** The calculator */
+  private static final AnalyticCDSPricer CALCULATOR = new AnalyticCDSPricer();
+  /** The accuracy */
+  private static final double EPS = 1e-15;
 
   static {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
@@ -93,5 +104,19 @@ public class CdsPricerTest extends IsdaTests {
     assertTrue(xlResult instanceof XLObject);
     final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
     assertEquals(result, CDS);
+  }
+
+  @Test
+  public void testPrice() {
+    final double expectedCleanPrice = CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON) * NOTIONAL;
+    final double expectedDirtyPrice = CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON, PriceType.DIRTY) * NOTIONAL;
+    final Object xlCleanPrice = PROCESSOR.invoke("CDS.CleanPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    final Object xlDirtyPrice = PROCESSOR.invoke("CDS.DirtyPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    assertTrue(xlCleanPrice instanceof XLNumber);
+    assertTrue(xlDirtyPrice instanceof XLNumber);
+    assertEquals(((XLNumber) xlCleanPrice).getAsDouble(), expectedCleanPrice, EPS);
+    assertEquals(((XLNumber) xlDirtyPrice).getAsDouble(), expectedDirtyPrice, EPS);
   }
 }

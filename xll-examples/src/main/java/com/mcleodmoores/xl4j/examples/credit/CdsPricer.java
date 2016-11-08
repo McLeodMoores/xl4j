@@ -10,8 +10,12 @@ import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
@@ -19,10 +23,9 @@ import com.opengamma.financial.convention.daycount.DayCountFactory;
 /**
  * Methods that create CDS trades and produce price and risk values.
  */
-/**
- *
- */
 public final class CdsPricer {
+  /** The calculator */
+  private static final AnalyticCDSPricer CALCULATOR = new AnalyticCDSPricer();
 
   /**
    * Constructs a CDS.
@@ -124,8 +127,55 @@ public final class CdsPricer {
     return cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor));
   }
 
+  /**
+   * Calculate the clean price for the protection buyer given a yield and credit curve.
+   * @param notional  the CDS notional
+   * @param cds  the CDS
+   * @param yieldCurve  the yield curve
+   * @param creditCurve  the credit curve
+   * @param coupon  the CDS coupon as a decimal (e.g. 0.01 for a 100bps coupon)
+   * @return  the clean price
+   */
+  @XLFunction(name = "CDS.CleanPrice", category = "ISDA CDS model",
+      description = "Calculate the clean price of a CDS for the protection buyer")
+  public static double cleanPrice(
+      @XLArgument(description = "Notional, positive for the protection buyer", name = "notional") final double notional,
+      @XLArgument(description = "CDS", name = "cds") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Coupon", name = "coupon") final double coupon) {
+    return notional * CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.CLEAN);
+  }
 
-  public static double presentValue() {
+  /**
+   * Calculate the dirty price for the protection buyer given a yield and credit curve.
+   * @param notional  the CDS notional
+   * @param cds  the CDS
+   * @param yieldCurve  the yield curve
+   * @param creditCurve  the credit curve
+   * @param coupon  the CDS coupon as a decimal (e.g. 0.01 for a 100bps coupon)
+   * @return  the dirty price
+   */
+  @XLFunction(name = "CDS.DirtyPrice", category = "ISDA CDS model",
+      description = "Calculate the dirty price of a CDS for the protection buyer")
+  public static double dirtyPrice(
+      @XLArgument(description = "Notional, positive for the protection buyer", name = "notional") final double notional,
+      @XLArgument(description = "CDS", name = "cds") final CDSAnalytic cds,
+      @XLArgument(description = "Yield Curve", name = "yieldCurve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Credit Curve", name = "creditCurve") final ISDACompliantCreditCurve creditCurve,
+      @XLArgument(description = "Coupon", name = "coupon") final double coupon) {
+    return notional * CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.DIRTY);
+  }
+
+  public static double parSpread() {
+    return 0;
+  }
+
+  public static double protectionLegPv() {
+    return 0;
+  }
+
+  public static double rpv01() {
     return 0;
   }
 
