@@ -196,9 +196,7 @@ __declspec(dllexport) int Settings () {
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	LOGTRACE("xlAutoOpen called");
 	if (XLCallVer () < (12 * 256)) {
-		HWND hWnd;
-		ExcelUtils::GetHWND (&hWnd);
-		MessageBox (hWnd, _T ("Not Supported"), _T ("Sorry, versions of Excel prior to 2007 are not supported."), MB_OK);
+		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2007 are not supported."), TempInt12(2));
 		return 0;
 	}
 	if (g_shudown) {
@@ -212,18 +210,21 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	g_initialized = true;
 
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
-	LoadDLLs ();
-	wchar_t buf[MAX_PATH + 1];
-	GetCurrentDirectoryW (MAX_PATH, buf);
-	LOGTRACE ("CWD = %s", buf);
-	LOGTRACE("Initializing Add-in, JVM, etc");
-	InitAddin ();
-	InitJvm ();
-	if (ExcelUtils::IsAddinSettingEnabled (L"ShowToolbar", TRUE)) {
-		g_pAddinEnv->AddToolbar ();
+	if (SUCCEEDED(LoadDLLs())) {
+		wchar_t buf[MAX_PATH + 1];
+		GetCurrentDirectoryW(MAX_PATH, buf);
+		LOGTRACE("CWD = %s", buf);
+		LOGTRACE("Initializing Add-in, JVM, etc");
+		InitAddin();
+		InitJvm();
+		if (ExcelUtils::IsAddinSettingEnabled(L"ShowToolbar", TRUE)) {
+			g_pAddinEnv->AddToolbar();
+		}
+		FreeAllTempMemory();
+		return 1;
+	} else {
+		return 0;
 	}
-	FreeAllTempMemory ();
-	return 1;
 }
 
 ///***************************************************************************

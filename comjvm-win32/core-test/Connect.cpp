@@ -260,6 +260,7 @@ public:
         /* [optional][in] */ BSTR bstrLogicalIdentifier,
         /* [retval][out] */ IJvm **ppJvm
 		) {
+		OutputDebugStringW(L"Mock");
 		Assert::IsNotNull (pTemplate);
 		Assert::IsNotNull (ppJvm);
 		*ppJvm = new CMockJvm (pTemplate);

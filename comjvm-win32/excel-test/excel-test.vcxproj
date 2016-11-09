@@ -120,6 +120,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -147,6 +149,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -175,6 +179,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -203,6 +209,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-test-files.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>

@@ -74,6 +74,7 @@ ULONG STDMETHODCALLTYPE CJarFile::Release () {
 HRESULT STDMETHODCALLTYPE CJarFile::AddToClasspath (
     /* [in] */ IClasspath *pClasspath
 	) {
+	LOGTRACE("GOt here");
 	if (!pClasspath) return E_POINTER;
 	return pClasspath->AddJar (this);
 }
@@ -91,7 +92,7 @@ HRESULT STDMETHODCALLTYPE CJarFile::AddToClasspath (
 				cchPath = cchResult + 1;
 				continue;
 			}
-			_bstr_t bstrPath (_tcsncmp (vPath.data (), TEXT ("\\\\?\\"), 4) ? vPath.data () : vPath.data () + 4);
+			_bstr_t bstrPath(vPath.data());// _tcsncmp(vPath.data(), TEXT("\\\\?\\"), 4) ? vPath.data() : vPath.data() + 4);
 			*pbstrPath = bstrPath.Detach ();
 			return S_OK;
 		} while (TRUE);

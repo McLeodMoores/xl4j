@@ -28,6 +28,7 @@ class CJvmEnvironment {
 public:
 	CJvmEnvironment (CAddinEnvironment *pEnv);
 	~CJvmEnvironment ();
+	void StartBackgroundThread();
 	BOOL _RegisterSomeFunctions () const;
 	LPXLOPER12 _UDF (int exportNumber, LPXLOPER12 first, va_list ap) const;
 	void _GarbageCollect () const;

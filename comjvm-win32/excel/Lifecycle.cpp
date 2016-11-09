@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Excel.h"
 
-void LoadDLLs () {
+HRESULT LoadDLLs () {
 	XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
 	wchar_t szDirPath[MAX_PATH];
@@ -10,7 +10,11 @@ void LoadDLLs () {
 	for (int i = 0; i < _countof (pszDlls); i++) {
 		if (SUCCEEDED (hr = FileUtils::GetAddinAbsolutePath (szDirPath, MAX_PATH, pszDlls[i]))) {
 			LOGTRACE ("Loading DLL %s", szDirPath);
-			LoadLibraryExW (szDirPath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+			if (!LoadLibraryExW(szDirPath, NULL, LOAD_WITH_ALTERED_SEARCH_PATH)) {
+				_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+				LOGFATAL("Fatal error loading DLL %s: %s", szDirPath, err.ErrorMessage());
+				return E_FAIL;
+			}
 		} else {
 			LOGERROR ("Error gettings AddinDirectory path");
 		}
@@ -19,6 +23,7 @@ void LoadDLLs () {
 	HMODULE hModule;
 	// set this module to never unload.
 	GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_PIN | GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCTSTR>(LoadDLLs), &hModule);
+	return S_OK;
 }
 
 void InitAddin () {
@@ -38,6 +43,7 @@ void InitJvm () {
 	AcquireSRWLockExclusive (&g_JvmEnvLock);
 	LOGTRACE ("Lock Acquired");
 	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+	g_pJvmEnv->StartBackgroundThread();
 	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockExclusive (&g_JvmEnvLock);
 }
@@ -69,6 +75,7 @@ void RestartJvm () {
 	LOGTRACE ("Lock Acquired");
 	delete g_pJvmEnv;
 	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+	g_pJvmEnv->StartBackgroundThread();
 	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockExclusive (&g_JvmEnvLock);
 }

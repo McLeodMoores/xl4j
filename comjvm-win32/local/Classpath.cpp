@@ -122,6 +122,7 @@ ULONG STDMETHODCALLTYPE CClasspath::Release () {
 
 static BOOL IsFile (PCTSTR pszPath) {
 	DWORD dwAttr = GetFileAttributes (pszPath);
+	LOGTRACE("dwAttr = 0x%x", dwAttr);
 	if (dwAttr == INVALID_FILE_ATTRIBUTES) return FALSE;
 	return (dwAttr & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
@@ -139,13 +140,18 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddFolder (
 	HRESULT hr;
 	try {
 		BSTR bstr;
-		if (FAILED (hr = pFolder->get_LocalPath (&bstr))) return hr;
+		if (FAILED(hr = pFolder->get_LocalPath(&bstr))) {
+			LOGERROR("get_LocalPath() failed"); return hr;
+		}
 		_bstr_t bstrPath (bstr, FALSE);
 		// TODO: Translate any '/' characters to '\\'
 		long lFiles;
 		long lLength;
 		MIDL_uhyper uTimestampHash;
-		if (FAILED (hr = pFolder->CacheInfo (&bstr, &lFiles, &lLength, &uTimestampHash))) return hr;
+		if (FAILED(hr = pFolder->CacheInfo(&bstr, &lFiles, &lLength, &uTimestampHash))) {
+			LOGERROR("CacheInfo failed");
+			return hr;
+		}
 		_bstr_t bstrHost (bstr, FALSE);
 		if (_tcscmp (bstrHost, m_strHost.data ()) || !IsDir (bstrPath)) {
 			// Folder is either from a different host, or can't be read locally by this process
@@ -171,6 +177,7 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddFolder (
 		}
 		hr = S_OK;
 	} catch (_com_error &e) {
+		LOGERROR("COM Error raised, source was %s", e.Source());
 		hr = e.Error ();
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
@@ -181,11 +188,15 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddFolder (
 HRESULT STDMETHODCALLTYPE CClasspath::AddJar ( 
     /* [in] */ IJarFile *pJar
 	) {
+	LOGTRACE("Got here");
 	if (!pJar) return E_POINTER;
 	HRESULT hr;
 	try {
 		BSTR bstr;
-		if (FAILED (hr = pJar->get_LocalPath (&bstr))) return hr;
+		if (FAILED(hr = pJar->get_LocalPath(&bstr))) {
+			LOGERROR("get_LocalPath failed on Jar");
+			return hr;
+		}
 		_bstr_t bstrPath (bstr, FALSE);
 		// TODO: Translate any '/' characters to '\\'
 		long lLength;
@@ -194,6 +205,15 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddJar (
 		_bstr_t bstrHost (bstr, FALSE);
 		if (_tcscmp (bstrHost, m_strHost.data ()) || !IsFile (bstrPath)) {
 			// JAR is either from a different host, or can't be read locally by this process
+			
+			LOGWARN("JAR is either from a different host, or can't be read locally by this process");
+			if (IsFile(bstrPath)) {
+				LOGWARN("Path %s points to file", (LPCTSTR)bstrPath);
+			}
+			else {
+				LOGWARN("Path %s is not a file", (LPCTSTR)bstrPath);
+			}
+			LOGTRACE("bstrHost is %s", (LPCTSTR)bstrHost);
 			CJarAndClassCache oCache (m_strOwner, (PCTSTR)bstrHost, (PCTSTR)bstrPath);
 			if ((lLength != oCache.get_FileSize ())
 			 || (uTimestamp != oCache.get_Timestamp ())) {
@@ -220,6 +240,7 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddJar (
 		}
 		hr = S_OK;
 	} catch (_com_error &e) {
+		LOGTRACE("COM Error, source is %s", e.Source());
 		hr = e.Error ();
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
@@ -241,6 +262,7 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddJar (
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;
 	} catch (_com_error &e) {
+		LOGERROR("COM error caught, source is %s", e.Source());
 		hr = e.Error ();
 	}
 	if (pszPath) delete pszPath;

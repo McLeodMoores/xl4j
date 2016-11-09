@@ -30,14 +30,18 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 
 size_t Debug::m_cMaxFileNameLength = 0;
 size_t Debug::m_cMaxFunctionNameLength = 0;
-LOGLEVEL Debug::m_logLevel = LOGLEVEL_ERROR;
+volatile LOGLEVEL Debug::m_logLevel = LOGLEVEL_TRACE;
 LOGTARGET Debug::m_logTarget = LOGTARGET_WINDEBUG;
 FILE *Debug::m_fdLogFile = nullptr;
+const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ", L"ERROR", L"FATAL", L"NONE " };
 
-
-void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
+void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
 	va_list argptr;
 	va_start (argptr, sFormat);
+	if (logLevel > LOGLEVEL_NONE || logLevel < LOGLEVEL_TRACE) {
+		OutputDebugString(L"PrettyLogPrintf: logLevel invalid so not printing");
+		return;
+	}
 	m_cMaxFileNameLength = max (m_cMaxFileNameLength, strnlen (sFileName, FILENAME_MAX));
 	m_cMaxFunctionNameLength = max (m_cMaxFunctionNameLength, strnlen (sFunctionName, FILENAME_MAX));
 	const int LINE_MAX = 2000;
@@ -45,10 +49,10 @@ void Debug::PrettyLogPrintf (const char *sFileName, int iLineNum, const char *sF
 	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
 	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 		wchar_t formatBuffer[LINE_MAX];
-		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%-%dS %%%dd %%-%dS %%s\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
+		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%s %%-%dS %%%dd %%-%dS %%s\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
 		if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 			wchar_t finalBuffer[LINE_MAX];
-			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, sFileName, iLineNum, sFunctionName, buffer);
+			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, LOGLEVEL_STR[logLevel], sFileName, iLineNum, sFunctionName, buffer);
 			if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 				if (Debug::m_logTarget == LOGTARGET_WINDEBUG) {
 					OutputDebugString(finalBuffer);

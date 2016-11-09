@@ -172,6 +172,9 @@
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Local.def</ModuleDefinitionFile>
       <Profile>true</Profile>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -217,6 +220,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Local.def</ModuleDefinitionFile>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -266,6 +272,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;kernel32.lib;ole32.lib;oleaut32.lib;uuid.lib;rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>Local.def</ModuleDefinitionFile>
+      <EnableUAC>false</EnableUAC>
+      <UACExecutionLevel />
+      <UACUIAccess />
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
