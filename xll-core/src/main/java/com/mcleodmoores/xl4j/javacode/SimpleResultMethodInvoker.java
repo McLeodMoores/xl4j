@@ -7,7 +7,6 @@ import java.lang.reflect.Method;
 
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -33,10 +32,9 @@ public class SimpleResultMethodInvoker extends AbstractMethodInvoker {
   @Override
   protected XLValue convertResult(final Object object, final TypeConverter returnConverter) {
     if (object != null) {
-      AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) returnConverter;
+      final AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) returnConverter;
       return (XLValue) scalarTypeConverter.toXLValue(getMethodReturnType(), object);
-    } else {
-      return XLMissing.INSTANCE;
     }
+    return XLMissing.INSTANCE;
   }
 }

@@ -69,7 +69,7 @@ public class FunctionRegistry {
 
   /**
    * Default constructor.
-   * 
+   *
    * @param invokerFactory
    *          invoker factory used to create method and constructor invokers to perform type conversions
    */
@@ -106,7 +106,7 @@ public class FunctionRegistry {
 
   /**
    * Register functions and constructors.
-   * 
+   *
    * @param callback
    *          the Excel callback interface
    */
@@ -188,7 +188,7 @@ public class FunctionRegistry {
         final int allocatedExportNumber = allocateExport();
         final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
         // put the definition in some look-up tables.
-        LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, methodInvoker.getMethodName());
+        LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionAnnotation == null ? method.getName() : functionAnnotation.name());
         _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
         _functionDefinitions.add(functionDefinition);
       } catch (final Exception e) {
@@ -237,11 +237,11 @@ public class FunctionRegistry {
           final ClassMetadata constructorMetadata = ClassMetadata.of(classAnnotation, namespaceAnnotation);
           final ClassConstructorDefinition constructorDefinition = constructors.length == 1
               ? ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, allocatedExportNumber)
-              : ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, constructorNumber, allocatedExportNumber);
-          // put the definition in some look-up tables.
-          LOGGER.info("Allocating export number {} to ", allocatedExportNumber, constructorInvoker.getClass().getSimpleName());
-          _classConstructorDefinitionLookup.put(allocatedExportNumber, constructorDefinition);
-          _classConstructorDefinitions.add(constructorDefinition);
+                  : ClassConstructorDefinition.of(constructorMetadata, constructorInvoker, constructorNumber, allocatedExportNumber);
+              // put the definition in some look-up tables.
+              LOGGER.info("Allocating export number {} to ", allocatedExportNumber, constructorInvoker.getClass().getSimpleName());
+              _classConstructorDefinitionLookup.put(allocatedExportNumber, constructorDefinition);
+              _classConstructorDefinitions.add(constructorDefinition);
         } catch (final Exception e) {
           LOGGER.error("Exception while scanning constructor for annotated class", e);
         }
@@ -304,7 +304,7 @@ public class FunctionRegistry {
 
   /**
    * This allocates an export number.
-   * 
+   *
    * @return the allocated export number
    */
   private int allocateExport() {
@@ -314,7 +314,7 @@ public class FunctionRegistry {
 
   /**
    * Look up the function definition, from the allocated.
-   * 
+   *
    * @param exportNumber
    *          the number of the export in the parameter size block
    * @return the function definition, not null throws Excel4JRuntimeException if function definition could not be found
