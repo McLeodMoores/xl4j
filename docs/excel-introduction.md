@@ -1,5 +1,5 @@
 
-# General Notes
+# A developer's introduction to Excel
 
 ## Excel Types
 | Excel Type       | Notes/Values |
