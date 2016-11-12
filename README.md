@@ -19,7 +19,7 @@ of object handles.  This means you can store any complex object in a single Exce
      or deploy to a maven repository.
  - Production-grade
    - make consideration of real-world production usage with XCOPY install, access to logs, pre-deployment configuration, etc.
- - Developer friendly licensing
+ - Developer-friendly licensing
    - Dual license GPL/Commercial means you can get your feet wet without an up-front commitment and use in personal or 
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase      (like JetBrains).
@@ -42,7 +42,7 @@ of object handles.  This means you can store any complex object in a single Exce
    - Primitive types (and Boxed equivalents)
    - JSR-310/Java 8 dates
    - 1D/2D Arrays
-   - Full object-handling system maintains a garbage-collected heap for objects, necessary for long running sheets
+   - Full object-handling system maintains a garbage-collected heap for objects, necessary for long-running sheets
    - Support for varargs
  - All the types of functions and features normally available to Excel XLLs
    - Volatile functions `@XLFunction(volatile=true)` which are always recalculated (e.g. =TODAY()).
@@ -50,7 +50,7 @@ of object handles.  This means you can store any complex object in a single Exce
      APIs such as those that modify other cells (useful for dumping data onto a sheet without using an array formula).
    - Multi-thread safe functions `@XLFunction(isMultiThreadSafe=true)` which Excel can call from multiple calculation threads.
      This is the default.
-   - Asynchronous functions `@XLFunction(isAsynchronous=true)` which enable long running operations to run while Excel continues
+   - Asynchronous functions `@XLFunction(isAsynchronous=true)` which enable long-running operations to run while Excel continues
      and explicitly notify Excel of a result. **CURRENTLY IN DEVELOPMENT**.
  - Call XLL API from different contexts
    - XLL API calls can be made from the caller's Excel calculation thread or from the Excel main thread depending on context required.  
@@ -71,7 +71,7 @@ which looks like this in Excel - note the object handles with the >> prefix foll
 ![JFrame in Excel](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe-example.PNG "How it looks in Excel")
 
 Breaking this example down:
- - The `JConstruct` function calls the named classes constructor with any supplied arguments and returns an object handle.  The first
+ - The `JConstruct` function calls the named class's constructor with any supplied arguments and returns an object handle.  The first
    constructor that the system is able to convert the argument list for will be chosen.
  - The `JMethod` function calls a method named in the second argument on the object handle passed in as the first argument with
    any subsequently supplied parameters.  The first method that the system is able to convert the argument list for will be chosen.
@@ -92,9 +92,9 @@ By default there are toolbar icons for opening the settings dialog, and opening 
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
    allow hosting installation files on a network share.
- - No manually run background server.
+ - No manually-run background server.
  - Installation can be custom configured to hide configuration and developer options from end users.
  - White labelling.
- - In-build access to logs without digging around in Temp directories or CLI windows.
+ - In-built access to logs without digging around in Temp directories or CLI windows.
 
 
