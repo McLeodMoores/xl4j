@@ -10,10 +10,10 @@
 | Errors | #NULL!, #DIV/0!, #VALUE!, #REF!, #NAME?, #NUM!, #N/A |
 | Arrays | One and two dimensional array of mixed type objects.  Literals are encoded using curly brackets row by row, with commas separating objects, with semi-colons separating rows. |
 
-### Pseudo types
+### Pseudotypes
 Dates and times are represented just as numbers, specifically fractions of a day since the epoch (which is not the standard epoch).  Their display is purely a formatting filter.
 
-Percentages to are represented as numbers and their display is just a * 100 formatting filter.  The % symbol is just a unary suffix operator that divides by 100.
+Percentages too are represented as numbers and their display is just a * 100 formatting filter.  The % symbol is just a unary suffix operator that divides by 100.
 
 ## Input evaluation
 Chains of evaluation
@@ -37,7 +37,7 @@ Will convert a string representation of a number to a negated number representat
 ### Binary arithmetic operators (`+`, `-`, `*`, `/`, `^`)
 Will try to convert any values to Numbers.  This includes strings in any recognised format, dates and times and percentages.
 ### Percentage operators (`%`)
-Higest precendence operator so binds tightly to the operand to it's left.  Will try and convert anything to a Number, so can be applied to dates, times and Booleans as well.
+Highest precendence operator so binds tightly to the operand to its left.  Will try and convert anything to a Number, so can be applied to dates, times and Booleans as well.
 ### String contatenation operator (`&`)
 Convert numbers to strings in a default number format unrelated to display format.
 ### Binary Boolean comparison operators (`=`, `<`, `>`, `<=`, `>=`, `<>`)
@@ -70,7 +70,7 @@ yields the values
 where each the range is converted into a scalar in a different way for each context using the *current* row/column relative to the range.  Note that if the range does not overlap the current column, the result will be `#VALUE!`
 
 ### Arrays
-Scalar operations on arrays are treated as matrix style operations where each element is operated on separately.  Note here that the formulas in B1:B5 are an array formula rather than multiple single formulas.
+Scalar operations on arrays are treated as matrix-style operations where each element is operated on separately.  Note here that the formulas in B1:B5 are an array formula rather than multiple single formulas.
 
 |   |  A |        B       | 
 |---|----|----------------|
@@ -91,7 +91,7 @@ yields
 | 5 | 32 | #VALUE! |
 
 ### Explicit type conversions
-There are a number of funcitons available to force type conversions
+There are a number of functions available to force type conversions
 
 | Function Name | Return Type | Number | String | Boolean | Error |
 |---------------|-------------|--------|--------|---------|-------|
