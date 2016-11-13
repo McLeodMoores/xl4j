@@ -419,7 +419,6 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 		ReleaseSRWLockShared (&g_JvmEnvLock);
 		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
 	}
-	
 	return 1;
 }
 

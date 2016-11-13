@@ -207,6 +207,10 @@ private:
 				}
 				LOGTRACE("About to create JVM");
 				hr = JNICreateJavaVM (&m_dwJvm, &params);
+				if (FAILED(hr)) {
+					_com_error err(hr);
+					LOGFATAL("JVM creation failed: %s", err.ErrorMessage());
+				}
 				LOGTRACE("Created JVM");
 			} catch (std::bad_alloc) {
 				hr = E_OUTOFMEMORY;

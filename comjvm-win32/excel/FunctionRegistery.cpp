@@ -62,6 +62,7 @@ HRESULT FunctionRegistry::Scan () {
 		LOGERROR ("SafeArrayGetUBound failed");
 		return hr;
 	}
+	LOGTRACE("Scan succeeded");
 	cFunctions++;
 	m_cFunctions = cFunctions;
 	// copy them into an array indexed by export number for fast lookup.
@@ -200,6 +201,7 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 }
 
 HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis) {
+	LOGTRACE("Registering a chunk of functions");
 	if (m_pResults == NULL || m_pFunctions == NULL) {
 		LOGERROR ("RegisterFunctions called before Scan");
 		return E_POINTER;
@@ -272,7 +274,8 @@ HRESULT FunctionRegistry::UnregsiterFunctions () {
 }
 
 bool FunctionRegistry::IsRegistrationComplete () {
-	return m_cFunctions == m_iIndex;
+	LOGTRACE("IsScanComplete = %d, m_cFunctions = %d, m_iIndex = %d", IsScanComplete(), m_cFunctions, m_iIndex);
+	return IsScanComplete() && m_cFunctions == m_iIndex;
 }
 
 

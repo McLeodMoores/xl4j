@@ -6,7 +6,7 @@
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	LOGTRACE("JVM Environment being created");
 	HRESULT hr;
-	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public Licese v3 Applies\nto linked code", &m_pSplashScreen))) {
+	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public License v3 applies\nto linked code", &m_pSplashScreen))) {
 		_com_error err(hr);
 		LOGERROR("Could not open splash screen, failing: %s", err.ErrorMessage());
 		return;

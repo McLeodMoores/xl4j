@@ -149,9 +149,15 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMW (PDWORD plJvmRef, PJAVA_VM_PARAMETERSW p
 		int cchClasspath = wcslen (pParams->pszClasspath);
 		if (cchClasspath) {
 			int cbClasspath = WideCharToMultiByte (CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->pszClasspath, cchClasspath, NULL, 0, NULL, NULL);
-			if (!cbClasspath) return HRESULT_FROM_WIN32 (GetLastError ());
+			if (!cbClasspath) {
+				_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+				LOGFATAL("WideCharToMultiByte failed: %s", err.ErrorMessage());
+				return HRESULT_FROM_WIN32(GetLastError());
+			}
 			strClasspath.resize (cbClasspath + 1);
 			if (!WideCharToMultiByte (CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->pszClasspath, cchClasspath, strClasspath.data (), cbClasspath + 1, NULL, NULL)) {
+				_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+				LOGFATAL("WideCharToMultiByte failed: %s", err.ErrorMessage());
 				return HRESULT_FROM_WIN32 (GetLastError ());
 			}
 			strClasspath[cbClasspath] = 0;
@@ -167,11 +173,17 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMW (PDWORD plJvmRef, PJAVA_VM_PARAMETERSW p
 			int cchOption = wcslen(pParams->ppszOptions[i]);
 			char *pszOption;
 			if (cchOption) {
-				int cbOption = WideCharToMultiByte (CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->ppszOptions[i], cchOption, NULL, 0, NULL, NULL);
-				if (!cbOption) return HRESULT_FROM_WIN32 (GetLastError ());
+				int cbOption = WideCharToMultiByte(CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->ppszOptions[i], cchOption, NULL, 0, NULL, NULL);
+				if (!cbOption) {
+					_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+					LOGFATAL("WideCharToMultiByte failed: %s", err.ErrorMessage());
+					return HRESULT_FROM_WIN32(GetLastError());
+				}
 				pszOption = new char[cbOption + 1]; // +1 for NULL
-				if (!WideCharToMultiByte (CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->ppszOptions[i], cchOption, pszOption, cbOption + 1, NULL, NULL)) {
-					return HRESULT_FROM_WIN32 (GetLastError ());
+				if (!WideCharToMultiByte(CP_ACP, /*WC_DEFAULTCHAR*/0, pParams->ppszOptions[i], cchOption, pszOption, cbOption + 1, NULL, NULL)) {
+					_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+					LOGFATAL("WideCharToMultiByte failed: %s", err.ErrorMessage());
+					return HRESULT_FROM_WIN32(GetLastError());
 				}
 				pszOption[cbOption] = 0;
 				params.ppszOptions[i] = pszOption;
@@ -189,6 +201,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMW (PDWORD plJvmRef, PJAVA_VM_PARAMETERSW p
 		}
 		return result;
 	} catch (std::bad_alloc) { // thia could leak.
+		LOGFATAL("bad_alloc");
 		return E_OUTOFMEMORY;
 	}
 }
@@ -242,14 +255,25 @@ DWORD APIENTRY JNIMainThreadProc (LPVOID lpCreateJVM) {
 /// <param name="pParams">VM configuration parameters</param>
 /// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA pParams) {
-	if (!pdwJvmRef) return E_POINTER;
-	if (!pParams->pszClasspath) return E_POINTER;
-	if (!g_oVM.EnterStartingState ()) return E_NOT_VALID_STATE;
+	if (!pdwJvmRef) {
+		LOGFATAL("Invalid JvmRef DWORD");
+		return E_POINTER;
+	}
+	if (!pParams->pszClasspath) {
+		LOGFATAL("CLasspath was NULL");
+		return E_POINTER;
+	}
+	if (!g_oVM.EnterStartingState()) {
+		LOGFATAL("Couldn't enter starting state");
+		return E_NOT_VALID_STATE;
+	}
 	struct _CreateJVM createJVM;
 	createJVM.hSemaphore = CreateSemaphore (NULL, 0, 1, NULL);
 	if (createJVM.hSemaphore == NULL) {
 		DWORD dwError = GetLastError ();
 		g_oVM.EnterNotRunningState ();
+		_com_error err(HRESULT_FROM_WIN32(dwError));
+		LOGFATAL("Could not create semaphore: %s", err.ErrorMessage());
 		return HRESULT_FROM_WIN32 (dwError);
 	}
 	*pdwJvmRef = 0;
@@ -269,7 +293,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 		CloseHandle (hThread);
 	} else {
 		DWORD dwError = GetLastError ();
-		LOGTRACE ("(%p) JNICreateJavaVMA: main thread creation failed.", GetCurrentThreadId ());
+		LOGFATAL ("(%p) JNICreateJavaVMA: main thread creation failed.", GetCurrentThreadId ());
 		DecrementModuleLockCount ();
 		hr = HRESULT_FROM_WIN32 (dwError);
 	}
@@ -278,11 +302,11 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 		LOGTRACE ("(%p) JNICreateJavaVMA: main thread signalled successfully", GetCurrentThreadId ());
 		if (!g_oVM.EnterStartedState (createJVM.pJvm, pdwJvmRef)) {
 			// The JVM thread terminated
-			LOGTRACE ("(%p) JNICreateJavaVMA: VM Not in correct state, JVM thread terminated.", GetCurrentThreadId ());
+			LOGFATAL ("(%p) JNICreateJavaVMA: VM Not in correct state, JVM thread terminated.", GetCurrentThreadId ());
 			hr = E_FAIL;
 		}
 	} else {
-		LOGTRACE ("(%p) JNICreateJavaVMA: main thread failed", GetCurrentThreadId ());
+		LOGFATAL ("(%p) JNICreateJavaVMA: main thread failed", GetCurrentThreadId ());
 		g_oVM.EnterNotRunningState ();
 	}
 	return hr;

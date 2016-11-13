@@ -46,6 +46,24 @@ HRESULT FileUtils::GetAddinDirectory (wchar_t *szDirectory, size_t cDirectory) {
 	return S_OK;
 }
 
+HRESULT FileUtils::GetDirectoryFromFullPath(wchar_t *szDirectory, size_t cDirectory, const wchar_t *szFullPath) {
+	if (cDirectory < 3) { // just to protect the assumption that the buffer is at least 3 chars in the code below.
+		LOGERROR("Buffer to small");
+		return E_FAIL;
+	}
+	if (_wsplitpath_s(&szFullPath[0], szDirectory, 3, NULL, 0, NULL, 0, NULL, 0)) {
+		LOGERROR("_wsplitpath_s failed");
+		return HRESULT_FROM_WIN32(GetLastError());
+	}
+	LOGTRACE("Path with drive is %s", szDirectory);
+	if (_wsplitpath_s(&szFullPath[0], NULL, 0, &szDirectory[2], cDirectory - 2, NULL, 0, NULL, 0)) {
+		LOGERROR("_wsplitpath_s failed");
+		return HRESULT_FROM_WIN32(GetLastError());
+	}
+	LOGTRACE("Path with drive + dir is %s", szDirectory);
+	return S_OK;
+}
+
 HRESULT FileUtils::GetDllFileName (wchar_t *szFilename, size_t cFilename) {
 	HMODULE hModule;
 	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)FileUtils::GetDllFileName, &hModule)) {

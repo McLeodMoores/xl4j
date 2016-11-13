@@ -75,38 +75,38 @@ public:
 #define LOGTRACE(x, ...)\
   do { \
     if (Debug::GetLogLevel() <= LOGLEVEL_TRACE) {\
-      Debug::PrettyLogPrintf(LOGLEVEL_TRACE, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("TRACE " ## x), __VA_ARGS__);\
+      Debug::PrettyLogPrintf(LOGLEVEL_TRACE, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
 #endif
 #define LOGDEBUG(x, ...)\
   do { \
     if (Debug::GetLogLevel() <= LOGLEVEL_DEBUG) {\
-      Debug::PrettyLogPrintf(LOGLEVEL_DEBUG, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("DEBUG " ## x), __VA_ARGS__);\
+      Debug::PrettyLogPrintf(LOGLEVEL_DEBUG, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
 #define LOGINFO(x, ...)\
   do { \
     if (Debug::GetLogLevel() <= LOGLEVEL_INFO) {\
-      Debug::PrettyLogPrintf(LOGLEVEL_INFO, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("INFO  " ## x), __VA_ARGS__);\
+      Debug::PrettyLogPrintf(LOGLEVEL_INFO, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
 #define LOGWARN(x, ...)\
   do { \
     if (Debug::GetLogLevel() <= LOGLEVEL_WARN) {\
-      Debug::PrettyLogPrintf(LOGLEVEL_WARN, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("WARN  " ## x), __VA_ARGS__);\
+      Debug::PrettyLogPrintf(LOGLEVEL_WARN, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
 #define LOGERROR(x, ...)\
   do { \
     if (Debug::GetLogLevel() <= LOGLEVEL_ERROR) {\
-      Debug::PrettyLogPrintf(LOGLEVEL_ERROR, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("ERROR " ## x), __VA_ARGS__);\
+      Debug::PrettyLogPrintf(LOGLEVEL_ERROR, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
 #define LOGFATAL(x, ...)\
   do { \
     if (Debug::GetLogLevel() <= LOGLEVEL_FATAL) {\
-      Debug::PrettyLogPrintf(LOGLEVEL_FATAL, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("FATAL " ## x), __VA_ARGS__);\
+      Debug::PrettyLogPrintf(LOGLEVEL_FATAL, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
 
