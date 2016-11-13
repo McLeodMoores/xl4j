@@ -21,6 +21,7 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.InterestRateSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
@@ -86,6 +87,8 @@ public class CdsPricerTest extends IsdaTests {
   private static final AnalyticCDSPricer CALCULATOR = new AnalyticCDSPricer();
   /** The CS01 calculator */
   private static final AnalyticSpreadSensitivityCalculator CS01_CALCULATOR = new AnalyticSpreadSensitivityCalculator();
+  /** The IR01 calculator */
+  private static final InterestRateSensitivityCalculator IR_CALCULATOR = new InterestRateSensitivityCalculator();
   /** The accuracy */
   private static final double EPS = 1e-15;
 
@@ -126,10 +129,13 @@ public class CdsPricerTest extends IsdaTests {
         convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
     final Object xlDirtyPrice = PROCESSOR.invoke("CDS.DirtyPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
         convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    final Object xlAccrued = PROCESSOR.invoke("CDS.Accrued", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
     assertTrue(xlCleanPrice instanceof XLNumber);
     assertTrue(xlDirtyPrice instanceof XLNumber);
     assertEquals(((XLNumber) xlCleanPrice).getAsDouble(), expectedCleanPrice, EPS);
     assertEquals(((XLNumber) xlDirtyPrice).getAsDouble(), expectedDirtyPrice, EPS);
+    assertEquals(((XLNumber) xlAccrued).getAsDouble(), expectedDirtyPrice - expectedCleanPrice, EPS);
   }
 
   @Test
@@ -143,7 +149,17 @@ public class CdsPricerTest extends IsdaTests {
 
   @Test
   public void testLegPvs() {
-
+    final double expectedProtectionLegPv = NOTIONAL * CALCULATOR.protectionLeg(CDS, YIELD_CURVE, CREDIT_CURVE);
+    final double expectedPremiumLegPv = -NOTIONAL * CALCULATOR.annuity(CDS, YIELD_CURVE, CREDIT_CURVE) * COUPON;
+    final Object xlProtectionLegPv = PROCESSOR.invoke("CDS.ProtectionLegPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
+    final Object xlPremiumLegPv = PROCESSOR.invoke("CDS.PremiumLegCleanPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    final Object xlPv = PROCESSOR.invoke("CDS.CleanPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    assertEquals(((XLNumber) xlProtectionLegPv).getAsDouble(), expectedProtectionLegPv, EPS);
+    assertEquals(((XLNumber) xlPremiumLegPv).getAsDouble(), expectedPremiumLegPv, EPS);
+    assertEquals(((XLNumber) xlProtectionLegPv).getAsDouble() + ((XLNumber) xlPremiumLegPv).getAsDouble(), ((XLNumber) xlPv).getAsDouble(), EPS);
   }
 
   @Test
@@ -186,4 +202,5 @@ public class CdsPricerTest extends IsdaTests {
     assertTrue(xlResult instanceof XLNumber);
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedCs01, EPS);
   }
+
 }

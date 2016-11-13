@@ -2,7 +2,7 @@ Specification
 =============
 
 # Standard UDFs
-So an Excel function like `MyJavaFunction(Number1, Number2)`->`Number` would be:
+An Excel function like `MyJavaFunction(Number1, Number2)`->`Number` would be:
 ``` java
 package com.mcleodmoores.xl4j.example;
 
@@ -22,7 +22,7 @@ In this example most of these annotations would be optional
 
 1. `@XLFunction.name` would default to the method name by doing a conversion to camel case.
 2. `@XLFunction.category` would default to the Class name.
-3. `@XLFunction.description` would lift the first line of any JavaDoc comment or otherwise be the fully qualified class name plus themethod name.
+3. `@XLFunction.description` would lift the first line of any JavaDoc comment or otherwise be the fully qualified class name plus the method name.
 4. `@XLFunction.volatile` would default to false.
 5. `@XLFunction.allowReferences` would default to false. (This is whether the function can receive cell references).
 6. `@XLArgument.name` would default to:
@@ -36,7 +36,7 @@ In this example most of these annotations would be optional
 Registering the same method twice with the same `@XLFunction.name` could be allowable in some cases to handle overloading.
 
 ## Class or Package level prefixes
-To allow a degree of namespaceing we need another anotation. In the case of a package it would go in the `package-java.java` file in the package you want:
+To allow a degree of namespaceing we need another annotation. In the case of a package it would go in the `package-java.java` file in the package you want:
 
 ``` java
 @XLNamespace("Ex")
