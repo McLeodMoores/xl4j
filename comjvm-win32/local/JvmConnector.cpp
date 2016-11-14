@@ -150,6 +150,7 @@ private:
 	}
 
 	HRESULT CreateJvmImpl (IJvmTemplate *pTemplate, BSTR bstrLogicalIdentifier, IJvm **ppJvm) {
+		LOGTRACE("Got here");
 		if (!m_bLocked) return E_NOT_VALID_STATE;
 		if (!pTemplate) return E_POINTER;
 		if (!ppJvm) return E_POINTER;
@@ -164,21 +165,34 @@ private:
 			try {
 				pClasspath = new CClasspath (bstrLogicalIdentifier ? (PCTSTR)_bstr_t (bstrLogicalIdentifier) : TEXT (""));
 				if (FAILED (hr = pTemplate->get_Classpath (&pEntries))) _com_raise_error (hr);
+				LOGTRACE("Got classpath entries");
 				long lCount;
 				if (FAILED (hr = pEntries->get_Count (&lCount))) _com_raise_error (hr);
+				LOGTRACE("Got count");
 				long lIndex;
 				for (lIndex = 1; lIndex <= lCount; lIndex++) {
-					if (FAILED (hr = pEntries->get_Item (lIndex, &pEntry))) _com_raise_error (hr);
-					if (FAILED (hr = pEntry->AddToClasspath (pClasspath))) _com_raise_error (hr);
+					if (FAILED(hr = pEntries->get_Item(lIndex, &pEntry))) { 
+						LOGTRACE("Item %d of %d get_Item on classpath entries returned error", lIndex, lCount);
+						_com_raise_error(hr);
+					}
+					if (FAILED(hr = pEntry->AddToClasspath(pClasspath))) {
+						BSTR name;
+						pEntry->get_Name(&name);
+						LOGTRACE("Item %d of %d AddToClasspath failed %s", lIndex, lCount, (LPCTSTR)name);
+						_com_raise_error(hr);
+					}
 					pEntry->Release ();
 					pEntry = nullptr;
 				}
+				LOGTRACE("After classpath loop");
 				m_astrClasspath = pClasspath->GetPathComponents ();
 				pszClasspath = pClasspath->GetPath ();
 				// Options
 				if (FAILED (hr = pTemplate->get_Options (&pOptionEntries))) _com_raise_error (hr);
+				LOGTRACE("After get_Options");
 				long cOptions;
 				if (FAILED (hr = pOptionEntries->get_Count (&cOptions))) _com_raise_error (hr);
+				LOGTRACE("After pOptionEntriers->get_Count");
 				JAVA_VM_PARAMETERS params;
 				ZeroMemory (&params, sizeof (params));
 				params.cbSize = sizeof (params);
@@ -188,12 +202,20 @@ private:
 				for (long i = 0; i < cOptions; i++) {
 					BSTR pOptionEntry = nullptr;
 					if (FAILED (hr = pOptionEntries->get_Item (i + 1, &pOptionEntry))) _com_raise_error (hr);
+					LOGTRACE("After get_Item in options loop");
 					params.ppszOptions[i] = pOptionEntry;
 				}
+				LOGTRACE("About to create JVM");
 				hr = JNICreateJavaVM (&m_dwJvm, &params);
+				if (FAILED(hr)) {
+					_com_error err(hr);
+					LOGFATAL("JVM creation failed: %s", err.ErrorMessage());
+				}
+				LOGTRACE("Created JVM");
 			} catch (std::bad_alloc) {
 				hr = E_OUTOFMEMORY;
 			} catch (_com_error &e) {
+				LOGTRACE("COM Error handler triggered");
 				hr = e.Error ();
 			}
 			if (pClasspath) pClasspath->Release ();
@@ -263,6 +285,7 @@ public:
 	}
 
 	HRESULT CreateJvm (IJvmTemplate *pTemplate, BSTR bstrLogicalIdentifier, IJvm **ppJvm) {
+		LOGTRACE("Got here");
 		EnterCriticalSection (&m_cs);
 		HRESULT hr = CreateJvmImpl (pTemplate, bstrLogicalIdentifier, ppJvm);
 		m_dwLastUse = GetTickCount ();
@@ -351,6 +374,7 @@ HRESULT STDMETHODCALLTYPE CJvmConnector::CreateJvm (
     /* [optional][in] */ BSTR bstrLogicalIdentifier,
     /* [retval][out] */ IJvm **ppJvm
 	) {
+	OutputDebugStringW(L"GOt here");
 	return g_oSingleton.CreateJvm (pTemplate, bstrLogicalIdentifier, ppJvm);
 }
 

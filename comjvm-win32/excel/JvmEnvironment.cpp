@@ -6,7 +6,7 @@
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	LOGTRACE("JVM Environment being created");
 	HRESULT hr;
-	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public Licese v3 Applies\nto linked code", &m_pSplashScreen))) {
+	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public License v3 applies\nto linked code", &m_pSplashScreen))) {
 		_com_error err(hr);
 		LOGERROR("Could not open splash screen, failing: %s", err.ErrorMessage());
 		return;
@@ -21,18 +21,6 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment
 	m_pSplashScreen->SetMarquee();
 	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
 	m_pCollector = nullptr; // this means an already registered GarbageCollect() command will see that the collector hasn't been created yet.
-	//HANDLE hThread = CreateThread (nullptr, 2048 * 1024, MarqueeTickThread, static_cast<LPVOID>(this), 0, nullptr);
-	//if (!hThread) {
-	//	LOGTRACE ("CreateThread (marquee tick)failed %d", GetLastError ());
-	//	return;
-	//}
-	//CloseHandle (hThread); // doesn't close the thread, just the handle
-	HANDLE hJvmThread = CreateThread (nullptr, 4096 * 1024, BackgroundJvmThread, static_cast<LPVOID>(this), 0, nullptr);
-	if (!hJvmThread) {
-		LOGTRACE ("CreateThread (background JVM) failed %d", GetLastError ());
-		return;
-	}
-	CloseHandle (hJvmThread); // doesn't close the thread, just the handle
 }
 
 CJvmEnvironment::~CJvmEnvironment () {
@@ -49,6 +37,15 @@ CJvmEnvironment::~CJvmEnvironment () {
 	m_pSplashScreen->Close();
 	m_pSplashScreen->Release ();
 	m_pSplashScreen = nullptr;
+}
+
+void CJvmEnvironment::StartBackgroundThread() {
+	HANDLE hJvmThread = CreateThread(nullptr, 4096 * 1024, BackgroundJvmThread, static_cast<LPVOID>(this), 0, nullptr);
+	if (!hJvmThread) {
+		LOGTRACE("CreateThread (background JVM) failed %d", GetLastError());
+		return;
+	}
+	CloseHandle(hJvmThread); // doesn't close the thread, just the handle
 }
 
 BOOL CJvmEnvironment::_RegisterSomeFunctions () const {
@@ -94,6 +91,7 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 	try {
 		CJvmEnvironment *pThis = static_cast<CJvmEnvironment*>(param);
 		pThis->m_pJvm = new Jvm();
+		LOGTRACE("Created JVM");
 		if (!pThis->m_pJvm) {
 			LOGERROR("JVM global pointer is NULL");
 			return 1;

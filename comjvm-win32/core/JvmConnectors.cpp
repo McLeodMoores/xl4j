@@ -71,6 +71,7 @@ public:
         /* [optional][in] */ BSTR bstrLogicalIdentifier,
         /* [retval][out] */ IJvm **ppJvm
 		) {
+		OutputDebugStringW(L"Urgle Burgle");
 		return m_pInstance->CreateJvm (pTemplate, bstrLogicalIdentifier, ppJvm);
 	}
     HRESULT STDMETHODCALLTYPE Unlock () {

@@ -55,7 +55,7 @@ Building
         cd examples
         mvn -f jdk.xml install
         mvn -f xllsdk.xml install
-6. Now go back to your clone of Excel4J and build and install. 
+6. Now go back to your clone of XL4J and build and install. 
         
         mvn install 
 7.  Switch to the comjvm/jstub directory:
@@ -66,7 +66,7 @@ Building
 
         mvn install
         cd ..
-8. Check that the `maven-ative-packing.version` property in `pom.xml` matches that in (4) and build:
+8. Check that the `maven-native-packing.version` property in `pom.xml` matches that in (4) and build:
 
         mvn install
         

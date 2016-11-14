@@ -19,18 +19,46 @@ static JNICreateJavaVMProc g_pfnCreateVM = NULL;
 static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
 	TCHAR szPath[MAX_PATH];
 	DWORD cbPath = sizeof (szPath);
-	if (RegGetValue (hkeyJRE, pszVersion, TEXT ("RuntimeLib"), RRF_RT_REG_SZ, NULL, szPath, &cbPath) != ERROR_SUCCESS) return FALSE;
+	if (RegGetValue(hkeyJRE, pszVersion, TEXT("RuntimeLib"), RRF_RT_REG_SZ, NULL, szPath, &cbPath) != ERROR_SUCCESS) {
+		LOGFATAL("Couldn't find JRE runtime lib path");
+		return FALSE;
+	}
+	LOGTRACE("Trying to load JVM library from %s", szPath);
 	g_hJRE = LoadLibrary (szPath);
 	if (g_hJRE == NULL) {
-		// Change "/client/" to "/server/"
-		TCHAR *client = _tcsstr(szPath, TEXT("\\client\\"));
-		if (!client) return FALSE;
-		memcpy (client, TEXT ("\\server\\"), 8 * sizeof (TCHAR));
-		g_hJRE = LoadLibrary(szPath);
-		if (!g_hJRE) return FALSE;
+		// LoadLibrary failed, try adding that directory as a DLL source
+		DWORD dwErr = GetLastError();
+		_com_error err(HRESULT_FROM_WIN32(dwErr));
+		LOGWARN("LoadLibrary returned NULL, error code was %d which probably means %s", dwErr, err.ErrorMessage());
+		TCHAR szDir[MAX_PATH];
+		if (FAILED(FileUtils::GetDirectoryFromFullPath(szDir, MAX_PATH, szPath))) {
+			LOGFATAL("Couldn't get directory from full path");
+			return FALSE;
+		}
+		StringCchCat(szDir, MAX_PATH, L"..");
+		LOGTRACE("Adding %s to DLL search path", szDir);
+		SetDllDirectory(szDir);
+		g_hJRE = LoadLibrary (szPath);
+		if (g_hJRE == NULL) {
+			DWORD dwErr = GetLastError();
+			_com_error err(HRESULT_FROM_WIN32(dwErr));
+			LOGWARN("LoadLibrary still returned NULL, error code was %d which probably means %s", dwErr, err.ErrorMessage());
+			// Change "/client/" to "/server/"
+			TCHAR *client = _tcsstr(szPath, TEXT("\\client\\"));
+			if (!client) return FALSE;
+			memcpy(client, TEXT("\\server\\"), 8 * sizeof(TCHAR));
+			g_hJRE = LoadLibrary(szPath);
+			if (!g_hJRE) {
+				LOGTRACE("Still couldn't load JVM library after changing path to %s", szPath);
+				return FALSE;
+			}
+		} else {
+			LOGTRACE("Loaded JVM DLL successfully");
+		}
 	}
 	g_pfnCreateVM = reinterpret_cast<JNICreateJavaVMProc>(GetProcAddress (g_hJRE, "JNI_CreateJavaVM"));
 	if (!g_pfnCreateVM) {
+		LOGFATAL("Can't find entry point JNI_CreateJavaVM in the Java DLL");
 		FreeLibrary (g_hJRE);
 		g_hJRE = NULL;
 		return FALSE;
@@ -84,6 +112,8 @@ static BOOL LoadJVMLibrary (PCTSTR pszVendor, PCTSTR pszVersion) {
 			if (result == ERROR_SUCCESS) {
 				bResult = LoadJVMLibrary (hkeyJRE, pszVersion);
 				RegCloseKey (hkeyJRE);
+			} else {
+				LOGFATAL("Couldn't open registry key for JRE");
 			}
 			RegCloseKey (hkeyVendor);
 		}
@@ -121,12 +151,14 @@ static BOOL StartJVMImpl (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DW
 BOOL StartJVM (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DWORD cOptions, PCSTR *ppszOptions) {
 	// TODO: Vendor and Version should be passed in from (eventually the IJvmTemplate) with defaults of JavaSoft and [Current] if omitted
 	if (LoadJVMLibrary (TEXT ("JavaSoft"), TEXT ("[Current]"))) {
+		LOGTRACE("LoadJVMLibrary succeeded");
 		if (StartJVMImpl (ppJVM, ppEnv, pszClasspath, cOptions, ppszOptions)) {
 			return TRUE;
 		} else {
 			UnloadJVMLibrary ();
 		}
 	}
+	LOGTRACE("LoadJVMLibrary failed and returned null");
 	return FALSE;
 }
 

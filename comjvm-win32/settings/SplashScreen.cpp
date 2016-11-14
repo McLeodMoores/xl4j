@@ -91,6 +91,7 @@ void CSplashScreen::Update(int iRegistered) {
 INT_PTR CSplashScreen::Open(HWND hwndParent) {
 	LOGTRACE("Open");
 	Create(IDD_SPLASHWINDOW, CWnd::FromHandle(hwndParent));
+	SetMarquee();
 	HideIfSplashOpen();
 	return 0;
 }
@@ -143,7 +144,7 @@ void CSplashScreen::Increment() {
 
 void CSplashScreen::SetMarquee() {
 	m_prProgress.SetMarquee(TRUE, 50); // number is millis between updates: 50 ~ 20Hz
-	//m_prProgress.StepIt();
+	m_prProgress.StepIt();
 	HideIfSplashOpen();
 }
 

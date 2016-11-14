@@ -1,5 +1,5 @@
 #include "stdafx.h"
-void LoadDLLs ();
+HRESULT LoadDLLs ();
 void InitAddin ();
 void InitJvm ();
 void ShutdownJvm ();

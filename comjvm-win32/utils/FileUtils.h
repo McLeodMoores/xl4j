@@ -24,6 +24,7 @@ private:
 public:
 	static HRESULT GetAddinAbsolutePath (wchar_t *szFullPath, size_t cFullPath, const wchar_t *szFileName);
 	static HRESULT GetAddinDirectory (wchar_t *pszDirectory, size_t cDirectory);
+	static HRESULT GetDirectoryFromFullPath(wchar_t *szDirectory, size_t cDirectory, const wchar_t *szFullPath);
 	static HRESULT GetDllFileName (wchar_t *pszFilename, size_t cFilename);
 	static HRESULT GetTemporaryFileName(const wchar_t *pszLeafFilename, wchar_t *pszBuffer, size_t cBuffer);
 	static bool FileUtils::FileExists(const wchar_t *szPath);
