@@ -23,17 +23,22 @@ CAddinEnvironment::CAddinEnvironment () {
 }
 
 CAddinEnvironment::~CAddinEnvironment () {
+	LOGTRACE ("Removing toolbar");
+	RemoveToolbar();
 	LOGTRACE ("Deleting converter");
 	if (m_pConverter) delete m_pConverter;
 	LOGTRACE ("Deleting typelib");
 	if (m_pTypeLib) delete m_pTypeLib;
 	LOGTRACE ("Deleting settings object");
 	if (m_pSettings) delete m_pSettings;
-	if (m_idGarbageCollect) {
-		if (FAILED(ExcelUtils::UnregisterFunction (_T ("GarbageCollect"), m_idGarbageCollect))) {
-			LOGTRACE ("Error while unregistering GarbageCollect command");
-		}
-	}
+
+	/* We don't unregister GarbageColect so that it doesn't get called by xlOnTime after it's been deregistered.  It's not hugely important to deregister anyway. */
+	// if (m_idGarbageCollect) {
+	//	 if (FAILED(ExcelUtils::UnregisterFunction (_T ("GarbageCollect"), m_idGarbageCollect))) {
+	// 	   LOGTRACE ("Error while unregistering GarbageCollect command");
+	// 	 }
+	// }
+
 	if (m_idRegisterSomeFunctions) {
 		if (FAILED (ExcelUtils::UnregisterFunction (_T ("RegisterSomeFunctions"), m_idRegisterSomeFunctions))) {
 			LOGTRACE ("Error while unregistering RegisterSomeFunctions command");

@@ -30,7 +30,7 @@ int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
 bool g_initialized = false;
-bool g_shudown = false;
+bool g_shutdown = false;
 CAddinEnvironment *g_pAddinEnv = nullptr;
 CJvmEnvironment *g_pJvmEnv = nullptr;
 SRWLOCK g_JvmEnvLock = SRWLOCK_INIT;
@@ -199,7 +199,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2007 are not supported."), TempInt12(2));
 		return 0;
 	}
-	if (g_shudown) {
+	if (g_shutdown) {
 		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
 		return 0;
 	}
@@ -275,13 +275,13 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	ShutdownJvm ();
 	ShutdownAddin ();
-	g_pAddinEnv->RemoveToolbar ();
-	g_shudown = true;
+	
+	g_shutdown = true;
 	return 1;
 }
 
 __declspec(dllexport) int WINAPI xlAutoAdd (void) {
-	if (g_shudown) {
+	if (g_shutdown) {
 		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
 		return 0;
 	}
@@ -397,10 +397,14 @@ __declspec(dllexport) int GarbageCollect () {
 //	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
 //	LOGTRACE ("Lock Acquired");
-	g_pJvmEnv->_GarbageCollect();
+	if (!g_shutdown) {
+		g_pJvmEnv->_GarbageCollect();
+	}
 //	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockShared (&g_JvmEnvLock);
-	ExcelUtils::ScheduleCommand (TEXT("GarbageCollect"), 2);
+	if (!g_shutdown) {
+		ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2);
+	} // else this is the last call.
 	return 1;
 }
 
