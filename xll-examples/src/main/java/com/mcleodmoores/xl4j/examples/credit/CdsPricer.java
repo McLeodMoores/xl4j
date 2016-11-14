@@ -44,63 +44,51 @@ public final class CdsPricer {
   private static final double BPS = 1e-4;
 
   /**
-   * Calculate the clean price for the protection buyer given a yield and credit curve.
-   * @param notional  the CDS notional
+   * Calculate the clean price of a CDS given a yield and credit curve.
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the CDS coupon as a decimal (e.g. 0.01 for a 100bps coupon)
    * @return  the clean price
    */
   @XLFunction(name = "CDS.CleanPrice", category = "ISDA CDS model",
-      description = "Calculate the clean price of a CDS for the protection buyer")
+      description = "Calculate the clean price of a CDS")
   public static double cleanPrice(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    return notional * PRICE_CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.CLEAN);
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return cds.getNotional() * PRICE_CALCULATOR.pv(cds.getUnderlyingCds(), yieldCurve, creditCurve, cds.getCoupon(), PriceType.CLEAN);
   }
 
   /**
-   * Calculate the dirty price for the protection buyer given a yield and credit curve.
-   * @param notional  the CDS notional
+   * Calculate the dirty price of a CDS given a yield and credit curve.
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the CDS coupon as a decimal (e.g. 0.01 for a 100bps coupon)
    * @return  the dirty price
    */
   @XLFunction(name = "CDS.DirtyPrice", category = "ISDA CDS model",
       description = "Calculate the dirty price of a CDS for the protection buyer")
   public static double dirtyPrice(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    return notional * PRICE_CALCULATOR.pv(cds, yieldCurve, creditCurve, coupon, PriceType.DIRTY);
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return cds.getNotional() * PRICE_CALCULATOR.pv(cds.getUnderlyingCds(), yieldCurve, creditCurve, cds.getCoupon(), PriceType.DIRTY);
   }
 
   /**
-   * Calculate the accrued interest for the protection buyer given a yield and credit curve.
-   * @param notional  the CDS notional
+   * Calculate the accrued interest of a CDS given a yield and credit curve.
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the CDS coupon as a decimal (e.g. 0.01 for a 100bps coupon)
    * @return  the accrued interest
    */
   @XLFunction(name = "CDS.Accrued", category = "ISDA CDS model",
-      description = "Calculate the accrued of a CDS for the protection buyer")
+      description = "Calculate the accrued of a CDS")
   public static double accruedInterest(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    return dirtyPrice(notional, cds, yieldCurve, creditCurve, coupon) - cleanPrice(notional, cds, yieldCurve, creditCurve, coupon);
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return dirtyPrice(cds, yieldCurve, creditCurve) - cleanPrice(cds, yieldCurve, creditCurve);
   }
 
   /**
@@ -113,53 +101,46 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.ParSpread", category = "ISDA CDS model",
       description = "The par spread of a CDS")
   public static double parSpread(
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
-    return PRICE_CALCULATOR.parSpread(cds, yieldCurve, creditCurve);
+    return PRICE_CALCULATOR.parSpread(cds.getUnderlyingCds(), yieldCurve, creditCurve);
   }
 
   /**
-   * Calculates the price for the protection buyer of the protection leg given a yield and credit curve.
-   * @param notional  the notional
+   * Calculates the price of the protection leg given a yield and credit curve.
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
    * @return  the protection leg price
    */
   @XLFunction(name = "CDS.ProtectionLegPrice", category = "ISDA CDS model",
-      description = "The present value of the protection leg of a CDS for the protection buyer")
+      description = "The present value of the protection leg of a CDS")
   public static double protectionLegPv(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
-    return notional * PRICE_CALCULATOR.protectionLeg(cds, yieldCurve, creditCurve);
+    return cds.getNotional() * PRICE_CALCULATOR.protectionLeg(cds.getUnderlyingCds(), yieldCurve, creditCurve);
   }
 
   /**
-   * Calculates the clean price of the premium leg for the protection buyer.
-   * @param notional  the notional
+   * Calculates the clean price of the premium leg.
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the coupon
    * @return  the premium leg clean price
    */
   @XLFunction(name = "CDS.PremiumLegCleanPrice", category = "ISDA CDS model",
-      description = "The clean price of the premium leg of a CDS for the protection buyer")
+      description = "The clean price of the premium leg of a CDS")
   public static double premiumLegPv(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    return -notional * PRICE_CALCULATOR.annuity(cds, yieldCurve, creditCurve, PriceType.CLEAN) * coupon;
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return -cds.getNotional() * PRICE_CALCULATOR.annuity(cds.getUnderlyingCds(), yieldCurve, creditCurve, PriceType.CLEAN) * cds.getCoupon();
   }
 
   /**
    * Calculates the change in value of a CDS when the recovery rate is changed by 1 basis point.
-   * @param notional  the notional
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
@@ -168,59 +149,48 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.RR01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the recovery rate")
   public static double rr01(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
-    return notional * RISK_CALCULATOR.recoveryRateSensitivity(cds, yieldCurve, creditCurve) * BPS;
+    return cds.getNotional() * RISK_CALCULATOR.recoveryRateSensitivity(cds.getUnderlyingCds(), yieldCurve, creditCurve) * BPS;
   }
 
   /**
    * Calculates the value on default of a CDS.
-   * @param notional  the notional
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the coupon
    * @return  the value on default
    */
   @XLFunction(name = "CDS.ValueOnDefault", category = "ISDA CDS model",
       description = "The value on default of a CDS")
   public static double valueOnDefault(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    return notional * RISK_CALCULATOR.valueOnDefault(cds, yieldCurve, creditCurve, coupon);
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return cds.getNotional() * RISK_CALCULATOR.valueOnDefault(cds.getUnderlyingCds(), yieldCurve, creditCurve, cds.getCoupon());
   }
 
   /**
    * Calculates the change in value of a CDS when the yield curve is parallel-shifted by 1 basis point.
-   * @param notional  the notional
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the CDS coupon
    * @return  the IR01
    */
   @XLFunction(name = "CDS.IR01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the yield curve")
   public static double ir01(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    return notional * IR_CALCULATOR.parallelIR01(cds, coupon, creditCurve, yieldCurve);
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    return cds.getNotional() * IR_CALCULATOR.parallelIR01(cds.getUnderlyingCds(), cds.getCoupon(), creditCurve, yieldCurve);
   }
 
   /**
    * Calculates the change in value of a CDS when the credit spreads are parallel-shifted by 1 basis point.
-   * @param notional  the notional
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
-   * @param coupon  the CDS coupon
    * @param quoteType  the market quote type
    * @param marketQuote  the market quote
    * @return  the CS01
@@ -228,37 +198,31 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.CS01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the market spread")
   public static double cs01(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
       @XLArgument(description = "Quote Type", name = "Quote Type") final String quoteType,
       @XLArgument(description = "Market Quote", name = "Market Quote") final double marketQuote) {
-    final CDSQuoteConvention quote = createQuote(coupon, marketQuote, quoteType);
-    return notional * SPREAD_CALCULATOR.parallelCS01(cds, quote, yieldCurve);
+    final CDSQuoteConvention quote = createQuote(cds.getCoupon(), marketQuote, quoteType);
+    return cds.getNotional() * SPREAD_CALCULATOR.parallelCS01(cds.getUnderlyingCds(), quote, yieldCurve);
   }
 
   /**
    * Calculates the change in value of a CDS at each yield curve node when the yield is shifted by 1 basis point.
-   * @param notional  the notional
    * @param cds  the CDS
    * @param yieldCurve  the yield curve
    * @param creditCurve  the credit curve
-   * @param coupon  the CDS coupon
    * @return  the bucketed IR01
    */
   @XLFunction(name = "CDS.BucketedIR01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the yield curve")
   public static double[] bucketedIr01(
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon) {
-    final double[] bucketedIr01 = IR_CALCULATOR.bucketedIR01(cds, coupon, creditCurve, yieldCurve);
+      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+    final double[] bucketedIr01 = IR_CALCULATOR.bucketedIR01(cds.getUnderlyingCds(), cds.getCoupon(), creditCurve, yieldCurve);
     final double[] result = new double[bucketedIr01.length];
     for (int i = 0; i < bucketedIr01.length; i++) {
-      result[i] = notional * bucketedIr01[i];
+      result[i] = cds.getNotional() * bucketedIr01[i];
     }
     return result;
   }
@@ -273,9 +237,7 @@ public final class CdsPricer {
    * @param coupons  the coupons as decimals. Must have one per tenor
    * @param yieldCurve  the yield curve to be used in discounting
    * @param convention  the convention for the CDS
-   * @param notional  the notional
    * @param cds  the CDS
-   * @param coupon  the CDS coupon
    * @param quoteType  the market quote type
    * @param marketQuote  the market quote
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
@@ -292,9 +254,7 @@ public final class CdsPricer {
       @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
       @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
       @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Quote Type", name = "Quote Type") final String quoteType,
       @XLArgument(description = "Market Quote", name = "Market Quote") final double marketQuote,
       @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
@@ -334,9 +294,10 @@ public final class CdsPricer {
       marketQuotes[i] = createQuote(coupons[i], quotes[i], quoteTypes[i]);
     }
     final ISDACompliantCreditCurve creditCurve = builder.calibrateCreditCurve(calibrationCds, marketQuotes, yieldCurve);
-    final double[] bucketedCs01 = SPREAD_CALCULATOR.bucketedCS01FromCreditCurve(cds, coupon, calibrationCds, yieldCurve, creditCurve);
+    final double[] bucketedCs01 = SPREAD_CALCULATOR.bucketedCS01FromCreditCurve(cds.getUnderlyingCds(), cds.getCoupon(),
+        calibrationCds, yieldCurve, creditCurve);
     for (int i = 0; i < bucketedCs01.length; i++) {
-      bucketedCs01[i] *= notional;
+      bucketedCs01[i] *= cds.getNotional();
     }
     return bucketedCs01;
   }
@@ -358,9 +319,7 @@ public final class CdsPricer {
    * @param cashSettlementDays  the number of cash settlement days, is optional. If not supplied, 3 is used
    * @param stepInDays  the number of step-in days, is optional. If not supplied, 1 is used
    * @param payAccrualOnDefault  true if the accrued is paid on default, is optional. If not supplied, true is used
-   * @param notional  the notional
    * @param cds  the CDS
-   * @param coupon  the CDS coupon
    * @param quoteType  the market quote type
    * @param marketQuote  the market quote
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
@@ -384,9 +343,7 @@ public final class CdsPricer {
       @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
       @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
       @XLArgument(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
-      @XLArgument(description = "Notional, positive for the protection buyer", name = "Notional") final double notional,
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "Quote Type", name = "Quote Type") final String quoteType,
       @XLArgument(description = "Market Quote", name = "Market Quote") final double marketQuote,
       @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
@@ -426,9 +383,10 @@ public final class CdsPricer {
       marketQuotes[i] = createQuote(coupons[i], quotes[i], quoteTypes[i]);
     }
     final ISDACompliantCreditCurve creditCurve = builder.calibrateCreditCurve(calibrationCds, marketQuotes, yieldCurve);
-    final double[] bucketedCs01 = SPREAD_CALCULATOR.bucketedCS01FromCreditCurve(cds, coupon, calibrationCds, yieldCurve, creditCurve);
+    final double[] bucketedCs01 = SPREAD_CALCULATOR.bucketedCS01FromCreditCurve(cds.getUnderlyingCds(), cds.getCoupon(),
+        calibrationCds, yieldCurve, creditCurve);
     for (int i = 0; i < bucketedCs01.length; i++) {
-      bucketedCs01[i] *= notional;
+      bucketedCs01[i] *= cds.getNotional();
     }
     return bucketedCs01;
   }

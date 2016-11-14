@@ -10,12 +10,12 @@ import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
-import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSCoupon;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
+import com.opengamma.util.money.Currency;
 
 /**
  * Methods that create CDS trades and expose information about those trades.
@@ -33,9 +33,13 @@ public class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.BuildCDSFromConvention", category = "ISDA CDS model",
       description = "Build a CDS")
-  public static CDSAnalytic createImmCds(
+  public static CdsTrade createImmCds(
       @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Currency", name = "Currency") final String currency,
+      @XLArgument(description = "Notional", name = "Notional") final double notional,
+      @XLArgument(description = "Buy protection", name = "Buy Protection") final boolean buyProtection,
       @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
       @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
       @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
       @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
@@ -62,7 +66,7 @@ public class CdsTradeDetails {
       cdsFactory = cdsFactory.withStepIn(convention.getStepInDays());
     }
     cdsFactory = cdsFactory.withRecoveryRate(recoveryRate);
-    return cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor));
+    return CdsTrade.of(cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor)), Currency.of(currency), notional, coupon, buyProtection);
   }
 
   /**
@@ -83,9 +87,13 @@ public class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.BuildCDS", category = "ISDA CDS model",
       description = "Build a CDS")
-  public static CDSAnalytic createImmCds(
+  public static CdsTrade createImmCds(
       @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Currency", name = "Currency") final String currency,
+      @XLArgument(description = "Notional", name = "Notional") final double notional,
+      @XLArgument(description = "Buy protection", name = "Buy Protection") final boolean buyProtection,
       @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
       @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
       @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
       @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
@@ -119,14 +127,14 @@ public class CdsTradeDetails {
       cdsFactory = cdsFactory.withStepIn(stepInDays);
     }
     cdsFactory = cdsFactory.withRecoveryRate(recoveryRate);
-    return cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor));
+    return CdsTrade.of(cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor)), Currency.of(currency), notional, coupon, buyProtection);
   }
 
   @XLFunction(name = "CDS.AccrualStartTimes", category = "CDS Trade")
   public Object[] accrualStartTimes(
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLArgument(description = "notional", name = "notional") final double notional) {
-    final CDSCoupon[] coupons = cds.getCoupons();
+    final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
     final Object[] result = new Object[coupons.length];
     for (int i = 0; i < coupons.length; i++) {
       result[i] = coupons[i].getEffStart();
