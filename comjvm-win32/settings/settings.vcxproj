@@ -289,6 +289,7 @@
     <ClCompile Include="AddinPropertyPage.cpp" />
     <ClCompile Include="AddVmOptionDialog.cpp" />
     <ClCompile Include="AvailableJvms.cpp" />
+    <ClCompile Include="BlueProgress.cpp" />
     <ClCompile Include="EditVmOptionDialog.cpp" />
     <ClCompile Include="SettingsDialog.cpp" />
     <ClCompile Include="SettingsDialogFactory.cpp" />
@@ -310,6 +311,7 @@
     <ClInclude Include="AddinPropertyPage.h" />
     <ClInclude Include="AddVmOptionDialog.h" />
     <ClInclude Include="AvailableJvms.h" />
+    <ClInclude Include="BlueProgress.h" />
     <ClInclude Include="ClasspathPropertyPage.h" />
     <ClInclude Include="EditVmOptionDialog.h" />
     <ClInclude Include="Resource.h" />
@@ -339,6 +341,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="splash.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.dll.file.manifest" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,6 +3,7 @@
 #include "afxwin.h"
 #include "afxcmn.h"
 #include "TransparentStatic.h"
+#include "BlueProgress.h"
 
 // CSplashScreen dialog
 
@@ -38,7 +39,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CTransparentStatic m_stLicensee;
-	CProgressCtrl m_prProgress;
+	CBlueProgress m_prProgress;
 	CString m_csLicenseeText;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor); 
 	
