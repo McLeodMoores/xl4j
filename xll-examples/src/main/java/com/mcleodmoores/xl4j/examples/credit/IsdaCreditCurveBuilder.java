@@ -59,10 +59,10 @@ public final class IsdaCreditCurveBuilder {
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
     ArgumentChecker.isTrue(n == recoveryRates.length, "Must have one recovery rate per tenor, have {} tenors and {} recovery rates", n, recoveryRates.length);
     ArgumentChecker.isTrue(n == coupons.length, "Must have one coupon per tenor, have {} tenors and {} quote types", n, coupons.length);
-    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
-    cdsFactory = cdsFactory.withAccrualDCC(convention.getAccrualDayCount());
-    cdsFactory = cdsFactory.withCurveDCC(convention.getCurveDayCount());
-    cdsFactory = cdsFactory.with(convention.getBusinessDayConvention());
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
+        .withAccrualDCC(convention.getAccrualDayCount())
+        .withCurveDCC(convention.getCurveDayCount())
+        .with(convention.getBusinessDayConvention());
     if (holidayDates != null) {
       cdsFactory = cdsFactory.with(createHolidayCalendar(holidayDates));
     }
@@ -136,10 +136,10 @@ public final class IsdaCreditCurveBuilder {
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
     ArgumentChecker.isTrue(n == recoveryRates.length, "Must have one recovery rate per tenor, have {} tenors and {} recovery rates", n, recoveryRates.length);
     ArgumentChecker.isTrue(n == coupons.length, "Must have one coupon per tenor, have {} tenors and {} quote types", n, coupons.length);
-    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
-    cdsFactory = cdsFactory.withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName));
-    cdsFactory = cdsFactory.withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName));
-    cdsFactory = cdsFactory.with(BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName));
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
+        .withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName))
+        .withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName))
+        .with(BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName));
     if (holidayDates != null) {
       cdsFactory = cdsFactory.with(createHolidayCalendar(holidayDates));
     }

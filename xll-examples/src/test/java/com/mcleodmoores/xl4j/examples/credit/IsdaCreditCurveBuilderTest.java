@@ -104,6 +104,7 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertTrue(result instanceof ISDACompliantCreditCurve);
     final ISDACompliantCreditCurve curve = (ISDACompliantCreditCurve) result;
     // curves won't be equals() because the names will be different
+    final Object temp = EXPECTED_CURVE;
     assertArrayEquals(curve.getKnotTimes(), EXPECTED_CURVE.getKnotTimes(), 1e-15);
     assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
   }
