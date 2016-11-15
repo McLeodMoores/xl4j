@@ -23,10 +23,16 @@ import com.opengamma.util.money.Currency;
 public class CdsTradeDetails {
 
   /**
-   * Constructs a CDS.
+   * Constructs an IMM  CDS trade.
    * @param tradeDate  the trade date
+   * @param currency  the currency
+   * @param notional  the notional
+   * @param buyProtection  true if protection is bought
    * @param tenor  the tenor of the CDS
+   * @param coupon  the CDS coupon
    * @param recoveryRate the recovery rates as decimal
+   * @param initialMarketQuote  the initial market quote as decimal
+   * @param initialQuoteType  the initial market quote type
    * @param convention  the convention to be used
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  a credit curve constructed using the ISDA model
@@ -41,6 +47,8 @@ public class CdsTradeDetails {
       @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
       @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
       @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
+      @XLArgument(description = "Initial Market Quote", name = "Initial Market Quote") final double initialMarketQuote,
+      @XLArgument(description = "Initial Quote Type", name = "Initial Quote Type") final String initialQuoteType,
       @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
       @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
@@ -66,14 +74,21 @@ public class CdsTradeDetails {
       cdsFactory = cdsFactory.withStepIn(convention.getStepInDays());
     }
     cdsFactory = cdsFactory.withRecoveryRate(recoveryRate);
-    return CdsTrade.of(cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor)), Currency.of(currency), notional, coupon, buyProtection);
+    return CdsTrade.of(cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor)), Currency.of(currency), notional, coupon, buyProtection,
+        initialMarketQuote, initialQuoteType);
   }
 
   /**
    * Constructs a CDS.
    * @param tradeDate  the trade date
+   * @param currency  the currency
+   * @param notional  the notional
+   * @param buyProtection  true if protection is bought
    * @param tenor  the tenor of the CDS
+   * @param coupon  the CDS coupon
    * @param recoveryRate the recovery rates as decimal
+   * @param initialMarketQuote  the initial market quote as decimal
+   * @param initialQuoteType  the initial market quote type
    * @param accrualDayCountName  the accrual day count convention name
    * @param curveDayCountName  the curve day count convention name
    * @param businessDayConventionName  the business day convention name
@@ -95,6 +110,8 @@ public class CdsTradeDetails {
       @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
       @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
       @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
+      @XLArgument(description = "Initial Market Quote", name = "Initial Market Quote") final double initialMarketQuote,
+      @XLArgument(description = "Initial Quote Type", name = "Initial Quote Type") final String initialQuoteType,
       @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
       @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
       @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
@@ -127,7 +144,8 @@ public class CdsTradeDetails {
       cdsFactory = cdsFactory.withStepIn(stepInDays);
     }
     cdsFactory = cdsFactory.withRecoveryRate(recoveryRate);
-    return CdsTrade.of(cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor)), Currency.of(currency), notional, coupon, buyProtection);
+    return CdsTrade.of(cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenor)), Currency.of(currency), notional, coupon, buyProtection,
+        initialMarketQuote, initialQuoteType);
   }
 
   @XLFunction(name = "CDS.AccrualStartTimes", category = "CDS Trade")

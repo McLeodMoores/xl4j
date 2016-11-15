@@ -75,7 +75,7 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
       convertToXlType(STUB_TYPE), convertToXlType(CASH_SETTLEMENT_DAYS), convertToXlType(STEP_IN_DAYS), convertToXlType(PAY_ACCRUAL_ON_DEFAULT),
       convertToXlType(HOLIDAYS));
   static {
-    final CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
         .withAccrualDCC(DayCountFactory.INSTANCE.instance(ACCRUAL_DAY_COUNT_NAME))
         .withCurveDCC(DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT_NAME))
         .with(BusinessDayConventionFactory.INSTANCE.instance(BDC_NAME))
@@ -90,7 +90,7 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
     final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
     for (int i = 0; i < n; i++) {
-      cdsFactory.withRecoveryRate(RECOVERY_RATES[i]);
+      cdsFactory = cdsFactory.withRecoveryRate(RECOVERY_RATES[i]);
       calibrationCds[i] = cdsFactory.makeIMMCDS(TRADE_DATE, parsePeriod(TENORS[i]));
       marketQuotes[i] = createQuote(COUPONS[i], QUOTES[i], QUOTE_TYPES[i]);
     }
@@ -104,7 +104,6 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertTrue(result instanceof ISDACompliantCreditCurve);
     final ISDACompliantCreditCurve curve = (ISDACompliantCreditCurve) result;
     // curves won't be equals() because the names will be different
-    final Object temp = EXPECTED_CURVE;
     assertArrayEquals(curve.getKnotTimes(), EXPECTED_CURVE.getKnotTimes(), 1e-15);
     assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
   }
@@ -127,7 +126,8 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
 
   @Test
   public void testConstructionOfCurveWithoutOptional() {
-    final CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory().withAccrualDCC(DayCountFactory.INSTANCE.instance(ACCRUAL_DAY_COUNT_NAME))
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
+        .withAccrualDCC(DayCountFactory.INSTANCE.instance(ACCRUAL_DAY_COUNT_NAME))
         .withCurveDCC(DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT_NAME))
         .with(BusinessDayConventionFactory.INSTANCE.instance(BDC_NAME));
     final int n = TENORS.length;
@@ -135,7 +135,7 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
     final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
     for (int i = 0; i < n; i++) {
-      cdsFactory.withRecoveryRate(RECOVERY_RATES[i]);
+      cdsFactory = cdsFactory.withRecoveryRate(RECOVERY_RATES[i]);
       calibrationCds[i] = cdsFactory.makeIMMCDS(TRADE_DATE, parsePeriod(TENORS[i]));
       marketQuotes[i] = createQuote(COUPONS[i], QUOTES[i], QUOTE_TYPES[i]);
     }

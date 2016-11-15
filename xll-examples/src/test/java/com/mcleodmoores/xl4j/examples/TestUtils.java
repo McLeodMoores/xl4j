@@ -19,6 +19,7 @@ import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
+import com.opengamma.util.money.Currency;
 
 /**
  *
@@ -37,6 +38,9 @@ public final class TestUtils {
     }
     if (object instanceof Boolean) {
       return (boolean) object ? XLBoolean.TRUE : XLBoolean.FALSE;
+    }
+    if (object instanceof Currency) {
+      return XLString.of(((Currency) object).getCode());
     }
     if (object.getClass().isArray()) {
       //TODO only works for 1D arrays
