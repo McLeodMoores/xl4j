@@ -90,11 +90,37 @@ By default there are toolbar icons for opening the settings dialog, and opening 
  - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
  
 ## Deployment features
- - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
-   allow hosting installation files on a network share.
+ - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software - you 
+   just copy the files, point Excel at the .xll file using the Add-in manager, and off you go.
+ - Allow hosting installation files on a network share where they can be easily updated.
+ - No COM registration, no registry modifications whatsoever.
  - No manually-run background server.
  - Installation can be custom configured to hide configuration and developer options from end users.
- - White labelling.
+ - White labelling.  Add-in name can be changed by simply renaming XLL file.
  - In-built access to logs without digging around in Temp directories or CLI windows.
-
+ 
+## Add-in features
+ - Non-blocking background function registration means Excel doesn't blacklist your Add-in for extended startup times.
+ - Mark-and-sweep style garbage collector allows long running data-driven spreadsheets to keep memory requirements stable.
+ - Support for all Excel function types
+   - Macro-equivalent (single-threaded, but allows certain extra features)
+   - Multi-threaded
+   - Volatile
+   - Asynchronous (** in development **)
+ - Easy-to-use configuration dialog allows
+   - Custom VM options, with common options available via tick-box (max heap, remote debugging, JNI checks, logging level) 
+     meaning you don't have to remember the options.
+   - Add items to classpath individually, multi-select or scan a whole folder for jars.
+ - Auto-detects existing installed JVM enabled via the Java control panel applet.
+   - Bundled JVMs coming soon.
+  
+## Features in development
+There are various architectural choices that have been pre-made to enable future feature development:
+  - Out-of-process JVM.  This is relatively easy given the JVM is implemented as a COM object and all interaction is already 
+    via only COM types and interfaces.
+    - Allows multiple JVMs.
+    - No memory limitations.
+    - Multiple XL4J add-ins at the same time.
+    - Good performance due to highly optimized Windows LPC mechanism which uses shared memory for IPC when appropriate.
+  - 
 
