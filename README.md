@@ -122,5 +122,18 @@ There are various architectural choices that have been pre-made to enable future
     - No memory limitations.
     - Multiple XL4J add-ins at the same time.
     - Good performance due to highly optimized Windows LPC mechanism which uses shared memory for IPC when appropriate.
-  - 
-
+  - Excel high performance XLL C API access that can provide all kinds of extra functionality.  Important that these functions can be 
+    called back from the calling thread.  This is a tricky requirement in the out-of-process context, but a method to achieve it has
+    already been found.
+    - Access to caller information (e.g. which cell or cells are being computed).
+    - Read and write data into arbitrary cells without using array formulas (only certain types of function are allowed 
+      to do this).
+    - Evaluate arbitrary Excel formulas.
+    - Schedule commands to be called after a given period of time (possibly repeatedly).
+    - Add custom dialog boxes, menus, toolbars (although this functionality is probably best achieved in other ways).
+    - Much more...
+  - COM RTD server to allow real-time data to be pushed from Java into Excel.
+  - General COM API access - The most comprehensive API for Excel access is via the COM API.  The COM API allows things not available 
+    via the XLL API, such as ability to format cells, recalculate cells and ranges, and much more.  So why not only provide COM access? 
+    The reason is that the COM API can be rather slow, and there are still some things that can only be done via the XLL C API.
+   
