@@ -19,21 +19,21 @@ of object handles.  This means you can store any complex object in a single Exce
      or deploy to a maven repository.
  - Production-grade
    - make consideration of real-world production usage with XCOPY install, access to logs, pre-deployment configuration, etc.
- - Developer-friendly licensing
+ - Reasonable licensing
    - Dual license GPL/Commercial means you can get your feet wet without an up-front commitment and use in personal or 
      open source projects without payment.
-   - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase      (like JetBrains).
+   - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase.
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
 
 # Features
 ## Writing Excel user-defined functions
  - System will automatically scan your code for @XLFunction annotations and register them with Excel.
-    ```java
+   ```java
      @XLFunction(name = "MyAdd")
      public static double myadd(final double one, final double two) {
        return one + two;
      }
-  ```
+   ```
 
   ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
    
@@ -155,3 +155,18 @@ These are features we know how to implement but aside from identifying what is r
   - Argument hints using tooltips.
   - Arbitrary Java REPL style (e.g. `=Java("MyClass obj = MyClass.of($1)", A1); return obj.getCount();`).
    
+# Limitations
+There are a few limitations with the current build.  These should slowly dissapear with time.
+  - Excel 2010 is the minimum supported version.  
+    - This is the first version to support asynchronous functions, which allow us to avoid a psuedo-asynchronous framework to support
+      Excel 2007.  Additionally, Excel 2007 has some nasty bugs prior to the first service packs and it going out of support early 2017.
+    - Versions prior to 2007 don't support multi-threading at all, support much smaller sheets, and don't have Unicode support.
+  - The JVM has a limitation of one JVM per process.  This means you cannot install more than one XL4J-based Add-in at the same time.
+    Because the JVM interface is a pure COM interface, it will be relatively easy to switch to an out-of-process version within the
+    first updates.
+  - No ribbon support currently, toolbar uses the C API, which doesn't fully support the ribbon functionality.  It should be possible
+    to build a wrapper XLA to install a ribbon if needed before official support is added.
+  - 32-bit JVM limits maximum heap as it needs to share address space with Excel.  This will go away once we move to an 
+    out-of-process JVM with the first updates.
+  - 64-bit Add-in/JVM combination builds but hasn't been tested.
+  
