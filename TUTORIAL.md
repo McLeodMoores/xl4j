@@ -19,3 +19,46 @@ but it't fine to just download and install them yourself too.  You'll probably w
 be able to actually test your Add-in's, you will probably want to install Excel too!  Any version after (not including) 
 Excel 2007 is fine.
 
+Note that you MUST have a 32-bit Java runtime (JRE) installed for XL4J to work.  I have found chocolatey can be a bit hit and miss
+at installing this correctly, so I'd recommend downloading the i586 version of the JRE yourself and installing manually.
+
+## Cloning the template project
+We're provided a template project that you can use to get started.  It's very basic, and just consists of a Mavne POM which pulls 
+in the required libraries and a Maven assembly plug-in manifest which describes for to package the resulting Add-in into both a 
+directory (so you can use it directly) and a zip file for distribution.
+
+Start by cloning the project:
+```
+git clone https://github.com/McLeodMoores/xl4j-template.git
+```
+Inside you'll find a standard Maven project layout.  Now is a good time to import this project into your IDE of choice, or
+fire up a text editor.  
+
+## Adding a new custom Excel function
+Try adding this class:
+``` java
+package com.mcleodmoores.xl4j.template;
+
+import com.mcleodmoores.xl4j.XLFunction;
+
+public final class MyFunctions {
+  @XLFunction(name = "MyAdd")
+  public static double myadd(double one, double two) {
+    return one + two;
+  }
+}
+```
+## Build the Add-in
+Then build using:
+```
+mvn install
+```
+This will pull in required libraries and produce the build artifact.  Have a look in `xl4j-template\target` and you should see two 
+files:
+ - A folder called `xl4j-template-0.0.1-SHAPSHOT-distribution`
+ - A zip file of containing that folder called `xl4j-template-0.0.1-SNAPSHOT-distribution.zip`
+ 
+## Manually add the Add-in to Excel
+ 1. Start Excel.
+ 2. On the Backstage (the screen revealed by clicking on the `File` ribbon header or Office button), choose Options.
+ 3. Next to the dropdown list towards the botton, click 'Go'.
