@@ -153,5 +153,5 @@ These are features we know how to implement but aside from identifying what is r
   - Object inspector pop-up window.
   - Excel help topics from JavaDocs.
   - Argument hints using tooltips.
-  - Arbitrary Java REPL style (e.g. `=Java("MyClass class = MyClass.of($1)", A1)`)
+  - Arbitrary Java REPL style (e.g. `=Java("MyClass obj = MyClass.of($1)", A1); return obj.getCount();`).
    
