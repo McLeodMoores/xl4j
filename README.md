@@ -114,8 +114,12 @@ By default there are toolbar icons for opening the settings dialog, and opening 
  - Auto-detects existing installed JVM enabled via the Java control panel applet.
    - Bundled JVMs coming soon.
   
+# Roadmap
 ## Features in development
-There are various architectural choices that have been pre-made to enable future feature development:
+There are various architectural choices that have been made to enable specific future features.  These features can be considered the
+highest priority:
+  - Bundled JVM.  Allow inclusion of a JVM with the installation files meaning user does not have to even know Java is used and 
+    simplifying deployment.  Should be relatively simple.
   - Out-of-process JVM.  This is relatively easy given the JVM is implemented as a COM object and all interaction is already 
     via only COM types and interfaces.
     - Allows multiple JVMs.
@@ -132,8 +136,22 @@ There are various architectural choices that have been pre-made to enable future
     - Schedule commands to be called after a given period of time (possibly repeatedly).
     - Add custom dialog boxes, menus, toolbars (although this functionality is probably best achieved in other ways).
     - Much more...
+  - Toolbar support - allow the simple addition of new toolbar buttons linked to custom commands.  See below for full ribbon support.
+  - Per-cell exception display.  Allow developer to double-click on cell that caused error and see the last Exception + stack trace
+    thrown in that cell.
+    
+## Features in the pipeline
+These are features we know how to implement but aside from identifying what is required, nothing has been started yet.
   - COM RTD server to allow real-time data to be pushed from Java into Excel.
   - General COM API access - The most comprehensive API for Excel access is via the COM API.  The COM API allows things not available 
     via the XLL API, such as ability to format cells, recalculate cells and ranges, and much more.  So why not only provide COM access? 
     The reason is that the COM API can be rather slow, and there are still some things that can only be done via the XLL C API.
+  - Full Ribbon support.  Ribbon support requires more COM integration as a pre-requisite.
+  - Easy exposing of user defined functions to VBA.
+  - Dynamic class updating - support dynamic updaing of classes by your IDE feeding through to the Add-in without a restart.
+  - Dynamic class addition - fully dynamic updates including adding and removing new functions at run-time (a la JRebel).
+  - Object inspector pop-up window.
+  - Excel help topics from JavaDocs.
+  - Argument hints using tooltips.
+  - Arbitrary Java REPL style (e.g. `=Java("MyClass class = MyClass.of($1)", A1)`)
    
