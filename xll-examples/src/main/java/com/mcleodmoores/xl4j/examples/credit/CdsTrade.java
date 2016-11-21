@@ -13,21 +13,34 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.QuotedSpread;
 import com.opengamma.util.money.Currency;
 
 /**
- *
+ * Wrapper for an analytic CDS object (used in pricing) that contains trade details such as the notional
+ * and coupon.
  */
 public final class CdsTrade {
 
+  /**
+   * Static constructor of a CDS trade.
+   * @param cdsAnalytic  the analytic CDS object, not null
+   * @param currency  the currency, not null
+   * @param notional  the notional
+   * @param coupon  the coupon as a decimal
+   * @param buyProtection  true if protection is bought
+   * @param initialQuote  the quote when the trade was entered into
+   * @param initialQuoteType  the initial quote type, not null
+   * @return  a CDS trade
+   */
   public static CdsTrade of(final CDSAnalytic cdsAnalytic, final Currency currency, final double notional, final double coupon,
       final boolean buyProtection, final double initialQuote, final String initialQuoteType) {
     ArgumentChecker.notNull(cdsAnalytic, "cdsAnalytic");
     ArgumentChecker.notNull(currency, "currency");
+    ArgumentChecker.notNull(initialQuoteType, "initialQuoteType");
     return new CdsTrade(cdsAnalytic, currency, notional, coupon, buyProtection, initialQuote, initialQuoteType);
   }
 
-  //TODO initial quote?
   private final CDSAnalytic _cdsAnalytic;
   private final Currency _currency;
   private final double _notional;
+  private final double _coupon;
   private final CDSQuoteConvention _initialMarketQuote;
 
   private CdsTrade(final CDSAnalytic cdsAnalytic, final Currency currency, final double notional, final double coupon,
@@ -35,21 +48,41 @@ public final class CdsTrade {
     _cdsAnalytic = cdsAnalytic;
     _currency = currency;
     _notional = buyProtection ? notional : -notional;
+    _coupon = coupon;
     _initialMarketQuote = CdsQuoteConverter.createQuote(coupon, initialQuote, initialQuoteType);
   }
 
+  /**
+   * @return  the underlying CDS used in pricing
+   */
   public CDSAnalytic getUnderlyingCds() {
     return _cdsAnalytic;
   }
 
+  /**
+   * @return  the currency
+   */
   public Currency getCurrency() {
     return _currency;
   }
 
+  /**
+   * @return  the notional
+   */
   public double getNotional() {
     return _notional;
   }
 
+  /**
+   * @return  the coupon
+   */
+  public double getCoupon() {
+    return _coupon;
+  }
+
+  /**
+   * @return  the quote when the trade was entered into
+   */
   public CDSQuoteConvention getInitialQuote() {
     return _initialMarketQuote;
   }

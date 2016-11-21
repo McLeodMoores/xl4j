@@ -30,33 +30,18 @@ import com.opengamma.util.ArgumentChecker;
 public final class IsdaCreditCurveBuilder {
 
   /**
-   * Constructs a credit curve using the ISDA CDS model.
+   * Constructs the calibration CDS used to build a credit curve.
    * @param tradeDate  the trade date
    * @param tenors  the tenors of the CDS used to construct the curve
-   * @param quoteTypes  the quote types: PAR SPREAD; QUOTED SPREAD; and PUF or POINTS UPFRONT. Must have one per tenor
-   * @param quotes  the market data quotes. Must have one per tenor
    * @param recoveryRates  the recovery rates as decimals. Must have one per tenor
    * @param coupons  the coupons as decimals. Must have one per tenor
-   * @param yieldCurve  the yield curve to be used in discounting
    * @param convention  the convention for the CDS
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  a credit curve constructed using the ISDA model
    */
-  @XLFunction(name = "ISDACreditCurve.BuildIMMCurveFromConvention", category = "ISDA CDS model",
-      description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
-  public static ISDACompliantCreditCurve buildCreditCurve(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
-      @XLArgument(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
-      @XLArgument(description = "Market Quotes", name = "Market Quotes") final double[] quotes,
-      @XLArgument(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
-      @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
-      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
+  public static CDSAnalytic[] createCalibrationCds(final LocalDate tradeDate, final String[] tenors, final double[] recoveryRates,
+      final double[] coupons, final IsdaCdsConvention convention, final LocalDate[] holidayDates) {
     final int n = tenors.length;
-    ArgumentChecker.isTrue(n == quoteTypes.length, "Must have one quote type per tenor, have {} tenors and {} quote types", n, quoteTypes.length);
-    ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
     ArgumentChecker.isTrue(n == recoveryRates.length, "Must have one recovery rate per tenor, have {} tenors and {} recovery rates", n, recoveryRates.length);
     ArgumentChecker.isTrue(n == coupons.length, "Must have one coupon per tenor, have {} tenors and {} quote types", n, coupons.length);
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
@@ -82,11 +67,97 @@ public final class IsdaCreditCurveBuilder {
       cdsFactory = cdsFactory.withStepIn(convention.getStepInDays());
     }
     final CDSAnalytic[] calibrationCds = new CDSAnalytic[n];
-    final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
-    final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
     for (int i = 0; i < n; i++) {
       cdsFactory = cdsFactory.withRecoveryRate(recoveryRates[i]);
       calibrationCds[i] = cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenors[i]));
+    }
+    return calibrationCds;
+  }
+
+  /**
+   * Constructs the calibration CDS used to build a credit curve.
+   * @param tradeDate  the trade date
+   * @param tenors  the tenors of the CDS used to construct the curve
+   * @param recoveryRates  the recovery rates as decimals. Must have one per tenor
+   * @param coupons  the coupons as decimals. Must have one per tenor
+   * @param accrualDayCountName  the accrual day count convention name
+   * @param curveDayCountName  the curve day count convention name
+   * @param businessDayConventionName  the business day convention name
+   * @param couponIntervalName  the coupon interval name, is optional. If not supplied, 3 months is used
+   * @param stubTypeName  the stub type name, is optional: FRONTSHORT; FRONTLONG; BACKSHORT; or BACKLONG. If not supplied, FRONTSHORT is used
+   * @param cashSettlementDays  the number of cash settlement days, is optional. If not supplied, 3 is used
+   * @param stepInDays  the number of step-in days, is optional. If not supplied, 1 is used
+   * @param payAccrualOnDefault  true if the accrued is paid on default, is optional. If not supplied, true is used
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
+   * @return  a credit curve constructed using the ISDA model
+   */
+  public static CDSAnalytic[] createCalibrationCds(final LocalDate tradeDate, final String[] tenors, final double[] recoveryRates,
+      final double[] coupons, final String accrualDayCountName, final String curveDayCountName, final String businessDayConventionName,
+      final String couponIntervalName, final String stubTypeName, final Integer cashSettlementDays, final Integer stepInDays,
+      final Boolean payAccrualOnDefault, final LocalDate[] holidayDates) {
+    final int n = tenors.length;
+    ArgumentChecker.isTrue(n == recoveryRates.length, "Must have one recovery rate per tenor, have {} tenors and {} recovery rates", n, recoveryRates.length);
+    ArgumentChecker.isTrue(n == coupons.length, "Must have one coupon per tenor, have {} tenors and {} quote types", n, coupons.length);
+    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
+        .withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName))
+        .withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName))
+        .with(BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName));
+    if (holidayDates != null) {
+      cdsFactory = cdsFactory.with(createHolidayCalendar(holidayDates));
+    }
+    if (couponIntervalName != null) {
+      cdsFactory = cdsFactory.with(parsePeriod(couponIntervalName));
+    }
+    if (stubTypeName != null) {
+      cdsFactory = cdsFactory.with(StubType.valueOf(stubTypeName));
+    }
+    if (cashSettlementDays != null) {
+      cdsFactory = cdsFactory.withCashSettle(cashSettlementDays);
+    }
+    if (payAccrualOnDefault != null) {
+      cdsFactory = cdsFactory.withPayAccOnDefault(payAccrualOnDefault);
+    }
+    if (stepInDays != null) {
+      cdsFactory = cdsFactory.withStepIn(stepInDays);
+    }
+    final CDSAnalytic[] calibrationCds = new CDSAnalytic[n];
+    for (int i = 0; i < n; i++) {
+      cdsFactory = cdsFactory.withRecoveryRate(recoveryRates[i]);
+      calibrationCds[i] = cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenors[i]));
+    }
+    return calibrationCds;
+  }
+
+  /**
+   * Constructs a credit curve using the ISDA CDS model.
+   * @param tradeDate  the trade date
+   * @param tenors  the tenors of the CDS used to construct the curve
+   * @param quoteTypes  the quote types: PAR SPREAD; QUOTED SPREAD; and PUF or POINTS UPFRONT. Must have one per tenor
+   * @param quotes  the market data quotes. Must have one per tenor
+   * @param recoveryRates  the recovery rates as decimals. Must have one per tenor
+   * @param coupons  the coupons as decimals. Must have one per tenor
+   * @param yieldCurve  the yield curve to be used in discounting
+   * @param convention  the convention for the CDS
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
+   * @return  a credit curve constructed using the ISDA model
+   */
+  @XLFunction(name = "ISDACreditCurve.BuildIMMCurveFromConvention", category = "ISDA CDS model",
+      description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
+  public static ISDACompliantCreditCurve buildCreditCurve(
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLArgument(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
+      @XLArgument(description = "Market Quotes", name = "Market Quotes") final double[] quotes,
+      @XLArgument(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
+      @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
+      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
+      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
+    final int n = tenors.length;
+    final CDSAnalytic[] calibrationCds = createCalibrationCds(tradeDate, tenors, recoveryRates, coupons, convention, holidayDates);
+    final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
+    final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
+    for (int i = 0; i < n; i++) {
       marketQuotes[i] = createQuote(coupons[i], quotes[i], quoteTypes[i]);
     }
     return builder.calibrateCreditCurve(calibrationCds, marketQuotes, yieldCurve);
@@ -132,38 +203,11 @@ public final class IsdaCreditCurveBuilder {
       @XLArgument(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
       @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     final int n = tenors.length;
-    ArgumentChecker.isTrue(n == quoteTypes.length, "Must have one quote type per tenor, have {} tenors and {} quote types", n, quoteTypes.length);
-    ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
-    ArgumentChecker.isTrue(n == recoveryRates.length, "Must have one recovery rate per tenor, have {} tenors and {} recovery rates", n, recoveryRates.length);
-    ArgumentChecker.isTrue(n == coupons.length, "Must have one coupon per tenor, have {} tenors and {} quote types", n, coupons.length);
-    CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
-        .withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName))
-        .withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName))
-        .with(BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName));
-    if (holidayDates != null) {
-      cdsFactory = cdsFactory.with(createHolidayCalendar(holidayDates));
-    }
-    if (couponIntervalName != null) {
-      cdsFactory = cdsFactory.with(parsePeriod(couponIntervalName));
-    }
-    if (stubTypeName != null) {
-      cdsFactory = cdsFactory.with(StubType.valueOf(stubTypeName));
-    }
-    if (cashSettlementDays != null) {
-      cdsFactory = cdsFactory.withCashSettle(cashSettlementDays);
-    }
-    if (payAccrualOnDefault != null) {
-      cdsFactory = cdsFactory.withPayAccOnDefault(payAccrualOnDefault);
-    }
-    if (stepInDays != null) {
-      cdsFactory = cdsFactory.withStepIn(stepInDays);
-    }
-    final CDSAnalytic[] calibrationCds = new CDSAnalytic[n];
+    final CDSAnalytic[] calibrationCds = createCalibrationCds(tradeDate, tenors, recoveryRates, coupons, accrualDayCountName, curveDayCountName,
+        businessDayConventionName, couponIntervalName, stubTypeName, cashSettlementDays, stepInDays, payAccrualOnDefault, holidayDates);
     final CDSQuoteConvention[] marketQuotes = new CDSQuoteConvention[n];
     final ISDACompliantCreditCurveBuilder builder = new FastCreditCurveBuilder();
     for (int i = 0; i < n; i++) {
-      cdsFactory = cdsFactory.withRecoveryRate(recoveryRates[i]);
-      calibrationCds[i] = cdsFactory.makeIMMCDS(tradeDate, parsePeriod(tenors[i]));
       marketQuotes[i] = createQuote(coupons[i], quotes[i], quoteTypes[i]);
     }
     return builder.calibrateCreditCurve(calibrationCds, marketQuotes, yieldCurve);
