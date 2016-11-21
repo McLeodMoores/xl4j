@@ -19,25 +19,25 @@ of object handles.  This means you can store any complex object in a single Exce
      or deploy to a maven repository.
  - Production-grade
    - make consideration of real-world production usage with XCOPY install, access to logs, pre-deployment configuration, etc.
- - Developer-friendly licensing
+ - Reasonable licensing
    - Dual license GPL/Commercial means you can get your feet wet without an up-front commitment and use in personal or 
      open source projects without payment.
-   - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase      (like JetBrains).
+   - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase.
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
 
 # Features
 ## Writing Excel user-defined functions
  - System will automatically scan your code for @XLFunction annotations and register them with Excel.
-    ```java
+   ```java
      @XLFunction(name = "MyAdd")
      public static double myadd(final double one, final double two) {
        return one + two;
      }
-  ```
+   ```
 
   ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
    
-  See the tutorial for more complex examples that return objects and arrays, include documentation and more.
+  See the tutorial for more complex examples that return objects and arrays, including documentation and more.
  - Automatic marshalling (conversion) from Java to Excel types and back again.
    - Primitive types (and Boxed equivalents)
    - JSR-310/Java 8 dates
@@ -90,11 +90,83 @@ By default there are toolbar icons for opening the settings dialog, and opening 
  - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
  
 ## Deployment features
- - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software and 
-   allow hosting installation files on a network share.
+ - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software - you 
+   just copy the files, point Excel at the .xll file using the Add-in manager, and off you go.
+ - Allow hosting installation files on a network share where they can be easily updated.
+ - No COM registration, no registry modifications whatsoever.
  - No manually-run background server.
  - Installation can be custom configured to hide configuration and developer options from end users.
- - White labelling.
+ - White labelling.  Add-in name can be changed by simply renaming XLL file.
  - In-built access to logs without digging around in Temp directories or CLI windows.
-
-
+ 
+## Add-in features
+ - Non-blocking background function registration means Excel doesn't blacklist your Add-in for extended startup times.
+ - Mark-and-sweep style garbage collector allows long running data-driven spreadsheets to keep memory requirements stable.
+ - Support for all Excel function types
+   - Macro-equivalent (single-threaded, but allows certain extra features)
+   - Multi-threaded
+   - Volatile
+   - Asynchronous (** in development **)
+ - Easy-to-use configuration dialog allows
+   - Custom VM options, with common options available via tick-box (max heap, remote debugging, JNI checks, logging level) 
+     meaning you don't have to remember the options.
+   - Add items to classpath individually, multi-select or scan a whole folder for jars.
+ - Auto-detects existing installed JVM enabled via the Java control panel applet.
+   - Bundled JVMs coming soon.
+  
+# Roadmap
+## Features in development
+There are various architectural choices that have been made to enable specific future features.  These features can be considered the
+highest priority:
+  - Bundled JVM.  Allow inclusion of a JVM with the installation files meaning user does not have to even know Java is used and 
+    simplifying deployment.  Should be relatively simple.
+  - Out-of-process JVM.  This is relatively easy given the JVM is implemented as a COM object and all interaction is already 
+    via only COM types and interfaces.
+    - Allows multiple JVMs.
+    - No memory limitations.
+    - Multiple XL4J add-ins at the same time.
+    - Good performance due to highly optimized Windows LPC mechanism which uses shared memory for IPC when appropriate.
+  - Excel high-performance XLL C API access that can provide all kinds of extra functionality.  Important that these functions can be 
+    called back from the calling thread.  This is a tricky requirement in the out-of-process context, but a method to achieve it has
+    already been found.
+    - Access to caller information (e.g. which cell or cells are being computed).
+    - Read and write data into arbitrary cells without using array formulas (only certain types of function are allowed 
+      to do this).
+    - Evaluate arbitrary Excel formulas.
+    - Schedule commands to be called after a given period of time (possibly repeatedly).
+    - Add custom dialog boxes, menus, toolbars (although this functionality is probably best achieved in other ways).
+    - Much more...
+  - Toolbar support - allow the simple addition of new toolbar buttons linked to custom commands.  See below for full ribbon support.
+  - Per-cell exception display.  Allow developer to double-click on cell that caused error and see the last Exception + stack trace
+    thrown in that cell.
+    
+## Features in the pipeline
+These are features we know how to implement but aside from identifying what is required, nothing has been started yet.
+  - COM RTD server to allow real-time data to be pushed from Java into Excel.
+  - General COM API access - The most comprehensive API for Excel access is via the COM API.  The COM API allows things not available 
+    via the XLL API, such as ability to format cells, recalculate cells and ranges, and much more.  So why not only provide COM access? 
+    The reason is that the COM API can be rather slow, and there are still some things that can only be done via the XLL C API.
+  - Full Ribbon support.  Ribbon support requires more COM integration as a pre-requisite.
+  - Easy exposing of user defined functions to VBA.
+  - Dynamic class updating - support dynamic updaing of classes by your IDE feeding through to the Add-in without a restart.
+  - Dynamic class addition - fully dynamic updates including adding and removing new functions at run-time (a la JRebel).
+  - Object inspector pop-up window.
+  - Excel help topics from JavaDocs.
+  - Argument hints using tooltips.
+  - Arbitrary Java REPL style (e.g. `=Java("MyClass obj = MyClass.of($1)", A1); return obj.getCount();`).
+   
+# Limitations
+There are a few limitations with the current build.  These should slowly disappear with time.
+  - Excel 2010 is the minimum supported version.  
+    - This is the first version to support asynchronous functions, which allow us to avoid a psuedo-asynchronous framework to support
+      Excel 2007.  Additionally, Excel 2007 has some nasty bugs prior to the first service packs and is going out of support early 2017.
+    - Versions prior to 2007 don't support multi-threading at all, support much smaller sheets, and don't have Unicode support.
+  - The JVM has a limitation of one JVM per process.  This means you cannot install more than one XL4J-based Add-in at the same time.
+    Because the JVM interface is a pure COM interface, it will be relatively easy to switch to an out-of-process version within the
+    first updates.
+  - No ribbon support currently, toolbar uses the C API, which doesn't fully support the ribbon functionality.  It should be possible
+    to build a wrapper XLA to install a ribbon if needed before official support is added.
+  - 32-bit JVM limits maximum heap as it needs to share address space with Excel.  This will go away once we move to an 
+    out-of-process JVM with the first updates.
+  - 64-bit Add-in/JVM combination builds but hasn't been tested.
+  

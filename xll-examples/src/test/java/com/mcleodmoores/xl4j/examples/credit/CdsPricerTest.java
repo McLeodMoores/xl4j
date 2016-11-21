@@ -12,9 +12,7 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLObject;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticSpreadSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
@@ -25,6 +23,7 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.InterestRateSe
 import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
+import com.opengamma.util.money.Currency;
 
 /**
  * Unit tests for {@link CdsPricer}.
@@ -67,6 +66,10 @@ public class CdsPricerTest extends IsdaTests {
   private static final ISDACompliantCreditCurve CREDIT_CURVE =
       IsdaCreditCurveBuilder.buildCreditCurve(TRADE_DATE, CREDIT_CURVE_TENORS, CREDIT_QUOTE_TYPES, CREDIT_CURVE_QUOTES,
           CREDIT_CURVE_RECOVERY_RATES, CREDIT_CURVE_COUPONS, YIELD_CURVE, CDS_CONVENTION, HOLIDAYS);
+  /** The currency */
+  private static final Currency CURRENCY = Currency.USD;
+  /** The notional */
+  private static final double NOTIONAL = 12000000;
   /** The tenor */
   private static final String TENOR = Period.ofYears(3).toString();
   /** The CDS recovery rate */
@@ -77,10 +80,12 @@ public class CdsPricerTest extends IsdaTests {
   private static final String QUOTE_TYPE = "QUOTED SPREAD";
   /** The market quote */
   private static final double MARKET_QUOTE = 0.003;
-  /** The notional */
-  private static final double NOTIONAL = 100000000;
-  /** The expected CDS */
+  /** Is protection bought */
+  private static final boolean BUY_PROTECTION = false;
+  /** The underlying CDS */
   private static final CDSAnalytic CDS;
+  /** The CDS trade */
+  private static final CdsTrade CDS_TRADE;
   /** The CDS factory */
   private static final CDSAnalyticFactory CDS_FACTORY;
   /** The calculator */
@@ -100,37 +105,19 @@ public class CdsPricerTest extends IsdaTests {
         .with(createHolidayCalendar(HOLIDAYS))
         .withRecoveryRate(RECOVERY_RATE);
     CDS = CDS_FACTORY.makeIMMCDS(TRADE_DATE, Period.parse(TENOR));
-  }
-
-  @Test
-  public void testCreateCds() {
-    final Object xlResult = PROCESSOR.invoke("CDS.BuildCDS", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType(RECOVERY_RATE),
-        convertToXlType("ACT/360"), convertToXlType("ACT/365"), convertToXlType("Following"), XLMissing.INSTANCE, XLMissing.INSTANCE,
-        XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE, convertToXlType(HOLIDAYS));
-    assertTrue(xlResult instanceof XLObject);
-    final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
-    assertEquals(result, CDS);
-  }
-
-  @Test
-  public void testCreateCdsFromConvention() {
-    final Object xlResult = PROCESSOR.invoke("CDS.BuildCDSFromConvention", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType(RECOVERY_RATE),
-        convertToXlType(CDS_CONVENTION, HEAP), convertToXlType(HOLIDAYS));
-    assertTrue(xlResult instanceof XLObject);
-    final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
-    assertEquals(result, CDS);
+    CDS_TRADE = CdsTrade.of(CDS, CURRENCY, NOTIONAL, COUPON, BUY_PROTECTION, MARKET_QUOTE, QUOTE_TYPE);
   }
 
   @Test
   public void testPrice() {
-    final double expectedCleanPrice = CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON) * NOTIONAL;
-    final double expectedDirtyPrice = CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON, PriceType.DIRTY) * NOTIONAL;
-    final Object xlCleanPrice = PROCESSOR.invoke("CDS.CleanPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
-    final Object xlDirtyPrice = PROCESSOR.invoke("CDS.DirtyPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
-    final Object xlAccrued = PROCESSOR.invoke("CDS.Accrued", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    final double expectedCleanPrice = -NOTIONAL * CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON);
+    final double expectedDirtyPrice = -NOTIONAL * CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON, PriceType.DIRTY);
+    final Object xlCleanPrice = PROCESSOR.invoke("CDS.CleanPrice", convertToXlType(CDS_TRADE, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
+    final Object xlDirtyPrice = PROCESSOR.invoke("CDS.DirtyPrice", convertToXlType(CDS_TRADE, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
+    final Object xlAccrued = PROCESSOR.invoke("CDS.Accrued", convertToXlType(CDS_TRADE, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
     assertTrue(xlCleanPrice instanceof XLNumber);
     assertTrue(xlDirtyPrice instanceof XLNumber);
     assertEquals(((XLNumber) xlCleanPrice).getAsDouble(), expectedCleanPrice, EPS);
@@ -141,22 +128,22 @@ public class CdsPricerTest extends IsdaTests {
   @Test
   public void testParSpread() {
     final double expectedParSpread = CALCULATOR.parSpread(CDS, YIELD_CURVE, CREDIT_CURVE);
-    final Object xlResult = PROCESSOR.invoke("CDS.ParSpread", convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP));
+    final Object xlResult = PROCESSOR.invoke("CDS.ParSpread", convertToXlType(CDS_TRADE, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
     assertTrue(xlResult instanceof XLNumber);
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedParSpread, EPS);
   }
 
   @Test
   public void testLegPvs() {
-    final double expectedProtectionLegPv = NOTIONAL * CALCULATOR.protectionLeg(CDS, YIELD_CURVE, CREDIT_CURVE);
-    final double expectedPremiumLegPv = -NOTIONAL * CALCULATOR.annuity(CDS, YIELD_CURVE, CREDIT_CURVE) * COUPON;
-    final Object xlProtectionLegPv = PROCESSOR.invoke("CDS.ProtectionLegPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP),
+    final double expectedProtectionLegPv = -NOTIONAL * CALCULATOR.protectionLeg(CDS, YIELD_CURVE, CREDIT_CURVE);
+    final double expectedPremiumLegPv = NOTIONAL * CALCULATOR.annuity(CDS, YIELD_CURVE, CREDIT_CURVE) * COUPON;
+    final Object xlProtectionLegPv = PROCESSOR.invoke("CDS.ProtectionLegPrice", convertToXlType(CDS_TRADE, HEAP),
         convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
-    final Object xlPremiumLegPv = PROCESSOR.invoke("CDS.PremiumLegCleanPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP),
-        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
-    final Object xlPv = PROCESSOR.invoke("CDS.CleanPrice", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    final Object xlPremiumLegPv = PROCESSOR.invoke("CDS.PremiumLegCleanPrice", convertToXlType(CDS_TRADE, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
+    final Object xlPv = PROCESSOR.invoke("CDS.CleanPrice", convertToXlType(CDS_TRADE, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP));
     assertEquals(((XLNumber) xlProtectionLegPv).getAsDouble(), expectedProtectionLegPv, EPS);
     assertEquals(((XLNumber) xlPremiumLegPv).getAsDouble(), expectedPremiumLegPv, EPS);
     assertEquals(((XLNumber) xlProtectionLegPv).getAsDouble() + ((XLNumber) xlPremiumLegPv).getAsDouble(), ((XLNumber) xlPv).getAsDouble(), EPS);
@@ -171,10 +158,10 @@ public class CdsPricerTest extends IsdaTests {
     cdsFactory = cdsFactory.with(createHolidayCalendar(HOLIDAYS));
     cdsFactory = cdsFactory.withRecoveryRate(RECOVERY_RATE + BP);
     final CDSAnalytic shiftedCds = cdsFactory.makeIMMCDS(TRADE_DATE, Period.parse(TENOR));
-    final double expectedRr01 = NOTIONAL
+    final double expectedRr01 = -NOTIONAL
         * (CALCULATOR.pv(shiftedCds, YIELD_CURVE, CREDIT_CURVE, COUPON) - CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON));
-    final Object xlResult = PROCESSOR.invoke("CDS.RR01", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP));
+    final Object xlResult = PROCESSOR.invoke("CDS.RR01", convertToXlType(CDS_TRADE, HEAP),
+        convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CREDIT_CURVE, HEAP));
     assertTrue(xlResult instanceof XLNumber);
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedRr01, 1e-8);
   }
@@ -187,18 +174,17 @@ public class CdsPricerTest extends IsdaTests {
       r[i] = YIELD_CURVE.getZeroRate(t[i]) + BP;
     }
     final ISDACompliantYieldCurve shiftedCurve = new ISDACompliantYieldCurve(t, r);
-    final double expectedIr01 = NOTIONAL * (CALCULATOR.pv(CDS, shiftedCurve, CREDIT_CURVE, COUPON) - CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON));
-    final Object xlResult = PROCESSOR.invoke("CDS.IR01", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(CREDIT_CURVE, HEAP), convertToXlType(COUPON));
+    final double expectedIr01 = -NOTIONAL * (CALCULATOR.pv(CDS, shiftedCurve, CREDIT_CURVE, COUPON) - CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON));
+    final Object xlResult = PROCESSOR.invoke("CDS.IR01", convertToXlType(CDS_TRADE, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP));
     assertTrue(xlResult instanceof XLNumber);
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedIr01, 1e-8);
   }
 
   @Test
   public void testParallelCs01() {
-    final double expectedCs01 = NOTIONAL * CS01_CALCULATOR.parallelCS01(CDS, createQuote(COUPON, MARKET_QUOTE, QUOTE_TYPE), YIELD_CURVE);
-    final Object xlResult = PROCESSOR.invoke("CDS.CS01", convertToXlType(NOTIONAL), convertToXlType(CDS, HEAP), convertToXlType(YIELD_CURVE, HEAP),
-        convertToXlType(COUPON), convertToXlType(QUOTE_TYPE), convertToXlType(MARKET_QUOTE));
+    final double expectedCs01 = -NOTIONAL * CS01_CALCULATOR.parallelCS01(CDS, createQuote(COUPON, MARKET_QUOTE, QUOTE_TYPE), YIELD_CURVE) / 10000;
+    final Object xlResult = PROCESSOR.invoke("CDS.CS01", convertToXlType(CDS_TRADE, HEAP), convertToXlType(YIELD_CURVE, HEAP));
     assertTrue(xlResult instanceof XLNumber);
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedCs01, EPS);
   }
