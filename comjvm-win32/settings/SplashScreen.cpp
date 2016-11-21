@@ -27,6 +27,11 @@ CSplashScreen::~CSplashScreen()
 BOOL CSplashScreen::OnInitDialog() {
 	CDialog::OnInitDialog();
 	m_stLicensee.SetWindowText(m_csLicenseeText);
+	SetWindowTheme(m_prProgress.GetSafeHwnd(), L" ", NULL);
+	// the next two might not be necessary because of handling CtlColor in BlueProgress
+	COLORREF clrBar = RGB(43, 87, 151); // the bar color
+	m_prProgress.SendMessage(PBM_SETBARCOLOR, 0, (LPARAM)clrBar);
+	m_prProgress.SetBarColor(RGB(43, 87, 151));
 	return FALSE; // no focus given to control in dialog
 }
 
@@ -61,7 +66,7 @@ HBRUSH CSplashScreen::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 
 void CSplashScreen::Update(int iRegistered) {
 	LOGTRACE("Update");
-	m_prProgress.SetPos(iRegistered);
+	//m_prProgress.SetPos(iRegistered);
 	HideIfSplashOpen();
 }
 
@@ -129,22 +134,22 @@ void CSplashScreen::HideIfSplashOpen() {
 	}
 }
 void CSplashScreen::SetMax(int iMax) {
-	m_prProgress.SetRange32(0, iMax);
+	//m_prProgress.SetRange32(0, iMax);
 }
 
 void CSplashScreen::SetStep(int iStep) {
-	m_prProgress.SetStep(iStep);
+	//m_prProgress.SetStep(iStep);
 }
 
 void CSplashScreen::Increment() {
 	LOGTRACE("Increment");
-	m_prProgress.StepIt();
+	//m_prProgress.StepIt();
 	HideIfSplashOpen();
 }
 
 void CSplashScreen::SetMarquee() {
-	m_prProgress.SetMarquee(TRUE, 50); // number is millis between updates: 50 ~ 20Hz
-	m_prProgress.StepIt();
+	m_prProgress.SetMarquee(TRUE, 30); // number is millis between updates: 50 ~ 20Hz
+	//m_prProgress.StepIt();
 	HideIfSplashOpen();
 }
 

@@ -60,6 +60,9 @@
     <ClCompile Include="TransparentStatic.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BlueProgress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -104,6 +107,9 @@
     <ClInclude Include="TransparentStatic.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="BlueProgress.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="settings.def">
@@ -122,5 +128,8 @@
     <Image Include="splash.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.dll.file.manifest" />
   </ItemGroup>
 </Project>

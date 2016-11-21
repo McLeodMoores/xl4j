@@ -121,7 +121,11 @@ __declspec(dllexport) int Settings () {
 		LOGERROR ("Couldn not get Excel window handle");
 	}
 	ISettingsDialog *pSettingsDialog;
-	CSettings *pSettings = g_pAddinEnv->GetSettings ();
+	CSettings *pSettings;
+	if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
+		// TODO: pop up?
+		LOGERROR("Could not get settings from add-in environment");
+	}
 	HRESULT hr;
 	if (SUCCEEDED (hr = CSettingsDialogFactory::Create (pSettings, &pSettingsDialog))) {
 		ExcelUtils::HookExcelWindow (hwndExcel);
@@ -217,9 +221,6 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		LOGTRACE("Initializing Add-in, JVM, etc");
 		InitAddin();
 		InitJvm();
-		if (ExcelUtils::IsAddinSettingEnabled(L"ShowToolbar", TRUE)) {
-			g_pAddinEnv->AddToolbar();
-		}
 		FreeAllTempMemory();
 		return 1;
 	} else {
@@ -275,13 +276,11 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	ShutdownJvm ();
 	ShutdownAddin ();
-	
-	g_shutdown = true;
 	return 1;
 }
 
 __declspec(dllexport) int WINAPI xlAutoAdd (void) {
-	if (g_shutdown) {
+	if (g_pAddinEnv && g_pAddinEnv->IsShutdown()) {
 		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
 		return 0;
 	}
@@ -393,18 +392,22 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 }
 
 __declspec(dllexport) int GarbageCollect () {
-	//LOGTRACE ("GarbageCollect() called.");
-//	LOGTRACE ("Acquiring Lock");
+	// LOGTRACE ("GarbageCollect() called.");
+    // LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
-//	LOGTRACE ("Lock Acquired");
-	if (!g_shutdown) {
-		g_pJvmEnv->_GarbageCollect();
-	}
-//	LOGTRACE ("Releasing Lock");
-	ReleaseSRWLockShared (&g_JvmEnvLock);
-	if (!g_shutdown) {
+    // LOGTRACE ("Lock Acquired");
+	HRESULT hr = g_pJvmEnv->_GarbageCollect();
+	ReleaseSRWLockShared(&g_JvmEnvLock);
+	switch (hr) {
+	case ERROR_CONTINUE:
+		// JVM not up and running yet, still want to reschedule
+	case S_OK:
 		ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2);
-	} // else this is the last call.
+		break; // in case we add something below
+	case ERROR_INVALID_STATE:
+		// don't reschedule, something bad happened.
+		break;
+	}
 	return 1;
 }
 
@@ -412,16 +415,24 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
 	LOGTRACE ("Lock Acquired");
-	if (g_pJvmEnv && g_pJvmEnv->_RegisterSomeFunctions ()) {
-		LOGTRACE ("Releasing Lock");
-		LOGTRACE ("Registration complete, starting GC");
-		ReleaseSRWLockShared (&g_JvmEnvLock);
-		ExcelUtils::ScheduleCommand (TEXT ("GarbageCollect"), 2.0);
+	if (g_pJvmEnv) {
+		HRESULT hr = g_pJvmEnv->_RegisterSomeFunctions();
+		ReleaseSRWLockShared(&g_JvmEnvLock);
+		if (hr == S_OK) {
+			LOGTRACE("Releasing Lock");
+			LOGTRACE("Registration complete, starting GC");
+			ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2.0);
+		} else if (hr == ERROR_CONTINUE) {
+			LOGTRACE("Registration not complete, scheduling another go");
+			ExcelUtils::ScheduleCommand(TEXT("RegisterSomeFunctions"), 0.4);
+		} else /*if (hr == ERROR_INVALID_STATE)*/ {
+			LOGTRACE("Something bad happened, not scheduling any more goes");
+		}
 	} else {
-		LOGTRACE ("Releasing Lock");
-		LOGTRACE ("Registration not complete, scheduling another go");
-		ReleaseSRWLockShared (&g_JvmEnvLock);
-		ExcelUtils::ScheduleCommand (TEXT ("RegisterSomeFunctions"), 0.4);
+		ReleaseSRWLockShared(&g_JvmEnvLock);
+		LOGFATAL("JVM environment not valid");
+		XLOPER12 retVal;
+		Excel12f(xlcAlert, &retVal, 2, TempStr12(L"JVM Enviornment not valid, please report this bug"), TempInt12(3)); // 3 = WARNING SYMBOL + OK
 	}
 	return 1;
 }
@@ -430,7 +441,11 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 //	LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
 //	LOGTRACE ("Lock Acquired");
-	LPXLOPER12 result = g_pJvmEnv->_UDF (exportNumber, first, ap);
+	LPXLOPER12 result;
+	if (FAILED(g_pJvmEnv->_UDF(exportNumber, &result, first, ap))) {
+		LOGERROR("Failed calling UDF %d", exportNumber);
+		result = TempErr12(xlerrNull);
+	}
 //	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockShared (&g_JvmEnvLock);
 	return result;
