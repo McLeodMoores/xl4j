@@ -37,7 +37,7 @@ of object handles.  This means you can store any complex object in a single Exce
 
   ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
    
-  See the tutorial for more complex examples that return objects and arrays, include documentation and more.
+  See the tutorial for more complex examples that return objects and arrays, including documentation and more.
  - Automatic marshalling (conversion) from Java to Excel types and back again.
    - Primitive types (and Boxed equivalents)
    - JSR-310/Java 8 dates
@@ -126,7 +126,7 @@ highest priority:
     - No memory limitations.
     - Multiple XL4J add-ins at the same time.
     - Good performance due to highly optimized Windows LPC mechanism which uses shared memory for IPC when appropriate.
-  - Excel high performance XLL C API access that can provide all kinds of extra functionality.  Important that these functions can be 
+  - Excel high-performance XLL C API access that can provide all kinds of extra functionality.  Important that these functions can be 
     called back from the calling thread.  This is a tricky requirement in the out-of-process context, but a method to achieve it has
     already been found.
     - Access to caller information (e.g. which cell or cells are being computed).
@@ -156,10 +156,10 @@ These are features we know how to implement but aside from identifying what is r
   - Arbitrary Java REPL style (e.g. `=Java("MyClass obj = MyClass.of($1)", A1); return obj.getCount();`).
    
 # Limitations
-There are a few limitations with the current build.  These should slowly dissapear with time.
+There are a few limitations with the current build.  These should slowly disappear with time.
   - Excel 2010 is the minimum supported version.  
     - This is the first version to support asynchronous functions, which allow us to avoid a psuedo-asynchronous framework to support
-      Excel 2007.  Additionally, Excel 2007 has some nasty bugs prior to the first service packs and it going out of support early 2017.
+      Excel 2007.  Additionally, Excel 2007 has some nasty bugs prior to the first service packs and is going out of support early 2017.
     - Versions prior to 2007 don't support multi-threading at all, support much smaller sheets, and don't have Unicode support.
   - The JVM has a limitation of one JVM per process.  This means you cannot install more than one XL4J-based Add-in at the same time.
     Because the JVM interface is a pure COM interface, it will be relatively easy to switch to an out-of-process version within the
