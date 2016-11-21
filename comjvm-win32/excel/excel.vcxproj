@@ -243,7 +243,6 @@
     <ClInclude Include="FunctionRegistry.h" />
     <ClInclude Include="GarbageCollector.h" />
     <ClInclude Include="Jvm.h" />
-    <ClInclude Include="Progress.h" />
     <ClInclude Include="Lifecycle.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
@@ -259,7 +258,6 @@
     <ClCompile Include="FunctionRegistery.cpp" />
     <ClCompile Include="GarbageCollector.cpp" />
     <ClCompile Include="Jvm.cpp" />
-    <ClCompile Include="Progress.cpp" />
     <ClCompile Include="Lifecycle.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

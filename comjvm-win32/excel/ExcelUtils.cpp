@@ -134,7 +134,6 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 
 
 HRESULT ExcelUtils::UnregisterFunction (const TCHAR *szFunctionName, int iRegisterId) {
-	HRESULT hr;
 	XLOPER12 result;
 	Excel12f (xlfUnregister, &result, 1, TempInt12 (iRegisterId));
 	if (result.xltype == xltypeErr) {
@@ -295,7 +294,12 @@ BOOL GetHwnd (HWND * pHwnd) {
 
 BOOL ExcelUtils::IsAddinSettingEnabled (const wchar_t *wsSettingName, const BOOL bDefaultIfMissing) {
 	_std_string_t settingName = _std_string_t (wsSettingName);
-	const _bstr_t value = g_pAddinEnv->GetSettings ()->GetString (ADDIN_SETTINGS, settingName);
+	CSettings *pSettings;
+	if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
+		LOGWARN("Could not get valid settings from add-in environment, falling back to default");
+		return bDefaultIfMissing;
+	}
+	const _bstr_t value = pSettings->GetString (ADDIN_SETTINGS, settingName);
 	if (value.length () == 0) {
 		return bDefaultIfMissing;
 	}
@@ -304,7 +308,12 @@ BOOL ExcelUtils::IsAddinSettingEnabled (const wchar_t *wsSettingName, const BOOL
 
 bstr_t ExcelUtils::GetAddinSetting (const wchar_t *wsSettingName, const wchar_t* wsDefaultIfMissing) {
 	_std_string_t settingName = _std_string_t (wsSettingName);
-	const _bstr_t value = g_pAddinEnv->GetSettings ()->GetString (ADDIN_SETTINGS, settingName);
+	CSettings *pSettings;
+	if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
+		LOGWARN("Could not get valid settings from add-in environment, falling back to default");
+		return _bstr_t(wsDefaultIfMissing);
+	}
+	const _bstr_t value = pSettings->GetString (ADDIN_SETTINGS, settingName);
 	if (value.length () == 0) {
 		return _bstr_t(wsDefaultIfMissing);
 	}

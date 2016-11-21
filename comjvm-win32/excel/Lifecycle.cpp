@@ -27,55 +27,26 @@ HRESULT LoadDLLs () {
 }
 
 void InitAddin () {
-	LOGTRACE ("Acquiring Lock");
-	AcquireSRWLockExclusive (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
 	if (!g_pAddinEnv) {
 		g_pAddinEnv = new CAddinEnvironment ();
+		g_pAddinEnv->Start();
 	}
-	LOGTRACE ("Releasing Lock");
-	ReleaseSRWLockExclusive (&g_JvmEnvLock);
 }
 
 void InitJvm () {
-	// Display the progress bar
-	LOGTRACE ("Acquiring Lock");
-	AcquireSRWLockExclusive (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
 	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
-	g_pJvmEnv->StartBackgroundThread();
-	LOGTRACE ("Releasing Lock");
-	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+	g_pJvmEnv->Start();
 }
 
 void ShutdownJvm () {
-	LOGTRACE ("Acquiring Lock");
-	AcquireSRWLockExclusive (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
-
-	delete g_pJvmEnv;
-	g_pJvmEnv = nullptr;
-	LOGTRACE ("Releasing Lock");
-	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+	g_pJvmEnv->Shutdown();
 }
 
 void ShutdownAddin () {
-	LOGTRACE ("Acquiring Lock");
-	AcquireSRWLockExclusive (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
-	delete g_pAddinEnv;
-	g_pAddinEnv = nullptr;
-	LOGTRACE ("Releasing Lock");
-	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+	g_pAddinEnv->Shutdown();
 }
 
 void RestartJvm () {
-	LOGTRACE ("Acquiring Lock");
-	AcquireSRWLockExclusive (&g_JvmEnvLock);
-	LOGTRACE ("Lock Acquired");
-	delete g_pJvmEnv;
-	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
-	g_pJvmEnv->StartBackgroundThread();
-	LOGTRACE ("Releasing Lock");
-	ReleaseSRWLockExclusive (&g_JvmEnvLock);
+	g_pJvmEnv->Shutdown();
+	g_pJvmEnv->Start();
 }
