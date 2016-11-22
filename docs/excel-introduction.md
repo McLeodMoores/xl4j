@@ -26,8 +26,8 @@ and then we pull down the corner of B1 a few rows we'll end up with
 |   |  A  |  B  |
 |---|-----|-----|
 | 1 | 123 | =A1 |
-| 2 ! 456 ! =A2 |
-| 3 | 789 ! =A3 |
+| 2 | 456 | =A2 |
+| 3 | 789 | =A3 |
 
 which is great.  Except if we don't want that behaviour.  What if we want the reference to be anchored?  In this case we use a dollar
 in the reference to anchor the reference to the cell:
@@ -51,7 +51,7 @@ row will change relative to the original.  Similarly, we can anchor the row A$1 
 relative the original.  A useful keyboard shortcut is that F4 will cycle between the 4 different variants, which can save you a lot of
 re-typing.
 
-Interestingly, in R1C1 format, relative references are expressed as R[&lt;offset&gt;]C[<offset>] where if either the R or C offset 
+Interestingly, in R1C1 format, relative references are expressed as R[*&lt;offset&gt;*]C[*&lt;offset&gt;*] where if either the R or C offset 
 is optional, so R[-1]C refers to the cell above the current cell.  This can be more readable for complex sheets, so you might want to
 use it sometimes and also if you're generating sheets, it can be simpler.
 
