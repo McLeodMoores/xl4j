@@ -1,7 +1,61 @@
 
 # An Excel Primer for Developers
+## Document Structure
+Excel documents are known as *Workbooks*.  Workbooks are made up of one or more *Sheets* or *Worksheets*, which are the tabs you 
+can switch around at the bottom of each window.  Each sheet is made up of a grid of *cells*.  Each cell has a *reference* which can
+be used to refer to it.
+### Cell References
+Cell references come in two flavours
+ - A1, where the column is denoted by letters and the row is denoted by a number e.g. D18.
+ - R1C1, where the reference refers to row and column by number e.g. R20C18.
+Excel uses the R1C1 format internally, and you can choose on the options to view all references in R1C1 format, although most users do
+not.
 
-## Excel Types
+#### Reference behaviour when expanded
+Excel has the ability to generalize a cell reference by dragging the corner of a highlighted cell.  This will copy your cell reference 
+and modify it.  Typically, the reference will change relative to the source copy cell.  So if we start out with
+
+|   |  A  |  B  |
+|--------!-----!
+| 1 | 123 | =A1 |
+| 2 | 456 |     |
+| 3 | 789 |     |
+
+and then we pull down the corner of B1 a few rows we'll end up with
+
+|   !  A  |  B  |
+|---|-----|-----|
+| 1 | 123 | =A1 !
+| 2 ! 456 ! =A2 |
+| 3 | 789 ! =A3 |
+
+which is great.  Except if we don't want that behaviour.  What if we want the reference to be anchored?  In this case we use a dollar
+in the reference to anchor the reference to the cell:
+
+|   |  A  |   B   |
+|---!-----!-------!
+| 1 | 123 | =$A$1 |
+| 2 | 456 |       |
+| 3 | 789 |       |
+
+now becomes
+
+|   |  A  |   B   |
+|---!-----!-------!
+| 1 | 123 | =$A$1 |
+| 2 | 456 | =$A$1 |
+| 3 | 789 | =$A$1 |
+
+Note that we can anchor one dimension and not the other, so $A1 will always refer to column A if it's expanded horizontally, but it's 
+row will change relative to the original.  Similarly, we can anchor the row A$1 will always refer to row 1, but change the column 
+relative the original.  A useful keyboard shortcut is that F4 will cycle between the 4 different variants, which can save you a lot of
+re-typing.
+
+Interestingly, in R1C1 format, relative references are expressed as R[&lt;offset&gt;]C[<offset>] where if either the R or C offset 
+is optional, so R[-1]C refers to the cell above the current cell.  This can be more readable for complex sheets, so you might want to
+use it sometimes and also if you're generating sheets, it can be simpler.
+
+## Excel Cell Types
 | Excel Type       | Notes/Values |
 |------------------|--------------|
 | Number           | All floating point, note that it's not IEEE-compliant.  In particular NaN -> #NUM!, Inf -> #NUM! and subnormals are truncated to 0.  The range is 10<sup>307</sup> <= abs(x) < 10<sup>308</sup> |
