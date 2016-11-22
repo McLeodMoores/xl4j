@@ -69,6 +69,11 @@ Dates and times are represented just as numbers, specifically fractions of a day
 
 Percentages too are represented as numbers and their display is just a * 100 formatting filter.  The % symbol is just a unary suffix operator that divides by 100.
 
+Currency amounts are also just numbers with a label prefix or postfix - while it might technically be possible to determine the 
+currency format applied to a cell via COM, in practice the format itself isn't really comprehensive enough to reflect ISO currencies 
+accurately so you will need to use a separate cell/column/row to hold currency information (e.g. there's no visual indication to the
+user of a difference between a US Dollar and any other kind of Dollar).
+
 ## Input evaluation
 Chains of evaluation
 
