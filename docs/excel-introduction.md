@@ -16,7 +16,7 @@ Excel has the ability to generalize a cell reference by dragging the corner of a
 and modify it.  Typically, the reference will change relative to the source copy cell.  So if we start out with
 
 |   |  A  |  B  |
-|--------!-----!
+|---|-----|-----|
 | 1 | 123 | =A1 |
 | 2 | 456 |     |
 | 3 | 789 |     |
@@ -33,7 +33,7 @@ which is great.  Except if we don't want that behaviour.  What if we want the re
 in the reference to anchor the reference to the cell:
 
 |   |  A  |   B   |
-|---!-----!-------!
+|---|-----|-------|
 | 1 | 123 | =$A$1 |
 | 2 | 456 |       |
 | 3 | 789 |       |
@@ -41,7 +41,7 @@ in the reference to anchor the reference to the cell:
 now becomes
 
 |   |  A  |   B   |
-|---!-----!-------!
+|---|-----|-------|
 | 1 | 123 | =$A$1 |
 | 2 | 456 | =$A$1 |
 | 3 | 789 | =$A$1 |
