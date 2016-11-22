@@ -23,9 +23,9 @@ and modify it.  Typically, the reference will change relative to the source copy
 
 and then we pull down the corner of B1 a few rows we'll end up with
 
-|   !  A  |  B  |
+|   |  A  |  B  |
 |---|-----|-----|
-| 1 | 123 | =A1 !
+| 1 | 123 | =A1 |
 | 2 ! 456 ! =A2 |
 | 3 | 789 ! =A3 |
 
