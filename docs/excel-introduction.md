@@ -1,5 +1,5 @@
 
-# A developer's introduction to Excel
+# An Excel Primer for Developers
 
 ## Excel Types
 | Excel Type       | Notes/Values |
