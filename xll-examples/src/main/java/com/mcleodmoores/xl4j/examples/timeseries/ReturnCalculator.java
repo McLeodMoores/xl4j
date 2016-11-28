@@ -5,8 +5,6 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.function.Function;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
@@ -18,7 +16,6 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the returns of a time series, either assuming continuous compounding or at the frequency of the time series data.
  */
 public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReturnCalculator.class);
   /** True if continuous returns are required */
   private final boolean _continuous;
 
@@ -33,7 +30,6 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
       description = "Calculates returns of a time series", category = "Time series")
   public ReturnCalculator(
       @XLArgument(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
-    LOGGER.error("In ReturnCalculator constructor");
     _continuous = continuous;
   }
 
