@@ -15,7 +15,7 @@ import com.mcleodmoores.xl4j.values.XLReference;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Represents a mock Excel process and it's own internal storage of function definitions, not to be confused with FunctionRegistry, which
+ * Represents a mock Excel process and its own internal storage of function definitions, not to be confused with FunctionRegistry, which
  * stores the definitions on the Java side.
  */
 public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
@@ -63,7 +63,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
 
   /**
    * @param functionType
-   *          either an XLString or XLInteger containing 1 or 2 (1=Function, 2=Command
+   *          either an XLString or XLInteger containing 1 or 2 (1=Function, 2=Command)
    * @return an XLFunctionType instance
    */
   private static FunctionType getFunctionType(final int functionType) {

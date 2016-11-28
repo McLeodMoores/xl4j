@@ -70,17 +70,19 @@ public final class QuandlFunctions {
   @XLFunction(name = "ExpandTabularResult", category = "Quandl", description = "Array function to expand a TabularResult object")
   public static Object[][] expandTabularResult(
       @XLArgument(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
-      @XLArgument(optional = true, description = "Include Header Row", name = "includeHeader") Boolean includeHeader) {
-
+      @XLArgument(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
+    final boolean isIncludeHeader;
     if (includeHeader == null) {
-      includeHeader = true;
+      isIncludeHeader = true;
+    } else {
+      isIncludeHeader = includeHeader;
     }
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();
     final int cols = headerDefinition.size();
     final int rows = result.size();
     final Object[][] values = new Object[rows + (includeHeader ? 1 : 0)][cols];
     int row = 0;
-    if (includeHeader) {
+    if (isIncludeHeader) {
       final Object[] headerRow = values[0];
       int i = 0;
       for (final String columnName : headerDefinition.getColumnNames()) {
