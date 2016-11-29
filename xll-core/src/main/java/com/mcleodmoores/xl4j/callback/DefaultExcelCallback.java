@@ -3,17 +3,13 @@
  */
 package com.mcleodmoores.xl4j.callback;
 
-import com.mcleodmoores.xl4j.ClassConstructorDefinition;
-import com.mcleodmoores.xl4j.ClassMetadata;
-import com.mcleodmoores.xl4j.ClassMethodDefinition;
-import com.mcleodmoores.xl4j.ConstructorDefinition;
-import com.mcleodmoores.xl4j.ConstructorMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcleodmoores.xl4j.FunctionDefinition;
 import com.mcleodmoores.xl4j.FunctionMetadata;
 import com.mcleodmoores.xl4j.FunctionType;
 import com.mcleodmoores.xl4j.XLArgument;
-import com.mcleodmoores.xl4j.XLClass;
-import com.mcleodmoores.xl4j.XLConstructor;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
@@ -28,12 +24,13 @@ import com.mcleodmoores.xl4j.values.XLMultiReference;
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
  */
 public class DefaultExcelCallback implements ExcelCallback {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExcelCallback.class);
   private static final int VARARGS_MAX_PARAMS = 32;
   private final LowLevelExcelCallback _rawCallback;
 
   /**
    * Create a callback adapter.
-   * 
+   *
    * @param rawCallback
    *          the raw callback interface to call through to
    */
@@ -54,69 +51,20 @@ public class DefaultExcelCallback implements ExcelCallback {
   @Override
   public void registerFunction(final FunctionDefinition functionDefinition) {
     final FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
-    final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
-    final XLNamespace namespaceAnnotation = functionMetadata.getNamespace();
     final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
     final XLArgument[] argumentAnnotations = functionMetadata.getArguments();
     final String exportName = functionDefinition.getExportName();
-    final String functionName = buildFunctionName(methodInvoker, namespaceAnnotation, functionAnnotation);
-    final boolean isVarArgs = methodInvoker.isVarArgs();
+    final String functionName = buildFunctionName(functionDefinition);
+    final boolean isVarArgs = functionDefinition.isVarArgs();
     final String argumentNames = buildArgNames(argumentAnnotations);
     final Integer functionTypeInt = getFunctionType(functionAnnotation);
-    final String signature = buildFunctionSignature(functionAnnotation, argumentAnnotations, methodInvoker);
-    final String functionCategory = buildFunctionCategory(functionAnnotation, methodInvoker);
+    final String signature = buildFunctionSignature(functionDefinition);
+    final String functionCategory = buildFunctionCategory(functionDefinition);
     final String helpTopic = buildHelpTopic(functionAnnotation);
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
     _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, signature, functionName, argumentNames,
         functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
-  }
-
-  @Override
-  public void registerConstructor(final ConstructorDefinition constructorDefinition) {
-    final ConstructorMetadata constructorMetadata = constructorDefinition.getConstructorMetadata();
-    final ConstructorInvoker constructorInvoker = constructorDefinition.getConstructorInvoker();
-    final XLNamespace namespaceAnnotation = constructorMetadata.getNamespace();
-    final XLConstructor constructorAnnotation = constructorMetadata.getConstructorSpec();
-    final XLArgument[] argumentAnnotations = constructorMetadata.getArguments();
-    final String exportName = constructorDefinition.getExportName();
-    final String className = buildConstructorName(constructorInvoker, namespaceAnnotation, constructorAnnotation);
-    final boolean isVarArgs = constructorInvoker.isVarArgs();
-    final String argumentNames = buildArgNames(argumentAnnotations);
-    final Integer functionTypeInt = getConstructorType();
-    final String signature = buildConstructorSignature(argumentAnnotations, constructorInvoker);
-    final String functionCategory = buildConstructorCategory(constructorAnnotation, constructorInvoker);
-    final String helpTopic = buildHelpTopic(constructorAnnotation);
-    final String description = buildDescription(constructorAnnotation);
-    final String[] argsHelp = buildArgsHelp(argumentAnnotations);
-    _rawCallback.xlfRegister(constructorDefinition.getExportNumber(), exportName, isVarArgs, signature, className, argumentNames,
-        functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
-  }
-
-  @Override
-  public void registerConstructorsForClass(final ClassConstructorDefinition classDefinition) {
-    final ClassMetadata classMetadata = classDefinition.getClassMetadata();
-    final ConstructorInvoker constructorInvoker = classDefinition.getConstructorInvoker();
-    final XLNamespace namespaceAnnotation = classMetadata.getNamespace();
-    final XLClass classAnnotation = classMetadata.getClassSpec();
-    final String exportName = classDefinition.getExportName();
-    final Integer constructorNumber = classDefinition.getConstructorNumber();
-    final String className = buildConstructorName(constructorInvoker, namespaceAnnotation, classAnnotation, constructorNumber);
-    final boolean isVarArgs = constructorInvoker.isVarArgs();
-    final String argumentNames = ""; // TODO
-    final Integer functionTypeInt = getConstructorType();
-    final String signature = buildConstructorSignature(constructorInvoker);
-    final String functionCategory = buildConstructorCategory(classAnnotation, constructorInvoker);
-    final String helpTopic = buildHelpTopic(classAnnotation);
-    final String description = buildDescription(classAnnotation);
-    final String[] argsHelp = new String[0]; // TODO
-    _rawCallback.xlfRegister(classDefinition.getExportNumber(), exportName, isVarArgs, signature, className, argumentNames, functionTypeInt,
-        functionCategory, "", helpTopic, description, argsHelp);
-  }
-
-  @Override
-  public void registerMethodsForClass(final ClassMethodDefinition classDefinition) {
-
   }
 
   private static String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
@@ -138,20 +86,6 @@ public class DefaultExcelCallback implements ExcelCallback {
     return null;
   }
 
-  private static String buildDescription(final XLConstructor constructorAnnotation) {
-    if (constructorAnnotation != null && !constructorAnnotation.description().isEmpty()) {
-      return constructorAnnotation.description();
-    }
-    return null;
-  }
-
-  private static String buildDescription(final XLClass classAnnotation) {
-    if (classAnnotation != null && !classAnnotation.description().isEmpty()) {
-      return classAnnotation.description();
-    }
-    return null;
-  }
-
   private static String buildHelpTopic(final XLFunction functionAnnotation) {
     if (functionAnnotation != null && !functionAnnotation.helpTopic().isEmpty()) {
       return functionAnnotation.helpTopic();
@@ -159,46 +93,31 @@ public class DefaultExcelCallback implements ExcelCallback {
     return null;
   }
 
-  private static String buildHelpTopic(final XLConstructor constructorAnnotation) {
-    if (constructorAnnotation != null && !constructorAnnotation.helpTopic().isEmpty()) {
-      return constructorAnnotation.helpTopic();
-    }
-    return null;
-  }
-
-  private static String buildHelpTopic(final XLClass classAnnotation) {
-    if (classAnnotation != null && !classAnnotation.helpTopic().isEmpty()) {
-      return classAnnotation.helpTopic();
-    }
-    return null;
-  }
-
-  private static String buildFunctionCategory(final XLFunction functionAnnotation, final MethodInvoker methodInvoker) {
+  private static String buildFunctionCategory(final FunctionDefinition functionDefinition) {
+    final XLFunction functionAnnotation = functionDefinition.getFunctionMetadata().getFunctionSpec();
     if (functionAnnotation != null && !functionAnnotation.category().isEmpty()) {
       return functionAnnotation.category();
     }
-    return methodInvoker.getMethodDeclaringClass().getSimpleName();
+    return functionDefinition.getMethodOrConstructorName();
   }
 
-  private static String buildConstructorCategory(final XLConstructor constructorAnnotation, final ConstructorInvoker constructorInvoker) {
-    if (constructorAnnotation != null && !constructorAnnotation.category().isEmpty()) {
-      return constructorAnnotation.category();
-    }
-    return constructorInvoker.getDeclaringClass().getSimpleName();
-  }
-
-  private static String buildConstructorCategory(final XLClass classAnnotation, final ConstructorInvoker constructorInvoker) {
-    if (classAnnotation != null && !classAnnotation.category().isEmpty()) {
-      return classAnnotation.category();
-    }
-    return constructorInvoker.getDeclaringClass().getSimpleName();
-  }
-
-  private static String buildFunctionSignature(final XLFunction functionAnnotation, final XLArgument[] argumentAnnotations,
-      final MethodInvoker methodInvoker) {
+  private static String buildFunctionSignature(final FunctionDefinition functionDefinition) {
+    final XLFunction functionAnnotation = functionDefinition.getFunctionMetadata().getFunctionSpec();
     final StringBuilder signature = new StringBuilder();
-    final Class<?> excelReturnType = methodInvoker.getExcelReturnType();
-    final Class<?>[] parameterTypes = methodInvoker.getExcelParameterTypes();
+    final Class<?> excelReturnType;
+    final Class<?>[] parameterTypes;
+    final boolean isVarArgs;
+    if (functionDefinition.isMethod()) {
+      final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
+      excelReturnType = methodInvoker.getExcelReturnType();
+      parameterTypes = methodInvoker.getExcelParameterTypes();
+      isVarArgs = methodInvoker.isVarArgs();
+    } else {
+      final ConstructorInvoker constructorInvoker = functionDefinition.getConstructorInvoker();
+      excelReturnType = constructorInvoker.getExcelReturnType();
+      parameterTypes = constructorInvoker.getExcelParameterTypes();
+      isVarArgs = constructorInvoker.isVarArgs();
+    }
     final boolean isVolatile = functionAnnotation != null ? functionAnnotation.isVolatile() : false; // default
     final boolean isMTSafe = functionAnnotation != null ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
     final boolean isMacroEquivalent = functionAnnotation != null ? functionAnnotation.isMacroEquivalent() : false; // default
@@ -227,6 +146,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
     }
     // Parameters
+    final XLArgument[] argumentAnnotations = functionDefinition.getFunctionMetadata().getArguments();
     for (int i = 0; i < parameterTypes.length; i++) {
       final XLArgument argumentAnnotation = argumentAnnotations[i];
       if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
@@ -239,7 +159,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         signature.append("Q"); // XLOPER12 byval
       }
     }
-    if (methodInvoker.isVarArgs()) {
+    if (isVarArgs) {
       if (parameterTypes.length == 0) {
         throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
       }
@@ -266,56 +186,16 @@ public class DefaultExcelCallback implements ExcelCallback {
     return signature.toString();
   }
 
-  private static String buildConstructorSignature(final XLArgument[] argumentAnnotations, final ConstructorInvoker constructorInvoker) {
-    final StringBuilder signature = new StringBuilder();
-    final Class<?>[] parameterTypes = constructorInvoker.getExcelParameterTypes();
-    // Parameters
-    for (int i = 0; i < parameterTypes.length; i++) {
-      final XLArgument argumentAnnotation = argumentAnnotations[i];
-      if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
-        signature.append("U"); // XLOPER12 byref
-      } else {
-        signature.append("Q"); // XLOPER12 byval
-      }
-    }
-    if (constructorInvoker.isVarArgs()) {
-      if (parameterTypes.length == 0) {
-        throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
-      }
-      final boolean isLastTypeReferenceType = argumentAnnotations[parameterTypes.length - 1].referenceType();
-      for (int i = 0; i < VARARGS_MAX_PARAMS - parameterTypes.length; i++) {
-        if (isLastTypeReferenceType) {
-          signature.append("U"); // XLOPER12 byref
-        } else {
-          signature.append("Q"); // XLOPER12 byval
-        }
-      }
-    }
-    // Characters on the end -- we checked some invalid states at the start.
-    return signature.toString();
-  }
-
-  private static String buildConstructorSignature(final ConstructorInvoker constructorInvoker) {
-    final StringBuilder signature = new StringBuilder();
-    final Class<?>[] parameterTypes = constructorInvoker.getExcelParameterTypes();
-    // TODO do something about arguments
-    // Characters on the end -- we checked some invalid states at the start.
-    return signature.toString();
-  }
-
   /**
    * Build the function name string using the namespace if specified.
-   * 
-   * @param methodInvoker
-   *          the method invoker for this function, not null
-   * @param namespaceAnnotation
-   *          the namespace annotation if there is one, or null if there isn't.
-   * @param functionAnnotation
-   *          the function annotation is there is one, or null if there isn't.
+   *
+   * @param functionDefinition
+   *          the function definition, not null
    * @return the name of the function to register with Excel
    */
-  private static String buildFunctionName(final MethodInvoker methodInvoker, final XLNamespace namespaceAnnotation,
-      final XLFunction functionAnnotation) {
+  private static String buildFunctionName(final FunctionDefinition functionDefinition) {
+    final XLNamespace namespaceAnnotation = functionDefinition.getFunctionMetadata().getNamespace();
+    final XLFunction functionAnnotation = functionDefinition.getFunctionMetadata().getFunctionSpec();
     final StringBuilder functionName = new StringBuilder();
     if (namespaceAnnotation != null) {
       functionName.append(namespaceAnnotation.value());
@@ -324,53 +204,16 @@ public class DefaultExcelCallback implements ExcelCallback {
       if (!functionAnnotation.name().isEmpty()) {
         functionName.append(functionAnnotation.name());
       } else {
-        functionName.append(methodInvoker.getMethodName());
+        //TODO what about if multiple constructors are added - need a number
+        functionName.append(functionDefinition.getMethodOrConstructorName());
       }
-    }
-    return functionName.toString();
-  }
-
-  private static String buildConstructorName(final ConstructorInvoker constructorInvoker, final XLNamespace namespaceAnnotation,
-      final XLConstructor constructorAnnotation) {
-    final StringBuilder functionName = new StringBuilder();
-    if (namespaceAnnotation != null) {
-      functionName.append(namespaceAnnotation.value());
-    }
-    if (constructorAnnotation != null) {
-      if (!constructorAnnotation.name().isEmpty()) {
-        functionName.append(constructorAnnotation.name());
-      } else {
-        // TODO doesn't this just set the name to ObjectConstructorInvoker?
-        functionName.append(constructorInvoker.getClass().getSimpleName());
-      }
-    }
-    return functionName.toString();
-  }
-
-  private static String buildConstructorName(final ConstructorInvoker constructorInvoker, final XLNamespace namespaceAnnotation,
-      final XLClass classAnnotation, final Integer constructorNumber) {
-    final StringBuilder functionName = new StringBuilder();
-    if (namespaceAnnotation != null) {
-      functionName.append(namespaceAnnotation.value());
-    }
-    if (classAnnotation != null) {
-      if (!classAnnotation.name().isEmpty()) {
-        functionName.append(classAnnotation.name());
-      } else {
-        // TODO doesn't this just set the name to ObjectConstructorInvoker?
-        functionName.append(constructorInvoker.getClass().getSimpleName());
-      }
-    }
-    if (constructorNumber != null) {
-      functionName.append("$");
-      functionName.append(constructorNumber);
     }
     return functionName.toString();
   }
 
   /**
    * Build the string containing a list of argument annotations.
-   * 
+   *
    * @param argumentAnnotations
    *          array of argument annotations, can contain nulls
    * @return the argument annotations separated by a comma
@@ -402,7 +245,7 @@ public class DefaultExcelCallback implements ExcelCallback {
 
   /**
    * Get the type of the function
-   * 
+   *
    * @param functionAnnotation
    *          the function annotation if there is one, null otherwise
    * @return the type, defaults to 1 (FUNCTION)
@@ -411,10 +254,6 @@ public class DefaultExcelCallback implements ExcelCallback {
     if (functionAnnotation != null) {
       return functionAnnotation.functionType().getExcelValue();
     }
-    return FunctionType.FUNCTION.getExcelValue();
-  }
-
-  private static int getConstructorType() {
     return FunctionType.FUNCTION.getExcelValue();
   }
 

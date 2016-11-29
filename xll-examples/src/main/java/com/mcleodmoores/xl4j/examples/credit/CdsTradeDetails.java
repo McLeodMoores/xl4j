@@ -5,22 +5,30 @@ package com.mcleodmoores.xl4j.examples.credit;
 
 import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.createHolidayCalendar;
 import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePeriod;
+import static com.opengamma.analytics.financial.credit.isdastandardmodel.IMMDateLogic.getNextIMMDate;
+import static com.opengamma.analytics.financial.credit.isdastandardmodel.IMMDateLogic.getPrevIMMDate;
 
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.Period;
 
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.opengamma.analytics.date.CalendarAdapter;
+import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSCoupon;
+import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAPremiumLegSchedule;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
+import com.opengamma.financial.convention.businessday.BusinessDayConvention;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
+import com.opengamma.financial.convention.calendar.Calendar;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
 import com.opengamma.util.money.Currency;
 
 /**
  * Methods that create CDS trades and expose information about those trades.
  */
-public class CdsTradeDetails {
+public final class CdsTradeDetails {
 
   /**
    * Constructs an IMM  CDS trade.
@@ -148,15 +156,194 @@ public class CdsTradeDetails {
         initialMarketQuote, initialQuoteType);
   }
 
+  /**
+   * Gets all accrual start dates for the lifetime of the CDS.
+   * @param tradeDate  the trade date
+   * @param tenor  the tenor of the CDS
+   * @param businessDayConventionName  the business day convention name
+   * @param couponIntervalName  the coupon interval name, is optional. If not supplied, 3 months is used
+   * @param stubTypeName  the stub type name, is optional: FRONTSHORT; FRONTLONG; BACKSHORT; or BACKLONG. If not supplied, FRONTSHORT is used
+   * @param cashSettlementDays  the number of cash settlement days, is optional. If not supplied, 3 is used
+   * @param stepInDays  the number of step-in days, is optional. If not supplied, 1 is used
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
+   * @return  the accrual start dates
+   */
+  @XLFunction(name = "CDS.AccrualStartDates", category = "CDS Trade")
+  public static Object[] accrualStartDates(
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+    final ISDAPremiumLegSchedule paymentSchedule = getPremiumSchedule(tradeDate, tenor, businessDayConventionName, couponIntervalName,
+        stubTypeName, holidayDates);
+    final int n = paymentSchedule.getNumPayments();
+    final Object[] result = new Object[n];
+    for (int i = 0; i < n; i++) {
+      result[i] = paymentSchedule.getAccStartDate(i);
+    }
+    return result;
+  }
+
+  /**
+   * Gets all accrual end dates for the lifetime of the CDS.
+   * @param tradeDate  the trade date
+   * @param tenor  the tenor of the CDS
+   * @param businessDayConventionName  the business day convention name
+   * @param couponIntervalName  the coupon interval name, is optional. If not supplied, 3 months is used
+   * @param stubTypeName  the stub type name, is optional: FRONTSHORT; FRONTLONG; BACKSHORT; or BACKLONG. If not supplied, FRONTSHORT is used
+   * @param cashSettlementDays  the number of cash settlement days, is optional. If not supplied, 3 is used
+   * @param stepInDays  the number of step-in days, is optional. If not supplied, 1 is used
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
+   * @return  the accrual end dates
+   */
+  @XLFunction(name = "CDS.AccrualEndDates", category = "CDS Trade")
+  public static Object[] accrualEndDates(
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+    final ISDAPremiumLegSchedule paymentSchedule = getPremiumSchedule(tradeDate, tenor, businessDayConventionName, couponIntervalName,
+        stubTypeName, holidayDates);
+    final int n = paymentSchedule.getNumPayments();
+    final Object[] result = new Object[n];
+    for (int i = 0; i < n; i++) {
+      result[i] = paymentSchedule.getAccEndDate(i);
+    }
+    return result;
+  }
+
+  /**
+   * Gets all payment dates for the lifetime of the CDS.
+   * @param tradeDate  the trade date
+   * @param tenor  the tenor of the CDS
+   * @param businessDayConventionName  the business day convention name
+   * @param couponIntervalName  the coupon interval name, is optional. If not supplied, 3 months is used
+   * @param stubTypeName  the stub type name, is optional: FRONTSHORT; FRONTLONG; BACKSHORT; or BACKLONG. If not supplied, FRONTSHORT is used
+   * @param cashSettlementDays  the number of cash settlement days, is optional. If not supplied, 3 is used
+   * @param stepInDays  the number of step-in days, is optional. If not supplied, 1 is used
+   * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
+   * @return  the payments dates
+   */
+  @XLFunction(name = "CDS.PaymentDates", category = "CDS Trade")
+  public static Object[] paymentDates(
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+    final ISDAPremiumLegSchedule paymentSchedule = getPremiumSchedule(tradeDate, tenor, businessDayConventionName, couponIntervalName,
+        stubTypeName, holidayDates);
+    final int n = paymentSchedule.getNumPayments();
+    final Object[] result = new Object[n];
+    for (int i = 0; i < n; i++) {
+      result[i] = paymentSchedule.getPaymentDate(i);
+    }
+    return result;
+  }
+
+  /**
+   * Creates the premium leg schedule for a CDS.
+   * @param tradeDate  the trade date
+   * @param tenor  the tenor
+   * @param businessDayConventionName  the business day convention
+   * @param couponIntervalName  the coupon interval
+   * @param stubTypeName  the stub type
+   * @param holidayDates  the holiday dates
+   * @return  the schedule
+   */
+  @SuppressWarnings("deprecation")
+  private static ISDAPremiumLegSchedule getPremiumSchedule(final LocalDate tradeDate, final String tenor, final String businessDayConventionName,
+      final String couponIntervalName, final String stubTypeName, final LocalDate[] holidayDates) {
+    final BusinessDayConvention businessDayConvention = BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName);
+    final Calendar calendar = holidayDates == null ? new CalendarAdapter(WeekendWorkingDayCalendar.SATURDAY_SUNDAY) : createHolidayCalendar(holidayDates);
+    final Period paymentInterval = couponIntervalName == null ? Period.ofMonths(3) : parsePeriod(couponIntervalName);
+    final StubType stubType = stubTypeName == null ? StubType.FRONTSHORT : StubType.valueOf(stubTypeName);
+    final LocalDate effectiveDate = businessDayConvention.adjustDate(calendar, getPrevIMMDate(tradeDate));
+    final LocalDate nextIMM = getNextIMMDate(tradeDate);
+    final LocalDate maturity = nextIMM.plus(parsePeriod(tenor));
+    final ISDAPremiumLegSchedule paymentSchedule = new ISDAPremiumLegSchedule(effectiveDate, maturity, paymentInterval, stubType,
+        businessDayConvention, calendar, true);
+    return paymentSchedule;
+  }
+
+  /**
+   * Gets the accrual start times for the remaining life of the CDS.
+   * @param cds  the CDS
+   * @return  the accrual start times
+   */
   @XLFunction(name = "CDS.AccrualStartTimes", category = "CDS Trade")
-  public Object[] accrualStartTimes(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "notional", name = "notional") final double notional) {
+  public static Object[] accrualStartTimes(
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
     final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
     final Object[] result = new Object[coupons.length];
     for (int i = 0; i < coupons.length; i++) {
       result[i] = coupons[i].getEffStart();
     }
     return result;
+  }
+
+  /**
+   * Gets the accrual end times for the remaining life of the CDS.
+   * @param cds  the CDS
+   * @return  the accrual end times
+   */
+  @XLFunction(name = "CDS.AccrualEndTimes", category = "CDS Trade")
+  public static Object[] accrualEndTimes(
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+    final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
+    final Object[] result = new Object[coupons.length];
+    for (int i = 0; i < coupons.length; i++) {
+      result[i] = coupons[i].getEffEnd();
+    }
+    return result;
+  }
+
+  /**
+   * Gets the payment times for the remaining life of the CDS.
+   * @param cds  the CDS
+   * @return  the payment times
+   */
+  @XLFunction(name = "CDS.PaymentTimes", category = "CDS Trade")
+  public static Object[] paymentTimes(
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+    final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
+    final Object[] result = new Object[coupons.length];
+    for (int i = 0; i < coupons.length; i++) {
+      result[i] = coupons[i].getPaymentTime();
+    }
+    return result;
+  }
+
+  /**
+   * Gets the annuity payments for the remaining life of the CDS.
+   * @param cds  the CDS
+   * @return  the annuity payments
+   */
+  @XLFunction(name = "CDS.AnnuityPayments", category = "CDS Trade")
+  public static Object[] annuityPayments(
+      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+    final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
+    final Object[] result = new Object[coupons.length];
+    for (int i = 0; i < coupons.length; i++) {
+      result[i] = coupons[i].getYearFrac() * cds.getNotional() * cds.getCoupon();
+    }
+    return result;
+  }
+
+  /**
+   * Restricted constructor.
+   */
+  private CdsTradeDetails() {
   }
 }

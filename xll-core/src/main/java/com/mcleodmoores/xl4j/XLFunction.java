@@ -14,20 +14,20 @@ import java.lang.annotation.Target;
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD })
+@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
 public @interface XLFunction {
   // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
   /**
    * The name of the user-defined function as used on the worksheet. If this is not specified, the method name is used, with the name
    * processed into leading capital camel case, e.g. myMethod() becomes MyMethod().
-   * 
+   *
    * @return the name
    */
   String name() default "";
 
   /**
    * The category this function should be registered in. If this is not specified, it defaults to the class name.
-   * 
+   *
    * @return the category
    */
   // TODO see StandardCategories.
@@ -35,14 +35,14 @@ public @interface XLFunction {
 
   /**
    * The description of this function.
-   * 
+   *
    * @return the description
    */
   String description() default "";
 
   /**
    * The help topic.
-   * 
+   *
    * @return the help topic
    */
   String helpTopic() default "";
@@ -50,14 +50,14 @@ public @interface XLFunction {
   /**
    * Whether the function should be re-evaluated on any sheet changes. In other words, is it a volatile function. If not specified, it is
    * assumed the function is not volatile.
-   * 
+   *
    * @return true, if this function is volatile
    */
   boolean isVolatile() default false;
 
   /**
    * Whether the function can be executed from multiple threads safely.
-   * 
+   *
    * @return true, if this function can be executed concurrently safely
    */
   boolean isMultiThreadSafe() default true;
@@ -81,8 +81,15 @@ public @interface XLFunction {
 
   /**
    * The type of function
-   * 
+   *
    * @return the function type, defaults to FUNCTION
    */
   FunctionType functionType() default FunctionType.FUNCTION;
+
+  /**
+   * Indicates whether the function is likely to be slow.
+   *
+   * @return true if the function is slow, defaults to false
+   */
+  boolean isLongRunning() default false;
 }

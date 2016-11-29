@@ -291,7 +291,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
       return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
     } catch (final Excel4JRuntimeException e) {
-      throw new Excel4JRuntimeException("Could not find matching method " + constructor, e);
+      throw new Excel4JRuntimeException("Could not find matching constructor " + constructor, e);
     }
   }
 }

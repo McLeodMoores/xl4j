@@ -11,7 +11,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
 public interface ConstructorInvoker {
 
   /**
-   * Actually execute a method, performing the necessary type conversions.
+   * Create an instance of an object, performing the necessary type conversions.
    *
    * @param arguments
    *          the arguments to pass to the method

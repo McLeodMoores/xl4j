@@ -37,9 +37,8 @@ public final class IsdaFunctionUtils {
    * @param holidayDates  the holidays dates, can be null
    * @return  a calendar
    */
+  @SuppressWarnings("deprecation")
   public static Calendar createHolidayCalendar(final LocalDate[] holidayDates) {
-    @SuppressWarnings("deprecation")
-    final Calendar calendar;
     if (holidayDates == null) {
       return new CalendarAdapter(WeekendWorkingDayCalendar.SATURDAY_SUNDAY);
     }

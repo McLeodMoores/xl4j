@@ -23,7 +23,7 @@ public class ExcelReturnCalculatorFunctionTest {
 
   @Test
   public void test() {
-    final XLValue xlObject = PROCESSOR.newInstance("ReturnCalculator", XLBoolean.FALSE);
+    final XLValue xlObject = PROCESSOR.invoke("TimeSeriesReturnCalculator", XLBoolean.FALSE);
     assertTrue(xlObject instanceof XLObject);
     final Object object = HEAP.getObject(((XLObject) xlObject).getHandle());
     assertTrue(object instanceof ReturnCalculator);

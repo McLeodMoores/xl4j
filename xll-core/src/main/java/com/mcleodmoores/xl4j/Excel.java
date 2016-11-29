@@ -16,7 +16,7 @@ public interface Excel {
 
   /**
    * Get the local invoker factory to allow Excel types to be bound to java constructors, methods and fields.
-   * 
+   *
    * @return an instance of an invoker factory
    */
   InvokerFactory getInvokerFactory();
@@ -41,11 +41,6 @@ public interface Excel {
    */
   // TODO REVIEW: this should be somewhere else.
   ExcelFunctionCallHandler getExcelCallHandler();
-
-  /**
-   * @return the constructor call handler for dispatching from Excel.
-   */
-  ExcelConstructorCallHandler getExcelConstructorCallHandler();
 
   /**
    * @return the type converter registry

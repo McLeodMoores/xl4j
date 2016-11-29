@@ -8,7 +8,7 @@ import java.util.function.Function;
 import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLConstructor;
+import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -23,17 +23,21 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
    * Creates an instance.
    *
    * @param continuous
-   *          true if continuous returns are required
+   *            true if continuous returns are required
    */
-  @XLConstructor(name = "TimeSeriesReturn", description = "Calculates returns of a time series", category = "Time series")
-  public ReturnCalculator(final boolean continuous) {
+  @XLFunction(
+      name = "TimeSeriesReturnCalculator",
+      description = "Calculates returns of a time series", category = "Time series")
+  public ReturnCalculator(
+      @XLArgument(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
     _continuous = continuous;
   }
 
-  @XLFunction(name = "Return",
-              description = "Calculates returns of a time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  @XLFunction(
+      name = "TimeSeriesReturnCalculator.Return",
+      description = "Calculates returns of a time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries apply(final TimeSeries ts) {
     ArgumentChecker.notNull(ts, "ts");

@@ -12,8 +12,11 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
+import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLMissing;
+import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
+import com.mcleodmoores.xl4j.values.XLValue;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
@@ -90,5 +93,83 @@ public class CdsTradeDetailsTest extends IsdaTests {
     assertTrue(xlResult instanceof XLObject);
     final Object result = HEAP.getObject(((XLObject) xlResult).getHandle());
     assertEquals(result, CDS);
+  }
+
+  @Test
+  public void testDateDetails() {
+    final Object xlResult1 = PROCESSOR.invoke("CDS.AccrualStartDates", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType("FOLLOWING"),
+        XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE);
+    final Object xlResult2 = PROCESSOR.invoke("CDS.AccrualEndDates", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType("FOLLOWING"),
+        convertToXlType("3M"), convertToXlType("FRONTSHORT"), convertToXlType(3), convertToXlType(1), convertToXlType(HOLIDAYS));
+    final Object xlResult3 = PROCESSOR.invoke("CDS.PaymentDates", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType("FOLLOWING"),
+        XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE, XLMissing.INSTANCE);
+    assertTrue(xlResult1 instanceof XLArray);
+    assertTrue(xlResult2 instanceof XLArray);
+    assertTrue(xlResult3 instanceof XLArray);
+    final XLValue[][] accrualStartDates = ((XLArray) xlResult1).getArray();
+    final XLValue[][] accrualEndDates = ((XLArray) xlResult2).getArray();
+    final XLValue[][] paymentDates = ((XLArray) xlResult3).getArray();
+    final int n1 = accrualStartDates.length;
+    final int m1 = accrualStartDates[0].length;
+    final int n2 = accrualEndDates.length;
+    final int m2 = accrualEndDates[0].length;
+    final int n3 = paymentDates.length;
+    final int m3 = paymentDates[0].length;
+    // in case a different array converter was used
+    if (n1 == 1) {
+      if (n2 == 1) {
+        assertEquals(m1, m2);
+        for (int i = 0; i < m1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) accrualEndDates[0][i]).getAsDouble());
+        }
+      } else {
+        assertEquals(m1, n2);
+        for (int i = 0; i < m1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) accrualEndDates[i][0]).getAsDouble());
+        }
+      }
+      if (n3 == 1) {
+        assertEquals(m1, m3);
+        for (int i = 0; i < m1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) paymentDates[0][i]).getAsDouble());
+        }
+      } else {
+        assertEquals(m1, n3);
+        for (int i = 0; i < m1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) paymentDates[i][0]).getAsDouble());
+        }
+      }
+    } else {
+      if (n2 == 1) {
+        assertEquals(n1, m2);
+        for (int i = 0; i < n1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) accrualEndDates[0][i]).getAsDouble());
+        }
+      } else {
+        assertEquals(n1, n2);
+        for (int i = 0; i < n1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) accrualEndDates[i][0]).getAsDouble());
+        }
+      }
+      if (n3 == 1) {
+        assertEquals(n1, m3);
+        for (int i = 0; i < n1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) paymentDates[0][i]).getAsDouble());
+        }
+      } else {
+        assertEquals(n1, n3);
+        for (int i = 0; i < n1; i++) {
+          // sanity check
+          assertTrue(((XLNumber) accrualStartDates[0][i]).getAsDouble() < ((XLNumber) paymentDates[i][0]).getAsDouble());
+        }
+      }
+    }
   }
 }
