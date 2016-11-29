@@ -17,6 +17,7 @@ public:
 	static LRESULT CALLBACK ExcelCursorProc (HWND hwnd, UINT wMsg, WPARAM wParam, LPARAM lParam);
 	static void HookExcelWindow (HWND hWndExcel);
 	static void UnhookExcelWindow (HWND hWndExcel);
+	static void WarningMessageBox(wchar_t *);
 	static BOOL GetHWND (HWND *phWnd);
 	static void PrintExcel12Error (int err);
 	static BOOL IsAddinSettingEnabled (const wchar_t *wsSettingName, const BOOL bDefaultIfMissing);

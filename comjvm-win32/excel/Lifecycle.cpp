@@ -5,7 +5,11 @@ HRESULT LoadDLLs () {
 	XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
 	wchar_t szDirPath[MAX_PATH];
-	wchar_t *pszDlls[] = { L"core.dll", L"jni.dll", L"helper.dll", L"settings.dll", L"local.dll", L"utils.dll" };
+	wchar_t *pszDlls[] = { L"core.dll", L"jni.dll", L"helper.dll", L"settings.dll", L"local.dll", L"utils.dll"
+#ifdef NDEBUG
+		,L"msvcr120.dll", L"msvcp120.dll", /*L"vccorlib120.dll",*/ L"mfc120u.dll", L"mfcm120u.dll"
+#endif
+	};
 	HRESULT hr;
 	for (int i = 0; i < _countof (pszDlls); i++) {
 		if (SUCCEEDED (hr = FileUtils::GetAddinAbsolutePath (szDirPath, MAX_PATH, pszDlls[i]))) {
