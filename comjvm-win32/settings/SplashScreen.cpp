@@ -70,29 +70,6 @@ void CSplashScreen::Update(int iRegistered) {
 	HideIfSplashOpen();
 }
 
-//void CSplashScreen::Open(HWND hwndParent, HINSTANCE hInst) {
-//	m_hwndParent = hwndParent;
-//	//ExcelUtils::HookExcelWindow (hwndParent);
-//
-//	RECT rcClient;  // Client area of parent window.
-//	int cyVScroll;  // Height of scroll bar arrow.
-//	INITCOMMONCONTROLSEX init;
-//	init.dwICC = ICC_PROGRESS_CLASS;
-//	init.dwSize = sizeof(INITCOMMONCONTROLSEX);
-//	InitCommonControlsEx(&init);
-//
-//	GetWindowRect(hwndParent, &rcClient);
-//	LOGTRACE("Client Rect bottom=%d, left=%d, right=%d, top=%d", rcClient.bottom, rcClient.left, rcClient.right, rcClient.top);
-//
-//	cyVScroll = GetSystemMetrics(SM_CYVSCROLL);
-//	int width = rcClient.right - rcClient.left;
-//	m_hwndProgress = CreateWindowEx(0, PROGRESS_CLASS, (LPTSTR)NULL,
-//		WS_POPUP/*CHILD*/ | /*WS_VISIBLE | */ WS_BORDER | PBS_SMOOTH | PBS_MARQUEE, rcClient.left + (width / 6),
-//		((rcClient.top + rcClient.bottom) / 2) - cyVScroll,
-//		(width * 2) / 3, cyVScroll * 2,
-//		hwndParent, (HMENU)0, hInst, NULL);
-//	HideIfSplashOpen();
-//}
 INT_PTR CSplashScreen::Open(HWND hwndParent) {
 	LOGTRACE("Open");
 	Create(IDD_SPLASHWINDOW, CWnd::FromHandle(hwndParent));
@@ -104,12 +81,14 @@ INT_PTR CSplashScreen::Open(HWND hwndParent) {
 void CSplashScreen::Close() {
 	LOGTRACE("Closed");
 	DestroyWindow();
-	//EndDialog(IDOK);
 }
 
 bool CSplashScreen::IsSplashOpen() {
 	CWnd* parent = GetParent();
 	HWND hwndParent = *parent;
+	if (!::IsWindowEnabled(hwndParent)) { // check if another dialog is open too
+		return true;
+	}
 	HWND hSplash = ::FindWindowExW(hwndParent, nullptr, L"MsoSplash", nullptr);
 	return hSplash != nullptr;
 }
@@ -128,8 +107,7 @@ void CSplashScreen::HideIfSplashOpen() {
 	LOGTRACE("HideIfSplashOpen");
 	if (IsSplashOpen()) {
 		Hide();
-	}
-	else {
+	} else {
 		Show();
 	}
 }

@@ -272,6 +272,12 @@ void ExcelUtils::UnhookExcelWindow (HWND hWndExcel) {
 	g_lpfnExcelWndProc = NULL;
 }
 
+void ExcelUtils::WarningMessageBox(wchar_t *szWarningMessage) {
+	const int WARNING_OK = 3;
+	XLOPER12 retVal;
+	Excel12f(xlcAlert, &retVal, 2, TempStr12(szWarningMessage), TempInt12(WARNING_OK));
+}
+
 BOOL ExcelUtils::GetHWND (HWND *phWnd) {
 	XLOPER12 xWnd;
 	if (Excel12f (xlGetHwnd, &xWnd, 0) == xlretSuccess) {

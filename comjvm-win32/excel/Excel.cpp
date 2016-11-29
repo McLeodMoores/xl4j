@@ -29,7 +29,7 @@ DWORD g_dwTlsIndex = 0;
 int g_idRegisterSomeFunctions;
 int g_idSettings;
 int g_idGarbageCollect;
-bool g_initialized = false;
+LONG g_initialized = 0;
 bool g_shutdown = false;
 CAddinEnvironment *g_pAddinEnv = nullptr;
 CJvmEnvironment *g_pJvmEnv = nullptr;
@@ -116,6 +116,7 @@ _declspec(dllexport) int ViewCppLogs() {
 }
 
 __declspec(dllexport) int Settings () {
+	// TODO: Move most of this logic into AddinEnvironment.
 	HWND hwndExcel;
 	if (!ExcelUtils::GetHWND (&hwndExcel)) {
 		LOGERROR ("Couldn not get Excel window handle");
@@ -125,12 +126,13 @@ __declspec(dllexport) int Settings () {
 	if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
 		// TODO: pop up?
 		LOGERROR("Could not get settings from add-in environment");
+		return 0;
 	}
 	HRESULT hr;
 	if (SUCCEEDED (hr = CSettingsDialogFactory::Create (pSettings, &pSettingsDialog))) {
-		ExcelUtils::HookExcelWindow (hwndExcel);
+		//ExcelUtils::HookExcelWindow (hwndExcel);
 		INT_PTR nRet = pSettingsDialog->Open (hwndExcel);
-		ExcelUtils::UnhookExcelWindow (hwndExcel);
+		//ExcelUtils::UnhookExcelWindow (hwndExcel);
 		// Handle the return value from DoModal
 		switch (nRet) {
 		case -1:
@@ -144,7 +146,8 @@ __declspec(dllexport) int Settings () {
 		} break;
 		case IDOK:
 			LOGTRACE ("Settings OK clicked, restarting JVM");
-			MessageBox (hwndExcel, _T ("Restart Required"), _T ("You will need to restart Excel before any JVM changes take effect"), MB_OK);
+			// TODO: change this to Excel12f(xlAlert)
+			ExcelUtils::WarningMessageBox (_T ("You will need to restart Excel before any JVM changes take effect"));
 			//RestartJvm ();
 			g_pAddinEnv->RefreshSettings ();
 			break;
@@ -157,8 +160,9 @@ __declspec(dllexport) int Settings () {
 		};
 	} else {
 		_com_error err (hr);
+		// TODO: change this to Excel12f(xlAlert)
 		LOGERROR ("Problem opening settings dialog: %s", err.ErrorMessage ());
-		MessageBox (hwndExcel, _T ("Error"), _T ("Problem opening settings dialog.  Rerun with DebugView open and check log for reason"), MB_OK);
+		ExcelUtils::WarningMessageBox(_T ("Problem opening settings dialog.  Rerun with DebugView open and check log for reason"));
 	}
 	// TODO: Release dialog object.
 	return 1;
@@ -203,15 +207,16 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2007 are not supported."), TempInt12(2));
 		return 0;
 	}
-	if (g_shutdown) {
-		Excel12f (xlcAlert, 0, 2, TempStr12 (L"You will need to exit and restart Excel to re-enable"), TempInt12 (2));
-		return 0;
-	}
-	if (g_initialized) {
+
+	if (InterlockedCompareExchange(&g_initialized, 1, 0)) {
+		// g_initialized was already 1, so
 		LOGTRACE("Already initialised, so don't do anything");
+		if (g_pAddinEnv && g_pAddinEnv->IsShutdown()) {
+			Excel12f(xlcAlert, 0, 2, TempStr12(L"You will need to exit and restart Excel to re-enable"), TempInt12(2));
+			return 0;
+		}
 		return 1;
 	}
-	g_initialized = true;
 
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	if (SUCCEEDED(LoadDLLs())) {

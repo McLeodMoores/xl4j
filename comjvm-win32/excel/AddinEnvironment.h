@@ -38,7 +38,14 @@ public:
 	// TODO: add state checks for these.
 	HRESULT GetConverter(Converter **ppConverter) const { *ppConverter = m_pConverter; return S_OK; }
 	HRESULT GetTypeLib(TypeLib **ppTypeLib) const { *ppTypeLib = m_pTypeLib; return S_OK; }
-	HRESULT GetSettings(CSettings **ppSettings) const { *ppSettings = m_pSettings; return S_OK; }
+	HRESULT GetSettings(CSettings **ppSettings) const {
+		if (m_state == STARTED) {
+			*ppSettings = m_pSettings;
+			return S_OK;
+		} else {
+			return ERROR_INVALID_STATE;
+		}
+	}
 	HRESULT RefreshSettings() { return InitFromSettings(); }
 	HRESULT ViewLogs(const wchar_t *szFileName);
 	bool IsShutdown() { return m_state == TERMINATING || m_state == NOT_RUNNING; }

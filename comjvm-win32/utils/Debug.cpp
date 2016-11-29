@@ -38,7 +38,7 @@ const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ",
 void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
 	va_list argptr;
 	va_start (argptr, sFormat);
-	if (logLevel > LOGLEVEL_NONE || logLevel < LOGLEVEL_TRACE) {
+	if ((logLevel > LOGLEVEL_NONE) || (logLevel < LOGLEVEL_TRACE)) {
 		OutputDebugString(L"PrettyLogPrintf: logLevel invalid so not printing");
 		return;
 	}

@@ -57,18 +57,31 @@ void CJvmEnvironment::ShutdownError(wchar_t *szTerminateErrorMessage) {
  * this may happen concurrently with most of this method.
  */
 void CJvmEnvironment::Shutdown() {
-	EnterTerminatingState();
-	LOGTRACE("Releasing JVM");
-	m_pJvm->Release();
-	LOGTRACE("Deleteing function registry");
-	delete m_pFunctionRegistry;
-	m_pFunctionRegistry = nullptr;
-	LOGTRACE("Deleting garbage collector");
-	delete m_pCollector;
-	m_pCollector = nullptr;
-	m_pSplashScreen->Close();
-	m_pSplashScreen->Release();
-	m_pSplashScreen = nullptr;
+	CreateThread(NULL, 0, [](void* pData) -> DWORD {
+		CJvmEnvironment *me = reinterpret_cast<CJvmEnvironment*>(pData);
+		me->m_pSplashScreen->Close();
+		me->m_pSplashScreen->Release();
+		me->m_pSplashScreen = nullptr;
+
+		me->EnterTerminatingState();
+		LOGTRACE("Releasing JVM");
+		me->m_pJvm->Release();
+		LOGTRACE("Deleteing function registry");
+		if (me->m_pFunctionRegistry) {
+			delete me->m_pFunctionRegistry;
+		} else {
+			LOGERROR("function registry was already nullptr, meaning multiple shutdown calls.");
+		}
+		me->m_pFunctionRegistry = nullptr;
+		LOGTRACE("Deleting garbage collector");
+		if (me->m_pCollector) {
+			delete me->m_pCollector;
+		} else {
+			LOGERROR("collector was already nullptr, meaning multiple shutdown calls.");
+		}
+		me->m_pCollector = nullptr;
+		return 0;
+	}, this, 0, NULL);
 }
 
 void CJvmEnvironment::ExcelThreadShutdown() {
