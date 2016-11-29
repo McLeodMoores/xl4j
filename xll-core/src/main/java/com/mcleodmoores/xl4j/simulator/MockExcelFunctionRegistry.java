@@ -23,9 +23,9 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
 
   // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
-  public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final String functionSignature,
-      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
-      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
+  public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
+      final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
+      final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final Method method = getMethod(functionExportName, argumentNames);
     final String[] argNames = getArgumentNames(argumentNames);
     final Class<?>[] argumentTypes = getArgumentTypes(functionSignature);

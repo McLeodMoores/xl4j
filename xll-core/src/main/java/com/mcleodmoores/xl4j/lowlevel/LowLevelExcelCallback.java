@@ -16,6 +16,8 @@ public interface LowLevelExcelCallback {
    *          the name of the C export to handle this function call, not null
    * @param isVarArgs
    *          true, if the function has a variable argument list
+   * @param isLongRunning
+   *          true if the function is likely to be long-running
    * @param functionSignature
    *          a string representing the functions return type, parameter types and calling permission, not null
    * @param functionWorksheetName
@@ -37,9 +39,9 @@ public interface LowLevelExcelCallback {
    * @return the function registration number
    */
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters. Take it up with Microsoft.
-  int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final String functionSignature,
-      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
-      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp);
+  int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
+      final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
+      final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp);
   // CHECKSTYLE:ON
   /*
    * This block is to be ignored: return code, see below

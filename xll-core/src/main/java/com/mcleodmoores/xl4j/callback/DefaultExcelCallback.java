@@ -56,6 +56,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String exportName = functionDefinition.getExportName();
     final String functionName = buildFunctionName(functionDefinition);
     final boolean isVarArgs = functionDefinition.isVarArgs();
+    final boolean isLongRunning = functionAnnotation.isLongRunning();
     final String argumentNames = buildArgNames(argumentAnnotations);
     final Integer functionTypeInt = getFunctionType(functionAnnotation);
     final String signature = buildFunctionSignature(functionDefinition);
@@ -63,7 +64,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String helpTopic = buildHelpTopic(functionAnnotation);
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
-    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, signature, functionName, argumentNames,
+    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, isLongRunning, signature, functionName, argumentNames,
         functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 

@@ -26,6 +26,7 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     public int _exportNumber;
     public String _functionExportName;
     public boolean _isVarArgs;
+    public boolean _isLongRunning;
     public String _functionSignature;
     public String _functionWorksheetName;
     public String _argumentNames;
@@ -42,13 +43,14 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
 
   @Override
   // CHECKSTYLE:OFF can't control signature.
-  public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final String functionSignature,
-      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
-      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
+  public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
+      final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
+      final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final LowLevelEntry entry = new LowLevelEntry();
     entry._exportNumber = exportNumber;
     entry._functionExportName = functionExportName;
     entry._isVarArgs = isVarArgs;
+    entry._isLongRunning = isLongRunning;
     entry._functionSignature = functionSignature;
     entry._functionWorksheetName = functionWorksheetName;
     entry._argumentNames = argumentNames;
