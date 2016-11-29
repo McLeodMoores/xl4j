@@ -35,7 +35,11 @@ public final class QuandlFunctions {
   private QuandlFunctions() {
   }
 
-  @XLFunction(name = "QuandlDataSet", category = "Quandl", description = "Get a data set from Quandl")
+  @XLFunction(
+      name = "QuandlDataSet",
+      category = "Quandl",
+      description = "Get a data set from Quandl",
+      isLongRunning = true)
   public static TabularResult dataSet(
       @XLArgument(description = "Quandl Code", name = "quandlCode") final String quandlCode,
       @XLArgument(optional = true, description = "Start Date", name = "StartDate") final LocalDate startDate,

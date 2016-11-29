@@ -85,4 +85,11 @@ public @interface XLFunction {
    * @return the function type, defaults to FUNCTION
    */
   FunctionType functionType() default FunctionType.FUNCTION;
+
+  /**
+   * Indicates whether the function is likely to be slow.
+   *
+   * @return true if the function is slow, defaults to false
+   */
+  boolean isLongRunning() default false;
 }
