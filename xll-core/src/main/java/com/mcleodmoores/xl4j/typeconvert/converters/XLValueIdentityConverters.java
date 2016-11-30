@@ -36,7 +36,7 @@ public class XLValueIdentityConverters {
      * @param xlType
      *          the Excel type to convert
      */
-    public AbstractXLValueIdentityConverter(final Class<?> xlType) {
+    AbstractXLValueIdentityConverter(final Class<?> xlType) {
       super(xlType, xlType, IDENTITY_CONVERTER_PRIORITY);
     }
 

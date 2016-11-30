@@ -30,8 +30,8 @@ public interface InvokerFactory {
    * @throws ClassNotFoundException
    *           if the specified class cannot be found
    */
-  ConstructorInvoker[] getConstructorTypeConverter(final Class<?> clazz, final TypeConversionMode typeConversionMode,
-      @SuppressWarnings("unchecked") final Class<? extends XLValue>... argTypes) throws ClassNotFoundException;
+  ConstructorInvoker[] getConstructorTypeConverter(Class<?> clazz, TypeConversionMode typeConversionMode,
+      @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) throws ClassNotFoundException;
 
   /**
    * Return a method type converter ready to process calls for a given method.

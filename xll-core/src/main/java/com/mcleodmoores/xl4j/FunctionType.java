@@ -18,7 +18,10 @@ public enum FunctionType {
 
   private int _xlValue;
 
-  private FunctionType(final int xlValue) {
+  /**
+   * @param xlValue  the value
+   */
+  FunctionType(final int xlValue) {
     _xlValue = xlValue;
   }
 
