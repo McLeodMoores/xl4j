@@ -3,9 +3,6 @@
  */
 package com.mcleodmoores.xl4j.callback;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcleodmoores.xl4j.FunctionDefinition;
 import com.mcleodmoores.xl4j.FunctionMetadata;
 import com.mcleodmoores.xl4j.FunctionType;
@@ -24,7 +21,6 @@ import com.mcleodmoores.xl4j.values.XLMultiReference;
  * Provides a layer to process function metadata into relatively raw calls back to Excel.
  */
 public class DefaultExcelCallback implements ExcelCallback {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExcelCallback.class);
   private static final int VARARGS_MAX_PARAMS = 32;
   private final LowLevelExcelCallback _rawCallback;
 
@@ -99,7 +95,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     if (functionAnnotation != null && !functionAnnotation.category().isEmpty()) {
       return functionAnnotation.category();
     }
-    return functionDefinition.getMethodOrConstructorName();
+    return functionDefinition.getFunctionName();
   }
 
   private static String buildFunctionSignature(final FunctionDefinition functionDefinition) {
@@ -149,15 +145,20 @@ public class DefaultExcelCallback implements ExcelCallback {
     // Parameters
     final XLArgument[] argumentAnnotations = functionDefinition.getFunctionMetadata().getArguments();
     for (int i = 0; i < parameterTypes.length; i++) {
-      final XLArgument argumentAnnotation = argumentAnnotations[i];
-      if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
-        if (!isMacroEquivalent) {
-          throw new Excel4JRuntimeException("Cannot register reference type parameters if not a macro equivalent: "
-              + "function annotation @XLFunction(isMacroEquivalent = true) required");
-        }
-        signature.append("U"); // XLOPER12 byref
+      if (argumentAnnotations.length == 0) { // true if someone has used a class-level @XLFunction annotation, see FunctionRegistry
+        // if they wanted anything other than the default, they wouldn't have used a class-level annotation
+        signature.append("Q");
       } else {
-        signature.append("Q"); // XLOPER12 byval
+        final XLArgument argumentAnnotation = argumentAnnotations[i];
+        if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
+          if (!isMacroEquivalent) {
+            throw new Excel4JRuntimeException("Cannot register reference type parameters if not a macro equivalent: "
+                + "function annotation @XLFunction(isMacroEquivalent = true) required");
+          }
+          signature.append("U"); // XLOPER12 byref
+        } else {
+          signature.append("Q"); // XLOPER12 byval
+        }
       }
     }
     if (isVarArgs) {
@@ -196,19 +197,11 @@ public class DefaultExcelCallback implements ExcelCallback {
    */
   private static String buildFunctionName(final FunctionDefinition functionDefinition) {
     final XLNamespace namespaceAnnotation = functionDefinition.getFunctionMetadata().getNamespace();
-    final XLFunction functionAnnotation = functionDefinition.getFunctionMetadata().getFunctionSpec();
     final StringBuilder functionName = new StringBuilder();
     if (namespaceAnnotation != null) {
       functionName.append(namespaceAnnotation.value());
     }
-    if (functionAnnotation != null) {
-      if (!functionAnnotation.name().isEmpty()) {
-        functionName.append(functionAnnotation.name());
-      } else {
-        //TODO what about if multiple constructors are added - need a number
-        functionName.append(functionDefinition.getMethodOrConstructorName());
-      }
-    }
+    functionName.append(functionDefinition.getFunctionName());
     return functionName.toString();
   }
 

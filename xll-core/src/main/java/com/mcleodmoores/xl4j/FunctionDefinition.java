@@ -161,13 +161,16 @@ public final class FunctionDefinition {
   }
 
   /**
-   * @return  the name of the function, either user defined or taken from the constructor or method name
+   * @return  the name of the function, either user defined, taken from the annotation name() property or taken from the constructor or method name
    */
-  public String getMethodOrConstructorName() {
+  public String getFunctionName() {
     if (_name != null) {
       return _name;
     }
-    return _isMethod ? _methodInvoker.getMethodName() : _constructorInvoker.getDeclaringClass().getSimpleName();
+    if (_functionMetadata.getFunctionSpec().name().isEmpty()) {
+      return _isMethod ? _methodInvoker.getMethodName() : _constructorInvoker.getDeclaringClass().getName();
+    }
+    return _functionMetadata.getFunctionSpec().name();
   }
 
   /**
