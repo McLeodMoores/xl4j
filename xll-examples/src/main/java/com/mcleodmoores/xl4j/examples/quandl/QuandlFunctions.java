@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.format.DateTimeParseException;
 
@@ -21,6 +23,8 @@ import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
+import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.opengamma.util.ArgumentChecker;
 
 /**
@@ -28,13 +32,34 @@ import com.opengamma.util.ArgumentChecker;
  */
 public final class QuandlFunctions {
   private static final QuandlSession SESSION = QuandlSession.create();
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(QuandlFunctions.class);
   /**
    * Restricted constructor.
    */
   private QuandlFunctions() {
   }
 
+  /**
+   * Gets a time series of data from Quandl.
+   *
+   * @param quandlCode
+   *          the ticker
+   * @param startDate
+   *          the start date of the time series. If not set, the entire history is obtained.
+   * @param endDate
+   *          the end date of the time series. If not set, the latest data are returned.
+   * @param columnIndex
+   *          the column index. If not set, all available columns are returned.
+   * @param frequency
+   *          the data frequency. If not set, a daily time series is returned.
+   * @param maxRows
+   *          the maximum number of rows to return. If not set, all available rows are returned.
+   * @param sortOrder
+   *          the sort order of the rows. If not set, the series will be descending in date.
+   * @param transform
+   *          the transformation of the data. If not set, no transformation is applied to the data.
+   * @return the time series
+   */
   @XLFunction(
       name = "QuandlDataSet",
       category = "Quandl",
@@ -49,6 +74,7 @@ public final class QuandlFunctions {
       @XLArgument(optional = true, description = "Max Rows", name = "MaxRows") final Integer maxRows,
       @XLArgument(optional = true, description = "Sort Order", name = "SortOrder") final SortOrder sortOrder,
       @XLArgument(optional = true, description = "Transform", name = "Transform") final Transform transform) {
+    LOGGER.error("Fetching Quandl series for {}", quandlCode);
     Builder builder = DataSetRequest.Builder.of(quandlCode);
     if (startDate != null) {
       builder = builder.withStartDate(startDate);
@@ -79,8 +105,7 @@ public final class QuandlFunctions {
    *
    * @param result
    *          the tabular data
-   * @return
-   *          the header names or null if they could not be obtained
+   * @return the header names or null if they could not be obtained
    */
   @XLFunction(name = "GetHeaders", category = "Quandl", description = "Get the headers")
   public static String[] getHeaders(
@@ -98,12 +123,12 @@ public final class QuandlFunctions {
 
   /**
    * Get the ith row from a Quandl tabular result. Note that this is 1-indexed.
+   *
    * @param result
    *          the tabular data
    * @param index
    *          the index number, must be greater than zero and less than the number of rows in the result
-   * @return
-   *          the row, or null if it could not be obtained
+   * @return the row, or null if it could not be obtained
    */
   @XLFunction(name = "GetRow", category = "Quandl", description = "Get the ith row")
   public static Object[] getRow(
@@ -132,12 +157,12 @@ public final class QuandlFunctions {
 
   /**
    * Gets the named row from a Quandl tabular result.
+   *
    * @param result
    *          the tabular data
    * @param header
    *          the row name
-   * @return
-   *          the row, or null if it could not be obtained
+   * @return the row, or null if it could not be obtained
    */
   @XLFunction(name = "GetNamedRow", category = "Quandl", description = "Get the named row")
   public static Object[] getRow(
@@ -150,7 +175,49 @@ public final class QuandlFunctions {
     return getRow(result, index + 1);
   }
 
-  @XLFunction(name = "ExpandTabularResult", category = "Quandl", description = "Array function to expand a TabularResult object")
+  /**
+   * Transforms one row of a table of data into a time series if there are data points available for the header.
+   *
+   * @param result
+   *          the tabular data
+   * @param header
+   *          the header
+   * @return the data as a time series
+   */
+  @XLFunction(name = "TabularResultAsTimeSeries", category = "Quandl",
+      description = "Convert a data from a specific field to a time series")
+  public static TimeSeries getTabularResultAsTimeSeries(
+      @XLArgument(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
+      @XLArgument(description = "The row name", name = "rowName") final String header) {
+    ArgumentChecker.notNull(result, "result");
+    final Object[] dateArray = getRow(result, 1);
+    if (dateArray == null) {
+      throw new Excel4JRuntimeException("No dates available for TabularResult");
+    }
+    final Object[] valueArray = getRow(result, header);
+    if (valueArray == null) {
+      throw new Excel4JRuntimeException("No data available for " + header);
+    }
+    final int n = dateArray.length;
+    final LocalDate[] dates = new LocalDate[n];
+    final Double[] values = new Double[n];
+    for (int i = 0; i < n; i++) {
+      dates[i] = (LocalDate) dateArray[i];
+      values[i] = (Double) valueArray[i];
+    }
+    return TimeSeries.of(dates, values);
+  }
+
+  /**
+   * Expands a tabular result into an array.
+   * @param result
+   *          the tabular data
+   * @param includeHeader
+   *          true if headers are to be included
+   * @return the data as an array
+   */
+  @XLFunction(name = "ExpandTabularResult", category = "Quandl",
+      description = "Array function to expand a TabularResult object")
   public static Object[][] expandTabularResult(
       @XLArgument(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
       @XLArgument(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
