@@ -15,9 +15,13 @@ IMPLEMENT_DYNAMIC(CSplashScreen, CDialog)
 CSplashScreen::CSplashScreen(CString& csLicenseeText, CWnd* pParent /*=NULL*/)
 	: CDialog(IDD_SPLASHWINDOW, pParent)
 {
+	InitializeCriticalSection(&m_cs);
+	EnterCriticalSection(&m_cs);
 	m_csLicenseeText = csLicenseeText;
 	m_lRefCount = 0;
 	AddRef();
+	m_state = CREATED;
+	LeaveCriticalSection(&m_cs);
 }
 
 CSplashScreen::~CSplashScreen()
@@ -71,16 +75,34 @@ void CSplashScreen::Update(int iRegistered) {
 }
 
 INT_PTR CSplashScreen::Open(HWND hwndParent) {
+	EnterCriticalSection(&m_cs);
 	LOGTRACE("Open");
 	Create(IDD_SPLASHWINDOW, CWnd::FromHandle(hwndParent));
 	SetMarquee();
 	HideIfSplashOpen();
+	LeaveCriticalSection(&m_cs);
 	return 0;
 }
 
 void CSplashScreen::Close() {
-	LOGTRACE("Closed");
-	DestroyWindow();
+	EnterCriticalSection(&m_cs);
+	if (m_state == OPEN || m_state == HIDDEN) {
+		LOGTRACE("Closed");
+		DestroyWindow();
+		m_state = CLOSED;
+	}
+	LeaveCriticalSection(&m_cs);
+}
+
+void CSplashScreen::CloseMT() {
+	EnterCriticalSection(&m_cs);
+	LOGTRACE("Posting WM_CLOSE message");
+	// Only allow DestroyWindow to be called once as not sure if it's defined to be called multiple times.
+	if (m_state == OPEN) {
+		PostMessage(WM_CLOSE, 0, 0);
+		m_state = CLOSED;
+	}
+	LeaveCriticalSection(&m_cs);
 }
 
 bool CSplashScreen::IsSplashOpen() {
@@ -95,10 +117,12 @@ bool CSplashScreen::IsSplashOpen() {
 
 void CSplashScreen::Show() {
 	LOGTRACE("Show");
+	m_state = OPEN;
 	ShowWindow(SW_SHOW);
 }
 
 void CSplashScreen::Hide() {
+	m_state = HIDDEN;
 	LOGTRACE("Hide");
 	ShowWindow(SW_HIDE);
 }
@@ -120,9 +144,11 @@ void CSplashScreen::SetStep(int iStep) {
 }
 
 void CSplashScreen::Increment() {
+	EnterCriticalSection(&m_cs);
 	LOGTRACE("Increment");
 	//m_prProgress.StepIt();
 	HideIfSplashOpen();
+	LeaveCriticalSection(&m_cs);
 }
 
 void CSplashScreen::SetMarquee() {

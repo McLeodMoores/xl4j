@@ -7,9 +7,7 @@
 
 extern HANDLE g_hInst;
 extern DWORD g_dwTlsIndex;
-
 extern LONG g_initialized;
-extern bool g_shutdown;
 extern CAddinEnvironment *g_pAddinEnv;
 extern CJvmEnvironment *g_pJvmEnv;
 extern SRWLOCK g_JvmEnvLock;

@@ -11,6 +11,9 @@ class CSplashScreen : public CDialog, public ISplashScreen
 {
 	DECLARE_DYNAMIC(CSplashScreen)
 	ULONG m_lRefCount;
+	enum State { CREATED, OPEN, VISIBLE, HIDDEN, CLOSED };
+	CRITICAL_SECTION m_cs;
+	State m_state;
 	virtual bool IsSplashOpen();
 	virtual void Show();
 	virtual void Hide();
@@ -25,6 +28,7 @@ public:
 	virtual void SetMarquee();
 	virtual INT_PTR Open(HWND hwndParent);
 	virtual void Close();
+	virtual void CloseMT();
 	virtual ULONG Release();
 	virtual ULONG AddRef();
 // Dialog Data

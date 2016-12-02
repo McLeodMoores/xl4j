@@ -18,6 +18,7 @@ CCollect::CCollect (CJvm *pJvm) {
 }
 
 CCollect::~CCollect () {
+	LOGTRACE("Destructor started");
 	assert (m_lRefCount == 0);
 	DeleteCriticalSection (&m_cs);
 	m_pJvm->Release ();
@@ -25,6 +26,7 @@ CCollect::~CCollect () {
 	delete m_pJniCache;
 	m_pJniCache = NULL;
 	DecrementActiveObjectCount ();
+	LOGTRACE("Destructor complete");
 }
 
 static HRESULT APIENTRY _call (LPVOID lpData, JNIEnv *pEnv) {

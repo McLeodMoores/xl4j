@@ -2,13 +2,21 @@
 #include "Converter.h"
 
 Converter::Converter (TypeLib *pTypeLib) {
-	pTypeLib->GetLocalReferenceRecInfo (&m_pLocalReferenceRecInfo);
-	pTypeLib->GetMultReferenceRecInfo (&m_pMultiReferenceRecInfo);
+	if (FAILED(pTypeLib->GetLocalReferenceRecInfo(&m_pLocalReferenceRecInfo))) {
+		LOGERROR("Can't get LocalReference RecordInfo");
+		m_pLocalReferenceRecInfo = nullptr;
+	}
+	if (FAILED(pTypeLib->GetMultReferenceRecInfo(&m_pMultiReferenceRecInfo))) {
+		LOGERROR("Can't get MultiReference RecordInfo");
+		m_pMultiReferenceRecInfo = nullptr;
+	}
 }
 
 Converter::~Converter () {
+	LOGTRACE("Destructor started");
 	if (m_pLocalReferenceRecInfo) m_pLocalReferenceRecInfo->Release ();
 	if (m_pMultiReferenceRecInfo) m_pMultiReferenceRecInfo->Release ();
+	LOGTRACE("Destructor complete");
 }
 
 HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {

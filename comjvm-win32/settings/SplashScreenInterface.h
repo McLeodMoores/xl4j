@@ -11,6 +11,7 @@
 class COMJVM_SPLASHSCREEN_API ISplashScreen {
 public:
 	virtual INT_PTR Open(HWND hwndParent) = 0;
+	virtual void CloseMT() = 0;
 	virtual void Close() = 0;
 	virtual void Update(int iProgress) = 0;
 	virtual void Increment() = 0;

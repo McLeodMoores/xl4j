@@ -27,6 +27,8 @@ class CJvmEnvironment {
 	GarbageCollector *m_pCollector;
 	ISplashScreen *m_pSplashScreen;
 	static DWORD WINAPI BackgroundJvmThread(LPVOID param);
+	static DWORD WINAPI BackgroundShutdownThread(LPVOID pData);
+	static DWORD WINAPI BackgroundWatchdogThread(LPVOID pData);
 	HRESULT Unregister();
 	HRESULT EnterStartingState();
 	HRESULT EnterStartedState();

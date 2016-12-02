@@ -16,6 +16,13 @@ CJvmEnvironment::~CJvmEnvironment () {
 	
 }
 
+DWORD WINAPI CJvmEnvironment::BackgroundWatchdogThread(LPVOID pData) {
+	CJvmEnvironment *me = reinterpret_cast<CJvmEnvironment*>(pData);
+	Sleep(30000); // wait for 30 secs
+	me->m_pSplashScreen->CloseMT(); // close out splash if no one else has.
+	return 0;
+}
+
 void CJvmEnvironment::Start() {
 	EnterStartingState();
 	LOGTRACE("JVM Environment being created");
@@ -39,6 +46,10 @@ void CJvmEnvironment::Start() {
 		return;
 	}
 	CloseHandle(hJvmThread); // doesn't close the thread, just the handle
+	// WATCHDOG THREAD - neeeded in case user clicks in formula edit box which suspends callbacks
+	// This will get rid of the splash after 30 secs which can occasionally cover other dialogs.
+	HANDLE hWatchdog = CreateThread(NULL, 2048 * 1024, BackgroundWatchdogThread, this, 0, NULL);
+	CloseHandle(hWatchdog);
 }
 
 /**
@@ -51,37 +62,20 @@ void CJvmEnvironment::ShutdownError(wchar_t *szTerminateErrorMessage) {
 	}
 }
 
+DWORD WINAPI CJvmEnvironment::BackgroundShutdownThread(LPVOID pData) {
+	CJvmEnvironment *me = reinterpret_cast<CJvmEnvironment*>(pData);
+	me->EnterTerminatingState();
+	// this should trigger GC command to call ExcelThreadShutdown().
+	return 0;
+}
+
 /**
  * Start shutting down.  Transition to terminating state.
  * Later calls into Excel thread functions (GC, UDF, etc) will finalize by calling ExcelThreadShutdown, 
  * this may happen concurrently with most of this method.
  */
 void CJvmEnvironment::Shutdown() {
-	CreateThread(NULL, 0, [](void* pData) -> DWORD {
-		CJvmEnvironment *me = reinterpret_cast<CJvmEnvironment*>(pData);
-		me->m_pSplashScreen->Close();
-		me->m_pSplashScreen->Release();
-		me->m_pSplashScreen = nullptr;
-
-		me->EnterTerminatingState();
-		LOGTRACE("Releasing JVM");
-		me->m_pJvm->Release();
-		LOGTRACE("Deleteing function registry");
-		if (me->m_pFunctionRegistry) {
-			delete me->m_pFunctionRegistry;
-		} else {
-			LOGERROR("function registry was already nullptr, meaning multiple shutdown calls.");
-		}
-		me->m_pFunctionRegistry = nullptr;
-		LOGTRACE("Deleting garbage collector");
-		if (me->m_pCollector) {
-			delete me->m_pCollector;
-		} else {
-			LOGERROR("collector was already nullptr, meaning multiple shutdown calls.");
-		}
-		me->m_pCollector = nullptr;
-		return 0;
-	}, this, 0, NULL);
+	CreateThread(NULL, 2048 * 1024, BackgroundShutdownThread, this, 0, NULL);
 }
 
 void CJvmEnvironment::ExcelThreadShutdown() {
@@ -92,6 +86,22 @@ void CJvmEnvironment::ExcelThreadShutdown() {
 		XLOPER12 retVal;
 		Excel12f(xlcAlert, &retVal, 2, TempStr12(m_szTerminateErrorMessage), TempInt12(WARNING_OK));
 	}
+	LOGTRACE("Releasing JVM");
+	m_pJvm->Release();
+	LOGTRACE("Deleteing function registry");
+	if (m_pFunctionRegistry) {
+		delete m_pFunctionRegistry;
+	} else {
+		LOGERROR("function registry was already nullptr, meaning multiple shutdown calls.");
+	}
+	m_pFunctionRegistry = nullptr;
+	LOGTRACE("Deleting garbage collector");
+	if (m_pCollector) {
+		delete m_pCollector;
+	} else {
+		LOGERROR("collector was already nullptr, meaning multiple shutdown calls.");
+	}
+	m_pCollector = nullptr;
 }
 
 
@@ -220,6 +230,7 @@ HRESULT CJvmEnvironment::_GarbageCollect () {
 		ReleaseSRWLockShared(&m_rwlock);
 		return ERROR_CONTINUE;
 	case STARTED:
+		m_pSplashScreen->Close();
 		if (m_pCollector) {
 			m_pCollector->Collect();
 			ReleaseSRWLockShared(&m_rwlock);
@@ -259,6 +270,17 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		// Find out how many parameters this function should expect.
 		FUNCTIONINFO functionInfo;
 		HRESULT hr = m_pFunctionRegistry->Get(exportNumber, &functionInfo);
+		if (functionInfo.bIsLongRunning) {
+			XLOPER12 caller;
+			Excel12f(xlfCaller, &caller, 0);
+			LOGTRACE("Long running function caller:");
+			ExcelUtils::PrintXLOPER(&caller);
+			if (caller.xltype == xltypeErr) {
+				*ppResult = TempNum12(0);
+				ReleaseSRWLockShared(&m_rwlock);
+				return S_OK;
+			}
+		}
 		long nArgs = wcslen(functionInfo.bsFunctionSignature) - 2;
 		//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
 		LOGTRACE("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);

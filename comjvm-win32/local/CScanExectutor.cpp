@@ -58,6 +58,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jfieldID jfExportNumber = pEnv->GetFieldID (jcLowLevelEntry, "_exportNumber", "I");
 		jfieldID jfFunctionExportName = pEnv->GetFieldID (jcLowLevelEntry, "_functionExportName", "Ljava/lang/String;");
 		jfieldID jfIsVarArgs = pEnv->GetFieldID (jcLowLevelEntry, "_isVarArgs", "Z");
+		jfieldID jfIsLongRunning = pEnv->GetFieldID(jcLowLevelEntry, "_isLongRunning", "Z");
 		jfieldID jfFunctionSignature = pEnv->GetFieldID (jcLowLevelEntry, "_functionSignature", "Ljava/lang/String;");
 		jfieldID jfFunctionWorksheetname = pEnv->GetFieldID (jcLowLevelEntry, "_functionWorksheetName", "Ljava/lang/String;");
 		jfieldID jfArgumentNames = pEnv->GetFieldID (jcLowLevelEntry, "_argumentNames", "Ljava/lang/String;");
@@ -67,6 +68,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jfieldID jfHelpTopic = pEnv->GetFieldID (jcLowLevelEntry, "_helpTopic", "Ljava/lang/String;");
 		jfieldID jfDescription = pEnv->GetFieldID (jcLowLevelEntry, "_description", "Ljava/lang/String;");
 		jfieldID jfArgsHelp = pEnv->GetFieldID (jcLowLevelEntry, "_argsHelp", "[Ljava/lang/String;");
+		
 
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
 		if (FAILED (hResult = ::GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
@@ -94,6 +96,8 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].bsFunctionExportName);
 			jboolean jsIsVarArgs = pEnv->GetBooleanField (joElement, jfIsVarArgs);
 			pFunctionInfos[i].bIsVarArgs = jsIsVarArgs;
+			jboolean jsIsLongRunning = pEnv->GetBooleanField(joElement, jfIsLongRunning);
+			pFunctionInfos[i].bIsLongRunning = jsIsLongRunning;
 			jstring jsFunctionSignature = (jstring)pEnv->GetObjectField (joElement, jfFunctionSignature);
 			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].bsFunctionSignature);
 			jstring jsFunctionWorksheetname = (jstring)pEnv->GetObjectField (joElement, jfFunctionWorksheetname);
