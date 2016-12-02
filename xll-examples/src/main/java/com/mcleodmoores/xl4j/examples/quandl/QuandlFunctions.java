@@ -35,6 +35,8 @@ import com.opengamma.util.ArgumentChecker;
  *
  */
 public final class QuandlFunctions {
+  private static final Logger LOGGER = LoggerFactory.getLogger(QuandlFunctions.class);
+  
   private static final QuandlSession SESSION;
   private static final boolean API_KEY_PRESENT = System.getProperty("quandl.auth.token") != null;
   private static final String API_KEY_MESSAGE = "No Quandl API key: set JVM property -Dquandl.auth.token=YOUR_KEY via settings on Add-in toolbar";
@@ -42,15 +44,15 @@ public final class QuandlFunctions {
   static {
     SessionOptions.Builder builder;
     if (API_KEY_PRESENT) {
-       builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));  
+      LOGGER.info("Using Quandl API key from properties");
+      builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));  
     } else {
-       builder = SessionOptions.Builder.withoutAuthToken();
+      LOGGER.warn("No Quandl API key detected");
+      builder = SessionOptions.Builder.withoutAuthToken();
     }
     SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
     SESSION = QuandlSession.create(sessionOptions);
   }
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(QuandlFunctions.class);
 
   /**
    * Restricted constructor.
