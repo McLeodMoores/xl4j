@@ -17,7 +17,7 @@ public interface ExcelCallback {
    * @param functionDefinition
    *          the function definition, not null
    */
-  void registerFunction(final FunctionDefinition functionDefinition);
+  void registerFunction(FunctionDefinition functionDefinition);
 
   /**
    * Look up a binary blob given the Windows HANDLE type and length. As HANDLE reduces to (void *), it's width is platform dependent and so
@@ -29,7 +29,7 @@ public interface ExcelCallback {
    *          the length of the block.
    * @return the binary blob
    */
-  byte[] getBinaryName(final long handle, final long length);
+  byte[] getBinaryName(long handle, long length);
 
   /**
    * @return the underlying low-level callback interface

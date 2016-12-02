@@ -19,7 +19,7 @@ import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Type converter
+ * Type converter for maps to {@link XLArray}.
  */
 public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
   /** The logger */

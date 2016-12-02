@@ -23,13 +23,12 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
    * Creates an instance.
    *
    * @param continuous
-   *            true if continuous returns are required
+   *            true if continuous compounding is assumed
    */
   @XLFunction(
       name = "TimeSeriesReturnCalculator",
       description = "Calculates returns of a time series", category = "Time series")
-  public ReturnCalculator(
-      @XLArgument(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
+  public ReturnCalculator(@XLArgument(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
     _continuous = continuous;
   }
 
@@ -51,4 +50,5 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
     }
     return TimeSeries.of(dates, returns);
   }
+
 }

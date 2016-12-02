@@ -7,7 +7,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
-import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,8 +102,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       }
     }
     try {
-      LOGGER.info("invoking method {} on {} with {}", _method, object == null ? "null" : object.getClass().getSimpleName(),
-          Arrays.toString(args));
+      LOGGER.info("invoking method {} on {}", _method, object == null ? "null" : object.getClass().getSimpleName());
       final Object result = _method.invoke(object, args);
       return convertResult(result, _returnConverter);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -121,7 +119,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
    *          the simplifying return converter
    * @return an XLValue type
    */
-  protected abstract XLValue convertResult(final Object object, final TypeConverter returnConverter);
+  protected abstract XLValue convertResult(Object object, TypeConverter returnConverter);
 
   @Override
   public Class<?>[] getExcelParameterTypes() {
