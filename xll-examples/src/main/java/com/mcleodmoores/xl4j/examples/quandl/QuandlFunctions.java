@@ -122,8 +122,8 @@ public final class QuandlFunctions {
       return SESSION.getDataSet(builder.build());
     } catch (QuandlRuntimeException qre) {
       if (!API_KEY_PRESENT) {
-        HeaderDefinition headerDefinition = HeaderDefinition.of("Error");
-        return TabularResult.of(headerDefinition, Collections.singletonList(Row.of(headerDefinition, new String[] { API_KEY_MESSAGE })));
+        HeaderDefinition headerDefinition = HeaderDefinition.of("Date", "Error");
+        return TabularResult.of(headerDefinition, Collections.singletonList(Row.of(headerDefinition, new String[] { "1970-01-01", API_KEY_MESSAGE })));
       }
       return null;
     }
