@@ -4,6 +4,7 @@
 package com.mcleodmoores.xl4j.examples.quandl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,10 +16,13 @@ import com.jimmoores.quandl.DataSetRequest.Builder;
 import com.jimmoores.quandl.Frequency;
 import com.jimmoores.quandl.HeaderDefinition;
 import com.jimmoores.quandl.QuandlSession;
+import com.jimmoores.quandl.RetryPolicy;
 import com.jimmoores.quandl.Row;
+import com.jimmoores.quandl.SessionOptions;
 import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
+import com.jimmoores.quandl.util.QuandlRuntimeException;
 import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.opengamma.util.ArgumentChecker;
@@ -27,8 +31,20 @@ import com.opengamma.util.ArgumentChecker;
  *
  */
 public final class QuandlFunctions {
-  private static final QuandlSession SESSION = QuandlSession.create();
+  private static final QuandlSession SESSION;
+  private static final boolean API_KEY_PRESENT = System.getProperty("quandl.auth.token") != null;
+  private static final String API_KEY_MESSAGE = "No Quandl API key: set JVM property -Dquandl.auth.token=YOUR_KEY via settings on Add-in toolbar";
 
+  static {
+    SessionOptions.Builder builder;
+    if (API_KEY_PRESENT) {
+       builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));  
+    } else {
+       builder = SessionOptions.Builder.withoutAuthToken();
+    }
+    SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
+    SESSION = QuandlSession.create(sessionOptions);
+  }
   /**
    * Restricted constructor.
    */
@@ -49,6 +65,7 @@ public final class QuandlFunctions {
       @XLArgument(optional = true, description = "Max Rows", name = "MaxRows") final Integer maxRows,
       @XLArgument(optional = true, description = "Sort Order", name = "SortOrder") final SortOrder sortOrder,
       @XLArgument(optional = true, description = "Transform", name = "Transform") final Transform transform) {
+
     Builder builder = DataSetRequest.Builder.of(quandlCode);
     if (startDate != null) {
       builder = builder.withStartDate(startDate);
@@ -71,7 +88,15 @@ public final class QuandlFunctions {
     if (transform != null) {
       builder = builder.withTransform(transform);
     }
-    return SESSION.getDataSet(builder.build());
+    try {
+      return SESSION.getDataSet(builder.build());
+    } catch (QuandlRuntimeException qre) {
+      if (!API_KEY_PRESENT) {
+        HeaderDefinition headerDefinition = HeaderDefinition.of("Error");
+        return TabularResult.of(headerDefinition, Collections.singletonList(Row.of(headerDefinition, new String[] { API_KEY_MESSAGE })));
+      }
+      return null;
+    }
   }
 
   /**
