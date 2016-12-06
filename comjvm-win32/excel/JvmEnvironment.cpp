@@ -274,7 +274,7 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 			XLOPER12 caller;
 			Excel12f(xlfCaller, &caller, 0);
 			LOGTRACE("Long running function caller:");
-			ExcelUtils::PrintXLOPER(&caller);
+			//ExcelUtils::PrintXLOPER(&caller);
 			if (caller.xltype == xltypeErr) {
 				*ppResult = TempNum12(0);
 				ReleaseSRWLockShared(&m_rwlock);

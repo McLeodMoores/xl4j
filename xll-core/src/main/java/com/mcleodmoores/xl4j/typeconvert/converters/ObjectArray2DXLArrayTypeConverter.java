@@ -28,7 +28,8 @@ import com.mcleodmoores.xl4j.values.XLValue;
 public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConverter {
   /** The Excel context */
   private final Excel _excel;
-
+  /** The priority */
+  private static final int PRIORITY = 11;
   /**
    * Default constructor.
    *
@@ -36,7 +37,7 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
    *          the excel context object, used to access the type converter registry, not null
    */
   public ObjectArray2DXLArrayTypeConverter(final Excel excel) {
-    super(Object[][].class, XLArray.class);
+    super(Object[][].class, XLArray.class, PRIORITY);
     ArgumentChecker.notNull(excel, "excel");
     _excel = excel;
   }

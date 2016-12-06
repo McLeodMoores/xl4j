@@ -313,6 +313,7 @@
     <ClInclude Include="CCollect.h" />
     <ClInclude Include="CCollectExecutor.h" />
     <ClInclude Include="Classpath.h" />
+    <ClInclude Include="ComJavaConverter.h" />
     <ClInclude Include="CScan.h" />
     <ClInclude Include="CScanExecutor.h" />
     <ClInclude Include="Delete.h" />
@@ -334,6 +335,7 @@
     <ClCompile Include="CCollect.cpp" />
     <ClCompile Include="Classpath.cpp" />
     <ClCompile Include="CCollectExecutor.cpp" />
+    <ClCompile Include="ComJavaConverter.cpp" />
     <ClCompile Include="CScan.cpp" />
     <ClCompile Include="CScanExectutor.cpp" />
     <ClCompile Include="Delete.cpp" />

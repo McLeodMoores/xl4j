@@ -26,7 +26,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
  */
 public final class ObjectArray2DXLArrayTypeConverter2 extends AbstractTypeConverter {
   /** The priority */
-  private static final int PRIORITY = 6;
+  private static final int PRIORITY = 7;
   /** The Excel context */
   private final Excel _excel;;
 

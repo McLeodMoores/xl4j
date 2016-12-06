@@ -250,6 +250,7 @@ public final class QuandlFunctions {
   public static Object[][] expandTabularResult(
       @XLArgument(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
       @XLArgument(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
+    LOGGER.info(result.toPrettyPrintedString());
     final boolean isIncludeHeader = includeHeader == null ? true : includeHeader;
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();
     final int cols = headerDefinition.size();
@@ -280,6 +281,7 @@ public final class QuandlFunctions {
       }
       row++;
     }
+    LOGGER.trace(Arrays.deepToString(values));
     return values;
   }
 }

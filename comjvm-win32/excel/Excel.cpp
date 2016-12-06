@@ -449,6 +449,8 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	}
 //	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockShared (&g_JvmEnvLock);
+	LOGTRACE("Returning from UDF");
+	//ExcelUtils::PrintXLOPER(result);
 	return result;
 }
 
