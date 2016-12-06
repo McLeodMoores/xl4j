@@ -18,6 +18,13 @@ public final class XlDateUtils {
    */
   private static final long DAYS_FROM_XL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(XL_EPOCH_YEAR, 1, 1), LocalDate.ofEpochDay(0)) + 1;
 
+  /**
+   * Calculates the number of days from the Excel epoch.
+   *
+   * @param date
+   *          the date
+   * @return the number of days
+   */
   public static long getDaysFromXlEpoch(final LocalDate date) {
     ArgumentChecker.notNull(date, "date");
     return date.toEpochDay() + DAYS_FROM_XL_EPOCH;
