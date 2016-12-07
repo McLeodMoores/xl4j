@@ -24,6 +24,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
+      final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired,
       final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
       final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final Method method = getMethod(functionExportName, argumentNames);
@@ -37,7 +38,6 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     // REVIEW: t might be a mistake to make isVolatile based on isMacroEquivalent here because we haven't elsewhere.
     final boolean isVolatile = isMacroEquivalent || functionSignature.endsWith("!");
     final boolean isMultiThreadSafe = functionSignature.endsWith("$");
-    // XLResultType resultType = functionSignature.startsWith("Q") ? XLResultType.OBJECT : XLResultType.SIMPLEST;
     final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, isMacroEquivalent,
         isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
     final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType, argumentsHelp,

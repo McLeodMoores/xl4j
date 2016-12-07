@@ -7,6 +7,7 @@ package com.mcleodmoores.xl4j.lowlevel;
  * The Excel low-level callback interface. This may or may not be necessary.
  */
 public interface LowLevelExcelCallback {
+  //TODO javadoc
   /**
    * Excel callback interface to register a function.
    *
@@ -18,6 +19,9 @@ public interface LowLevelExcelCallback {
    *          true, if the function has a variable argument list
    * @param isLongRunning
    *          true if the function is likely to be long-running
+   * @param isAutoAsynchronous
+   * @param isManualAsynchronous
+   * @param isCallerRequired
    * @param functionSignature
    *          a string representing the functions return type, parameter types and calling permission, not null
    * @param functionWorksheetName
@@ -39,9 +43,10 @@ public interface LowLevelExcelCallback {
    * @return the function registration number
    */
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters. Take it up with Microsoft.
-  int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
-      final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
-      final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp);
+  int xlfRegister(int exportNumber, String functionExportName, boolean isVarArgs, boolean isLongRunning,
+      boolean isAutoAsynchronous, boolean isManualAsynchronous, boolean isCallerRequired,
+      String functionSignature, String functionWorksheetName, String argumentNames, int functionType,
+      String functionCategory, String acceleratorKey, String helpTopic, String description, String... argsHelp);
   // CHECKSTYLE:ON
   /*
    * This block is to be ignored: return code, see below

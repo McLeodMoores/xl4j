@@ -63,16 +63,10 @@ public @interface XLFunction {
   boolean isMultiThreadSafe() default true;
 
   /**
-   * @return true, if this function needs access to macro-level features Note this cannot be used in conjunction with isMultiThreadSafe, but
+   * @return true, if this function needs access to macro-level features. Note this cannot be used in conjunction with isMultiThreadSafe, but
    *         is required if access to certain call-backs or range references (XLLocalReference or XLMultiReference) are needed.
    */
   boolean isMacroEquivalent() default false;
-
-  /**
-   * @return true, if this function executes asynchronously Note this cannot be used in conjunction with volatile or macro equivalent, but
-   *         is required if access to certain call-backs or range references is needed.
-   */
-  boolean isAsynchronous() default false;
 
   /**
    * @return the way to handle results
@@ -92,4 +86,10 @@ public @interface XLFunction {
    * @return true if the function is slow, defaults to false
    */
   boolean isLongRunning() default false;
+
+  boolean isAutoAsynchronous() default false;
+
+  boolean isManualAsynchronous() default false;
+
+  boolean isCallerRequired() default false;
 }

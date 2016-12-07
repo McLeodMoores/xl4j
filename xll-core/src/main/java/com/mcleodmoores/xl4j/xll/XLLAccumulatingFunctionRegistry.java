@@ -22,11 +22,13 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
    */
   public class LowLevelEntry {
     // CHECKSTYLE:OFF
-
     public int _exportNumber;
     public String _functionExportName;
     public boolean _isVarArgs;
     public boolean _isLongRunning;
+    public boolean _isAutoAsynchronous;
+    public boolean _isManualAsynchronous;
+    public boolean _isCallerRequired;
     public String _functionSignature;
     public String _functionWorksheetName;
     public String _argumentNames;
@@ -44,13 +46,17 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   @Override
   // CHECKSTYLE:OFF can't control signature.
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
-      final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
-      final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
+      final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired, final String functionSignature,
+      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
+      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final LowLevelEntry entry = new LowLevelEntry();
     entry._exportNumber = exportNumber;
     entry._functionExportName = functionExportName;
     entry._isVarArgs = isVarArgs;
     entry._isLongRunning = isLongRunning;
+    entry._isAutoAsynchronous = isAutoAsynchronous;
+    entry._isManualAsynchronous = isManualAsynchronous;
+    entry._isCallerRequired = isCallerRequired;
     entry._functionSignature = functionSignature;
     entry._functionWorksheetName = functionWorksheetName;
     entry._argumentNames = argumentNames;

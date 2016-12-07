@@ -43,9 +43,9 @@ public final class JMethod {
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "Method",
-              description = "Call a named Java method",
-              category = "Java",
-              typeConversionMode = TypeConversionMode.PASSTHROUGH)
+      description = "Call a named Java method",
+      category = "Java",
+      typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethod(@XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
       @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
       @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
@@ -57,7 +57,7 @@ public final class JMethod {
       final Class<?> clazz = object.getClass();
       final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(clazz, methodName,
           TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
-      
+
       int i = 0;
       // TODO remove any method with Object or Object[] types and try them last?
       for (; i < methodTypeConverters.length; i++) {
@@ -65,11 +65,12 @@ public final class JMethod {
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
+            // (can have nulls in the middle of the method invoker array)
             LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
                 Arrays.toString(args));
             return XLError.Null;
           }
-          // go to where it will try any methods that are at the end of the array
+          // go to where it will try any methods that are at the end of the array i.e. varargs methods
           break;
         }
         try {
@@ -113,9 +114,9 @@ public final class JMethod {
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "MethodX",
-              description = "Call a named Java method",
-              category = "Java",
-              typeConversionMode = TypeConversionMode.PASSTHROUGH)
+      description = "Call a named Java method",
+      category = "Java",
+      typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jMethodX(@XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
       @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
       @XLArgument(name = "args", description = "the method arguments") final XLValue... args) {
@@ -134,11 +135,12 @@ public final class JMethod {
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
+            // (can have nulls in the middle of the method invoker array)
             LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
                 Arrays.toString(args));
             return XLError.Null;
           }
-          // go to where it will try any methods that are at the end of the array
+          // go to where it will try any methods that are at the end of the array i.e. varargs methods
           break;
         }
         try {
@@ -180,9 +182,9 @@ public final class JMethod {
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "StaticMethod",
-              description = "Call a named Java method",
-              category = "Java",
-              typeConversionMode = TypeConversionMode.PASSTHROUGH)
+      description = "Call a named Java method",
+      category = "Java",
+      typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticMethod(
       @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
       @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
@@ -199,6 +201,7 @@ public final class JMethod {
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
+            // (can have nulls in the middle of the method invoker array)
             LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(),
                 Arrays.toString(args));
             return XLError.Null;
@@ -244,9 +247,9 @@ public final class JMethod {
    * @return the result, converted to an Excel type if possible
    */
   @XLFunction(name = "StaticMethodX",
-              description = "Call a named Java method",
-              category = "Java",
-              typeConversionMode = TypeConversionMode.PASSTHROUGH)
+      description = "Call a named Java method",
+      category = "Java",
+      typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticMethodX(
       @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
       @XLArgument(name = "method name", description = "The method name without parentheses") final XLString methodName,
@@ -263,6 +266,7 @@ public final class JMethod {
         if (methodTypeConverter == null) {
           if (i == methodTypeConverters.length - 1) {
             // have reached the end of the available methods without finding a match
+            // (can have nulls in the middle of the method invoker array)
             LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(),
                 Arrays.toString(args));
             return XLError.Null;
