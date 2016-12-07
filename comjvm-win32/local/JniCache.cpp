@@ -57,6 +57,7 @@ JniCache::JniCache () {
 	m_jmExcelFunctionCallHandler_invoke = NULL;
 	m_joHeap = NULL;
 	m_jmHeap_cycleGC = NULL;
+	m_lRefCount = 1;
 }
 
 JniCache::~JniCache () {
@@ -468,4 +469,14 @@ jboolean JniCache::IsXLBigData (JNIEnv *pEnv, jclass clazz) {
 jboolean JniCache::IsXLArray (JNIEnv *pEnv, jclass clazz) {
 	EnsureInit (pEnv);
 	return pEnv->IsAssignableFrom (clazz, m_jcXLArray);
+}
+
+ULONG JniCache::AddRef(void) {
+	return InterlockedIncrement(&m_lRefCount);
+}
+
+ULONG JniCache::Release(void) {
+	ULONG lResult = InterlockedDecrement(&m_lRefCount);
+	if (!lResult) delete this;
+	return lResult;
 }

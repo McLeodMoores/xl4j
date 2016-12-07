@@ -7,7 +7,7 @@ CCallExecutor::CCallExecutor (CCall *pOwner, JniCache *pJniCache)
 	if (!pOwner) {
 		throw std::logic_error ("called with null CScan");
 	}
-	m_hSemaphore = CreateSemaphore (NULL, 0, MAXINT, NULL);
+	m_hSemaphore = CreateSemaphore (NULL, 0, 1, NULL); // max 1 means we can release when no one waits
 	pOwner->AddRef ();
 }
 

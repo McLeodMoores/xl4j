@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "CCall.h"
 #include "Internal.h"
 #if 1
@@ -7,11 +6,17 @@
 #include "Framewrk.h"
 #endif // 1
 
-
-
-CCall::CCall (CJvm *pJvm) {
+CCall::CCall(CJvm *pJvm) {
 	m_pJvm = pJvm;
-	m_pJniCache = new JniCache ();
+	// we use the TLS so we don't create blank JNI Caches if we're creating per-call CCall objects
+	// e.g. for async use.
+	m_pJniCache = static_cast<JniCache *>(TlsGetValue(g_dwTlsJniCacheIndex));
+	if (!m_pJniCache) {
+		m_pJniCache = new JniCache();
+		TlsSetValue(g_dwTlsJniCacheIndex, m_pJniCache);
+	} else {
+		m_pJniCache->AddRef();
+	}
 	m_pExecutor = new CCallExecutor (this, m_pJniCache);
 	m_pExecutor->AddRef (); // RC2
 	IncrementActiveObjectCount ();
@@ -24,7 +29,7 @@ CCall::~CCall () {
 	DeleteCriticalSection (&m_cs);
 	m_pJvm->Release ();
 	m_pExecutor->Release ();
-	delete m_pJniCache;
+	m_pJniCache->Release ();
 	m_pJniCache = NULL;
 	DecrementActiveObjectCount ();
 }
@@ -88,6 +93,43 @@ HRESULT STDMETHODCALLTYPE CCall::Call (/* [out] */ VARIANT *result, /* [in] */ i
 		hr = E_OUTOFMEMORY;
 	}
 	LOGTRACE ("Returning hr = %x", hr);
+	return hr;
+}
+
+static HRESULT APIENTRY _asynccall(LPVOID lpData, JNIEnv *pEnv) {
+	LOGTRACE("Entering static callback function _call");
+	CCallExecutor *pExecutor = (CCallExecutor*)lpData;
+	VARIANT vHandle = pExecutor->GetAsyncrhonousHandle();
+	IAsyncCallResult *resultHandler = pExecutor->GetAsynchronousHandler();
+	HRESULT hr = pExecutor->Run(pEnv);
+	pExecutor->Wait(); // should just be released straight away
+	resultHandler->Complete(vHandle, pExecutor->GetResult());
+	//if (SUCCEEDED (hr)) {
+	//	LOGTRACE ("_call: Run returned success");
+	//	hr = pExecutor->Wait ();
+	//	LOGTRACE ("pExecutor->Wait() returned");
+	//	Debug::print_HRESULT (hr);
+	//} else {
+	//	LOGTRACE ("_call: Run returned failure");
+	//	Debug::print_HRESULT (hr);
+	//	pExecutor->Release ();
+	//}
+	return hr;
+}
+HRESULT STDMETHODCALLTYPE CCall::AsyncCall(/* [in] */ IAsyncCallResult *pAsyncHandler, /* [in] */ VARIANT vAsyncHandle, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
+	HRESULT hr;
+	try {
+		CCallExecutor *pExecutor = m_pExecutor;
+		pExecutor->AddRef();
+		pExecutor->AddRef();
+		pExecutor->SetArguments(nullptr, iFunctionNum, args);
+		hr = m_pJvm->Execute(_call, pExecutor);
+		// we don't wait for it to finish.
+		pExecutor->Release();
+		pExecutor->Release();
+	} catch (std::bad_alloc) {
+		hr = E_OUTOFMEMORY;
+	}
 	return hr;
 }
 

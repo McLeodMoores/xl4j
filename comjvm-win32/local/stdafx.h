@@ -22,6 +22,8 @@
 
 #include "utils/Debug.h"
 
+extern DWORD g_dwTlsJniCacheIndex;
+
 #ifdef _UNICODE
 typedef std::wstring _std_string_t;
 __inline const _std_string_t _tstring (const std::string &ansi) {

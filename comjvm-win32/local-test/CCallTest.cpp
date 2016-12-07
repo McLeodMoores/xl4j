@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "comjvm/local.h"
+//#include "comjvm/local.h"
 #include "comjvm/core.h"
 #include "local/CScanExecutor.h"
 #include "local/CCall.h"

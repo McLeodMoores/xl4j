@@ -171,6 +171,12 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		out->xltype = xltypeInt;
 		out->val.w = V_INT (in);
 	}
+	case VT_UI8:
+	{
+		out->xltype = xltypeBigData;
+		out->val.bigdata.h.hdata = reinterpret_cast<HANDLE>(V_UI8 (in));
+		out->val.bigdata.cbData = 0;
+	}
 	break;
 	default:
 	{
@@ -272,7 +278,10 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 		V_BOOL (out) = in->val.xbool == FALSE ? VARIANT_FALSE : VARIANT_TRUE;
 	} break;
 	case xltypeBigData: {
-		throw std::logic_error ("BigData not implemented");
+		//throw std::logic_error ("BigData not implemented");
+		V_VT(out) = VT_UI8;
+		HANDLE hBigData = in->val.bigdata.h.hdata;
+		V_UI8(out) = reinterpret_cast<unsigned long long>(hBigData);
 	} break;
 	case xltypeMulti: {
 		RW cRows = in->val.array.rows;

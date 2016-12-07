@@ -4,6 +4,7 @@ EXPORTS
 	DllGetClassObject PRIVATE
 	DllRegisterServer PRIVATE
 	DllUnregisterServer PRIVATE
+	_IID_IAsyncCallResult = IID_IAsyncCallResult DATA
 ;	?RegisterTypeLibrary@@YGJXZ
 ;	??0CSettings@@QAE@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0W4LoadType@0@@Z
 ;	?GetString@CSettings@@QBE?BV_bstr_t@@ABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z

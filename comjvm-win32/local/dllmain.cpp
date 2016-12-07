@@ -12,6 +12,7 @@
 #include "JvmConnector.h"
 
 volatile long g_lActiveObjects = 0;
+DWORD g_dwTlsJniCacheIndex = 1;
 
 extern "C" HRESULT APIENTRY DllGetImplementingCLSID (REFIID iid, DWORD dwIndex, BSTR *pProgId, CLSID *pCLSID) {
 	if (!pProgId) return E_POINTER;

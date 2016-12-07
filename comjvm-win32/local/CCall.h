@@ -23,6 +23,7 @@ public:
 	CCall (CJvm *pJvm);
 	~CCall ();
 	HRESULT STDMETHODCALLTYPE Call (/* [out] */ VARIANT *result, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
+	HRESULT STDMETHODCALLTYPE AsyncCall(/* [in] */ IAsyncCallResult *pAsyncHandler, /* [in] */ VARIANT vAsyncHandle, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args);
 	ULONG STDMETHODCALLTYPE AddRef ();
 	ULONG STDMETHODCALLTYPE Release ();
 	// IUnknown
