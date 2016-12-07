@@ -227,7 +227,9 @@ GarbageCollector::GarbageCollector (ICollect *pCollector) {
 }
 
 GarbageCollector::~GarbageCollector () {
+	LOGTRACE("Destructor started");
 	m_pCollector->Release ();
+	LOGTRACE("Destructor complete");
 }
 
 //#include "../utils/TraceOn.h"

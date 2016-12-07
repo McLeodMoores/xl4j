@@ -32,15 +32,6 @@ private:
 	HANDLE m_hSemaphore;
 	HRESULT m_hRunResult;
 	~CCallExecutor ();
-	void allocSAFEARRAY_BSTR (SAFEARRAY **ppsa, size_t cElem);
-	void freeBSTR (BSTR pStr);
-	HRESULT storeBSTR (JNIEnv *pEnv, jstring jsStr, BSTR *result);
-	HRESULT storeXCHAR (JNIEnv *pEnv, jstring jsStr, XCHAR **result);
-	HRESULT allocMultiReference (XL4JMULTIREFERENCE **result, jsize elems);
-	HRESULT allocReference (XL4JREFERENCE **result);
-	void allocArray (SAFEARRAY **result, jsize rows, jsize cols);
-	VARIANT convert (JNIEnv *pEnv, JniCache *pJniCache, jobject joXLValue);
-	jobject convert (JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper);
 public:
 	CCallExecutor (CCall *pOwner, JniCache *pJniCache);
 	void SetArguments (VARIANT *result, int iFunctionNum, SAFEARRAY * args);

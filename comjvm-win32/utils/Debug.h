@@ -37,7 +37,7 @@ private:
 	const static wchar_t *LOGLEVEL_STR[];
 	static size_t m_cMaxFileNameLength;
 	static size_t m_cMaxFunctionNameLength;
-	volatile static LOGLEVEL m_logLevel;
+	static LOGLEVEL m_logLevel;
 	static LOGTARGET m_logTarget;
 	static FILE *m_fdLogFile;
 	static void appendExceptionTraceMessages (

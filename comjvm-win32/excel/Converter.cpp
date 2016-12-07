@@ -2,13 +2,21 @@
 #include "Converter.h"
 
 Converter::Converter (TypeLib *pTypeLib) {
-	pTypeLib->GetLocalReferenceRecInfo (&m_pLocalReferenceRecInfo);
-	pTypeLib->GetMultReferenceRecInfo (&m_pMultiReferenceRecInfo);
+	if (FAILED(pTypeLib->GetLocalReferenceRecInfo(&m_pLocalReferenceRecInfo))) {
+		LOGERROR("Can't get LocalReference RecordInfo");
+		m_pLocalReferenceRecInfo = nullptr;
+	}
+	if (FAILED(pTypeLib->GetMultReferenceRecInfo(&m_pMultiReferenceRecInfo))) {
+		LOGERROR("Can't get MultiReference RecordInfo");
+		m_pMultiReferenceRecInfo = nullptr;
+	}
 }
 
 Converter::~Converter () {
+	LOGTRACE("Destructor started");
 	if (m_pLocalReferenceRecInfo) m_pLocalReferenceRecInfo->Release ();
 	if (m_pMultiReferenceRecInfo) m_pMultiReferenceRecInfo->Release ();
+	LOGTRACE("Destructor complete");
 }
 
 HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
@@ -26,7 +34,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		out->xltype = xltypeStr;
 		HRESULT hr = allocXCHAR (V_BSTR (in), &(out->val.str));
 		if (FAILED (hr)) {
-			LOGTRACE ("Converter::convert(VARIANT->XLOPER): could not alloc XCHAR array for string.");
+			LOGERROR ("Converter::convert(VARIANT->XLOPER): could not alloc XCHAR array for string.");
 			return hr;
 		}
 	}
@@ -43,7 +51,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		HRESULT hr = V_RECORDINFO (in)->GetGuid (&guid);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			LOGTRACE ("Converter::convert::recordinfo->GetGuid returned: %s", err.ErrorMessage ());
+			LOGERROR ("Converter::convert::recordinfo->GetGuid returned: %s", err.ErrorMessage ());
 			return hr;
 		}
 		if (guid == IID_XL4JMULTIREFERENCE) {
@@ -90,10 +98,16 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	break;
 	case VT_ARRAY:
 	{
-		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): VT_ARRAY");
+		LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
+		LARGE_INTEGER Frequency;
+
+		QueryPerformanceFrequency(&Frequency);
+		QueryPerformanceCounter(&StartingTime);
+
+		LOGTRACE ("Converter::convert(VARIANT->XLOPER): VT_ARRAY");
 		SAFEARRAY *psa = V_ARRAY (in);
 		if (SafeArrayGetDim (psa) != 2) {
-			LOGTRACE ("Converter::convert: VT_ARRAY not a 2D array");
+			LOGERROR ("Converter::convert: VT_ARRAY not a 2D array");
 			return E_NOT_VALID_STATE;
 		}
 		long cRows;
@@ -106,16 +120,16 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		HRESULT hr = SafeArrayAccessData (psa, (PVOID *)&pArray);
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			LOGTRACE ("Converter::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
+			LOGERROR ("Converter::convert SafeArrayAccessData failed: %s", err.ErrorMessage ());
 			return hr;
 		}
 		XLOPER12 *pXLOPERArr;
-		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): allocating (%d x %d) array.", cColumns, cRows);
+		LOGTRACE ("Converter::convert(VARIANT->XLOPER): allocating (%d x %d) array.", cColumns, cRows);
 		hr = allocARRAY (cColumns, cRows, &pXLOPERArr);
 		out->val.array.lparray = pXLOPERArr; // assign BEFORE walking it along array!!!
 		if (FAILED (hr)) {
 			_com_error err (hr);
-			LOGTRACE ("CCallExecutor::convert allocARRAY failed: %s", err.ErrorMessage ());
+			LOGERROR ("CCallExecutor::convert allocARRAY failed: %s", err.ErrorMessage ());
 			return hr;
 		}
 		
@@ -130,11 +144,15 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 				}
 			}
 		}
-		//LOGTRACE ("Converter::convert(VARIANT->XLOPER): finished converting elements, writing to out structure");
+		
 		SafeArrayUnaccessData (psa);
 		out->xltype = xltypeMulti;
 		out->val.array.columns = cColumns;
 		out->val.array.rows = cRows;
+		QueryPerformanceCounter(&EndingTime);
+		ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
+		LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
+		LOGTRACE("Converter::convert(VARIANT->XLOPER): finished converting elements, writing to out structure");
 		
 	}
 	break;

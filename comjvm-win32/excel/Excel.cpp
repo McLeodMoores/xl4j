@@ -26,11 +26,7 @@ const IID ComJvmCore_LIBID2 = {	0x0e07a0b8,	0x0fa3, 0x4497,	{ 0xbc,	0x66, 0x6d, 
 //
 HANDLE g_hInst = nullptr;
 DWORD g_dwTlsIndex = 0;
-int g_idRegisterSomeFunctions;
-int g_idSettings;
-int g_idGarbageCollect;
 LONG g_initialized = 0;
-bool g_shutdown = false;
 CAddinEnvironment *g_pAddinEnv = nullptr;
 CJvmEnvironment *g_pJvmEnv = nullptr;
 SRWLOCK g_JvmEnvLock = SRWLOCK_INIT;
@@ -453,6 +449,8 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	}
 //	LOGTRACE ("Releasing Lock");
 	ReleaseSRWLockShared (&g_JvmEnvLock);
+	LOGTRACE("Returning from UDF");
+	//ExcelUtils::PrintXLOPER(result);
 	return result;
 }
 

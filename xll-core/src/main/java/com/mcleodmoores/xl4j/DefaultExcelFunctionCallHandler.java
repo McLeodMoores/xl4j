@@ -72,7 +72,9 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
           }
           final XLValue[] newArgs = new XLValue[args.length - 1];
           System.arraycopy(args, 1, newArgs, 0, args.length - 1);
-          return methodInvoker.invoke(obj, newArgs);
+          XLValue retVal = methodInvoker.invoke(obj, newArgs);
+          LOGGER.trace("Return value from Java to C++ layer is {}", retVal);
+          return retVal;
         }
       }
       final ConstructorInvoker constructorInvoker = functionDefinition.getConstructorInvoker();

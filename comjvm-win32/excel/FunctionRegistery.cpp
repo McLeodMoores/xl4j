@@ -10,6 +10,7 @@ FunctionRegistry::FunctionRegistry (IJvm *pJvm, TypeLib *pTypeLib) : m_pJvm (pJv
 }
 
 FunctionRegistry::~FunctionRegistry () {
+	LOGTRACE("Destructor started");
 	// Release refs, free stuff and zero out pointers.
 	if (m_pJvm != NULL) {
 		m_pJvm->Release ();
@@ -26,6 +27,7 @@ FunctionRegistry::~FunctionRegistry () {
 	m_bComplete = false;
 	m_iIndex = 0;
 	m_cFunctions = 0;
+	LOGTRACE("Destructor complete");
 }
 
 HRESULT FunctionRegistry::Scan () {

@@ -818,6 +818,7 @@ struct FUNCTIONINFO {
 	int iExportNumber;
 	BSTR bsFunctionExportName;
 	boolean bIsVarArgs;
+	boolean bIsLongRunning;
 	BSTR bsFunctionSignature;
 	BSTR bsFunctionWorksheetName;
 	BSTR bsArgumentNames;

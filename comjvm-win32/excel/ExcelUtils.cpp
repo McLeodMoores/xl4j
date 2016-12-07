@@ -3,7 +3,7 @@
 #include "ExcelUtils.h"
 
 void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
-	switch (pXLOper->xltype) {
+	switch (pXLOper->xltype & 0xfff) {
 	case xltypeStr: {
 		size_t sz = pXLOper->val.str[0]; // the first 16-bit word is the length in chars (not inclusing any zero terminator)
 		wchar_t *zeroTerminated = (wchar_t *)malloc ((sz + 1) * sizeof (wchar_t)); // + 1 for zero terminator
@@ -65,6 +65,7 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 		XLOPER12 *pXLOPER = pXLOper->val.array.lparray;
 		for (RW j = 0; j < cRows; j++) {
 			for (COL i = 0; i < cCols; i++) {
+				LOGTRACE("Element col=%d, row=%d is:", i, j);
 				PrintXLOPER (pXLOPER++);
 			}
 		}

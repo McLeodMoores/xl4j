@@ -97,10 +97,12 @@ Jvm::Jvm () : m_lRefCount (1) {
 }
 
 Jvm::~Jvm () {
+	LOGTRACE("Destructor started");
 	LOGTRACE ("Releasing JVM");
 	m_pJvm->Release ();
 	LOGTRACE ("Releasing Connector");
 	m_pConnector->Release ();
+	LOGTRACE("Destructor complete");
 }
 
 ULONG Jvm::AddRef () {

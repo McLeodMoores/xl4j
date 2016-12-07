@@ -60,7 +60,7 @@ BOOL CVmOptionsPropertyPage::OnInitDialog () {
 		_bstr_t bstrOption;
 		long i = 0;
 		do {
-			bstrOption = m_pSettings->GetString (TEXT ("VM Options"), i);
+			bstrOption = m_pSettings->GetString (TEXT ("Options"), i);
 			if (bstrOption.length () > 0) {
 				m_lbCustomOptions.AddString (bstrOption);
 				LOGTRACE ("Adding VM option into CListBox: %s", bstrOption);
@@ -96,11 +96,11 @@ void CVmOptionsPropertyPage::OnOK () {
 	const int MAX_HEAP_CHARS = 32;
 	CPropertyPage::OnOK ();
 	if (m_pSettings->IsValid ()) {
-		m_pSettings->DeleteKey (TEXT ("VM Options"));
+		m_pSettings->DeleteKey (TEXT ("Options"));
 		for (int i = 0; i < m_lbCustomOptions.GetCount (); i++) {
 			CString option;
 			m_lbCustomOptions.GetText (i, option);
-			m_pSettings->PutString (TEXT ("VM Options"), i, option.GetBuffer ());
+			m_pSettings->PutString (TEXT ("Options"), i, option.GetBuffer ());
 			LOGTRACE ("Writing %s to VM option position %d", option, i);
 		}
 		const wchar_t *szAutoOptions = TEXT ("Auto Options");

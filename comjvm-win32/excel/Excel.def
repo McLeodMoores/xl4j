@@ -18,7 +18,6 @@ EXPORTS
 	Settings
 	ViewJavaLogs
 	ViewCppLogs
-	g_shutdown DATA
 	UDF
 	UDF_0
 	UDF_1
