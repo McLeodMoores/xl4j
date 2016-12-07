@@ -36,7 +36,7 @@ my %defaultReturn = ("boolean", "true",
                   "long", "0L",
                   "double", "0d",
                   "void", "");
-my @excelFunctionAttribs = ("isVolatile", "isMultiThreadSafe", "isMacroEquivalent", "isAsynchronous");
+my @excelFunctionAttribs = ("isVolatile", "isMultiThreadSafe", "isMacroEquivalent", "isAutoAsynchronous");
 for (my $methodNumber = 0; $methodNumber < $MAX_METHODS; $methodNumber++) {
   my $returnType = $types[int(rand(@types))];
   my $numAttr = int(rand(@excelFunctionAttribs));

@@ -53,6 +53,9 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String functionName = buildFunctionName(functionDefinition);
     final boolean isVarArgs = functionDefinition.isVarArgs();
     final boolean isLongRunning = functionAnnotation.isLongRunning();
+    final boolean isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
+    final boolean isManualAsynchronous = functionAnnotation.isManualAsynchronous();
+    final boolean isCallerRequired = functionAnnotation.isCallerRequired();
     final String argumentNames = buildArgNames(argumentAnnotations);
     final Integer functionTypeInt = getFunctionType(functionAnnotation);
     final String signature = buildFunctionSignature(functionDefinition);
@@ -60,7 +63,8 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String helpTopic = buildHelpTopic(functionAnnotation);
     final String description = buildDescription(functionAnnotation);
     final String[] argsHelp = buildArgsHelp(argumentAnnotations);
-    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, isLongRunning, signature, functionName, argumentNames,
+    _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, isLongRunning,
+        isAutoAsynchronous, isManualAsynchronous, isCallerRequired, signature, functionName, argumentNames,
         functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
@@ -118,7 +122,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final boolean isVolatile = functionAnnotation != null ? functionAnnotation.isVolatile() : false; // default
     final boolean isMTSafe = functionAnnotation != null ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
     final boolean isMacroEquivalent = functionAnnotation != null ? functionAnnotation.isMacroEquivalent() : false; // default
-    final boolean isAsynchronous = functionAnnotation != null ? functionAnnotation.isAsynchronous() : false; // default
+    final boolean isAutoAsynchronous = functionAnnotation != null ? functionAnnotation.isAutoAsynchronous() : false; // default
     final FunctionType functionType = functionAnnotation != null ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
     if (isVolatile && isMTSafe || isMTSafe && isMacroEquivalent) {
       throw new Excel4JRuntimeException(
@@ -131,7 +135,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
       signature.append("J"); // means int, but we'll convert from XLInteger to make the class hierarchy cleaner.
     } else {
-      if (isAsynchronous) {
+      if (isAutoAsynchronous) {
         signature.append(">"); // means void function is asynchronous callback handle, which we don't expose to the user.
       } else {
         if (excelReturnType.isAssignableFrom(XLLocalReference.class) || excelReturnType.isAssignableFrom(XLMultiReference.class)) {
@@ -174,7 +178,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         }
       }
     }
-    if (isAsynchronous) {
+    if (isAutoAsynchronous) {
       signature.append("X"); // should we allow the other options (below)?
     }
     // Characters on the end -- we checked some invalid states at the start.
