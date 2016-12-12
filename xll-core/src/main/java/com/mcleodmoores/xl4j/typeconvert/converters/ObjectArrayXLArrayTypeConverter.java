@@ -46,7 +46,7 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
       throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
     Type componentType = null;
-    if (expectedType instanceof Class) {
+    if (expectedType == null || expectedType instanceof Class) {
       final Class<?> expectedClass = from.getClass();
       componentType = expectedClass.getComponentType();
       // REVIEW: this will never fail because of the isArray() test

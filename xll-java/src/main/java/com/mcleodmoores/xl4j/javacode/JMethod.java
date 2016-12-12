@@ -21,7 +21,7 @@ import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Class containing Java object construction function.
+ * Class containing Java method invocation functions.
  */
 @XLNamespace("J")
 public final class JMethod {
