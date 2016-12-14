@@ -146,6 +146,7 @@ These are features we know how to implement but aside from identifying what is r
   - General COM API access - The most comprehensive API for Excel access is via the COM API.  The COM API allows things not available 
     via the XLL API, such as ability to format cells, recalculate cells and ranges, and much more.  So why not only provide COM access? 
     The reason is that the COM API can be rather slow, and there are still some things that can only be done via the XLL C API.
+  - Heap serialization to XLS file on save/load.
   - Full Ribbon support.  Ribbon support requires more COM integration as a pre-requisite.
   - Easy exposing of user defined functions to VBA.
   - Dynamic class updating - support dynamic updaing of classes by your IDE feeding through to the Add-in without a restart.
@@ -169,4 +170,3 @@ There are a few limitations with the current build.  These should slowly disappe
   - 32-bit JVM limits maximum heap as it needs to share address space with Excel.  This will go away once we move to an 
     out-of-process JVM with the first updates.
   - 64-bit Add-in/JVM combination builds but hasn't been tested.
-  

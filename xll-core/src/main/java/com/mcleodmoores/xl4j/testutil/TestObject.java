@@ -11,9 +11,12 @@ import java.util.Objects;
  */
 // CHECKSTYLE:OFF
 public class TestObject {
-  private final int _number;
-  private final Double[] _doubles;
-  private final String _name;
+  /** Magic number */
+  public static final double MAGIC_NUMBER = 1.234567;
+
+  public final int _number;
+  public final Double[] _doubles;
+  public final String _name;
 
   // TODO add a builder
 
