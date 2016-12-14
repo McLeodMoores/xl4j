@@ -25,6 +25,7 @@ private:
 	volatile long m_lRefCount;
 	CCall *m_pOwner;
 	JniCache *m_pJniCache;
+	VARIANT m_asyncResult;
 	VARIANT *m_pResult;
 	int m_iFunctionNum;
 	SAFEARRAY *m_pArgs;

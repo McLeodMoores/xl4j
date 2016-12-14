@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #pragma once
+
+class CJvmEnvironment;
+
 #include "Jvm.h"
 #include "FunctionRegistry.h"
 #include "Converter.h"
@@ -13,7 +16,7 @@
 #include "Lifecycle.h"
 #include "AddinEnvironment.h"
 #include "AsyncCallResult.h"
-	
+
 class CJvmEnvironment {
 	enum JvmEnvState { NOT_RUNNING, STARTING, STARTED, TERMINATING };
 	SRWLOCK m_rwlock;
@@ -49,5 +52,7 @@ public:
 	HRESULT _RegisterSomeFunctions();
 	HRESULT _UDF(int exportNumber, LPXLOPER12 *result, LPXLOPER12 first, va_list ap);
 	HRESULT _GarbageCollect();
+
+	long GetNumArgs(FUNCTIONINFO * pFunctionInfo);
 	
 };

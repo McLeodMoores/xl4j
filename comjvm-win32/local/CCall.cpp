@@ -4,6 +4,7 @@
 #if 1
 #include <xlcall.h>
 #include "Framewrk.h"
+#include <comdef.h>
 #endif // 1
 
 CCall::CCall(CJvm *pJvm) {
@@ -22,6 +23,7 @@ CCall::CCall(CJvm *pJvm) {
 	IncrementActiveObjectCount ();
 	m_pJvm->AddRef ();
 	InitializeCriticalSection (&m_cs);
+	m_lRefCount = 1;
 }
 
 CCall::~CCall () {
@@ -97,13 +99,16 @@ HRESULT STDMETHODCALLTYPE CCall::Call (/* [out] */ VARIANT *result, /* [in] */ i
 }
 
 static HRESULT APIENTRY _asynccall(LPVOID lpData, JNIEnv *pEnv) {
-	LOGTRACE("Entering static callback function _call");
+	LOGTRACE("Entering static callback function _asynccall");
 	CCallExecutor *pExecutor = (CCallExecutor*)lpData;
 	VARIANT vHandle = pExecutor->GetAsyncrhonousHandle();
 	IAsyncCallResult *resultHandler = pExecutor->GetAsynchronousHandler();
 	HRESULT hr = pExecutor->Run(pEnv);
 	pExecutor->Wait(); // should just be released straight away
-	resultHandler->Complete(vHandle, pExecutor->GetResult());
+	VARIANT *vResult = pExecutor->GetResult();
+	LOGTRACE("Got result from executor 0x%p, releasing executor", vResult);
+	resultHandler->Complete(vHandle, vResult);
+	pExecutor->Release(); // we've finished with the executor so release it for freeing.
 	//if (SUCCEEDED (hr)) {
 	//	LOGTRACE ("_call: Run returned success");
 	//	hr = pExecutor->Wait ();
@@ -119,13 +124,22 @@ static HRESULT APIENTRY _asynccall(LPVOID lpData, JNIEnv *pEnv) {
 HRESULT STDMETHODCALLTYPE CCall::AsyncCall(/* [in] */ IAsyncCallResult *pAsyncHandler, /* [in] */ VARIANT vAsyncHandle, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
 	HRESULT hr;
 	try {
+		Debug::LOGTRACE_SAFEARRAY(args);
 		CCallExecutor *pExecutor = m_pExecutor;
 		pExecutor->AddRef();
 		pExecutor->AddRef();
+		// passing nullptr here makes the executor point it's result pointer to an
+		// internal field we can use until we release the object.
 		pExecutor->SetArguments(nullptr, iFunctionNum, args);
-		hr = m_pJvm->Execute(_call, pExecutor);
+		pExecutor->SetAsynchronous(pAsyncHandler, vAsyncHandle);
+		LOGTRACE("vAsyncHandle(%d) = %llu", vAsyncHandle.vt, vAsyncHandle.ullVal);
+		LOGTRACE("In CCall::Call");
+		Debug::LOGTRACE_SAFEARRAY(args);
+		LOGTRACE("handle");
+		Debug::LOGTRACE_VARIANT(&vAsyncHandle);
+		hr = m_pJvm->ExecuteAsync(_asynccall, pExecutor);
 		// we don't wait for it to finish.
-		pExecutor->Release();
+		//pExecutor->Release();
 		pExecutor->Release();
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;

@@ -52,6 +52,8 @@ public:
 	static COMJVM_DEBUG_API void odprintf (LPCTSTR sFormat, ...);
 	static COMJVM_DEBUG_API void PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...);
 	static COMJVM_DEBUG_API HRESULT print_HRESULT (HRESULT result);
+	static COMJVM_DEBUG_API void LOGTRACE_SAFEARRAY(SAFEARRAY * psa);
+	static COMJVM_DEBUG_API void LOGTRACE_VARIANT(VARIANT * pVariant);
 	static COMJVM_DEBUG_API void printException (JNIEnv *pEnv, jthrowable exception);
 	//static void printXLOPER (XLOPER12 *oper);
 	static COMJVM_DEBUG_API void SetThreadName (DWORD dwThreadID, const char* threadName);

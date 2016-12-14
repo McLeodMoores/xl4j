@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "JvmEnvironment.h"
-#include "Excel.h"
-#include "../settings/SplashScreenInterface.h"
 
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	m_rwlock = SRWLOCK_INIT;
@@ -49,7 +47,7 @@ void CJvmEnvironment::Start() {
 	CloseHandle(hJvmThread); // doesn't close the thread, just the handle
 	// WATCHDOG THREAD - neeeded in case user clicks in formula edit box which suspends callbacks
 	// This will get rid of the splash after 30 secs which can occasionally cover other dialogs.
-	HANDLE hWatchdog = CreateThread(NULL, 2048 * 1024, BackgroundWatchdogThread, this, 0, NULL);
+	HANDLE hWatchdog = CreateThread(NULL, 4096 * 1024, BackgroundWatchdogThread, this, 0, NULL);
 	CloseHandle(hWatchdog);
 }
 
@@ -256,6 +254,22 @@ HRESULT CJvmEnvironment::_GarbageCollect () {
 	return E_FAIL;
 }
 
+long CJvmEnvironment::GetNumArgs(FUNCTIONINFO *pFunctionInfo) {
+	size_t len = wcslen(pFunctionInfo->bsFunctionSignature);
+	if (len > 1) {
+		switch (pFunctionInfo->bsFunctionSignature[len - 1]) {
+		case '$': // mt safe flag
+		case '#': // macro equivalent flag
+		case '!': // volatile flag
+			return len - 2;
+		default: // this include 'X'
+			return len - 1;
+		}
+	}
+	LOGERROR("Function signature is too short");
+	return len;
+}
+
 long CJvmEnvironment::GetNumCOMArgs(FUNCTIONINFO *pFunctionInfo, long nArgs) {
 	if (pFunctionInfo->bIsAutoAsynchronous || pFunctionInfo->bIsManualAsynchronous) {
 		return nArgs - 1;
@@ -280,8 +294,9 @@ HRESULT CJvmEnvironment::TrimArgs(FUNCTIONINFO *pFunctionInfo, long nArgs, VARIA
 			LOGERROR("SafeArrayRedim failed");
 			return hr;
 		}
+		return S_OK;
 	} else {
-		SafeArrayUnaccessData(saInputs);
+		return SafeArrayUnaccessData(saInputs);
 	}
 }
 
@@ -313,11 +328,15 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		// Find out how many parameters this function should expect.
 		FUNCTIONINFO functionInfo;
 		HRESULT hr = m_pFunctionRegistry->Get(exportNumber, &functionInfo);
-		long nArgs = wcslen(functionInfo.bsFunctionSignature) - 2;
+		long nArgs = GetNumArgs(&functionInfo);
 		LOGTRACE("UDF_%d invoked (%d params)", exportNumber, nArgs);
 
 		// Create a SAFEARRAY(XL4JOPER12) of nArg entries
 		long nComArgs = GetNumCOMArgs(&functionInfo, nArgs);
+		LOGTRACE("COM args = %d", nComArgs);
+		if (functionInfo.bIsAutoAsynchronous) {
+			LOGTRACE("Auto Async function detected");
+		}
 		SAFEARRAYBOUND bounds = { nComArgs, 0 };
 		SAFEARRAY *saInputs = SafeArrayCreateEx(VT_VARIANT, 1, &bounds, nullptr);
 		if (!saInputs) {
@@ -338,7 +357,14 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		SafeArrayAccessData(saInputs, reinterpret_cast<PVOID *>(&inputs));
 		// put into safearray if there are more than 0 com args else the first one becomes the async handle
 		// (which we might not use). Probably never happens in practice anyway...
-		VARIANT *pInputs = nComArgs > 0 ? inputs : &vAsyncHandle;
+		VARIANT *pInputs;
+		if (nComArgs > 0) {
+			LOGTRACE("async handle is not first argument");
+			pInputs = inputs;
+		} else {
+			LOGTRACE("async handle is first argument");
+			pInputs = &vAsyncHandle;
+		}
 		if (nArgs > 0) {
 			LOGTRACE("Got XLOPER12 %p, type = %x", first, first->xltype);
 			pConverter->convert(first, pInputs++);
@@ -355,7 +381,10 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		}
 		// If it's async and we didn't deal with it as the first argument.
 		if ((functionInfo.bIsAutoAsynchronous || functionInfo.bIsManualAsynchronous) && nComArgs > 0) {
+			LOGTRACE("Getting last parameter (async handle)");
 			LPXLOPER12 arg = va_arg(ap, LPXLOPER12);
+			ExcelUtils::PrintXLOPER(arg);
+			VariantClear(&vAsyncHandle);
 			pConverter->convert(arg, &vAsyncHandle);
 		}
 		va_end(ap);
@@ -385,7 +414,9 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 				LOGERROR("AsyncCall failed: %s.", err.ErrorMessage());
 				goto error;
 			}
-			SafeArrayDestroy(saInputs); // should recursively deallocate
+			LOGTRACE("Async call returned");
+			// Destroy is now done in the CCallExecutor
+			//SafeArrayDestroy(saInputs); // should recursively deallocate
 			saInputs = nullptr; // prevent double dealloc on errors.
 			ReleaseSRWLockShared(&m_rwlock);
 			return S_OK;
@@ -403,7 +434,8 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 				LOGERROR("Call failed: %s.", err.ErrorMessage());
 				goto error;
 			}
-			SafeArrayDestroy(saInputs); // should recursively deallocate
+			// Destroy is now done in the CCallExecutor
+			//SafeArrayDestroy(saInputs); // should recursively deallocate
 			saInputs = nullptr; // prevent double dealloc on errors.
 			LARGE_INTEGER t3;
 			QueryPerformanceCounter(&t3);
