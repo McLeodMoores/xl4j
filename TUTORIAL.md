@@ -62,3 +62,10 @@ files:
  1. Start Excel.
  2. On the Backstage (the screen revealed by clicking on the `File` ribbon header or Office button), choose Options.
  3. Next to the dropdown list towards the botton, click 'Go'.
+ 
+ # Using Java projects from Excel
+ ## Using existing code (1)
+ The simplest way to 
+ ## Starting from scratch
+ ## Using existing code (2)
+ 
