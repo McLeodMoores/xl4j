@@ -50,8 +50,8 @@ public final class QuandlFunctions {
       LOGGER.warn("No Quandl API key detected");
       builder = SessionOptions.Builder.withoutAuthToken();
     }
-    SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
-    SESSION = QuandlSession.create(sessionOptions);
+    //SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
+    SESSION = QuandlSession.create();//sessionOptions);
   }
 
   /**
@@ -85,8 +85,9 @@ public final class QuandlFunctions {
       name = "QuandlDataSet",
       category = "Quandl",
       description = "Get a data set from Quandl",
+      isAutoAsynchronous = true,
       isLongRunning = true)
-  public static TabularResult dataSet(
+  public synchronized static TabularResult dataSet(
       @XLArgument(description = "Quandl Code", name = "quandlCode") final String quandlCode,
       @XLArgument(optional = true, description = "Start Date", name = "StartDate") final LocalDate startDate,
       @XLArgument(optional = true, description = "End Date", name = "EndDate") final LocalDate endDate,
@@ -95,7 +96,7 @@ public final class QuandlFunctions {
       @XLArgument(optional = true, description = "Max Rows", name = "MaxRows") final Integer maxRows,
       @XLArgument(optional = true, description = "Sort Order", name = "SortOrder") final SortOrder sortOrder,
       @XLArgument(optional = true, description = "Transform", name = "Transform") final Transform transform) {
-    LOGGER.error("Fetching Quandl series for {}", quandlCode);
+    LOGGER.info("Fetching Quandl series for {}", quandlCode);
     Builder builder = DataSetRequest.Builder.of(quandlCode);
     if (startDate != null) {
       builder = builder.withStartDate(startDate);
@@ -246,11 +247,12 @@ public final class QuandlFunctions {
    * @return the data as an array
    */
   @XLFunction(name = "ExpandTabularResult", category = "Quandl",
-      description = "Array function to expand a TabularResult object")
+      description = "Array function to expand a TabularResult object",
+      isAutoAsynchronous = true)
   public static Object[][] expandTabularResult(
       @XLArgument(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
       @XLArgument(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
-    LOGGER.info(result.toPrettyPrintedString());
+    //LOGGER.info(result.toPrettyPrintedString());
     final boolean isIncludeHeader = includeHeader == null ? true : includeHeader;
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();
     final int cols = headerDefinition.size();
@@ -281,7 +283,7 @@ public final class QuandlFunctions {
       }
       row++;
     }
-    LOGGER.trace(Arrays.deepToString(values));
+    //LOGGER.trace(Arrays.deepToString(values));
     return values;
   }
 }

@@ -236,6 +236,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AddinEnvironment.h" />
+    <ClInclude Include="AsyncCallResult.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="JvmEnvironment.h" />
     <ClInclude Include="Excel.h" />
@@ -250,6 +251,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AddinEnvironment.cpp" />
+    <ClCompile Include="AsyncCallResult.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="JvmEnvironment.cpp" />
     <ClCompile Include="Excel.cpp" />

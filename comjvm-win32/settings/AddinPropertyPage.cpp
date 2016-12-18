@@ -118,7 +118,7 @@ void CAddinPropertyPage::OnOK () {
 		CString csLogLevel;
 		m_cbCppLogLevel.GetLBText(m_cbCppLogLevel.GetCurSel(), csLogLevel);
 		m_pSettings->PutString(TEXT("Addin"), TEXT("LogLevel"), csLogLevel.GetBuffer());
-		if (m_rdLogFileRadio.GetState() == BST_PUSHED) {
+		if (m_rdLogFileRadio.GetCheck() == BST_CHECKED) {
 			m_pSettings->PutString(TEXT("Addin"), TEXT("LogTarget"), TEXT("File"));
 		} else {
 			m_pSettings->PutString(TEXT("Addin"), TEXT("LogTarget"), TEXT("WinDebug"));

@@ -1,7 +1,5 @@
 #include "stdafx.h"
 #include "JvmEnvironment.h"
-#include "Excel.h"
-#include "../settings/SplashScreenInterface.h"
 
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	m_rwlock = SRWLOCK_INIT;
@@ -10,6 +8,7 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment
 	m_pFunctionRegistry = nullptr; // this means the marquee tick thread won't choke before it's created as it checks for nullptr.
 	m_pCollector = nullptr; // this means an already registered GarbageCollect() command will see that the collector hasn't been created yet.
 	m_szTerminateErrorMessage = nullptr; // means no error to display.
+	m_pAsyncHandler = nullptr;
 }
 
 CJvmEnvironment::~CJvmEnvironment () {
@@ -48,7 +47,7 @@ void CJvmEnvironment::Start() {
 	CloseHandle(hJvmThread); // doesn't close the thread, just the handle
 	// WATCHDOG THREAD - neeeded in case user clicks in formula edit box which suspends callbacks
 	// This will get rid of the splash after 30 secs which can occasionally cover other dialogs.
-	HANDLE hWatchdog = CreateThread(NULL, 2048 * 1024, BackgroundWatchdogThread, this, 0, NULL);
+	HANDLE hWatchdog = CreateThread(NULL, 4096 * 1024, BackgroundWatchdogThread, this, 0, NULL);
 	CloseHandle(hWatchdog);
 }
 
@@ -205,6 +204,7 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		LOGTRACE("Creating GarbageCollector");
 		pThis->m_pCollector = new GarbageCollector(pCollect);
 		LOGTRACE("Created GarbageCollector");
+		pThis->m_pAsyncHandler = new CAsyncCallResult(pThis->m_pAddinEnvironment);
 		ReleaseSRWLockShared(&(pThis->m_rwlock));
 		pThis->EnterStartedState();
 		return 0;
@@ -254,6 +254,64 @@ HRESULT CJvmEnvironment::_GarbageCollect () {
 	return E_FAIL;
 }
 
+long CJvmEnvironment::GetNumArgs(FUNCTIONINFO *pFunctionInfo) {
+	size_t len = wcslen(pFunctionInfo->bsFunctionSignature);
+	if (len > 1) {
+		switch (pFunctionInfo->bsFunctionSignature[len - 1]) {
+		case '$': // mt safe flag
+		case '#': // macro equivalent flag
+		case '!': // volatile flag
+			return len - 2;
+		default: // this include 'X'
+			return len - 1;
+		}
+	}
+	LOGERROR("Function signature is too short");
+	return len;
+}
+
+long CJvmEnvironment::GetNumCOMArgs(FUNCTIONINFO *pFunctionInfo, long nArgs) {
+	if (pFunctionInfo->bIsAutoAsynchronous || pFunctionInfo->bIsManualAsynchronous) {
+		return nArgs - 1;
+	} else {
+		return nArgs;
+	}
+}
+
+HRESULT CJvmEnvironment::TrimArgs(FUNCTIONINFO *pFunctionInfo, long nArgs, VARIANT *inputs, SAFEARRAY *saInputs) {
+	// trim off any VT_NULLs if it's a varargs function.
+	if (pFunctionInfo->bIsVarArgs) {
+		LOGTRACE("Detected VarArgs, trying to trim");
+		int i = GetNumCOMArgs(pFunctionInfo, nArgs - 1); // skip last one.
+		while (i > 0 && inputs[i].vt == VT_EMPTY) {
+			i--;
+		}
+		SafeArrayUnaccessData(saInputs);
+		LOGTRACE("Trimming to %d", i + 1);
+		SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
+		HRESULT hr = SafeArrayRedim(saInputs, &trimmedBounds);
+		if (FAILED(hr)) {
+			LOGERROR("SafeArrayRedim failed");
+			return hr;
+		}
+		return S_OK;
+	} else {
+		return SafeArrayUnaccessData(saInputs);
+	}
+}
+
+
+//if (functionInfo.bIsLongRunning) {
+//	XLOPER12 caller;
+//	Excel12f(xlfCaller, &caller, 0);
+//	LOGTRACE("Long running function caller:");
+//	//ExcelUtils::PrintXLOPER(&caller);
+//	if (caller.xltype == xltypeErr) {
+//		*ppResult = TempNum12(0);
+//		ReleaseSRWLockShared(&m_rwlock);
+//		return S_OK;
+//	}
+//}
 /**
  * Returns:
  *   S_OK if call was fine
@@ -270,125 +328,136 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		// Find out how many parameters this function should expect.
 		FUNCTIONINFO functionInfo;
 		HRESULT hr = m_pFunctionRegistry->Get(exportNumber, &functionInfo);
-		if (functionInfo.bIsLongRunning) {
-			XLOPER12 caller;
-			Excel12f(xlfCaller, &caller, 0);
-			LOGTRACE("Long running function caller:");
-			//ExcelUtils::PrintXLOPER(&caller);
-			if (caller.xltype == xltypeErr) {
-				*ppResult = TempNum12(0);
-				ReleaseSRWLockShared(&m_rwlock);
-				return S_OK;
-			}
-		}
-		long nArgs = wcslen(functionInfo.bsFunctionSignature) - 2;
-		//SafeArrayGetUBound (functionInfo.argsHelp, 1, &nArgs); nArgs++;
-		LOGTRACE("UDF stub: UDF_%d invoked (%d params)", exportNumber, nArgs);
+		long nArgs = GetNumArgs(&functionInfo);
+		LOGTRACE("UDF_%d invoked (%d params)", exportNumber, nArgs);
 
 		// Create a SAFEARRAY(XL4JOPER12) of nArg entries
-		SAFEARRAYBOUND bounds = { nArgs, 0 };
+		long nComArgs = GetNumCOMArgs(&functionInfo, nArgs);
+		LOGTRACE("COM args = %d", nComArgs);
+		if (functionInfo.bIsAutoAsynchronous) {
+			LOGTRACE("Auto Async function detected");
+		}
+		SAFEARRAYBOUND bounds = { nComArgs, 0 };
 		SAFEARRAY *saInputs = SafeArrayCreateEx(VT_VARIANT, 1, &bounds, nullptr);
 		if (!saInputs) {
-			LOGERROR("UDF stub: Could not create SAFEARRAY");
+			LOGERROR("Could not create SAFEARRAY");
 			hr = E_POINTER;
 			goto error;
 		}
-		LOGTRACE("UDF stub: Created SAFEARRAY for parameters");
+		Converter *pConverter;
+		if (FAILED(hr = m_pAddinEnvironment->GetConverter(&pConverter))) {
+			LOGERROR("Could not get valid converter");
+			goto error;
+		}
+		LOGTRACE("Created SAFEARRAY for parameters");
+		VARIANT vAsyncHandle;
 		// Get a ptr into the SAFEARRAY
 		VARIANT *inputs;
+		
 		SafeArrayAccessData(saInputs, reinterpret_cast<PVOID *>(&inputs));
-		VARIANT *pInputs = inputs;
-		if (nArgs > 0) {
-			LOGTRACE("UDF stub: Got XLOPER12 %p, type = %x", first, first->xltype);
-			Converter *pConverter;
-			if (SUCCEEDED(hr = m_pAddinEnvironment->GetConverter(&pConverter))) {
-				pConverter->convert(first, pInputs++);
-				LOGTRACE("UDF stub: copied first element into SAFEARRAY");
-			} else {
-				LOGERROR("Could not get valid converter");
-				goto error;
-			}
+		// put into safearray if there are more than 0 com args else the first one becomes the async handle
+		// (which we might not use). Probably never happens in practice anyway...
+		VARIANT *pInputs;
+		if (nComArgs > 0) {
+			LOGTRACE("async handle is not first argument");
+			pInputs = inputs;
 		} else {
-			LOGTRACE("UDF stub: first paramter was NULL, no conversion");
+			LOGTRACE("async handle is first argument");
+			pInputs = &vAsyncHandle;
 		}
-		LOGTRACE("UDF stub: converting any remaining parameters");
-		for (int i = 0; i < nArgs - 1; i++) {
+		if (nArgs > 0) {
+			LOGTRACE("Got XLOPER12 %p, type = %x", first, first->xltype);
+			pConverter->convert(first, pInputs++);
+			LOGTRACE("Copied first element into SAFEARRAY (or vAsyncHandle)");
+		} else {
+			LOGTRACE("First paramter was NULL, no conversion");
+		}
+		LOGTRACE("Converting any remaining parameters");
+		for (int i = 0; i < nComArgs - 1; i++) {
 			LPXLOPER12 arg = va_arg(ap, LPXLOPER12);
-			LOGTRACE("UDF stub: Got XLOPER12 %p, type = %x", arg, arg->xltype);
-			Converter *pConverter;
-			if (SUCCEEDED(hr = m_pAddinEnvironment->GetConverter(&pConverter))) {
-				pConverter->convert(arg, pInputs++);
-			} else {
-				LOGERROR("Could not get valid converter");
-				goto error;
-			}
+			LOGTRACE("Got XLOPER12 %p, type = %x", arg, arg->xltype);
+			pConverter->convert(arg, pInputs++);
 			LOGTRACE("UDF stub: converted and copied into SAFEARRAY");
+		}
+		// If it's async and we didn't deal with it as the first argument.
+		if ((functionInfo.bIsAutoAsynchronous || functionInfo.bIsManualAsynchronous) && nComArgs > 0) {
+			LOGTRACE("Getting last parameter (async handle)");
+			LPXLOPER12 arg = va_arg(ap, LPXLOPER12);
+			ExcelUtils::PrintXLOPER(arg);
+			VariantClear(&vAsyncHandle);
+			pConverter->convert(arg, &vAsyncHandle);
 		}
 		va_end(ap);
 		// trim off any VT_NULLs if it's a varargs function.
-		if (functionInfo.bIsVarArgs) {
-			LOGTRACE("Detected VarArgs, trying to trim");
-			int i = nArgs - 1;
-			while (i > 0 && inputs[i].vt == VT_EMPTY) {
-				i--;
-			}
-			SafeArrayUnaccessData(saInputs);
-			LOGTRACE("Trimming to %d", i + 1);
-			SAFEARRAYBOUND trimmedBounds = { i + 1, 0 };
-			hr = SafeArrayRedim(saInputs, &trimmedBounds);
-			if (FAILED(hr)) {
-				LOGERROR("SafeArrayRedim failed");
-				goto error;
-			}
-		} else {
-			SafeArrayUnaccessData(saInputs);
+		if (FAILED(hr = TrimArgs(&functionInfo, nArgs, inputs, saInputs))) {
+			goto error;
 		}
 		VARIANT vResult;
 
 		long szInputs;
 		if (FAILED(hr = SafeArrayGetUBound(saInputs, 1, &szInputs))) {
-			LOGERROR("UDF stub: SafeArrayGetUBound failed");
+			LOGERROR("SafeArrayGetUBound failed");
 			goto error;
 		}
 		szInputs++;
 		LARGE_INTEGER t2;
 		QueryPerformanceCounter(&t2);
 		// get TLS call instance.
-		ICall *pCall = static_cast<ICall *>(TlsGetValue(g_dwTlsIndex));
-		if (!pCall) {
+		ICall *pCall;
+		if (functionInfo.bIsAutoAsynchronous || functionInfo.bIsManualAsynchronous) {
 			if (hr = FAILED(m_pJvm->getJvm()->CreateCall(&pCall))) {
-				LOGERROR("UDF stub: CreateCall failed on JVM");
+				LOGERROR("CreateCall failed on JVM");
 				goto error;
 			}
-			TlsSetValue(g_dwTlsIndex, pCall);
-		}
-		if (FAILED(hr = pCall->Call(&vResult, exportNumber, saInputs))) {
-			_com_error err(hr);
-			LOGERROR("UDF stub: call failed %s.", err.ErrorMessage());
-			goto error;
-		}
-		SafeArrayDestroy(saInputs); // should recursively deallocate
-		saInputs = nullptr; // prevent double dealloc on errors.
-		LARGE_INTEGER t3;
-		QueryPerformanceCounter(&t3);
-		XLOPER12 *pResult = static_cast<XLOPER12*> (malloc(sizeof(XLOPER12)));
-		Converter *pConverter;
-		if (SUCCEEDED(hr = m_pAddinEnvironment->GetConverter(&pConverter))) {
-			hr = pConverter->convert(&vResult, pResult);
-			if (FAILED(hr)) {
-				LOGERROR("UDF stub: Result conversion failed");
+			if (FAILED(hr = pCall->AsyncCall(m_pAsyncHandler, vAsyncHandle, exportNumber, saInputs))) {
+				_com_error err(hr);
+				LOGERROR("AsyncCall failed: %s.", err.ErrorMessage());
 				goto error;
 			}
+			LOGTRACE("Async call returned");
+			// Destroy is now done in the CCallExecutor
+			//SafeArrayDestroy(saInputs); // should recursively deallocate
+			saInputs = nullptr; // prevent double dealloc on errors.
+			ReleaseSRWLockShared(&m_rwlock);
+			return S_OK;
 		} else {
-			LOGERROR("Could not get valid converter");
-			goto error;
+			pCall = static_cast<ICall *>(TlsGetValue(g_dwTlsIndex));
+			if (!pCall) {
+				if (hr = FAILED(m_pJvm->getJvm()->CreateCall(&pCall))) {
+					LOGERROR("CreateCall failed on JVM");
+					goto error;
+				}
+				TlsSetValue(g_dwTlsIndex, pCall);
+			}
+			if (FAILED(hr = pCall->Call(&vResult, exportNumber, saInputs))) {
+				_com_error err(hr);
+				LOGERROR("Call failed: %s.", err.ErrorMessage());
+				goto error;
+			}
+			// Destroy is now done in the CCallExecutor
+			//SafeArrayDestroy(saInputs); // should recursively deallocate
+			saInputs = nullptr; // prevent double dealloc on errors.
+			LARGE_INTEGER t3;
+			QueryPerformanceCounter(&t3);
+			XLOPER12 *pResult = static_cast<XLOPER12*> (malloc(sizeof(XLOPER12)));
+			Converter *pConverter;
+			if (SUCCEEDED(hr = m_pAddinEnvironment->GetConverter(&pConverter))) {
+				hr = pConverter->convert(&vResult, pResult);
+				if (FAILED(hr)) {
+					LOGERROR("UDF stub: Result conversion failed");
+					goto error;
+				}
+			} else {
+				LOGERROR("Could not get valid converter");
+				goto error;
+			}
+			VariantClear(&vResult); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
+			pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
+			LOGTRACE("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
+			*ppResult = pResult;
+			ReleaseSRWLockShared(&m_rwlock);
+			return S_OK;
 		}
-		VariantClear(&vResult); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
-		pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
-		LOGTRACE("UDF stub: conversion complete, returning value (type=%d) to Excel", pResult->xltype);
-		*ppResult = pResult;
-		ReleaseSRWLockShared(&m_rwlock);
-		return S_OK;
 	error:
 		if (saInputs) {
 			SafeArrayDestroy(saInputs);

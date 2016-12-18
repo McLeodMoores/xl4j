@@ -66,7 +66,11 @@ HRESULT CAddinEnvironment::Start() {
 	EnterStartingState();
 	m_pTypeLib = new TypeLib();
 	m_pSettings = new CSettings(TEXT("inproc"), TEXT("default"), CSettings::INIT_APPDATA);
-	InitFromSettings();
+	HRESULT hr;
+	if (FAILED(hr = InitFromSettings())) {
+		LOGFATAL("Could not initialise add-in from settings");
+		return hr;
+	}
 	m_pConverter = new Converter(m_pTypeLib);
 	// Register polling command that registers chunks of functions
 	m_idRegisterSomeFunctions = ExcelUtils::RegisterCommand(TEXT("RegisterSomeFunctions"));

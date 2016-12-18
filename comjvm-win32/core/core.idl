@@ -819,6 +819,9 @@ struct FUNCTIONINFO {
 	BSTR bsFunctionExportName;
 	boolean bIsVarArgs;
 	boolean bIsLongRunning;
+	boolean bIsAutoAsynchronous;
+	boolean bIsManualAsynchronous;
+	boolean bIsCallerRequired;
 	BSTR bsFunctionSignature;
 	BSTR bsFunctionWorksheetName;
 	BSTR bsArgumentNames;
@@ -839,11 +842,22 @@ struct FUNCTIONINFO {
 
 [
 	object,
+	uuid(b8c4990d-d0e0-4b53-a357-ec7ede1c85fe)
+]
+interface IAsyncCallResult : IUnknown {
+	HRESULT Complete ([in] VARIANT vAsyncHandle, [in] VARIANT *vResult);
+};
+
+[
+	object,
 	uuid(1edb5111-1544-4a2c-b99e-b65e5813a48a)
 ]
 interface ICall : IUnknown {
 	HRESULT Call ([out] VARIANT *pvResult, [in] int iFunctionNum, [in] SAFEARRAY (VARIANT) saArgs);
-}
+	HRESULT AsyncCall ([in] IAsyncCallResult *pAsyncHandler, VARIANT vAsyncHandle, [in] int iFunctionNum, [in] SAFEARRAY(VARIANT) saArgs);
+};
+
+
 
 [
 	object,
@@ -877,6 +891,7 @@ interface ICollect : IUnknown {
 	interface IScan;
 	interface ICall;
 	interface ICollect;
+	interface IAsyncCallResult;
 	[
 		uuid (34b9de97-d756-4d18-a65c-e7a688cdf3e7),
 		helpstring ("Library entry point"),

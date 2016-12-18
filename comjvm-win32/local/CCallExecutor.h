@@ -25,17 +25,25 @@ private:
 	volatile long m_lRefCount;
 	CCall *m_pOwner;
 	JniCache *m_pJniCache;
+	VARIANT m_asyncResult;
 	VARIANT *m_pResult;
 	int m_iFunctionNum;
 	SAFEARRAY *m_pArgs;
-	bool m_bAsync;
+	VARIANT m_vAsyncHandle;
+	IAsyncCallResult *m_pAsyncHandler;
 	HANDLE m_hSemaphore;
 	HRESULT m_hRunResult;
 	~CCallExecutor ();
 public:
 	CCallExecutor (CCall *pOwner, JniCache *pJniCache);
 	void SetArguments (VARIANT *result, int iFunctionNum, SAFEARRAY * args);
-	void SetAsynchronous(bool bAsync) { m_bAsync = bAsync; }
+	void SetAsynchronous(IAsyncCallResult *pAsyncHandler, VARIANT vAsyncHandle) { 
+		m_vAsyncHandle = vAsyncHandle; 
+		m_pAsyncHandler = pAsyncHandler; 
+	}
+	VARIANT GetAsyncrhonousHandle() { return m_vAsyncHandle; }
+	IAsyncCallResult *GetAsynchronousHandler() { return m_pAsyncHandler; }
+	VARIANT *GetResult() { return m_pResult; }
 	HRESULT Run (JNIEnv *pEnv);
 	HRESULT Wait ();
 #if 1

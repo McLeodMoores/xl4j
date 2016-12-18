@@ -6,6 +6,7 @@
 
 class JniCache {
 private:
+	volatile ULONG m_lRefCount;
 	// class, method and objects to cache for performance.
 	jclass m_jcXLNumber;
 	jmethodID m_jmXLNumber_of;
@@ -114,4 +115,7 @@ public:
 	jboolean IsXLBoolean (JNIEnv *pEnv, jclass clazz);
 	jboolean IsXLBigData (JNIEnv *pEnv, jclass clazz);
 	jboolean IsXLArray (JNIEnv *pEnv, jclass clazz);
+
+	virtual ULONG AddRef(void);
+	virtual ULONG Release(void);
 };

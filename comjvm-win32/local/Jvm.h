@@ -18,6 +18,7 @@ protected:
 public:
 	CJvm (IJvmTemplate *pTemplate, const GUID *pguid, DWORD dwJvm);
 	HRESULT Execute (JNICallbackProc pfnCallback, LPVOID lpData);
+	HRESULT ExecuteAsync(JNICallbackProc pfnCallback, LPVOID lpData);
 	// IJvm
 	HRESULT STDMETHODCALLTYPE CreateScan (
 		/* [retval][out] */ IScan **ppScan);

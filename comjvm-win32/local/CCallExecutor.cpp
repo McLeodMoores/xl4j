@@ -7,7 +7,7 @@ CCallExecutor::CCallExecutor (CCall *pOwner, JniCache *pJniCache)
 	if (!pOwner) {
 		throw std::logic_error ("called with null CScan");
 	}
-	m_hSemaphore = CreateSemaphore (NULL, 0, MAXINT, NULL);
+	m_hSemaphore = CreateSemaphore (NULL, 0, 1, NULL); // max 1 means we can release when no one waits
 	pOwner->AddRef ();
 }
 
@@ -15,8 +15,13 @@ CCallExecutor::~CCallExecutor () {
 	m_pOwner->Release ();
 }
 
+// if pResult is nullptr, we point to internal field to hold result instead of caller - this is for async operation.
 void CCallExecutor::SetArguments (/* [out] */ VARIANT *pResult, /* [in] */ int iFunctionNum, /* [in] */ SAFEARRAY * args) {
-	m_pResult = pResult;
+	if (pResult) {
+		m_pResult = pResult;
+	} else {
+		m_pResult = &m_asyncResult;
+	}
 	m_iFunctionNum = iFunctionNum;
 	m_pArgs = args;
 }
@@ -41,7 +46,7 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 			pEnv->SetObjectArrayElement (joaArgs, i, joArg);
 		}
 		SafeArrayUnaccessData (m_pArgs);
-		
+		SafeArrayDestroy(m_pArgs);
 		jobject joResult =
 			m_pJniCache->InvokeCallHandler (pEnv, m_iFunctionNum, joaArgs);
 		
@@ -54,7 +59,7 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 			goto error;
 		}
 		//LOGTRACE ("About to convert result");
-
+		LOGTRACE("joResult = %p, about to convert", joResult);
 		*m_pResult = CComJavaConverter::convert (pEnv, m_pJniCache, joResult);
 		hr = S_OK;
 
@@ -100,10 +105,16 @@ HRESULT CCallExecutor::Wait(int timeoutMillis, bool *timedOut) {
 }
 
 void CCallExecutor::AddRef () {
+	
 	InterlockedIncrement (&m_lRefCount);
+	LOGTRACE("Adding reference, now %d", m_lRefCount);
 }
 
 void CCallExecutor::Release () {
 	long lCount = InterlockedDecrement (&m_lRefCount);
-	if (!lCount) delete this;
+	LOGTRACE("Releasing reference, now %d", m_lRefCount);
+	if (!lCount) {
+		LOGTRACE("Deleting this");
+		delete this;
+	}
 }

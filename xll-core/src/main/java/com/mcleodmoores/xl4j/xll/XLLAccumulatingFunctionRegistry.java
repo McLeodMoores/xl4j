@@ -68,7 +68,8 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     // replace any missing help strings with empty string.
     final String[] argsHelpCp = new String[argsHelp.length];
     for (int i = 0; i < argsHelp.length; i++) {
-      argsHelpCp[i] = argsHelp[i] == null ? "" : argsHelp[i];
+      // Excel bug means last char  or two truncated, so add two spaces
+      argsHelpCp[i] = argsHelp[i] == null ? "  " : argsHelp[i] + "  ";
     }
     entry._argsHelp = argsHelpCp;
     _entries.add(entry);

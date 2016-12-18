@@ -62,20 +62,22 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
+		Debug::SetLogTarget(LOGTARGET_FILE);
+		Debug::SetLogLevel(LOGLEVEL_TRACE);
 		LOGTRACE ("DLL_PROCESS_ATTACH called");
 		// The instance handle passed into DllMain is saved
 		// in the global variable g_hInst for later use.
 		g_hInst = hDLL;
-		/*if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
+		if ((g_dwTlsIndex = TlsAlloc ()) == TLS_OUT_OF_INDEXES) {
 			LOGERROR ("TlsAlloc returned TLS_OUT_OF_INDEXES");
 			return FALSE;
-		}*/
+		}
 		LOGTRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
 
 		break;
 	case DLL_THREAD_ATTACH: {
 		LOGTRACE ("DLL_THREAD_ATTACH called");
-		//TlsSetValue (g_dwTlsIndex, NULL);
+		TlsSetValue (g_dwTlsIndex, NULL);
 	} break;
 	case DLL_THREAD_DETACH: {
 		LOGTRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
@@ -88,7 +90,7 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	} break;
 	case DLL_PROCESS_DETACH: {
 		LOGTRACE ("DLL_PROCESS_DETACH");
-		//TlsFree (g_dwTlsIndex);
+		TlsFree (g_dwTlsIndex);
 		//if (g_pJvm) {
 		//	LOGTRACE ("Calling Release on Jvm");
 		//	g_pJvm->Release ();

@@ -17,6 +17,8 @@ static HMODULE g_hJRE = NULL;
 static JNICreateJavaVMProc g_pfnCreateVM = NULL;
 
 static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
+	Debug::SetLogTarget(LOGTARGET_FILE);
+	Debug::SetLogLevel(LOGLEVEL_TRACE);
 	TCHAR szPath[MAX_PATH];
 	DWORD cbPath = sizeof (szPath);
 	if (RegGetValue(hkeyJRE, pszVersion, TEXT("RuntimeLib"), RRF_RT_REG_SZ, NULL, szPath, &cbPath) != ERROR_SUCCESS) {

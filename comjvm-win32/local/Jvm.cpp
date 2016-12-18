@@ -36,6 +36,17 @@ HRESULT CJvm::Execute (JNICallbackProc pfnCallback, LPVOID lpData) {
 	return JNICallback (m_dwJvm, pfnCallback, lpData);
 }
 
+/// <summary>Schedules the callback on one of the JVM bound async threads.</summary>
+///
+/// <para>If there are no idle threads, one is spawned and attached to the JVM.</para>
+///
+/// <param name="pfnCallback">Callback function</param>
+/// <param name="lpData">Callback function user data</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+HRESULT CJvm::ExecuteAsync(JNICallbackProc pfnCallback, LPVOID lpData) {
+	return JNICallbackAsync(m_dwJvm, pfnCallback, lpData);
+}
+
 HRESULT STDMETHODCALLTYPE CJvm::CreateScan (
 	/* [retval][out] */ IScan **ppScan) {
 	if (!ppScan) return E_POINTER;

@@ -102,6 +102,7 @@ public:
 			LOGTRACE ("(%p) Entering terminating state, poisining slave threads...", GetCurrentThreadId ());
 			bResult = SUCCEEDED (PoisonJNISlaveThreads ());
 			LOGTRACE ("(%p) Poisoning result was %d", GetCurrentThreadId (), bResult);
+			bResult = bResult && SUCCEEDED(PoisonJNIAsyncSlaveThreads());
 		} else {
 			LOGTRACE ("(%p) Attempt to Enter terminating state failed.");
 			bResult = FALSE;
@@ -128,6 +129,19 @@ public:
 			hr = E_NOT_VALID_STATE;
 		}
 		LeaveCriticalSection (&m_cs);
+		return hr;
+	}
+	HRESULT ScheduleAsync(DWORD dwJvmRef, JNICallbackProc pfnCallback, PVOID pData) {
+		HRESULT hr;
+		EnterCriticalSection(&m_cs);
+		if ((m_eState == STARTED) && (m_dwJvmRef == dwJvmRef)) {
+			LOGTRACE("(%p) Schedule slave async dwJvmRef = %p, pfnCallback = %p, pData = %p", GetCurrentThreadId(), dwJvmRef, pfnCallback, pData);
+			hr = ScheduleSlaveAsync(m_pJvm, pfnCallback, pData);
+		} else {
+			LOGTRACE("(%p) Cannot schedule async, in invalid state.  dwJvmRef = %p, pfnCallback = %p, pData = %p", GetCurrentThreadId(), dwJvmRef, pfnCallback, pData);
+			hr = E_NOT_VALID_STATE;
+		}
+		LeaveCriticalSection(&m_cs);
 		return hr;
 	}
 };
@@ -235,10 +249,14 @@ static BOOL StartJVMImpl (struct _CreateJVM *pCreateJVM, JNIEnv **ppEnv) {
 /// is complete</param>
 /// <returns>Thread exit code</returns>
 DWORD APIENTRY JNIMainThreadProc (LPVOID lpCreateJVM) {
+	Debug::SetLogTarget(LOGTARGET_FILE);
 	LOGTRACE ("(%p) JNIMainThreadProc called", GetCurrentThreadId ());
 	JNIEnv *pEnv;
-	if (!StartJVMImpl (static_cast<struct _CreateJVM*>(lpCreateJVM), &pEnv)) return ERROR_INVALID_ENVIRONMENT;
+	if (!StartJVMImpl (((struct _CreateJVM*)lpCreateJVM), &pEnv)) return ERROR_INVALID_ENVIRONMENT;
 	LOGTRACE ("(%p) JNIMainThreadProc: Calling slave thread handler", GetCurrentThreadId ());
+	JavaVM *pJvm = ((struct _CreateJVM*)lpCreateJVM)->pJvm;
+	pEnv->GetJavaVM(&pJvm);
+	JNISlaveAsyncMainThreadStart (pJvm); // initial thread to handle async queue
 	JNISlaveThread (pEnv, INFINITE);
 	LOGTRACE ("(%p) JNIMainThreadProc: Returned from  slave thread handler, Stopping VM", GetCurrentThreadId ());
 	StopJVM (pEnv);
@@ -283,7 +301,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 	createJVM.ppszOptions = pParams->ppszOptions;
 	IncrementModuleLockCount ();
 	LOGTRACE ("(%p) JNICreateJavaVMA Creating main thread", GetCurrentThreadId ());
-	HANDLE hThread = CreateThread (NULL, 2048 * 1024, JNIMainThreadProc, &createJVM, 0, NULL);
+	HANDLE hThread = CreateThread (NULL, 4096 * 1024, JNIMainThreadProc, &createJVM, 0, NULL);
 	HRESULT hr;
 	if (hThread != NULL) {
 		LOGTRACE ("(%p) JNICreateJavaVMA: Created main thread, waiting for semaphore", GetCurrentThreadId ());
@@ -323,6 +341,19 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMA (PDWORD pdwJvmRef, PJAVA_VM_PARAMETERSA 
 /// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT COMJVM_JNI_API JNICallback (DWORD dwJvmRef, JNICallbackProc pfnCallback, PVOID pData) {
 	return g_oVM.Schedule (dwJvmRef, pfnCallback, pData);
+}
+
+/// <summary>Schedules a JNI callback.</summary>
+///
+/// <para>The callback is made from a thread attached to the JVM which will provide
+/// an appropriate JNIEnv instance.</para>
+///
+/// <param name="dwJvmRef">VM reference</param>
+/// <param name="pfnCallback">Callback function</param>
+/// <param name="pData">User data for callback function</param>
+/// <returns>S_OK if successful, an error code otherwise</returns>
+HRESULT COMJVM_JNI_API JNICallbackAsync(DWORD dwJvmRef, JNICallbackProc pfnCallback, PVOID pData) {
+	return g_oVM.ScheduleAsync(dwJvmRef, pfnCallback, pData);
 }
 
 /// <summary>Destroys a running VM instance.</summary>

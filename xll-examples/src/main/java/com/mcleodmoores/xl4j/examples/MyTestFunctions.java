@@ -29,7 +29,20 @@ public final class MyTestFunctions {
    */
   private MyTestFunctions() {
   }
-
+  
+  @XLFunction(name = "AsyncWait", 
+              description = "Wait for n seconds", 
+              category = "Mine",
+              isAutoAsynchronous = true)
+  public static XLNumber myAsyncWait(@XLArgument(name = "delay", description = "delay in seconds") final XLNumber delay) {
+    try {
+      Thread.sleep((int) delay.getAsDouble() * 1000);
+    } catch (InterruptedException ie) {
+      return XLNumber.of(-1);
+    }
+    return delay;
+  }
+  
   /**
    * String concatenation test.
    *

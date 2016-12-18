@@ -11,18 +11,21 @@
 #include "internal.h"
 #include "utils/Debug.h"
 
-#include "utils/TraceOff.h"
+//#include "utils/TraceOff.h"
 
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM);
+DWORD APIENTRY JNISlaveAsyncThreadProc(LPVOID lpJVM);
+extern class CCallbackRequests g_oRequests;
+extern class CCallbackRequests g_oAsyncRequests;
 
 class CCallbackRequests {
 private:
 	CRITICAL_SECTION m_cs;
 	HANDLE m_hNotify;
-	DWORD m_dwThreads;
+	volatile DWORD m_dwThreads;
 	std::deque<JNICallbackProc> m_apfnCallback;
 	std::deque<PVOID> m_apData;
-	int m_iSize;
+	volatile int m_iSize;
 public:
 	CCallbackRequests () {
 		LOGTRACE ("(%p) constructor", GetCurrentThreadId ()); 
@@ -38,7 +41,7 @@ public:
 	}
 	// TODO: The "last" slave thread should close the semaphore handle
 	BOOL WaitForRequest (DWORD dwTimeout, JNICallbackProc *ppfnCallback, PVOID *ppData) {
-		LOGTRACE ("(%p) timeout=%d, ppfnCallback=%p, ppData=%p", GetCurrentThreadId (), dwTimeout, ppfnCallback, ppData);
+		LOGTRACE ("(%p) (this = %p) timeout=%d, ppfnCallback=%p, ppData=%p", GetCurrentThreadId (), this, dwTimeout, ppfnCallback, ppData);
 		EnterCriticalSection (&m_cs);
 		if (m_iSize == 0) {//m_apfnCallback.size () == 0) {
 			// Nothing in the queue - wait for something
@@ -49,19 +52,20 @@ public:
 			}
 			m_dwThreads++;
 			LeaveCriticalSection (&m_cs);
-			LOGTRACE ("(%p) m_dwThreads = %d, calling WaitForSingleObject", m_dwThreads, GetCurrentThreadId ());
+			LOGTRACE ("(%p) (this = %p) m_dwThreads = %d, calling WaitForSingleObject", GetCurrentThreadId(), this, m_dwThreads);
 			WaitForSingleObject (m_hNotify, dwTimeout);
 			//LARGE_INTEGER t1, freq;
 			//QueryPerformanceCounter (&t1);
 			//QueryPerformanceFrequency (&freq);
 			//Debug::odprintf (TEXT ("Woken at %lld (freq = %lld)\n"), t1, freq);
-			LOGTRACE ("(%p) semaphore released", GetCurrentThreadId ());
+			LOGTRACE ("(%p) (this = %p) semaphore released", GetCurrentThreadId (), this);
 			EnterCriticalSection (&m_cs);
 			if (m_iSize == 0) {
-				LOGTRACE ("(%p) callback list empty, decrementing thread count, returning FALSE", GetCurrentThreadId ());
-				m_dwThreads--;
+				LOGTRACE ("(%p) (this = %p) callback list empty, decrementing thread count, returning FALSE", GetCurrentThreadId (), this);
+				//m_dwThreads--;
+				*ppfnCallback = nullptr;
 				LeaveCriticalSection (&m_cs);
-				return FALSE;
+				return TRUE; // not shutdown
 			}
 		}
 		*ppfnCallback = m_apfnCallback.front ();// begin ();
@@ -70,11 +74,11 @@ public:
 		m_apData.pop_front ();
 		m_iSize--;
 		if (*ppfnCallback) {
-			LOGTRACE ("(%p) returning callback %p, with data %p", GetCurrentThreadId (), *ppfnCallback, *ppData);
+			LOGTRACE ("(%p) (this = %p) returning callback %p, with data %p", GetCurrentThreadId (), this, *ppfnCallback, *ppData);
 			LeaveCriticalSection (&m_cs);
 			return TRUE;
 		} else {
-			LOGTRACE ("(%p) got null callback, pushing back.", GetCurrentThreadId ());
+			LOGTRACE ("(%p) (this = %p) got null callback, pushing back.", GetCurrentThreadId (), this);
 			m_apfnCallback.push_back (NULL);
 			m_apData.push_back (NULL);
 			m_iSize++;
@@ -88,14 +92,14 @@ public:
 		bool bCallback = 0;
 		bool bData = 0;
 		try {
-			LOGTRACE ("(%p) pJVM=%p, pfnCallback=%p, pData=%p", GetCurrentThreadId(), pJVM, pfnCallback, pData);
+			LOGTRACE ("(%p) (this = %p) pJVM=%p, pfnCallback=%p, pData=%p", GetCurrentThreadId(), this, pJVM, pfnCallback, pData);
 			m_apfnCallback.push_back (pfnCallback);
 			bCallback = true;
 			m_apData.push_back (pData);
 			bData = true;
 			m_iSize++;
 			if (m_dwThreads) {
-				LOGTRACE ("(%p) pushed the callback and data onto queue, decrementing thread count (currently %d b4) and releasing semaphore", GetCurrentThreadId (), m_dwThreads);
+				LOGTRACE ("(%p) (this = %p) pushed the callback and data onto queue, decrementing thread count (currently %d b4) and releasing semaphore", GetCurrentThreadId (), this, m_dwThreads);
 				m_dwThreads--;
 				//LARGE_INTEGER t1;
 				//QueryPerformanceCounter (&t1);
@@ -104,9 +108,16 @@ public:
 				hr = S_OK;
 			} else {
 				// TODO: No spare threads; spawn one and attach to the JVM
-				LOGERROR ("(%p) pushed the callback and data onto queue, creating new thread and releasing semaphore", GetCurrentThreadId (), m_dwThreads);
-				//CreateThread (NULL, 0, JNISlaveThreadProc, pJVM, 0, NULL);
-				//ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
+				LOGERROR ("(%p) (this = %p) pushed the callback and data onto queue, creating new thread and releasing semaphore", GetCurrentThreadId (), this, m_dwThreads);
+				if (this == &g_oRequests) {
+					CreateThread(NULL, 4096 * 1024, JNISlaveThreadProc, pJVM, 0, NULL);
+				} else if (this == &g_oAsyncRequests) {
+					CreateThread(NULL, 4096 * 1024, JNISlaveAsyncThreadProc, pJVM, 0, NULL);
+				} else {
+					LOGERROR("(this = %p) Couldn't figure out which instance this is so not spawning new thread", this);
+				}
+				//m_dwThreads++; // trying this one out.
+				ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
 				hr = S_OK;
 				//hr = E_NOTIMPL;
 			}
@@ -117,7 +128,7 @@ public:
 			hr = E_OUTOFMEMORY;
 			LOGERROR ("(%p) memory allocation exception", GetCurrentThreadId ());
 		}
-		LOGTRACE ("(%p) finishing", GetCurrentThreadId ());
+		LOGTRACE ("(%p) (this = %p) finishing", GetCurrentThreadId (), this);
 		LeaveCriticalSection (&m_cs);
 		return hr;
 	}
@@ -143,16 +154,58 @@ public:
 };
 
 static CCallbackRequests g_oRequests;
+static CCallbackRequests g_oAsyncRequests;
 
 /// My go at a slave thread proc.  Takes pointer to a JVM, attaches current thread and calls the main SlaveThread loop.
 /// doesn't do any of the clearing up the main thread does.
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM) {
 	JavaVM *pJVM = (JavaVM *)lpJVM;
 	JNIEnv *pJNIEnv;
-	pJVM->AttachCurrentThread ((void **) &pJNIEnv, NULL);
+	//int getEnvStat = pJVM->GetEnv((void **)&pJNIEnv, JNI_VERSION_1_6);
+	//if (getEnvStat == JNI_EDETACHED) {
+	//	LOGTRACE("GetEnv: not attached");
+		if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
+			LOGERROR("Failed to attach");
+			return E_FAIL;
+		}
+	//} else if (getEnvStat == JNI_OK) {
+	//	LOGTRACE("Already attached");
+	//} else if (getEnvStat == JNI_EVERSION) {
+	//	LOGTRACE("GetEnv: version not supported");
+	//	return E_FAIL;
+	//}
+	LOGTRACE("Attached.");
 	LOGTRACE ("(%p) JNISlaveThreadProc (%p) attached to current thread.", GetCurrentThreadId (), lpJVM);
 	JNISlaveThread ((JNIEnv *) pJNIEnv, INFINITE);
 	LOGTRACE ("(%p) JNISlaveThreadProc (%p) terminating with S_OK.", GetCurrentThreadId (), lpJVM);
+	pJVM->DetachCurrentThread();
+	return S_OK;
+}
+/// My go at a slave thread proc.  Takes pointer to a JVM, attaches current thread and calls the main SlaveThread loop.
+/// doesn't do any of the clearing up the main thread does.
+DWORD APIENTRY JNISlaveAsyncThreadProc(LPVOID lpJVM) {
+	LOGTRACE("About to attach first async pool thread to VM %p", lpJVM);
+	JavaVM *pJVM = (JavaVM *)lpJVM;
+	JNIEnv *pJNIEnv;
+	//int getEnvStat = pJVM->GetEnv((void **)&pJNIEnv, JNI_VERSION_1_6);
+	//if (getEnvStat == JNI_EDETACHED) {
+	//	LOGTRACE("GetEnv: not attached");
+	LOGTRACE("pJVM = %p", pJVM);
+		if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
+			LOGERROR("Failed to attach");
+			return E_FAIL;
+		}
+	//} else if (getEnvStat == JNI_OK) {
+	//	LOGTRACE("Already attached");
+	//} else if (getEnvStat == JNI_EVERSION) {
+	//	LOGTRACE("GetEnv: version not supported");
+	//	return E_FAIL;
+	//}    
+	LOGTRACE("Attached.");
+	LOGTRACE("(%p) JNISlaveThreadProc (%p) attached to current thread.", GetCurrentThreadId(), lpJVM);
+	JNISlaveAsyncThread((JNIEnv *)pJNIEnv, INFINITE);
+	LOGTRACE("(%p) JNISlaveThreadProc (%p) terminating with S_OK.", GetCurrentThreadId(), lpJVM);
+	pJVM->DetachCurrentThread();
 	return S_OK;
 }
 
@@ -162,9 +215,28 @@ void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	LOGTRACE ("(%p) About to enter wait loop", GetCurrentThreadId ()); 
 	while (g_oRequests.WaitForRequest (dwIdleTimeout, &pfnCallback, &pData)) {
 		LOGTRACE ("(%p) got request for callback on %p with data %p", GetCurrentThreadId (), pfnCallback, pData);
-		pfnCallback (pData, pEnv);
+		if (pfnCallback) {
+			pfnCallback(pData, pEnv);
+		}
 		LOGTRACE ("(%p) callback %p returned", GetCurrentThreadId (), pfnCallback);
 	}
+}
+void JNISlaveAsyncThread(JNIEnv *pEnv, DWORD dwIdleTimeout) {
+	JNICallbackProc pfnCallback;
+	PVOID pData;
+	LOGTRACE("(%p) About to enter wait loop", GetCurrentThreadId());
+	while (g_oAsyncRequests.WaitForRequest(dwIdleTimeout, &pfnCallback, &pData)) {
+		LOGTRACE("(%p) got request for callback on %p with data %p", GetCurrentThreadId(), pfnCallback, pData);
+		if (pfnCallback) {
+			pfnCallback(pData, pEnv);
+		}
+		LOGTRACE("(%p) callback %p returned", GetCurrentThreadId(), pfnCallback);
+	}
+}
+
+void JNISlaveAsyncMainThreadStart(JavaVM *pJVM) {
+	LOGTRACE("JavaVM * = %p", pJVM);
+	CreateThread(NULL, 4096 * 1024, JNISlaveAsyncThreadProc, pJVM, 0, NULL);
 }
 
 HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
@@ -173,9 +245,19 @@ HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
 	return g_oRequests.Add (pJVM, pfnCallback, pData);
 }
 
+HRESULT ScheduleSlaveAsync(JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
+	// TODO: If this is already a slave thread, don't post to the queue, callback directory (JIM: should this read 'directly'?)
+	LOGTRACE("(%p) pJVM=%p, pfnCallback=%p, pData=%p", GetCurrentThreadId(), pJVM, pfnCallback, pData);
+	return g_oAsyncRequests.Add(pJVM, pfnCallback, pData);
+}
+
 HRESULT PoisonJNISlaveThreads () {
 	LOGTRACE ("(%p) called", GetCurrentThreadId ());
 	return g_oRequests.Poison ();
 }
 
-#include "utils/TraceOn.h"
+HRESULT PoisonJNIAsyncSlaveThreads() {
+	LOGTRACE("(%p) called", GetCurrentThreadId());
+	return g_oAsyncRequests.Poison();
+}
+//#include "utils/TraceOn.h"

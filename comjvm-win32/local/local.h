@@ -42,7 +42,6 @@ HRESULT COMJVM_LOCAL_API ComJvmCreateFileWriterW (/* [in] */ PCWSTR pszPath, /* 
 #endif /* ifdef _UNICODE */
 
 HRESULT COMJVM_LOCAL_API ComJvmCreateLocalConnector (/* [out][retval] */ IJvmConnector **ppConnector);
-
 #ifdef __cplusplus
 }
 #endif /* ifdef __cplusplus */

@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #pragma once
+
+class CJvmEnvironment;
+
 #include "Jvm.h"
 #include "FunctionRegistry.h"
 #include "Converter.h"
@@ -12,7 +15,8 @@
 #include "../utils/FileUtils.h"
 #include "Lifecycle.h"
 #include "AddinEnvironment.h"
-	
+#include "AsyncCallResult.h"
+
 class CJvmEnvironment {
 	enum JvmEnvState { NOT_RUNNING, STARTING, STARTED, TERMINATING };
 	SRWLOCK m_rwlock;
@@ -26,6 +30,7 @@ class CJvmEnvironment {
 	FunctionRegistry *m_pFunctionRegistry;
 	GarbageCollector *m_pCollector;
 	ISplashScreen *m_pSplashScreen;
+	IAsyncCallResult *m_pAsyncHandler;
 	static DWORD WINAPI BackgroundJvmThread(LPVOID param);
 	static DWORD WINAPI BackgroundShutdownThread(LPVOID pData);
 	static DWORD WINAPI BackgroundWatchdogThread(LPVOID pData);
@@ -35,6 +40,9 @@ class CJvmEnvironment {
 	HRESULT EnterTerminatingState();
 	HRESULT EnterNotRunningState();
 	void ExcelThreadShutdown();
+
+	long GetNumCOMArgs(FUNCTIONINFO * pFunctionInfo, long nArgs);
+	HRESULT TrimArgs(FUNCTIONINFO * pFunctionInfo, long nArgs, VARIANT * inputs, SAFEARRAY * saInputs);
 public:
 	CJvmEnvironment(CAddinEnvironment *pEnv);
 	~CJvmEnvironment();
@@ -44,4 +52,7 @@ public:
 	HRESULT _RegisterSomeFunctions();
 	HRESULT _UDF(int exportNumber, LPXLOPER12 *result, LPXLOPER12 first, va_list ap);
 	HRESULT _GarbageCollect();
+
+	long GetNumArgs(FUNCTIONINFO * pFunctionInfo);
+	
 };

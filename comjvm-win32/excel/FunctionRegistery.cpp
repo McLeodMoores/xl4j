@@ -188,6 +188,15 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 		LOGTRACE ("--------------------------------");
 		LOGTRACE ("Registering function %d", i);
 		cArgsHelp++; // upper bound is not same as count
+		if (fi.bIsAutoAsynchronous) {
+			LOGTRACE("Function is AutoAsynchronous");
+		}
+		if (fi.bIsManualAsynchronous) {
+			LOGTRACE("Function is ManualAsynchronous");
+		}
+		if (fi.bIsCallerRequired) {
+			LOGTRACE("Function requires caller info");
+		}
 		XLOPER12 id = RegisterFunction (xDll, fi.iExportNumber, fi.bsFunctionExportName, fi.bsFunctionSignature,
 			fi.bsFunctionWorksheetName, fi.bsArgumentNames, fi.iFunctionType,
 			fi.bsFunctionCategory, fi.bsAcceleratorKey, fi.bsHelpTopic, fi.bsDescription,
@@ -226,6 +235,15 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis)
 		LOGTRACE ("--------------------------------");
 		LOGTRACE ("Registering function %d", m_iIndex);
 		cArgsHelp++; // upper bound is not same as size
+		if (fi.bIsAutoAsynchronous) {
+			LOGTRACE("Function is AutoAsynchronous");
+		}
+		if (fi.bIsManualAsynchronous) {
+			LOGTRACE("Function is ManualAsynchronous");
+		}
+		if (fi.bIsCallerRequired) {
+			LOGTRACE("Function requires caller info");
+		}
 		XLOPER12 id = RegisterFunction (xDll, fi.iExportNumber, fi.bsFunctionExportName, fi.bsFunctionSignature,
 			fi.bsFunctionWorksheetName, fi.bsArgumentNames, fi.iFunctionType,
 			fi.bsFunctionCategory, fi.bsAcceleratorKey, fi.bsHelpTopic, fi.bsDescription,

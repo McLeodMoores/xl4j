@@ -59,6 +59,9 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jfieldID jfFunctionExportName = pEnv->GetFieldID (jcLowLevelEntry, "_functionExportName", "Ljava/lang/String;");
 		jfieldID jfIsVarArgs = pEnv->GetFieldID (jcLowLevelEntry, "_isVarArgs", "Z");
 		jfieldID jfIsLongRunning = pEnv->GetFieldID(jcLowLevelEntry, "_isLongRunning", "Z");
+		jfieldID jfIsAutoAsynchronous = pEnv->GetFieldID(jcLowLevelEntry, "_isAutoAsynchronous", "Z");
+		jfieldID jfIsManualAsynchronous = pEnv->GetFieldID(jcLowLevelEntry, "_isManualAsynchronous", "Z");
+		jfieldID jfIsCallerRequired = pEnv->GetFieldID(jcLowLevelEntry, "_isCallerRequired", "Z");
 		jfieldID jfFunctionSignature = pEnv->GetFieldID (jcLowLevelEntry, "_functionSignature", "Ljava/lang/String;");
 		jfieldID jfFunctionWorksheetname = pEnv->GetFieldID (jcLowLevelEntry, "_functionWorksheetName", "Ljava/lang/String;");
 		jfieldID jfArgumentNames = pEnv->GetFieldID (jcLowLevelEntry, "_argumentNames", "Ljava/lang/String;");
@@ -68,7 +71,6 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jfieldID jfHelpTopic = pEnv->GetFieldID (jcLowLevelEntry, "_helpTopic", "Ljava/lang/String;");
 		jfieldID jfDescription = pEnv->GetFieldID (jcLowLevelEntry, "_description", "Ljava/lang/String;");
 		jfieldID jfArgsHelp = pEnv->GetFieldID (jcLowLevelEntry, "_argsHelp", "[Ljava/lang/String;");
-		
 
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
 		if (FAILED (hResult = ::GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
@@ -98,6 +100,12 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 			pFunctionInfos[i].bIsVarArgs = jsIsVarArgs;
 			jboolean jsIsLongRunning = pEnv->GetBooleanField(joElement, jfIsLongRunning);
 			pFunctionInfos[i].bIsLongRunning = jsIsLongRunning;
+			jboolean jsIsAutoAsynchronous = pEnv->GetBooleanField(joElement, jfIsAutoAsynchronous);
+			pFunctionInfos[i].bIsAutoAsynchronous = jsIsAutoAsynchronous;
+			jboolean jsIsManualAsynchronous = pEnv->GetBooleanField(joElement, jfIsManualAsynchronous);
+			pFunctionInfos[i].bIsManualAsynchronous = jsIsManualAsynchronous;
+			jboolean jsIsCallerRequired = pEnv->GetBooleanField(joElement, jfIsCallerRequired);
+			pFunctionInfos[i].bIsCallerRequired = jsIsCallerRequired;
 			jstring jsFunctionSignature = (jstring)pEnv->GetObjectField (joElement, jfFunctionSignature);
 			storeBSTR (pEnv, jsFunctionSignature, &pFunctionInfos[i].bsFunctionSignature);
 			jstring jsFunctionWorksheetname = (jstring)pEnv->GetObjectField (joElement, jfFunctionWorksheetname);
