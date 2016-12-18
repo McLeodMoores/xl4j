@@ -39,9 +39,8 @@ public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
       // if multiple layers of method invoker, don't put already encoded XLObjects on heap.
       // this happens in case of JMethod/JConstruct etc.
       return (XLValue) object;
-    } else {
-      return (XLValue) _objectXlObjectConverter.toXLValue(getMethodReturnType(), object);
     }
+    return (XLValue) _objectXlObjectConverter.toXLValue(getMethodReturnType(), object);
   }
 
 }

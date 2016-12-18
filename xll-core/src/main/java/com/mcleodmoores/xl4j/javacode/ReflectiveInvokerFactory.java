@@ -4,6 +4,7 @@
 package com.mcleodmoores.xl4j.javacode;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
@@ -292,6 +293,20 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
     } catch (final Excel4JRuntimeException e) {
       throw new Excel4JRuntimeException("Could not find matching constructor " + constructor, e);
+    }
+  }
+
+  @Override
+  public FieldInvoker getFieldTypeConverter(final Field field, final TypeConversionMode resultType) {
+    switch (resultType) {
+      case SIMPLEST_RESULT:
+        return new ObjectFieldInvoker(field, _typeConverterRegistry.findConverter(field.getType()));
+      case OBJECT_RESULT:
+        return new ObjectFieldInvoker(field, _objectXlObjectConverter);
+      case PASSTHROUGH:
+        return new PassthroughFieldInvoker(field);
+      default:
+        throw new IllegalArgumentException("Unhandled result type " + resultType);
     }
   }
 }
