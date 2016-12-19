@@ -65,7 +65,62 @@ files:
  
  # Using Java projects from Excel
  ## Using existing code (1)
- The simplest way to 
+ In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
+  - A yield curve
+  - A CDS curve
+  - A CDS trade definition
+  Just for reference, here is an example of the Java code that is used to construct a yield curve using the starling library:
+  
+  ``` java
+  /** The trade date */
+  private static final LocalDate TRADE_DATE = LocalDate.of(2016, 10, 3);
+  /** The instrument types */
+  private static final String[] INSTRUMENT_TYPE_STRINGS = new String[] {"M", "M", "M", "S", "S",
+      "S", "S", "S", "S", "S"};
+  /** The tenors */
+  private static final String[] TENOR_STRINGS = new String[] {"3M", "6M", "9M", "1Y", "2Y",
+      "3Y", "4Y", "5Y", "7Y", "10Y"};
+  /** The quotes */
+  private static final double[] QUOTES = new double[] {0.001, 0.0011, 0.0012, 0.002, 0.0035,
+      0.006, 0.01, 0.015, 0.025, 0.04};
+  /** The money market day count */
+  private static final String MONEY_MARKET_DAY_COUNT = "ACT/360";
+  /** The swap day count */
+  private static final String SWAP_DAY_COUNT = "ACT/365";
+  /** The swap interval */
+  private static final String SWAP_INTERVAL = "6M";
+  /** The curve day count */
+  private static final String CURVE_DAY_COUNT = "ACT/365";
+  /** The business day convention */
+  private static final String BDC = "Modified Following";
+  /** The spot date */
+  private static final LocalDate SPOT_DATE = LocalDate.of(2016, 10, 5);
+  /** The number of spot days */
+  private static final int SPOT_DAYS = 2;
+  /** The holidays */
+  private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 8, 1)};
+  /** The calendar */
+  private static final Calendar CALENDAR =
+      new CalendarAdapter(new SimpleWorkingDayCalendar("Calendar", Arrays.asList(LocalDate.of(2016, 8, 1)), DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
+  /** The yield curve */
+  private static final ISDACompliantYieldCurve YIELD_CURVE;
+
+  static {
+    final ISDAInstrumentTypes[] instrumentTypes = new ISDAInstrumentTypes[] {
+        ISDAInstrumentTypes.MoneyMarket, ISDAInstrumentTypes.MoneyMarket, ISDAInstrumentTypes.MoneyMarket, ISDAInstrumentTypes.Swap,
+        ISDAInstrumentTypes.Swap, ISDAInstrumentTypes.Swap, ISDAInstrumentTypes.Swap, ISDAInstrumentTypes.Swap, ISDAInstrumentTypes.Swap,
+        ISDAInstrumentTypes.Swap};
+    final Period[] tenors = new Period[] {Period.ofMonths(3), Period.ofMonths(6), Period.ofMonths(9),
+        Period.ofYears(1), Period.ofYears(2), Period.ofYears(3), Period.ofYears(4), Period.ofYears(5), Period.ofYears(7),
+        Period.ofYears(10)};
+    final ISDACompliantYieldCurveBuild builder = new ISDACompliantYieldCurveBuild(TRADE_DATE, SPOT_DATE, instrumentTypes, tenors,
+        DayCountFactory.INSTANCE.instance(MONEY_MARKET_DAY_COUNT), DayCountFactory.INSTANCE.instance(SWAP_DAY_COUNT), Period.ofMonths(6),
+        DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT), BusinessDayConventionFactory.INSTANCE.instance(BDC),
+        CALENDAR);
+    CURVE = builder.build(QUOTES);
+  ```
+  
+ 
  ## Starting from scratch
  ## Using existing code (2)
  
