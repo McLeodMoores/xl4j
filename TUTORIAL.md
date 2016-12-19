@@ -64,12 +64,14 @@ files:
  3. Next to the dropdown list towards the botton, click 'Go'.
  
  # Using Java projects from Excel
- ## Using existing code (1)
+ ## Using existing libraries (1)
+ 
  In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
   - A yield curve
   - A CDS curve
   - A CDS trade definition
-  Just for reference, here is an example of the Java code that is used to construct a yield curve using the starling library:
+  
+  Just for reference, here is some example Java code that constructs a yield curve using the starling library:
   
   ``` java
   /** The trade date */
@@ -119,7 +121,17 @@ files:
         CALENDAR);
     CURVE = builder.build(QUOTES);
   ```
-  
+ The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed from Excel. This will allow much more straightforward pricing functions to be written later, as the correct convention can be pulled from a table using the currency of the CDS trade.
+ 
+ ### The conventions
+We've added two POJOs, ```IdsaYieldCurveConvention``` and ```IsdaCdsConvention``` that contain all of the convention information for yield curves and CDS, and a utility class, ```ConventionFunctions```, that contains static Excel functions that build these objects.
+ 
+ The yield curve convention constructor is simple: all fields are required and can be represented as ```String``` or ```int```. 
+It takes Excel types (```XLString, XLNumber```) as arguments, which means that there is no type conversion done on the Java side before this function is called.
+
+ ``` java
+ ```
+ **point out possibly null values and ways to deal with them**
  
  ## Starting from scratch
  ## Using existing code (2)
