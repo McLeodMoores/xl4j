@@ -62,9 +62,9 @@ files:
  1. Start Excel.
  2. On the Backstage (the screen revealed by clicking on the `File` ribbon header or Office button), choose Options.
  3. Next to the dropdown list towards the botton, click 'Go'.
- 
- # Using Java projects from Excel
- ## A simple wrapper
+  
+# Using Java projects from Excel
+## A simple wrapper
  
  In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
   - A yield curve
