@@ -12,14 +12,15 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
+import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLNumber;
+import com.mcleodmoores.xl4j.values.XLString;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticSpreadSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantCreditCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
-import com.opengamma.analytics.financial.credit.isdastandardmodel.InterestRateSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
@@ -53,9 +54,11 @@ public class CdsPricerTest extends IsdaTests {
   private static final double[] YIELD_CURVE_QUOTES = new double[] {0.001, 0.0011, 0.0012, 0.002, 0.0035,
       0.006, 0.01, 0.015, 0.025, 0.04};
   /** The yield curve convention */
-  private static final IsdaYieldCurveConvention YIELD_CURVE_CONVENTION = IsdaYieldCurveConvention.of("ACT/365", "ACT/365", "3M", "ACT/365", "Following", 2);
+  private static final IsdaYieldCurveConvention YIELD_CURVE_CONVENTION = ConventionFunctions.buildYieldCurveConvention(XLString.of("ACT/365"),
+      XLString.of("ACT/365"), XLString.of("3M"), XLString.of("ACT/365"), XLString.of("Following"), XLNumber.of(2));
   /** The CDS convention */
-  private static final IsdaCdsConvention CDS_CONVENTION = IsdaCdsConvention.of("ACT/360", "ACT/365", "Following", "3M", "FRONTSHORT", 3, 1, true);
+  private static final IsdaCdsConvention CDS_CONVENTION = ConventionFunctions.buildCdsConvention(XLString.of("ACT/360"), XLString.of("ACT/365"),
+      XLString.of("Following"), XLString.of("3M"), XLString.of("FRONTSHORT"), XLNumber.of(3), XLNumber.of(1), XLBoolean.TRUE);
   /** Holidays */
   private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 11, 1)};
   /** The yield curve */
@@ -92,8 +95,6 @@ public class CdsPricerTest extends IsdaTests {
   private static final AnalyticCDSPricer CALCULATOR = new AnalyticCDSPricer();
   /** The CS01 calculator */
   private static final AnalyticSpreadSensitivityCalculator CS01_CALCULATOR = new AnalyticSpreadSensitivityCalculator();
-  /** The IR01 calculator */
-  private static final InterestRateSensitivityCalculator IR_CALCULATOR = new InterestRateSensitivityCalculator();
   /** The accuracy */
   private static final double EPS = 1e-15;
 

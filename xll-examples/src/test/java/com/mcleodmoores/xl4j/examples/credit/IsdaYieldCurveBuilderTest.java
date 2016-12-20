@@ -20,6 +20,7 @@ import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
+import com.mcleodmoores.xl4j.values.XLString;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.SimpleWorkingDayCalendar;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
@@ -28,6 +29,7 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantY
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurveBuild;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAInstrumentTypes;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
+import com.opengamma.financial.convention.calendar.Calendar;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
 
 /**
@@ -61,6 +63,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
   private static final int SPOT_DAYS = 2;
   /** The holidays */
   private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 8, 1)};
+  /** The calendar */
+  private static final Calendar CALENDAR =
+      new CalendarAdapter(new SimpleWorkingDayCalendar("Calendar", Arrays.asList(LocalDate.of(2016, 8, 1)), DayOfWeek.SATURDAY, DayOfWeek.SUNDAY));
   /** The expected curve */
   private static final ISDACompliantYieldCurve EXPECTED_CURVE;
   /** The object constructed by the function processor */
@@ -81,7 +86,7 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     final ISDACompliantYieldCurveBuild builder = new ISDACompliantYieldCurveBuild(TRADE_DATE, SPOT_DATE, instrumentTypes, tenors,
         DayCountFactory.INSTANCE.instance(MONEY_MARKET_DAY_COUNT), DayCountFactory.INSTANCE.instance(SWAP_DAY_COUNT), Period.ofMonths(6),
         DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT), BusinessDayConventionFactory.INSTANCE.instance(BDC),
-        new CalendarAdapter(new SimpleWorkingDayCalendar("Calendar", Arrays.asList(LocalDate.of(2016, 8, 1)), DayOfWeek.SATURDAY, DayOfWeek.SUNDAY)));
+        CALENDAR);
     EXPECTED_CURVE = builder.build(QUOTES);
   }
 
@@ -98,8 +103,8 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
 
   @Test
   public void testConstructionOfCurveWithConvention() {
-    final IsdaYieldCurveConvention convention = IsdaYieldCurveConvention.of(MONEY_MARKET_DAY_COUNT, SWAP_DAY_COUNT, SWAP_INTERVAL,
-        CURVE_DAY_COUNT, BDC, SPOT_DAYS);
+    final IsdaYieldCurveConvention convention = ConventionFunctions.buildYieldCurveConvention(XLString.of(MONEY_MARKET_DAY_COUNT), XLString.of(SWAP_DAY_COUNT),
+        XLString.of(SWAP_INTERVAL), XLString.of(CURVE_DAY_COUNT), XLString.of(BDC), XLNumber.of(SPOT_DAYS));
     final Object xlResult = PROCESSOR.invoke("ISDAYieldCurve.BuildCurveFromConvention", convertToXlType(TRADE_DATE),
         convertToXlType(INSTRUMENT_TYPE_STRINGS), convertToXlType(TENOR_STRINGS), convertToXlType(QUOTES),
         convertToXlType(convention, HEAP), convertToXlType(SPOT_DATE), convertToXlType(HOLIDAYS));

@@ -16,9 +16,11 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.values.XLArray;
+import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
+import com.mcleodmoores.xl4j.values.XLString;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSQuoteConvention;
@@ -110,8 +112,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
 
   @Test
   public void testConstructionOfCurveWithConvention() {
-    final IsdaCdsConvention convention = IsdaCdsConvention.of(ACCRUAL_DAY_COUNT_NAME, CURVE_DAY_COUNT_NAME, BDC_NAME, COUPON_INTERVAL, STUB_TYPE,
-        CASH_SETTLEMENT_DAYS, STEP_IN_DAYS, PAY_ACCRUAL_ON_DEFAULT);
+    final IsdaCdsConvention convention = ConventionFunctions.buildCdsConvention(XLString.of(ACCRUAL_DAY_COUNT_NAME),
+        XLString.of(CURVE_DAY_COUNT_NAME), XLString.of(BDC_NAME), XLString.of(COUPON_INTERVAL), XLString.of(STUB_TYPE),
+        XLNumber.of(CASH_SETTLEMENT_DAYS), XLNumber.of(STEP_IN_DAYS), XLBoolean.from(PAY_ACCRUAL_ON_DEFAULT));
     final Object xlResult = PROCESSOR.invoke("ISDACreditCurve.BuildIMMCurveFromConvention", convertToXlType(TRADE_DATE), convertToXlType(TENORS),
         convertToXlType(QUOTE_TYPES), convertToXlType(QUOTES), convertToXlType(RECOVERY_RATES), convertToXlType(COUPONS), convertToXlType(YIELD_CURVE, HEAP),
         convertToXlType(convention, HEAP), convertToXlType(HOLIDAYS));

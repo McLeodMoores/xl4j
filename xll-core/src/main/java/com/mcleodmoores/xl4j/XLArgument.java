@@ -16,12 +16,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER })
 public @interface XLArgument {
-  // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
   /**
    * The name of the argument, as it is to appear in the function wizard. If not supplied, the library will attempt to: 1. Use the debug
    * symbol if available (the class must have been compiled with debugging info) 2. Use the JavaDoc name if available. 3. Use 'arg&lt;n&gt;'
    * where &lt;n&gt; is 1-based.
-   * 
+   *
    * @return the name
    */
   String name() default "";
@@ -29,14 +28,14 @@ public @interface XLArgument {
   /**
    * The description of the argument, as it is to appear in the function wizard. If not supplied, this will default to the JavaDoc
    * description if available.
-   * 
+   *
    * @return the description
    */
   String description() default "";
 
   /**
    * Whether the argument is optional. This defaults to false, i.e. not optional.
-   * 
+   *
    * @return whether this argument is optional
    */
   boolean optional() default false;

@@ -13,9 +13,11 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
 import com.mcleodmoores.xl4j.values.XLArray;
+import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
+import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
@@ -37,7 +39,8 @@ public class CdsTradeDetailsTest extends IsdaTests {
   /** The coupon */
   private static final double COUPON = 0.05;
   /** The CDS convention */
-  private static final IsdaCdsConvention CDS_CONVENTION = IsdaCdsConvention.of("ACT/360", "ACT/365", "Following", "3M", "FRONTSHORT", 3, 1, true);
+  private static final IsdaCdsConvention CDS_CONVENTION = ConventionFunctions.buildCdsConvention(XLString.of("ACT/360"), XLString.of("ACT/365"),
+      XLString.of("Following"), XLString.of("3M"), XLString.of("FRONTSHORT"), XLNumber.of(3), XLNumber.of(1), XLBoolean.TRUE);
   /** Holidays */
   private static final LocalDate[] HOLIDAYS = new LocalDate[] {LocalDate.of(2016, 11, 1)};
   /** The tenor */
