@@ -66,12 +66,12 @@ files:
 # Using Java projects from Excel
 ## A simple wrapper
  
- In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
+In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
   - A yield curve
   - A CDS curve
   - A CDS trade definition
   
-  Just for reference, here is some example Java code that constructs a yield curve using the starling library:
+Just for reference, here is some example Java code that constructs a yield curve using the starling library:
   
   ``` java
   /** The trade date */
@@ -122,12 +122,12 @@ files:
     CURVE = builder.build(QUOTES);
     }
   ```
- The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed in Excel. This means that conventions can be stored in Excel tables.
+The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed in Excel. This means that conventions can be stored in Excel tables.
  
- ### The conventions
+### The conventions
 We've added two POJOs, ```IdsaYieldCurveConvention``` and ```IsdaCdsConvention``` that contain all of the convention information for yield curves and CDS, and a utility class, ```ConventionFunctions```, that contains static Excel functions that build these objects.
  
- The yield curve convention builder is simple: all fields are required and can be represented as ```String``` or ```int```. 
+The yield curve convention builder is simple: all fields are required and can be represented as ```String``` or ```int```. 
 This method takes Excel types (```XLString, XLNumber```) as arguments, which means that there is no type conversion done on the objects coming from the add-in.
 
  ``` java
@@ -146,14 +146,17 @@ This method takes Excel types (```XLString, XLNumber```) as arguments, which mea
     final Period swapInterval = parsePeriod(xlSwapIntervalName.getValue());
     return new IsdaYieldCurveConvention(moneyMarketDayCount, swapDayCount, swapInterval, curveDayCount, businessDayConvention, xlSpotDays.getAsInt());
   }
- ```
- The ```@XLFunction``` annotation means that this method is available from Excel. The fields are self-explanatory: the name of the function, a more detailed description and the category that the function will appear in. None of these properties are mandatory - the default value for the name is the method name, the class name for the category and an empty description if they are not filled in. There are other properties that will be discussed in more detail later. The ```@XLArgument``` properties have the same meaning as those in the function annotation.
+```
+The ```@XLFunction``` annotation means that this method is available from Excel. The fields are self-explanatory: the name of the function, a more detailed description and the category that the function will appear in. None of these properties are mandatory - the default value for the name is the method name, the class name for the category and an empty description if they are not filled in. There are other properties that will be discussed in more detail later. The ```@XLArgument``` properties have the same meaning as those in the function annotation.
  
- After this function is built, it can be called from Excel
- ** picture **
- ** picture **
+After this function is built, it can be called from Excel
  
- The CDS convention builder is very similar to the yield curve convention builder, but some one the fields are optional:
+![First yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention1.png)
+ 
+![Second yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention2.png)
+
+ 
+The CDS convention builder is very similar to the yield curve convention builder, but some one the fields are optional:
  ``` java
    @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
   public static IsdaCdsConvention buildCdsConvention(
@@ -174,7 +177,8 @@ This method takes Excel types (```XLString, XLNumber```) as arguments, which mea
   }
  ```
 As optional values are passed in as nulls, it's necessary to test for them and handle appropriately. Optional values are dealt with in the usual Excel way by leaving the field blank:
-**picture**
+
+![CDS convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/CDSConvention.png)
 
  
  ## Starting from scratch
