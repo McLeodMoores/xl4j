@@ -76,12 +76,6 @@ Just for reference, here is some example Java code that constructs a yield curve
   ``` java
   /** The trade date */
   private static final LocalDate TRADE_DATE = LocalDate.of(2016, 10, 3);
-  /** The instrument types */
-  private static final String[] INSTRUMENT_TYPE_STRINGS = new String[] {"M", "M", "M", "S", "S",
-      "S", "S", "S", "S", "S"};
-  /** The tenors */
-  private static final String[] TENOR_STRINGS = new String[] {"3M", "6M", "9M", "1Y", "2Y",
-      "3Y", "4Y", "5Y", "7Y", "10Y"};
   /** The quotes */
   private static final double[] QUOTES = new double[] {0.001, 0.0011, 0.0012, 0.002, 0.0035,
       0.006, 0.01, 0.015, 0.025, 0.04};
