@@ -64,7 +64,7 @@ files:
  3. Next to the dropdown list towards the botton, click 'Go'.
  
  # Using Java projects from Excel
- ## Using existing libraries (1)
+ ## A simple wrapper
  
  In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
   - A yield curve
@@ -120,18 +120,62 @@ files:
         DayCountFactory.INSTANCE.instance(CURVE_DAY_COUNT), BusinessDayConventionFactory.INSTANCE.instance(BDC),
         CALENDAR);
     CURVE = builder.build(QUOTES);
+    }
   ```
- The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed from Excel. This will allow much more straightforward pricing functions to be written later, as the correct convention can be pulled from a table using the currency of the CDS trade.
+ The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed in Excel. This means that conventions can be stored in Excel tables.
  
  ### The conventions
 We've added two POJOs, ```IdsaYieldCurveConvention``` and ```IsdaCdsConvention``` that contain all of the convention information for yield curves and CDS, and a utility class, ```ConventionFunctions```, that contains static Excel functions that build these objects.
  
- The yield curve convention constructor is simple: all fields are required and can be represented as ```String``` or ```int```. 
-It takes Excel types (```XLString, XLNumber```) as arguments, which means that there is no type conversion done on the Java side before this function is called.
+ The yield curve convention builder is simple: all fields are required and can be represented as ```String``` or ```int```. 
+This method takes Excel types (```XLString, XLNumber```) as arguments, which means that there is no type conversion done on the objects coming from the add-in.
 
  ``` java
+   @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
+  public static IsdaYieldCurveConvention buildYieldCurveConvention(
+      @XLArgument(description = "Money Market Day Count", name = "Money Market Day Count") final XLString xlMoneyMarketDayCountName,
+      @XLArgument(description = "Swap Day Count", name = "Swap Day Count") final XLString xlSwapDayCountName,
+      @XLArgument(description = "Swap Interval", name = "Swap Interval") final XLString xlSwapIntervalName,
+      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
+      @XLArgument(description = "Spot Days", name = "spotDays") final XLNumber xlSpotDays) {
+    final DayCount moneyMarketDayCount = DayCountFactory.INSTANCE.instance(xlMoneyMarketDayCountName.getValue());
+    final DayCount swapDayCount = DayCountFactory.INSTANCE.instance(xlSwapDayCountName.getValue());
+    final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(xlCurveDayCountName.getValue());
+    final BusinessDayConvention businessDayConvention = BusinessDayConventionFactory.INSTANCE.instance(xlBusinessDayConventionName.getValue());
+    final Period swapInterval = parsePeriod(xlSwapIntervalName.getValue());
+    return new IsdaYieldCurveConvention(moneyMarketDayCount, swapDayCount, swapInterval, curveDayCount, businessDayConvention, xlSpotDays.getAsInt());
+  }
  ```
- **point out possibly null values and ways to deal with them**
+ The ```@XLFunction``` annotation means that this method is available from Excel. The fields are self-explanatory: the name of the function, a more detailed description and the category that the function will appear in. None of these properties are mandatory - the default value for the name is the method name, the class name for the category and an empty description if they are not filled in. There are other properties that will be discussed in more detail later. The ```@XLArgument``` properties have the same meaning as those in the function annotation.
+ 
+ After this function is built, it can be called from Excel
+ ** picture **
+ ** picture **
+ 
+ The CDS convention builder is very similar to the yield curve convention builder, but some one the fields are optional:
+ ``` java
+   @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
+  public static IsdaCdsConvention buildCdsConvention(
+      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final XLString xlAccrualDayCountName,
+      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
+      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
+      @XLArgument(description = "Coupon Interval", name = "Coupon Interval", optional = true) final XLString xlCouponInterval,
+      @XLArgument(description = "Stub Type", name = "Stub Type", optional = true) final XLString xlStubType,
+      @XLArgument(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final XLNumber xlCashSettlementDays,
+      @XLArgument(description = "Step In Days", name = "Step In Days", optional = true) final XLNumber xlStepInDays,
+      @XLArgument(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final XLBoolean xlPayAccrualOnDefault) {
+    final String stubType = xlStubType == null ? null : xlStubType.getValue();
+    final Integer cashSettlementDays = xlCashSettlementDays == null ? null : xlCashSettlementDays.getAsInt();
+    final Integer stepInDays = xlStepInDays == null ? null : xlStepInDays.getAsInt();
+    final Boolean payAccrualOnDefault = xlPayAccrualOnDefault == null ? null : xlPayAccrualOnDefault.getValue();
+    return new IsdaCdsConvention(xlAccrualDayCountName.getValue(), xlCurveDayCountName.getValue(), xlBusinessDayConventionName.getValue(),
+        xlCouponInterval.getValue(), stubType, cashSettlementDays, stepInDays, payAccrualOnDefault);
+  }
+ ```
+As optional values are passed in as nulls, it's necessary to test for them and handle appropriately. Optional values are dealt with in the usual Excel way by leaving the field blank:
+**picture**
+
  
  ## Starting from scratch
  ## Using existing code (2)
