@@ -66,7 +66,7 @@ files:
 # Using Java projects from Excel
 ## A simple wrapper
  
-In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Java. To get pricing and risk metrics, we need 
+In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Excel. To get pricing and risk metrics, we need 
   - A yield curve
   - A CDS curve
   - A CDS trade definition
@@ -124,6 +124,7 @@ Just for reference, here is some example Java code that constructs a yield curve
   ```
 The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed in Excel. This means that conventions can be stored in Excel tables.
  
+** TODO links to all of the classes referenced **
 ### The conventions
 We've added two POJOs, ```IdsaYieldCurveConvention``` and ```IsdaCdsConvention``` that contain all of the convention information for yield curves and CDS, and a utility class, ```ConventionFunctions```, that contains static Excel functions that build these objects.
  
@@ -176,10 +177,27 @@ The CDS convention builder is very similar to the yield curve convention builder
         xlCouponInterval.getValue(), stubType, cashSettlementDays, stepInDays, payAccrualOnDefault);
   }
  ```
-As optional values are passed in as nulls, it's necessary to test for them and handle appropriately. Optional values are dealt with in the usual Excel way by leaving the field blank:
+As optional values are passed in as nulls, it's necessary to test for them and handle appropriately. Optional values are dealt with in the usual Excel way by leaving the argument blank in the formula:
 
 ![CDS convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/CDSConvention.png)
 
+ The next stage is to actually construct the yield and CDS curves. Again, the wrapper class has been written with various static methods that call into the starling code. For these methods, the arguments are standard Java objects (e.g. double[]) rather than ```XLValue```, which means that type conversion is performed automatically. This means that we don't have to think about how to deal with arrays (what if the data were passed in as a row? a column?), as well as cutting down on the boilerplate of unwrapping and casting these objects to the types that are needed.
+ 
+ ``` java
+   @XLFunction(name = "ISDAYieldCurve.BuildCurveFromConvention", category = "ISDA CDS model",
+      description = "Build a yield curve using the ISDA methodology")
+  public static ISDACompliantYieldCurve buildYieldCurve(
+      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLArgument(description = "Instrument Types", name = "Instrument Types") final String[] instrumentTypeNames,
+      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLArgument(description = "Quotes", name = "Quotes") final double[] quotes,
+      @XLArgument(description = "Convention", name = "Convention") final IsdaYieldCurveConvention convention,
+      @XLArgument(description = "Spot Date", name = "Spot Date", optional = true) final LocalDate spotDate,
+      @XLArgument(description = "Holidays", name = "Holidays", optional = true) final LocalDate[] holidayDates) {
+ ```
+ This class contains two methods that construct yield curves; one that takes a convention object and another that constructs the convention itself. Note that although the methods are overloaded in the Java code, as you'd expect, the names of the functions are different. All function names in Excel must be unique; if a function has already been registered with the name, this is logged and the function ignored.
+ 
+ 
  
  ## Starting from scratch
  ## Using existing code (2)
