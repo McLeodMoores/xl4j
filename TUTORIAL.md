@@ -151,7 +151,7 @@ After this function is built, it can be called from Excel
 ![Second yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention2.png)
 
  
-The CDS convention builder is very similar to the yield curve convention builder, but some one the fields are optional:
+The CDS convention builder is very similar to the yield curve convention builder, but some fields are optional:
  ``` java
    @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
   public static IsdaCdsConvention buildCdsConvention(
