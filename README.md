@@ -47,11 +47,10 @@ of object handles.  This means you can store any complex object in a single Exce
  - All the types of functions and features normally available to Excel XLLs
    - Volatile functions `@XLFunction(volatile=true)` which are always recalculated (e.g. =TODAY()).
    - Macro-equivalent functions `@XLFunction(isMacroEquivalent=true)` run single-threaded but can call more Excel
-     APIs such as those that modify other cells (useful for dumping data onto a sheet without using an array formula).
+     APIs such as those that modify other cells (useful for dumping data onto a sheet without using an array formula). **THIS ISN'T CURRENTLY HUGELY USEFUL BECAUSE CALLBACKS ARE NOT YET AVAILABLE**
    - Multi-thread safe functions `@XLFunction(isMultiThreadSafe=true)` which Excel can call from multiple calculation threads.
      This is the default.
-   - Asynchronous functions `@XLFunction(isAsynchronous=true)` which enable long-running operations to run while Excel continues
-     and explicitly notify Excel of a result. **CURRENTLY IN DEVELOPMENT**.
+   - Asynchronous functions `@XLFunction(isAsynchronous=true)` which enable long-running operations to not block Excel
  - Call XLL API from different contexts
    - XLL API calls can be made from the caller's Excel calculation thread or from the Excel main thread depending on context required.  
      Excel documentation specifies that many API calls can only be safely made from the main Excel thread. **CURRENTLY IN DEVELOPMENT**
