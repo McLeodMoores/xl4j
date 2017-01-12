@@ -88,7 +88,7 @@ By default there are toolbar icons for opening the settings dialog, and opening 
 `.log` file viewer).  These can be disabled for end users if preferred.
  - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
  
- ![Toolbar](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/toolbar.PNG "The default toolbar")
+ ![Toolbar](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/toolbar.png "The default toolbar")
  
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software - you 
