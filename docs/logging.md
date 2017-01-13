@@ -20,8 +20,6 @@ Configuration of the logging system is covered in the [Settings](https://github.
 guide but as an overview, you can configure each logging system to produce output from log statements at a number of different logging 
 levels.  These are summarised below:
 
-
-|-----------|------------------------------------------------------------------------------------------------------------|
 | Log Level | Purpose                                                                                                    |
 |-----------|------------------------------------------------------------------------------------------------------------|
 | `TRACE`   | Very fine-grained flow of execution through the code, this provides typically almost excessive detail      |
@@ -30,7 +28,6 @@ levels.  These are summarised below:
 | `WARN`    | Messages indicating possible errors during execution                                                       |
 | `ERROR`   | Indication of error conditions which may, or may not be fatal                                              |
 | `FATAL`   | Indication of error conditions which are definitely fatal to execution                                     |
-|-----------|------------------------------------------------------------------------------------------------------------|
 
 # Log target for C++
 Logs from the native part of the add-in [can be configured](https://github.com/McLeodMoores/xl4j/blob/master/docs/settings.md)
