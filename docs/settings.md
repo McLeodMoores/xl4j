@@ -22,7 +22,7 @@ The default tab here is for options relating to the whole Add-in:
      section below on how to do this.
  * C++ Logging Options
    - Radio buttons to determine whether to send C++ logging to a file (opened via the toolbar), or to Windows Debug, which can be viewed
-     using visual studio or `DebugView.exe`.  The latter is quite convenient, although the performance leaves something to be desired.
+     using Visual Studio or `DebugView.exe`.  The latter is quite convenient, although the performance leaves something to be desired.
    - A combo box allowing you to choose the logging level.  `TRACE` is the most detailed and `FATAL` is the least. It is recommended 
      not to have anything below `WARN` during normal operation as the logging causes a significant performance hit.
 
