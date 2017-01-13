@@ -16,9 +16,10 @@ In practice, C++ logging is primarily for the development of new native (C++) fe
 logs more useful.
 
 # Configuration
-Configuration of the logging system is covered in the [Settings](https://github.com/McLeodMoores/xl4j/blob/master/docs/settings.md) guide
-but as an overview, you can configure each logging system to produce output from log statements at a number of different logging levels.
-These are summarised below:
+Configuration of the logging system is covered in the [Settings](https://github.com/McLeodMoores/xl4j/blob/master/docs/settings.md) 
+guide but as an overview, you can configure each logging system to produce output from log statements at a number of different logging 
+levels.  These are summarised below:
+
 
 |-----------|------------------------------------------------------------------------------------------------------------|
 | Log Level | Purpose                                                                                                    |
