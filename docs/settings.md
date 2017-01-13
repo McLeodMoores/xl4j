@@ -84,7 +84,7 @@ parse and well understood.  When you first activate the Add-in, it will check fo
     `C:\Users\<username>\Download\xl4j-0.1.0\bin-x86\default.ini` or perhaps on a shared network drive.
     
 The behaviour is that if `default.ini` file is found in **1** that is used, otherwise the system checks in **2**.  If the file is 
-found in **2**, it is copied to location **1** and there after any modification are made to this copy.  This means users aren't 
+found in **2**, it is copied to location **1** and thereafter any modification are made to this copy.  This means users aren't 
 always altering each-others settings if the Add-in is deployed on a network drive, but allows admins to distribute default settings
 very easily.  Note that if no file is found in either **1** or **2**, an empty file is created in **2**.  XL4J is written to assume
 sensible defaults in the absence of any configuration and if any particular setting is missing from the configuration file, it will
