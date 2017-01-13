@@ -90,3 +90,42 @@ very easily.  Note that if no file is found in either **1** or **2**, an empty f
 sensible defaults in the absence of any configuration and if any particular setting is missing from the configuration file, it will
 fall back to an in-built default value.
 
+## Small example file
+```
+[Addin]
+GarbageCollection=Enabled
+ShowToolbar=Enabled
+LogViewer=NOTEPAD.EXE
+LogLevel=TRACE
+LogTarget=WinDebug
+[Auto Options]
+Logback=WARN
+Debug=Enabled
+CheckJNI=Enabled
+[Options]
+v1=-Dquandl.auth.token=U4c8PuHYsa61ECEorSGC
+```
+
+## Reference
+There are four sections currently supported by the format - sections are named groups of key value pairs with the name appearing within 
+square brackets.  The key/value pairs that follow a section header are separated by an `=` sign.  The supported sections are
+
+| Section Name | Corresponding tab on Settings dialog |
+|--------------|--------------------------------------|
+| Addin        | Add-in                               |
+| Auto Options | VM Options (common options at top)   |
+| Options      | VM Options (custom options list)     |
+| Classpath    | Classpath                            |
+
+We'll look at each one in turn.
+
+### Addin
+This is a normal key/value pair section, with pre-known keys and sets of possible valid values.  In the case the value is invalid, the
+add-in will use it's default, so be careful to get the values correct when manually manipulating files settings files.
+
+| Key name            | Possible values       | Value if invalid | Value if missing | Notes                                           |
+|---------------------|-----------------------|------------------|------------------|-------------------------------------------------|
+| `GarbageCollection` | `Enabled`, `Disabled` | `Disabled`       | `Enabled`        | Not implemented, should be `Enabled` if invalid |
+| `ShowToolbar`       | `Enabled`, `Disabled` | `Disabled`       | `Enaabled`       | Should be `Enabled` if invalid but isn't        |
+| `LogTarget`         | `File`, `WinDebug`    | `WinDebug`       | `WinDebug`       | This is C++ logging output, see logging section |
+| `LogLevel`          | `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL`, `NONE` | `ERROR` | `ERROR` | C++ logging level, see logging section |
