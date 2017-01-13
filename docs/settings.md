@@ -129,3 +129,37 @@ add-in will use it's default, so be careful to get the values correct when manua
 | `ShowToolbar`       | `Enabled`, `Disabled` | `Disabled`       | `Enaabled`       | Should be `Enabled` if invalid but isn't        |
 | `LogTarget`         | `File`, `WinDebug`    | `WinDebug`       | `WinDebug`       | This is C++ logging output, see logging section |
 | `LogLevel`          | `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL`, `NONE` | `ERROR` | `ERROR` | C++ logging level, see logging section |
+
+### Auto Options
+This is also a normal key/value pair section, with pre-known keys, although values in this case can be directly user supplied and
+are not validated before passing to the JVM so care is required.
+
+| Key name | Possible values | Value if invalid | Value if missing | Notes |
+|----------|-----------------|------------------|------------------|-------|
+| Debug | `Enabled`, `Disabled` | `Disabled` | `Disabled` | Settings dialog will not preserve entry if not `Enabled` |
+| CheckJNI | `Enabled`, `Disabled` | `Disabled` | `Disabled` | Settings dialog will not preserve entry if not `Enabled` |
+| MaxHeap | Arbitrary string, e.g. `2048M` | Poss. JVM Error | None | |
+| RemoteDebugging | `Enabled`, `Disabled` | `Disabled` | `Disabled` | Settings dialog will not preserve entry if not `Enabled` |
+| Logback | `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL`, `NONE` | Logback default | Logback default | Settings dialog will not preserve entry if not valid |
+
+### Options
+This is an ordered list section.  In this case the keys are simply the string `v`*x*, where x is a 1-based ascending integer (i.e.
+keys are `v1`, `v2`, `v3` etc.  Each value is an option string to be passed directly to the JVM command line with no validation or checking, so be careful.  A small example section follows:
+```
+[Options]
+v1=-Xms256m
+v2=-agentlib:hprof
+v3=-ea
+```
+
+### Classpath
+Again, this is an ordered list section.  Again, the keys are simple the string `v`*x*, where x is a 1-based ascending integer (i.e.
+keys are `v1`, `v2`, `v3` etc.  Each value is a jar or directory to be added to the classpath.  In the case of directories, the
+directory will be searched an any individual jars contained within will be added as separate entries.  A small example section follows:
+```
+[Classpath]
+v1=C:\lib\xerces.jar
+v2=C:\lib\apache-commons-lib\
+v3=C:\lib\dom4j.jar
+v4=C:\Users\MyUser\myproj\build
+```
