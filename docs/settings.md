@@ -85,7 +85,7 @@ parse and well understood.  When you first activate the Add-in, it will check fo
     
 The behaviour is that if `default.ini` file is found in **1** that is used, otherwise the system checks in **2**.  If the file is 
 found in **2**, it is copied to location **1** and thereafter any modification are made to this copy.  This means users aren't 
-always altering each-others settings if the Add-in is deployed on a network drive, but allows admins to distribute default settings
+always altering each others settings if the Add-in is deployed on a network drive, but allows admins to distribute default settings
 very easily.  Note that if no file is found in either **1** or **2**, an empty file is created in **2**.  XL4J is written to assume
 sensible defaults in the absence of any configuration and if any particular setting is missing from the configuration file, it will
 fall back to an in-built default value.
@@ -108,7 +108,7 @@ v1=-Dquandl.auth.token=U4c8PuHYsa61ECEorSGC
 
 ## Reference
 There are four sections currently supported by the format - sections are named groups of key value pairs with the name appearing within 
-square brackets.  The key/value pairs that follow a section header are separated by an `=` sign.  The supported sections are
+square brackets.  The key/value pairs that follow a section header are separated by an `=` sign.  The supported sections are:
 
 | Section Name | Corresponding tab on Settings dialog |
 |--------------|--------------------------------------|
@@ -121,18 +121,18 @@ We'll look at each one in turn.
 
 ### Addin
 This is a normal key/value pair section, with pre-known keys and sets of possible valid values.  In the case the value is invalid, the
-add-in will use it's default, so be careful to get the values correct when manually manipulating files settings files.
+add-in will use its default, so be careful to get the values correct when manually manipulating settings files.
 
 | Key name            | Possible values       | Value if invalid | Value if missing | Notes                                           |
 |---------------------|-----------------------|------------------|------------------|-------------------------------------------------|
 | `GarbageCollection` | `Enabled`, `Disabled` | `Disabled`       | `Enabled`        | Not implemented, should be `Enabled` if invalid |
-| `ShowToolbar`       | `Enabled`, `Disabled` | `Disabled`       | `Enaabled`       | Should be `Enabled` if invalid but isn't        |
+| `ShowToolbar`       | `Enabled`, `Disabled` | `Disabled`       | `Enabled`       | Should be `Enabled` if invalid but isn't        |
 | `LogTarget`         | `File`, `WinDebug`    | `WinDebug`       | `WinDebug`       | This is C++ logging output, see logging section |
 | `LogLevel`          | `TRACE`, `DEBUG`, `INFO`, `WARN`, `ERROR`, `FATAL`, `NONE` | `ERROR` | `ERROR` | C++ logging level, see logging section |
 
 ### Auto Options
 This is also a normal key/value pair section, with pre-known keys, although values in this case can be directly user supplied and
-are not validated before passing to the JVM so care is required.
+are not validated before passing to the JVM, so care is required.
 
 | Key name | Possible values | Value if invalid | Value if missing | Notes |
 |----------|-----------------|------------------|------------------|-------|
@@ -144,7 +144,7 @@ are not validated before passing to the JVM so care is required.
 
 ### Options
 This is an ordered list section.  In this case the keys are simply the string `v`*x*, where x is a 1-based ascending integer (i.e.
-keys are `v1`, `v2`, `v3` etc.  Each value is an option string to be passed directly to the JVM command line with no validation or checking, so be careful.  A small example section follows:
+keys are `v1`, `v2`, `v3` etc.).  Each value is an option string to be passed directly to the JVM command line with no validation or checking, so be careful.  A small example section follows:
 ```
 [Options]
 v1=-Xms256m
@@ -153,9 +153,9 @@ v3=-ea
 ```
 
 ### Classpath
-Again, this is an ordered list section.  Again, the keys are simple the string `v`*x*, where x is a 1-based ascending integer (i.e.
-keys are `v1`, `v2`, `v3` etc.  Each value is a jar or directory to be added to the classpath.  In the case of directories, the
-directory will be searched an any individual jars contained within will be added as separate entries.  A small example section follows:
+Again, this is an ordered list section, and the keys are simply the string `v`*x*, where x is a 1-based ascending integer (i.e.
+keys are `v1`, `v2`, `v3` etc.).  Each value is a jar or directory to be added to the classpath.  In the case of directories, the
+directory will be searched and any individual jars contained within will be added as separate entries.  A small example section follows:
 ```
 [Classpath]
 v1=C:\lib\xerces.jar
