@@ -32,7 +32,7 @@ The default tab here is for options relating to the whole Add-in:
 
 By default, the classpath is set to include all the jars in the `lib/` directory in the root of the installation directory.  This dialog
 lets you include other jars or folders (folders will be searched for all contained jars).  Both the **Add JAR...** and **Add Folder...**
-buttons open file dialogs that support selecting more than one file.  Entries can be removed and reorded by selecting and using the 
+buttons open file dialogs that support selecting more than one file.  Entries can be removed and reordered by selecting and using the 
 arrow buttons to the right of the list and **Remove** button at the bottom.  These entries will come *before* the automatically added
 entries, allowing you to override classes included in the Add-in distribution.
 
