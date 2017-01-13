@@ -36,7 +36,7 @@ buttons open file dialogs that support selecting more than one file.  Entries ca
 arrow buttons to the right of the list and **Remove** button at the bottom.  These entries will come *before* the automatically added
 entries, allowing you to override classes included in the Add-in distribution.
 
-Note that classpath changes will not currently take effect until you restart Excel (This is a limitation of the Oracle JVM in that it
+Note that classpath changes will not currently take effect until you restart Excel (this is a limitation of the Oracle JVM in that it
 doesn't support being restarted when run in-process).
 
 ### Quick turn-around development
@@ -67,7 +67,7 @@ list and then clicking **Edit...** and similarly, you can remove options by high
 The order that options are passed to the JVM can be altered by highlighting options and using the up and down arrows to the right of the
 list to move them.  Any changes can be aborted by clicking **Cancel** or confirmed by clicking **OK**.
 
-Note that VM options will not currently take effect until you restart Excel (This is a limitation of the Oracle JVM in that it
+Note that VM options will not currently take effect until you restart Excel (this is a limitation of the Oracle JVM in that it
 doesn't support being restarted when run in-process).
 
 # Configuration file
