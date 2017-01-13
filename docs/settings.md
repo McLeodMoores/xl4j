@@ -64,7 +64,7 @@ used and useful options have been made available to save the developer from havi
 in addition to these easy-to-use common options, you can configure any custom VM options you like.  Just click the **Add...** button
 and enter the full option (including any minus signs) and click okay.  You can edit existing options by highlighting them in the 
 list and then clicking **Edit...** and similarly, you can remove options by highlighting in the list and clicking the **Remove** button.
-The order than options are passed to the JVM can be altered by highlighting options and using the up and down arrows to the right of the
+The order that options are passed to the JVM can be altered by highlighting options and using the up and down arrows to the right of the
 list to move them.  Any changes can be aborted by clicking **Cancel** or confirmed by clicking **OK**.
 
 Note that VM options will not currently take effect until you restart Excel (This is a limitation of the Oracle JVM in that it
