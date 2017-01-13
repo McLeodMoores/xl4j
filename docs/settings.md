@@ -1,5 +1,5 @@
-Settings
-========
+Settings and Configuration
+==========================
 
 XL4J stores all its settings in an `.ini` style file rather than the registry. This makes it easier for developers and admins to manage 
 the configuration and makes it less likely that there will be issues with permissions.  To make configuration easier to manage, you can
