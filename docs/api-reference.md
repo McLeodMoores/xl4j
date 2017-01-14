@@ -6,7 +6,7 @@ API Reference
 This annotation applies at the class level and specifies a prefix to be prepended to all `@XLFunction` annotated functions within
 the specificied class.  This allows you to easily add, for example, a company-specific prefix to all your functions, and to easily
 change it.  For example, in the xll-java project, there are functions for creating java objects and calling methods, etc.  These use
-this annotation to prefix all the functions defined with the letter 'J'.  Below is an abridged version of the source code to demonstate
+this annotation to prefix all the functions defined with the letter 'J'.  Below is an abridged version of the source code to demonstrate:
 
 ```java
 @XLNamespace("J")
