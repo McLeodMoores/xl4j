@@ -28,6 +28,7 @@ This annotation applies at the method level, and is used to indicate methods tha
 be registered with Excel.  There are an number of argument to enable different features:
 
 | Argument name | Type | Required? | Default Value | Description |
+|---------------|------|-----------|---------------|-------------|
 | `name` | `String` | No | The method name will be transformed into Pascal case | The name with which to register the function with Excel, with 
 any `@XLNamespace` prepended. This name, together with the namespace, should typically match the Excel style of Pascal case with an initial uppercase letter. |
 | `category` | `String` | No | the containing class name (excluding any package qualification) | The category in which the function
