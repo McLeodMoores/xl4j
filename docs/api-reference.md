@@ -20,4 +20,8 @@ public final class JConstruct {
   ...
 }
 ```
-As you can see, the annotations takes a single argument which defines the namespace prefix to be used.
+As you can see, the annotations takes a single argument which defines the namespace prefix to be used.  In this case, the resulting
+new user defined function is called using `JConstruct`.
+
+### @XLFunction
+This annotation applies at the method or class level.
