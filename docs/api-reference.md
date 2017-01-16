@@ -42,3 +42,18 @@ be registered with Excel.  There are an number of argument to enable different f
 | `isAutoAsynchronous` | `boolean` | No | `false` | Tell the add-in to register the function as asynchronous, but to handle the blocking callback within the add-in transparently and use the add-ins asynchronous thread pool to execute the function. |
 | `isManualAsynchronous` | `boolean` | No | `false` | Register an asynchronous function, but handle the callback manually.  This is not currently supported and is just the same as `isAutoAsynchronous`.  It should not currently be used. |
 | `isCallerRequired` | `boolean` | No | `false` | Tell the add-in to pass the caller information (the cell reference the calculation is taking place in, for example) as the first parameter to the method.  This is not currently supported and should not be used. |
+
+
+### @XLParameter
+This annotation applies to parameters to the method implementing a user-defined function (which should have been annotated with 
+`@XLFunction`) and is used to supply meta-data about each parameter to Excel during function registration.  Below is a list of the
+available annotation arguments.
+
+| Argument name | Type | Req? | Default Value | Description |
+|---------------|------|-----------|---------------|-------------|
+| `name` | `String` | No | param name if avail. else param*x* | The name of the parameter, as it is to appear in the Insert function dialog. | 
+| `description` | `String` | No | `""` | The description of the parameter, as it is to appear in the Insert function dialog. |
+| `optional` | `boolean` | No | `false` | Whether the argument should be considered optional.  Optional parameters will be passed as `null` if not provided otherwise an Exception will be thrown. |
+| `referenceType` | `boolean` | No | `false` | This indicates whether an argument should be registered as being a reference type (e.g.
+an `XLLocalReference` or `XLMultiReferences` or `XLArray` byref. This will probably only work with commands rather than functions and
+hasn't been tested. |
