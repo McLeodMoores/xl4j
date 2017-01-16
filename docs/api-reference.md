@@ -70,3 +70,38 @@ fields of the class.
 | `description` | `String` | No | `""` | The description of the function, as displayed in the Insert function dialog in Excel. |
 | `helpTopic` | 'String' | No | `""` | The help topic under which this function should appear in Excel help. |
 | `typeConversionMode` | `TypeConversionMode` | No | `TypeConversionMode` `.SIMPLEST_RESULT` | Indicates to the Java/Excel type  conversion system what type of type conversions are desired.  Options are `SIMPLEST_RESULT`, which converts results into the most  primitive type possible (e.g. an Excel Number `XLNumber` rather than a java.lang.Double object handle); `OBJECT_RESULT`, which forces the type conversion system to return an object handle (possibly boxing the value) and; `PASSTHROUGH`, which is used only by the type conversion system itself when performing conversions recursively (e.g. on the elements on an array) to avoid types being converted more than once. |
+
+## The type system
+XL4J includes types that directly mirror the types used by Excel:
+
+### XLNumber
+This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
+`Inf` (infinity) or `NaN` (not-a-number).
+
+#### Dates and times
+**Dates** and **times** are actually represented using `XLNumber` - the number represents the number of days since either 0th January
+1900 (yes, the day before 1st January 1900, there is a reason of sorts!) or 0th January 1904, depending on whether the worksheet is in
+1900 or 1904 mode.  
+
+1904 mode is used in the Mac version of Excel for historical reasons.  Which mode is used for a given workbook is configured from the
+options section in Excel.  For Windows-created sheets it will always be 1900-mode unless specifically set up otherwise.  There is 
+another twist though.  Normally, years that start centuries that aren't a multiple of 100 skip a leap year (unless the year is also
+a multiple of 400 years).  This means the year 1900 should have skipped a leap year.  However, Excel counts the 29th February as a
+valid day, although it supresses it - this is why the day count starts on 0th January, to remove the extra day.  This was originally
+done for efficiency reasons in Lotus 1-2-3, because it means you can every forth year is a leap year without needing special logic for 
+1900, which is faster.
+
+### XLString
+This wraps a string type.  This can be a unicode string up to 32K characters long.
+
+### XLBoolean
+| XLArray          |
+| XLError          |
+| XLNil            |
+| XLBigData        |
+| XLLocalReference |
+| XLMultiReference |
+| XLMissing        |
+| XLRange          |
+| XLSheetId        |
+| XLObject         | This is not a direct analogue of an Excel type, but rather a special case of an XLString class that encodes an object handle prefixed with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being present. |
