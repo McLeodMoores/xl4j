@@ -15,8 +15,17 @@
 volatile long g_lActiveObjects = 0;
 
 HRESULT APIENTRY DllGetClassObject (REFCLSID clsid, REFIID iid, LPVOID *ppv) {
+	LOGTRACE("Called");
 	if (!ppv) return E_POINTER;
 	if (clsid == CLSID_JvmSupport) {
+		LPOLESTR szInterfaceName;
+		if (SUCCEEDED(StringFromIID(iid, &szInterfaceName))) {
+			LOGERROR("requested interface was %s", szInterfaceName);
+			CoTaskMemFree(szInterfaceName);
+		}
+		if (iid != IID_IJvmSupport) {
+			LOGERROR("Trying to get class object for %x-%x%x%x", iid.Data1, iid.Data2, iid.Data3, iid.Data4);
+		}
 		HRESULT hr;
 		CJvmSupportFactory *pFactory = NULL;
 		try {
@@ -26,13 +35,19 @@ HRESULT APIENTRY DllGetClassObject (REFCLSID clsid, REFIID iid, LPVOID *ppv) {
 			hr = E_OUTOFMEMORY;
 		}
 		if (pFactory) pFactory->Release ();
+		if (FAILED(hr)) {
+			LOGTRACE("Falling through to ProxyDllGetClassObject");
+			return ProxyDllGetClassObject(clsid, iid, ppv);
+		}
 		return hr;
 	} else {
+		LOGTRACE("Falling through to ProxyDllGetClassObject");
 		return ProxyDllGetClassObject (clsid, iid, ppv);
 	}
 }
 
 HRESULT APIENTRY RegisterTypeLibrary () {
+	LOGTRACE("Called");
 	HRESULT hr;
 	HMODULE hModule;
 	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)DllGetClassObject, &hModule)) {
@@ -68,7 +83,34 @@ HRESULT APIENTRY RegisterTypeLibrary () {
 	return S_OK;
 }
 
+static HRESULT RegisterAppIDEntry(HKEY hkeyRoot) {
+	LOGTRACE("Called");
+	HRESULT hr;
+	HKEY hkeyAppID;
+	TCHAR szKey[MAX_PATH];
+	DWORD dwError = RegCreateKeyEx(hkeyRoot, TEXT("SOFTWARE\\Classes\\AppID\\{2027AC1B-AB3E-4BE5-A98F-CB499990EA0E}"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkeyAppID, NULL);
+	if (dwError == ERROR_SUCCESS) {
+		dwError = RegSetValueEx(hkeyAppID, NULL, 0, REG_SZ, (LPBYTE)TEXT("XL4J AppID"), 11 * sizeof(TCHAR));
+		if (dwError == ERROR_SUCCESS) {
+			dwError = RegSetValueEx(hkeyAppID, TEXT("DllSurrogate"), 0, REG_SZ, (LPBYTE)TEXT(""), 1 * sizeof(TCHAR));
+			if (dwError != ERROR_SUCCESS) {
+				LOGERROR("Error creating DllSurrogate entry for AppID registry key");
+				return HRESULT_FROM_WIN32(dwError);
+			}
+		} else { 
+			LOGERROR("Error creating root entry for AppID registry entry");
+			return HRESULT_FROM_WIN32(dwError);
+		}
+		RegCloseKey(hkeyAppID);
+	} else {
+		LOGERROR("Error creating AppID registry entry");
+		return HRESULT_FROM_WIN32(dwError);
+	}
+	return S_OK;
+}
+
 static HRESULT RegisterServer (HKEY hkeyRoot) {
+	LOGTRACE("Called");
 	HRESULT hr;
 	HKEY hkeyCLSID;
 	LPOLESTR lpsz;
@@ -80,8 +122,21 @@ static HRESULT RegisterServer (HKEY hkeyRoot) {
 	if (FAILED (hr)) return hr;
 	DWORD dwError = RegCreateKeyEx (hkeyRoot, szKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkeyCLSID, NULL);
 	if (dwError == ERROR_SUCCESS) {
-		dwError = RegSetValueEx (hkeyCLSID, NULL, 0, REG_SZ, (LPBYTE)TEXT ("BeerDragon.JvmSupport.1"), 12 * sizeof (TCHAR));
-		if (dwError != ERROR_SUCCESS) hr = HRESULT_FROM_WIN32 (dwError);
+		dwError = RegSetValueEx(hkeyCLSID, NULL, 0, REG_SZ, (LPBYTE)TEXT("ComJvmCore.JvmSupport.1"), 24 * sizeof(TCHAR));
+		if (dwError != ERROR_SUCCESS) {
+			LOGERROR("Could not create default value on CLSID registry entry");
+			hr = HRESULT_FROM_WIN32(dwError);
+		}
+		dwError = RegSetValueEx(hkeyCLSID, TEXT("AppID"), 0, REG_SZ, (LPBYTE)TEXT("{2027AC1B-AB3E-4BE5-A98F-CB499990EA0E}"), 38 * sizeof(TCHAR));
+		if (dwError != ERROR_SUCCESS) {
+			LOGERROR("Could not create AppID value on CLSID registry entry");
+			hr = HRESULT_FROM_WIN32(dwError);
+		}
+	} else {
+		_com_error err(HRESULT_FROM_WIN32(dwError));
+		LOGERROR("Could not create class entry %s: %s", szKey, err.ErrorMessage());
+	}
+	if (dwError == ERROR_SUCCESS) {
 		HKEY hkeyServer;
 		dwError = RegCreateKeyEx (hkeyCLSID, TEXT ("InprocServer32"), 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkeyServer, NULL);
 		if (dwError == ERROR_SUCCESS) {
@@ -109,19 +164,29 @@ static HRESULT RegisterServer (HKEY hkeyRoot) {
 		}
 		RegCloseKey (hkeyCLSID);
 	} else {
+		LOGERROR("Could not create class key");
 		hr = HRESULT_FROM_WIN32 (dwError);
 	}
 	if (SUCCEEDED(hr)) {
 		hr = RegisterTypeLibrary ();
 	}
+	if (SUCCEEDED(hr)) {
+		hr = RegisterAppIDEntry (hkeyRoot);
+	}
+	if (FAILED(hr)) {
+		_com_error err(hr);
+		LOGERROR("Problem registering AppID: %s", err.ErrorMessage());
+	}
 	return hr;
 }
 
 static HRESULT UnregisterTypeLibrary () {
+	LOGTRACE("Called");
 	return UnRegisterTypeLibForUser (LIBID_ComJvmCore, 1, 0, 0, SYS_WIN32);
 }
 
 static HRESULT UnregisterServer (HKEY hkeyRoot) {
+	LOGTRACE("Called");
 	HRESULT hr;
 	LPOLESTR lpsz;
 	hr = StringFromCLSID (CLSID_JvmSupport, &lpsz);
@@ -135,23 +200,30 @@ static HRESULT UnregisterServer (HKEY hkeyRoot) {
 	if (SUCCEEDED (hr)) {
 		hr = UnregisterTypeLibrary ();
 	}
+	if (SUCCEEDED(hr)) {
+		dwError = RegDeleteTree(hkeyRoot, TEXT("SOFTWARE\\Classes\\AppID\\{2027AC1B-AB3E-4BE5-A98F-CB499990EA0E}"));
+		hr = HRESULT_FROM_WIN32 (dwError);
+	}
 	return hr;
 }
 
 HRESULT APIENTRY DllRegisterServer () {
+	LOGTRACE("Called");
 	HRESULT hr;
 	hr = RegisterServer (HKEY_LOCAL_MACHINE);
-	if (FAILED (hr)) {
-		hr = RegisterServer (HKEY_CURRENT_USER);
-	} else {
-		hr = ProxyDllRegisterServer ();
+	if (FAILED(hr)) {
+		hr = RegisterServer(HKEY_CURRENT_USER);
 	}
+	// this was in an else block for HKCU
+	LOGTRACE("Calling ProxyDllRegisterServer");
+	hr = ProxyDllRegisterServer();
 	return hr;
 }
 
 HRESULT APIENTRY DllUnregisterServer () {
 	UnregisterServer (HKEY_CURRENT_USER);
 	UnregisterServer (HKEY_LOCAL_MACHINE);
+	LOGTRACE("Calling ProxyDllUnregisterServer");
 	ProxyDllUnregisterServer ();
 	return S_OK;
 }
@@ -169,6 +241,7 @@ BOOL APIENTRY DllMain (
 	DWORD  dwReason,
 	LPVOID lpReserved
 	) {
+	LOGTRACE("Calling ProxyDllMain");
 	return ProxyDllMain (hModule, dwReason, lpReserved);
 }
 

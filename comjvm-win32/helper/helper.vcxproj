@@ -133,7 +133,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>helper,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>helper,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>helper.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -165,7 +165,7 @@
       <Message>Copy DLLs to the Unicode/Ascii targets</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>helper,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>helper,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>helper.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -202,7 +202,7 @@
       <Message>Copy DLLs to the Unicode/Ascii targets</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>helper,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>helper,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>helper.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
     </Manifest>
@@ -257,7 +257,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>helper,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>helper,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>helper.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
     </Manifest>

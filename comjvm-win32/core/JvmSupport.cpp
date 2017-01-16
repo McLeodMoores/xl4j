@@ -113,6 +113,14 @@ HRESULT STDMETHODCALLTYPE CJvmSupport::QueryInterface (
 		*ppvObject = static_cast<IJvmSupport*>(this);
 	} else {
 		*ppvObject = NULL;
+		LPOLESTR szInterfaceName;
+		if (SUCCEEDED(StringFromIID(riid, &szInterfaceName))) {
+			LOGERROR("requested interface was %s", szInterfaceName);
+			CoTaskMemFree(szInterfaceName);
+		}
+		if (riid == IID_IMarshal) {
+			LOGWARN("IMarshall requested");
+		}
 		return E_NOINTERFACE;
 	}
 	AddRef ();

@@ -92,7 +92,7 @@ HRESULT STDMETHODCALLTYPE CCollect::QueryInterface (
 	if (!ppvObject) return E_POINTER;
 	if (riid == IID_IUnknown) {
 		*ppvObject = static_cast<IUnknown*> (this);
-	} else if (riid == IID_IScan) {
+	} else if (riid == IID_ICollect) {
 		*ppvObject = static_cast<ICollect*> (this);
 	} else {
 		*ppvObject = NULL;

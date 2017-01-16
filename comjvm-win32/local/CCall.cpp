@@ -154,7 +154,7 @@ HRESULT STDMETHODCALLTYPE CCall::QueryInterface (
 	if (!ppvObject) return E_POINTER;
 	if (riid == IID_IUnknown) {
 		*ppvObject = static_cast<IUnknown*> (this);
-	} else if (riid == IID_IScan) {
+	} else if (riid == IID_ICall) {
 		*ppvObject = static_cast<ICall*> (this);
 	} else {
 		*ppvObject = NULL;

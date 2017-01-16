@@ -70,7 +70,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
-    <IntDir>$(OutputDir)</IntDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
     <ExecutablePath>$(SolutionDir)target\$(Configuration)-$(Platform);$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
@@ -78,7 +78,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
-    <IntDir>$(OutputDir)</IntDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
     <ExecutablePath>$(SolutionDir)target\$(Configuration)-$(Platform);$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
@@ -86,7 +86,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
-    <IntDir>$(OutputDir)</IntDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
     <ExecutablePath>$(SolutionDir)target\$(Configuration)-$(Platform);$(VC_ExecutablePath_x86);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);</ExecutablePath>
@@ -94,7 +94,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
-    <IntDir>$(OutputDir)</IntDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir)target\dependency\include\win32;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
     <ExecutablePath>$(SolutionDir)target\$(Configuration)-$(Platform);$(VC_ExecutablePath_x64);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);</ExecutablePath>
@@ -130,7 +130,7 @@
       <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
-      <OutputDirectory>$(OutDir)</OutputDirectory>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
       <HeaderFileName>%(Filename)_h.h</HeaderFileName>
@@ -147,13 +147,25 @@
       </AdditionalIncludeDirectories>
       <AdditionalMetadataDirectories>
       </AdditionalMetadataDirectories>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>
+      </GenerateClientFiles>
+      <GenerateServerFiles>
+      </GenerateServerFiles>
+      <ClientStubFile>
+      </ClientStubFile>
+      <ServerStubFile>
+      </ServerStubFile>
     </Midl>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>local,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>local,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>local.dll.file.manifest</AdditionalManifestFiles>
+      <TypeLibraryFile>$(OutDir)local.tlb</TypeLibraryFile>
+      <ComponentFileName>local.dll</ComponentFileName>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -183,7 +195,7 @@
       <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
-      <OutputDirectory>$(OutDir)</OutputDirectory>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
       <HeaderFileName>%(Filename)_h.h</HeaderFileName>
@@ -196,10 +208,22 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>
+      </GenerateClientFiles>
+      <GenerateServerFiles>
+      </GenerateServerFiles>
+      <ClientStubFile>
+      </ClientStubFile>
+      <ServerStubFile>
+      </ServerStubFile>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>local,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>local,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>local.dll.file.manifest</AdditionalManifestFiles>
+      <TypeLibraryFile>$(OutDir)local.tlb</TypeLibraryFile>
+      <ComponentFileName>local.dll</ComponentFileName>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -231,7 +255,7 @@
       <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
-      <OutputDirectory>$(OutDir)</OutputDirectory>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
       <HeaderFileName>%(Filename)_h.h</HeaderFileName>
@@ -244,11 +268,25 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>
+      </GenerateClientFiles>
+      <GenerateServerFiles>
+      </GenerateServerFiles>
+      <ClientStubFile>
+      </ClientStubFile>
+      <ServerStubFile>
+      </ServerStubFile>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>local,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>local,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>local.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
+      <TypeLibraryFile>$(OutDir)local.tlb</TypeLibraryFile>
+      <ComponentFileName>local.dll</ComponentFileName>
+      <RegistrarScriptFile>
+      </RegistrarScriptFile>
     </Manifest>
     <ManifestResourceCompile>
       <ResourceOutputFileName>$(IntDir)$(TargetName)$(TargetExt).embed.manifest.res</ResourceOutputFileName>
@@ -283,7 +321,7 @@
       <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
-      <OutputDirectory>$(OutDir)</OutputDirectory>
+      <OutputDirectory>$(IntDir)</OutputDirectory>
     </Midl>
     <Midl>
       <HeaderFileName>%(Filename)_h.h</HeaderFileName>
@@ -296,11 +334,23 @@
     </Midl>
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+      <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>
+      </GenerateClientFiles>
+      <GenerateServerFiles>
+      </GenerateServerFiles>
+      <ClientStubFile>
+      </ClientStubFile>
+      <ServerStubFile>
+      </ServerStubFile>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>local,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>local,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>local.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
+      <TypeLibraryFile>$(OutDir)local.tlb</TypeLibraryFile>
+      <ComponentFileName>local.dll</ComponentFileName>
     </Manifest>
     <ManifestResourceCompile>
       <ResourceOutputFileName>$(IntDir)$(TargetName)$(TargetExt).embed.manifest.res</ResourceOutputFileName>

@@ -77,6 +77,7 @@
     <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -84,20 +85,23 @@
     <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-i386;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\</OutDir>
-    <IntDir>$(OutDir)$(ProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)target\$(Configuration)-$(Platform)\$(ProjectName)\</OutDir>
+    <IntDir>$(OutDir)</IntDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)target\dependency\include\win32;$(SolutionDir);$(SolutionDir)target\dependency\include;$(SolutionDir);$(SolutionDir)target\dependency\include;$(IntDir);$(OutDir);$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(OutDir);$(SolutionDir)target\dependency\lib-x64;$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);</LibraryPath>
+    <GenerateManifest>true</GenerateManifest>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -123,12 +127,14 @@
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
+      <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
       <OutputDirectory>$(IntDir)</OutputDirectory>
@@ -145,6 +151,11 @@
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>Stub</GenerateClientFiles>
+      <GenerateServerFiles>Stub</GenerateServerFiles>
+      <ClientStubFile>%(Filename)_client_stub.c</ClientStubFile>
+      <ServerStubFile>%(Filename)_server_stub.c</ServerStubFile>
     </Midl>
     <Bscmake>
       <PreserveSbr>true</PreserveSbr>
@@ -154,8 +165,9 @@
     </Manifest>
     <Manifest>
       <ComponentFileName>core.dll</ComponentFileName>
-      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
-      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <RegistrarScriptFile>
+      </RegistrarScriptFile>
+      <AssemblyIdentity>core,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
   </ItemDefinitionGroup>
@@ -183,12 +195,14 @@
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
+      <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
       <OutputDirectory>$(IntDir)</OutputDirectory>
@@ -205,12 +219,18 @@
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>Stub</GenerateClientFiles>
+      <GenerateServerFiles>Stub</GenerateServerFiles>
+      <ClientStubFile>%(Filename)_client_stub.c</ClientStubFile>
+      <ServerStubFile>%(Filename)_server_stub.c</ServerStubFile>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
       <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
-      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
+      <RegistrarScriptFile>
+      </RegistrarScriptFile>
       <ComponentFileName>core.dll</ComponentFileName>
     </Manifest>
   </ItemDefinitionGroup>
@@ -236,12 +256,16 @@
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
+      <TurnOffAssemblyGeneration>false</TurnOffAssemblyGeneration>
+      <AdditionalManifestDependencies>
+      </AdditionalManifestDependencies>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
       <OutputDirectory>$(IntDir)</OutputDirectory>
@@ -258,13 +282,19 @@
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>Stub</GenerateClientFiles>
+      <GenerateServerFiles>Stub</GenerateServerFiles>
+      <ClientStubFile>%(Filename)_client_stub.c</ClientStubFile>
+      <ServerStubFile>%(Filename)_server_stub.c</ServerStubFile>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
       <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
-      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
+      <RegistrarScriptFile>
+      </RegistrarScriptFile>
       <ComponentFileName>core.dll</ComponentFileName>
     </Manifest>
     <ManifestResourceCompile>
@@ -294,12 +324,14 @@
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
+      <ManifestFile>$(IntDir)$(TargetName)$(TargetExt).intermediate.manifest</ManifestFile>
+      <TurnOffAssemblyGeneration>true</TurnOffAssemblyGeneration>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
-      <Message>Copy DLLs to the Unicode/Ascii targets</Message>
+      <Message>Copy DLLs to the Unicode targets</Message>
     </PostBuildEvent>
     <Midl>
       <OutputDirectory>$(IntDir)</OutputDirectory>
@@ -316,13 +348,19 @@
     <Midl>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
       <TypeLibraryName>$(ProjectName).tlb</TypeLibraryName>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <GenerateClientFiles>Stub</GenerateClientFiles>
+      <GenerateServerFiles>Stub</GenerateServerFiles>
+      <ClientStubFile>%(Filename)_client_stub.c</ClientStubFile>
+      <ServerStubFile>%(Filename)_server_stub.c</ServerStubFile>
     </Midl>
     <Manifest>
-      <AssemblyIdentity>core,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>core,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>core.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
       <TypeLibraryFile>$(OutDir)core.tlb</TypeLibraryFile>
-      <RegistrarScriptFile>core.rgs</RegistrarScriptFile>
+      <RegistrarScriptFile>
+      </RegistrarScriptFile>
       <ComponentFileName>core.dll</ComponentFileName>
     </Manifest>
     <ManifestResourceCompile>

@@ -137,7 +137,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <EnableDpiAwareness />
       <AdditionalManifestFiles>settings.dll.file.manifest</AdditionalManifestFiles>
     </Manifest>
@@ -185,7 +185,7 @@
       <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <EnableDpiAwareness>
       </EnableDpiAwareness>
       <AdditionalManifestFiles>settings.dll.file.manifest</AdditionalManifestFiles>
@@ -226,7 +226,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>settings.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
       <EnableDpiAwareness />
@@ -270,7 +270,7 @@
       <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Manifest>
-      <AssemblyIdentity>settings,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>settings,type=win32,processorArchitecture=x86,version=1.0.1.0</AssemblyIdentity>
       <AdditionalManifestFiles>settings.dll.file.manifest</AdditionalManifestFiles>
       <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
       <EnableDpiAwareness />

@@ -44,8 +44,8 @@ HRESULT TypeLib::LoadTypeLibrary () {
 				return hr;
 			}
 			ITypeLib *pTypeLib;
-			OutputDebugStringW (szFilename);
-			hr = LoadTypeLibEx (szFilename, REGKIND_NONE, &pTypeLib);
+			LOGTRACE ("core typelib path is %s", szFilename);
+			hr = LoadTypeLibEx (szFilename, REGKIND_REGISTER/*REGKIND_NONE*/, &pTypeLib);
 			if (FAILED (hr)) {
 				_com_error err (hr);
 				LOGERROR ("Error calling LoadTypeLibEx: %s", err.ErrorMessage ());
@@ -67,6 +67,19 @@ HRESULT TypeLib::LoadTypeLibrary () {
 			if (FAILED (hr)) {
 				_com_error err (hr);
 				LOGERROR ("Error loading RecordInfo for FUNCTIONINFO_IID: %s", err.ErrorMessage ());
+				return hr;
+			}
+			hr = StringCchCopy(szFilename + cch - 10, 10, TEXT("local.tlb"));
+			if (FAILED(hr)) {
+				LOGERROR("StringCchCopy failed");
+				return hr;
+			}
+			ITypeLib *pTypeLib2;
+			LOGTRACE("local typelib path is %s", szFilename);
+			hr = LoadTypeLibEx(szFilename, REGKIND_REGISTER /*REGKIND_NONE*/, &pTypeLib2);
+			if (FAILED(hr)) {
+				_com_error err(hr);
+				LOGERROR("Error calling LoadTypeLibEx: %s", err.ErrorMessage());
 				return hr;
 			}
 		} else { // there was an error

@@ -77,10 +77,10 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 			LOGTRACE ("Couldn't get IRecotrdInfo");
 			goto fail;
 		}
-		
 		SAFEARRAYBOUND bounds;
 		bounds.cElements = cEntries;
 		bounds.lLbound = 0;
+		*m_pResults = SafeArrayCreateEx(VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
 		if (FAILED (hResult = ::SafeArraySetRecordInfo (*m_pResults, pFunctionInfoRecordInfo))) {
 			LOGTRACE ("CScanExecutor::Run: couldn't set record info");
 			goto fail;

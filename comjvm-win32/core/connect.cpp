@@ -91,27 +91,48 @@ HRESULT COMJVM_CORE_API ComJvmCopyTemplate (/* [in] */ IJvmTemplate *pSource, /*
 }
 
 HRESULT ComJvmConnectB (/* [in][optional] */ const _bstr_t &bstrIdentifier, /* [in][optional] */ IJvmTemplate *pTemplate, /* [out][retval] */ IJvmContainer **ppJvmContainer) {
-	if (!bstrIdentifier && !pTemplate) return E_INVALIDARG;
-	if (!ppJvmContainer) return E_POINTER;
+	if (!bstrIdentifier && !pTemplate) {
+		LOGERROR("bstrIdentifier and pTemplate are both nullptr");
+		return E_INVALIDARG;
+	}
+	if (!ppJvmContainer) {
+		LOGERROR("ppJvmContainer is nullptr");
+		return E_POINTER;
+	}
 	HRESULT hr;
 	IJvmTemplate *pBaseTemplate = NULL;
 	IJvmConnector *pConnector = NULL;
 	try {
 		if (FAILED (ComJvmCreateTemplateB (bstrIdentifier, &pBaseTemplate))) {
 			pBaseTemplate = new CJvmTemplate ();
+			LOGTRACE("ComJvmCreateTemplateB failed, created blank base template");
 		}
 		if (pTemplate) {
 			if (FAILED (hr = pTemplate->AppendDefaults ())
 			 || FAILED (hr = CJvmTemplate::Append (pTemplate, pBaseTemplate))) {
+				LOGERROR("AppendDefaults || CJvmTemplate::Append failed");
 				_com_raise_error (hr);
 			}
 		}
-		if (FAILED (hr = pBaseTemplate->AppendDefaults ())) _com_raise_error (hr);
+		if (FAILED(hr = pBaseTemplate->AppendDefaults())) {
+			LOGERROR("AppendDefaults failed");
+			_com_raise_error(hr);
+		}
 		BSTR bstr;
-		if (FAILED (hr = pBaseTemplate->get_Type (&bstr))) _com_raise_error (hr);
-		if (!bstr) _com_raise_error (E_INVALIDARG);
-		_bstr_t bstrType (bstr, FALSE);
-		if (FAILED (hr = s_oJvmConnectors.Find (bstrType, &pConnector))) _com_raise_error (hr);
+		if (FAILED(hr = pBaseTemplate->get_Type(&bstr))) {
+			LOGERROR("get_Type failed");
+			_com_raise_error(hr);
+		}
+		if (!bstr) {
+			LOGERROR("type is nullptr");
+			_com_raise_error(E_INVALIDARG);
+		}
+		LOGTRACE("base template type = %s", bstr);
+		//_bstr_t bstrType (bstr, FALSE);
+		if (FAILED(hr = s_oJvmConnectors.Find(bstr, &pConnector))) {
+			LOGERROR("Find failed"); 
+			_com_raise_error(hr);
+		}
 		*ppJvmContainer = new CJvmContainer (bstrIdentifier, pBaseTemplate, pConnector);
 		hr = S_OK;
 	} catch (std::bad_alloc) {

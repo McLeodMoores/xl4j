@@ -215,7 +215,11 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		}
 		return 1;
 	}
-
+	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_APARTMENTTHREADED))) {
+		LOGFATAL("Could not initialize COM");
+	} else {
+		LOGTRACE("Initialized COM");
+	}
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	if (SUCCEEDED(LoadDLLs())) {
 		wchar_t buf[MAX_PATH + 1];
@@ -279,6 +283,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	ShutdownJvm ();
 	ShutdownAddin ();
+	CoUninitialize();
 	return 1;
 }
 

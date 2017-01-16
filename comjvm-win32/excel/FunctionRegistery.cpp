@@ -50,14 +50,14 @@ HRESULT FunctionRegistry::Scan () {
 	//	LOGTRACE ("scan::Failed to get RecordInfoFromGuids %s", errMsg);
 	//	return hr;
 	//}
-	SAFEARRAYBOUND bounds;
+	/*SAFEARRAYBOUND bounds;
 	bounds.cElements = 100;
 	bounds.lLbound = 0;
 	m_pResults = SafeArrayCreateEx (VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
 	if (m_pResults == NULL) {
 		LOGTRACE ("scan::Failed to create safe array");
 		return E_OUTOFMEMORY;
-	}
+	}*/
 	hr = pScan->Scan (&m_pResults);
 	long cFunctions;
 	if (FAILED (hr = ::SafeArrayGetUBound (m_pResults, 1, &cFunctions))) {
@@ -86,6 +86,7 @@ HRESULT FunctionRegistry::Scan () {
 		m_pFunctions[fi.iExportNumber] = fi;
 	}
 	::SafeArrayUnaccessData (m_pResults);
+	//SafeArrayDestroy(m_pResults);
 	m_bComplete = true;
 	pFunctionInfoRecordInfo->Release ();
 	pScan->Release ();

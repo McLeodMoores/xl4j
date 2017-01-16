@@ -15,3 +15,4 @@ EXPORTS
 ;	?PutString@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@J0@Z
 ;	?DeleteKey@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@@Z
 ;	?DeleteString@CSettings@@QAEHABV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@0@Z
+

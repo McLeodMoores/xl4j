@@ -139,7 +139,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Manifest>
-      <AssemblyIdentity>excel,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>excel, type=win32, processorArchitecture=x86, version=1.0.1.0</AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -167,7 +167,7 @@
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>excel,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>excel, type=win32, processorArchitecture=x86, version=1.0.1.0</AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -199,7 +199,7 @@
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>excel,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>excel, type=win32, processorArchitecture=x86, version=1.0.1.0</AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -231,7 +231,7 @@
       <Message>Copies the test files to the target folder</Message>
     </PostBuildEvent>
     <Manifest>
-      <AssemblyIdentity>excel,type=win32,version=1.0.1.0</AssemblyIdentity>
+      <AssemblyIdentity>excel, type=win32, processorArchitecture=x86, version=1.0.1.0</AssemblyIdentity>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>

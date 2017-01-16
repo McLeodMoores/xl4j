@@ -1,34 +1,34 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity type="win32" name="excel" version="1.0.1.0" />
+  <assemblyIdentity type="win32" name="excel" processorArchitecture="x86" version="1.0.1.0" />
   <dependency>
     <dependentAssembly>
-      <assemblyIdentity type="win32" name="core" version="1.0.1.0" />
+      <assemblyIdentity type="win32" name="core" processorArchitecture="x86" version="1.0.1.0" />
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly>
-      <assemblyIdentity type="win32" name="helper" version="1.0.1.0" />
+      <assemblyIdentity type="win32" name="helper" processorArchitecture="x86" version="1.0.1.0" />
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly>
-      <assemblyIdentity type="win32" name="jni" version="1.0.1.0" />
+      <assemblyIdentity type="win32" name="jni" processorArchitecture="x86" version="1.0.1.0" />
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly>
-      <assemblyIdentity type="win32" name="local" version="1.0.1.0" />
+      <assemblyIdentity type="win32" name="local" processorArchitecture="x86" version="1.0.1.0" />
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly>
-      <assemblyIdentity type="win32" name="settings" version="1.0.1.0" />
+      <assemblyIdentity type="win32" name="settings" processorArchitecture="x86" version="1.0.1.0" />
     </dependentAssembly>
   </dependency>
   <dependency>
     <dependentAssembly>
-      <assemblyIdentity type="win32" name="utils" version="1.0.1.0" />
+      <assemblyIdentity type="win32" name="utils" processorArchitecture="x86" version="1.0.1.0" />
     </dependentAssembly>
   </dependency>
   <!--<file name="utils.dll"/>-->

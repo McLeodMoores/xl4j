@@ -82,7 +82,7 @@ public:
 typedef HRESULT (APIENTRY *DLL_GET_CLASS_OBJECT) (REFCLSID, REFIID, LPVOID *);
 
 static HRESULT CreateLocalObject (const _bstr_t &bstrModule, REFCLSID clsid, IJvmConnector **ppConnector) {
-	HMODULE hModule = LoadLibrary (bstrModule);
+	HMODULE hModule = LoadLibraryEx (bstrModule, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (hModule == NULL) return CLASS_E_CLASSNOTAVAILABLE;
 	IClassFactory *pFactory = NULL;
 	IJvmConnector *pConnector = NULL;
@@ -223,10 +223,13 @@ HRESULT CJvmConnectors::FindLocalDLLs () {
 	if (hFind == INVALID_HANDLE_VALUE) return HRESULT_FROM_WIN32 (GetLastError ());
 	do {
 		StringCchCopy (szFilename + cchSlash + 1, (sizeof (szFilename) / sizeof (TCHAR)) - (cchSlash + 1), wfd.cFileName);
-		hModule = LoadLibrary (szFilename);
+		LOGTRACE("Loading library %s", szFilename);
+		hModule = LoadLibraryEx (szFilename, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 		if (hModule != NULL) {
+			LOGTRACE("Module loaded");
 			DllGetImplementingCLSID pfn = (DllGetImplementingCLSID)GetProcAddress (hModule, "DllGetImplementingCLSID");
 			if (pfn) {
+				LOGTRACE("Found DllGetImplementingCLSID");
 				try {
 					_bstr_t bstrModule (szFilename);
 					DWORD dwIndex = 1;
@@ -235,13 +238,21 @@ HRESULT CJvmConnectors::FindLocalDLLs () {
 					while (SUCCEEDED (pfn (__uuidof (IJvmConnector), dwIndex++, &bstr, &clsid))) {
 						_bstr_t bstrProgId (bstr, FALSE);
 						// TODO: Convert the ProgId to just the fragment we need
+						BSTR bstrClsid;
+						StringFromCLSID(clsid, &bstrClsid);
+						LOGTRACE("Inserting cache entry for ProgID=%s, clsid=%s", bstr, bstrClsid);
 						m_cache.insert (CJvmConnectorFactoryCache::value_type (ConnectorType (bstrProgId), CJvmConnectorFactory (clsid, bstrModule)));
 					}
 				} catch (...) {
 					// Ignore
 				}
+			} else {
+				LOGTRACE("Didn't find DllGetImplementingCLSID");
 			}
 			FreeLibrary (hModule);
+		} else {
+			_com_error err(HRESULT_FROM_WIN32(GetLastError()));
+			LOGERROR("Could not load library %s, error was %s", szFilename, err.ErrorMessage());
 		}
 	} while (FindNextFile (hFind, &wfd));
 	FindClose (hFind);
@@ -261,6 +272,7 @@ HRESULT CJvmConnectors::FindLocalDLLs () {
 /// <param name="ppConnector">Receives the connector instance</param>
 /// <returns>S_OK if successful, an error code otherwise</returns>
 HRESULT CJvmConnectors::Find (const _bstr_t &bstrName, IJvmConnector **ppConnector) {
+	LOGTRACE("Entered");
 	if (!bstrName) return E_INVALIDARG;
 	if (!ppConnector) return E_POINTER;
 	CJvmConnectorFactory oFactory;
@@ -270,19 +282,23 @@ HRESULT CJvmConnectors::Find (const _bstr_t &bstrName, IJvmConnector **ppConnect
 		// failure or the valid construction.
 		HRESULT hr = FindLocalDLLs ();
 		if (FAILED (hr)) {
+			LOGTRACE("FindLocalDLLs failed");
 			LeaveCriticalSection (&m_cs);
 			return hr;
 		}
 	}
 	CJvmConnectorFactoryCache::iterator itr = m_cache.find (bstrName);
 	if (itr == m_cache.end ()) {
+		LOGTRACE("Not in cache, adding dummy value for next time");
 		// Not in the cache; stick a dummy entry there for next time
 		m_cache.insert (CJvmConnectorFactoryCache::value_type (bstrName, oFactory));
 		// TODO: Form the ProgId and resolve it to a CLSID
 	} else {
+		LOGTRACE("In cache");
 		// Found something in the cache
 		oFactory = itr->second;
 	}
 	LeaveCriticalSection (&m_cs);
+	LOGTRACE("Calling Factory create method");
 	return oFactory.Create (ppConnector);
 }
