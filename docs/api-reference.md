@@ -201,7 +201,7 @@ window).
 
 | Enum value | Excel appearance | Description |
 |------------|------------------|-------------|
-| Null       | #NULL!           | Errors occur when cell references are separated incorrectly within a formula. A common cause is a space between references.  This is also returned as the indication of a NullPointerException in Java. |
+| Null       | #NULL!           | Errors occur when cell references are separated incorrectly within a formula. A common cause is a space between references rather than an operator or a colon (for ranges).  This is also returned as the indication of a NullPointerException in Java. |
 | Div0       | #DIV/0!          | Errors occur when a formula tries to divide a number by zero or an empty cell. |
 | Value      | #VALUE!          | Errors occur when a function in a formula has the wrong type of argument. |
 | Ref        | #REF!            | Errors occur when a formula contains invalid cell references, often caused by deleted data or cut and pasted cells.
@@ -218,8 +218,6 @@ try {
 }
 ```
 
-   * rather than an operator or a colon (for ranges)
- * 
 ### XLNil
 This type represents an empty worksheet cell and is implemented as a Java `enum` with a single value `INSTANCE`.   As with other enums,
 it remains part of the `XLValue` class heirarchy.
@@ -228,6 +226,31 @@ XLValue value = XLNil.INSTANCE;
 ```
 
 ### XLBigData
+This type is a strange beast that presently you can probably safely ignore.  It was introduced into Excel to store binary data on a
+worksheet, which sounds really useful.  The problem is that it only works on the current selected worksheet (i.e. where it stores data
+is specific to the GUI state) making it much less useful.  Originally `XLBigData` was crafted to store and retrieve serialized objects
+from the heap using this mechanism, but this is not presently implemented because of the state problem.  There are alternative ways to
+store data in a sheet via COM, so the intention is to use those for persistent object storage in the long term.
+
+In the SDK BigData is a C-union in which one set of fields is used to pass binary data into Excel (pointer + length), and a
+different set of fields is used to hold a handle to that data (and a length).  This meant the meaning depended on whether it was an 
+input to Excel or an output.
+
+Then, when Excel 2010 introduced asynchronous functions, the BigData data structure was used to hold handles for returning values
+once asynchronous calls had completed.  The current implementation of `autoAsynchronous` functions handles all this internally to
+the native part of the Add-in, but the plan is to expose `manualAsynchronous` functions in the future, which will require fewer
+threads for asynchronous I/O operations that presently.  This implementation is likely to use `XLBigData` but presently no other
+API is available that uses it, although the plan is to eventually expose the BigData storage/retrieval API for completeness despite 
+it's limited usefulness.
+
+```
+byte[] myData = new byte[] { 0xDE, 0xAD, 0xBE, 0xEF };
+XLBigData xlBigDataBinary = XLBigData.of(myData); // in binary data mode
+assert xlBigDataBinary.getBuffer() == myData;
+XLBigData xlBigDataBinary2 - XLBigData.of("Hello"); // serialized data of string "Hello" as binary data
+xlBigDataBinary2.getValue().equals("Hello"); // deserialize binary data
+```
+
 ### XLLocalReference
 ### XLMultiReference
 ### XLMissing
