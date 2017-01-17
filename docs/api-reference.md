@@ -72,24 +72,26 @@ fields of the class.
 | `typeConversionMode` | `TypeConversionMode` | No | `TypeConversionMode` `.SIMPLEST_RESULT` | Indicates to the Java/Excel type  conversion system what type of type conversions are desired.  Options are `SIMPLEST_RESULT`, which converts results into the most  primitive type possible (e.g. an Excel Number `XLNumber` rather than a java.lang.Double object handle); `OBJECT_RESULT`, which forces the type conversion system to return an object handle (possibly boxing the value) and; `PASSTHROUGH`, which is used only by the type conversion system itself when performing conversions recursively (e.g. on the elements on an array) to avoid types being converted more than once. |
 
 ## The type system
-XL4J includes Java types that directly mirror the types used by Excel natively and these types are mapped to and from the C union 
-known as `XLOPER12` that is defined by the Excel SDK when calls cross from Java to and from the native code part of the add-in.  
+XL4J includes a set of immutable Java types that directly mirror the types used by Excel natively and these types are mapped to and 
+from the C union known as `XLOPER12` that is defined by the Excel SDK when calls cross from Java to and from the native code part of 
+the add-in.  
+
 Use of these types is mostly optional: the type converter system can convert to and from normal Java types in most cases, but in some
-cases you might prefer the explicit control of using these types.  Why might you prefer these?  You will avoid the small overhead of
+cases you might prefer the explicit control of using these types.  Why might you prefer them?  You will avoid the small overhead of
 the type converter system, you may be performing lower level Excel API calls (once available) that require certain types, or you may
 want access to reference types containing `XLRange` range references rather than by-value style arrays.
 
-All of these types implement `equals` and `hashCode` and have descriptive `toString` implementations suitable for debugging.  They also
-all extend the `XLValue` interface, which, beyond acting as a marker interface to collect all the types together, defines a visitor
-pattern `accept()` method to make it more efficient to implement functionality that depends on the supplied type than a chain of `instanceof`
-checks.
+All of these types are immutable, implement `equals` and `hashCode` and have descriptive `toString` implementations suitable for
+debugging.  They also all extend the `XLValue` interface, which, beyond acting as a marker interface to collect all the types together,
+defines a visitor pattern `accept()` method to make it more efficient to implement functionality that depends on the supplied type 
+than a chain of `instanceof` checks.
 
 ### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
-`Inf` (infinity) or `NaN` (not-a-number).  These are handled as `XLError` instances.  It is important to understand that Excel
-represents percentages, integers, accountancy amounts, even dates, as a formatting issue - the underlying representation of all these 
-as a double-precision floating point value.  You may therefore need to format your data to see the required format after returning it.
-It is intended that future versions of XL4J will add functionality to automatically format results as required.
+`Inf` (infinity) or `NaN` (not-a-number) and sub-normals are truncated to zero.  See `XLError` instances.  It is important to 
+understand that Excel represents percentages, integers, accountancy amounts, even dates, as a formatting issue - the underlying
+representation of all these as a double-precision floating point value.  You may therefore need to format your data to see the required
+format after returning it.  It is intended that future versions of XL4J will add functionality to automatically format results as required.
 
 ```java
 XLNumber xlNumber = XLNumber.of(3.4d);
@@ -159,10 +161,71 @@ if (converted.getValue()) {
 ```
 
 ### XLArray
+This type represents an Excel array of either one or two dimensions.  Excel has two ways of specifying an array as an input to a
+function.  One is explicit, using  curly brackets and comma-separated list syntax `{1, 2, 3}`, which is quite rarely used, or a range 
+of the form A1:B2.  A range is not necessarily an array, and if the parameter is registered as a reference type, a range will be passed
+from Excel as either an `XLReference` or `XLMultiReference`, but in most cases, when you specify an `@XLParameter(referenceType=false)`
+(the default), a range is converted by Excel into an array before passing to the funciton.  Because a range can contain any Excel cells,
+an `XLArray` can contain any `XLValue` type in each element.  
+
+When returning array, it's important to understand how Excel *array formulas* work, see the [Introduction to Excel](https://github.com/McLeodMoores/xl4j/blob/master/docs/excel-introduction.md) 
+for more information.  In summary though, if your function returns an array, you should highlight the area you want to populate with 
+the result, click on the formula bar (or hit F2) and enter your formula (e.g. `=MyArrayFunc()`) and then hit **CTRL-ALT-ENTER**.  If 
+you just hit **ENTER** it will not work correctly.  You will then see the forumla replicated in each element of the highlighted range
+with array brackets surrounding it.
+
+Presently, `XLArray` is created from a 2D Java array of `XLValue`.  In future, a builder inner class will probably be added for more
+convenience.  If you're converting from tabular data provided by another data source (which is likely), you'll probably find it easier
+to use an `Object[][]` and let the type converter system handle each conversion itself (possibly adding your own customer type
+converters).
+
+```java
+XLValue[][] xlValueArr = new XLValue[2][2];
+xlValueArr[0][0] = XLString.of("Hello");
+xlValueArr[1][0] = XLNil.INSTANCE;
+xlValueArr[0][1] = XLNumber.of(42);
+xlValueArr[1][1] = XLBoolean.from(false);
+XLArray xlArray = XLArray.of(xlValueArr);
+assert xlArray.isRow() == false;
+assert xlArray.isColumn() == false;
+assert xlArray.isArea() == true;
+XLValue[][] arr = xlArray.getArray();
+assert arr = xlValueArr; // it's not a copy so take 'immutable' with a pinch of salt.
+```
+
 ### XLError
+This type is an enum containing the different errors excel functions can return.  For Java, currently exception level information is 
+viewed via the Java log file (see [Logging](https://github.com/McLeodMoores/xl4j/blob/master/docs/logging.md)), although in future
+the intention is to allow per-cell Java exceptions to be accessed more easily (via a function and/or and context sensitive inspector 
+window).
+
+| Enum value | Excel appearance | Description |
+|------------|------------------|-------------|
+| Null       | #NULL!           | Errors occur when cell references are separated incorrectly within a formula. A common cause is a space between references.  This is also returned as the indication of a NullPointerException in Java. |
+| Div0       | #DIV/0!          | Errors occur when a formula tries to divide a number by zero or an empty cell. |
+| Value      | #VALUE!          | Errors occur when a function in a formula has the wrong type of argument. |
+| Ref        | #REF!            | Errors occur when a formula contains invalid cell references, often caused by deleted data or cut and pasted cells.
+| Name       | #NAME?           | Errors occur when Excel doesn't recognize text in a formula, for example if a Function cannot be found. |
+| Num        | #NUM!            | Errors occur when a calculation yields a number that is outside of what Excel can represent. This includes Infinities and NaNs (although sub-normals are truncated to 0 instead).|
+| NA         | #N/A             | Errors occur when some data in missing or that inappropriate arguments have been passed to lookup functions (vlookup, etc). |
+
+```java
+XLValue retVal;
+try {
+  return otherMethod(inputs)
+} catch (IllegalArgumentException e) {
+  return XLError.NA;
+}
+```
+
+   * rather than an operator or a colon (for ranges)
+ * 
 ### XLNil
 This type represents an empty worksheet cell and is implemented as a Java `enum` with a single value `INSTANCE`.   As with other enums,
 it remains part of the `XLValue` class heirarchy.
+```java
+XLValue value = XLNil.INSTANCE;
+```
 
 ### XLBigData
 ### XLLocalReference
