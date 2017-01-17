@@ -86,7 +86,10 @@ checks.
 
 ### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
-`Inf` (infinity) or `NaN` (not-a-number).  These are handled as `XLError` instances.
+`Inf` (infinity) or `NaN` (not-a-number).  These are handled as `XLError` instances.  It is important to understand that Excel
+represents percentages, integers, accountancy amounts, even dates, as a formatting issue - the underlying representation of all these 
+as a double-precision floating point value.  You may therefore need to format your data to see the required format after returning it.
+It is intended that future versions of XL4J will add functionality to automatically format results as required.
 
 ```java
 XLNumber xlNumber = XLNumber.of(3.4d);
@@ -158,6 +161,9 @@ if (converted.getValue()) {
 ### XLArray
 ### XLError
 ### XLNil
+This type represents an empty worksheet cell and is implemented as a Java `enum` with a single value `INSTANCE`.   As with other enums,
+it remains part of the `XLValue` class heirarchy.
+
 ### XLBigData
 ### XLLocalReference
 ### XLMultiReference
