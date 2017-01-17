@@ -72,9 +72,17 @@ fields of the class.
 | `typeConversionMode` | `TypeConversionMode` | No | `TypeConversionMode` `.SIMPLEST_RESULT` | Indicates to the Java/Excel type  conversion system what type of type conversions are desired.  Options are `SIMPLEST_RESULT`, which converts results into the most  primitive type possible (e.g. an Excel Number `XLNumber` rather than a java.lang.Double object handle); `OBJECT_RESULT`, which forces the type conversion system to return an object handle (possibly boxing the value) and; `PASSTHROUGH`, which is used only by the type conversion system itself when performing conversions recursively (e.g. on the elements on an array) to avoid types being converted more than once. |
 
 ## The type system
-XL4J includes types that directly mirror the types used by Excel.  All of these types implement `equals` and `hashCode` and have
-descriptive `toString` implementations suitable for debugging.  They also all extend the `XLValue` interface, which, beyond 
-acting as a marker interface, defines a visitor pattern for handling instances if desired.
+XL4J includes Java types that directly mirror the types used by Excel natively and these types are mapped to and from the C union 
+known as `XLOPER12` that is defined by the Excel SDK when calls cross from Java to and from the native code part of the add-in.  
+Use of these types is mostly optional: the type converter system can convert to and from normal Java types in most cases, but in some
+cases you might prefer the explicit control of using these types.  Why might you prefer these?  You will avoid the small overhead of
+the type converter system, you may be performing lower level Excel API calls (once available) that require certain types, or you may
+want access to reference types containing `XLRange` range references rather than by-value style arrays.
+
+All of these types implement `equals` and `hashCode` and have descriptive `toString` implementations suitable for debugging.  They also
+all extend the `XLValue` interface, which, beyond acting as a marker interface to collect all the types together, defines a visitor
+pattern `accept()` method to make it more efficient to implement functionality that depends on the supplied type than a chain of `instanceof`
+checks.
 
 ### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
@@ -116,19 +124,49 @@ This wraps a string type.  This can be a unicode string up to 32K characters lon
 XLString xlString = XLString.of("Hello Excel!")
 String string = xlString.getValue();
 if (xlString.isObject()) { // String has object handle prefix
-  XLObject xlObject = xlString.toXLObject();
+  XLObject xlObject = xlString.toXLObject(); // See XLObject for details.
 }
 System.out.println(xlString.toString());
 ```
 
 ### XLBoolean
-| XLArray          |
-| XLError          |
-| XLNil            |
-| XLBigData        |
-| XLLocalReference |
-| XLMultiReference |
-| XLMissing        |
-| XLRange          |
-| XLSheetId        |
-| XLObject         | This is not a direct analogue of an Excel type, but rather a special case of an XLString class that encodes an object handle prefixed with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being present. |
+This wraps a boolean, and is implemented as a Java `enum`.  It still implements `XLValue` so remains part of the class heirarchy.
+```java
+XLBoolean xlBooleanT = XLBoolean.TRUE;
+XLBoolean xlBooleanF = XLBoolean.FALSE;
+// use of enum in switch
+switch (xlBooleanT) {
+  case XLBoolean.TRUE:
+    // it was true
+    break;
+  case XLBoolean.FALSE:
+    // it was false
+    break;
+}
+// use of enum in if
+if (xlBooleanT == XLBoolean.TRUE) {
+  // yes
+}
+// show conversion to and from boolean
+boolean b = true;
+XLBoolean converted = XLBoolean.from(b);
+if (converted.getValue()) {
+  // yes
+}
+```
+
+### XLArray
+### XLError
+### XLNil
+### XLBigData
+### XLLocalReference
+### XLMultiReference
+### XLMissing
+
+Associated types
+### XLRange
+### XLSheetId
+### XLObject 
+This is not a direct analogue of an Excel type, but rather a special case of an XLString class that encodes an object handle prefixed
+with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being
+present.
