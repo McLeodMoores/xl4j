@@ -72,11 +72,27 @@ fields of the class.
 | `typeConversionMode` | `TypeConversionMode` | No | `TypeConversionMode` `.SIMPLEST_RESULT` | Indicates to the Java/Excel type  conversion system what type of type conversions are desired.  Options are `SIMPLEST_RESULT`, which converts results into the most  primitive type possible (e.g. an Excel Number `XLNumber` rather than a java.lang.Double object handle); `OBJECT_RESULT`, which forces the type conversion system to return an object handle (possibly boxing the value) and; `PASSTHROUGH`, which is used only by the type conversion system itself when performing conversions recursively (e.g. on the elements on an array) to avoid types being converted more than once. |
 
 ## The type system
-XL4J includes types that directly mirror the types used by Excel:
+XL4J includes types that directly mirror the types used by Excel.  All of these types implement `equals` and `hashCode` and have
+descriptive `toString` implementations suitable for debugging.  They also all extend the `XLValue` interface, which, beyond 
+acting as a marker interface, defines a visitor pattern for handling instances if desired.
 
 ### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
-`Inf` (infinity) or `NaN` (not-a-number).
+`Inf` (infinity) or `NaN` (not-a-number).  These are handled as `XLError` instances.
+
+```java
+XLNumber xlNumber = XLNumber.of(3.4d);
+double number = xlNumber.getValue();
+int i = 12345;
+XLNumber xlNumberFromInt = XLNumber.of(i);
+i = xlNumberFromInt.getAsInt();
+long l = 123345
+XLNumber xlNumberFromLong = XLNumber.of(l);
+l = xlNumberFromLong.getAsLong();
+short s = xlNumber.getAsShort();
+float f = xlNumber.getAsFloat();
+double d = xlNumber.getAsDouble(); // same as getValue()
+```
 
 #### Dates and times
 **Dates** and **times** are actually represented using `XLNumber` - the number represents the number of days since either 0th January
@@ -91,8 +107,19 @@ valid day, although it supresses it - this is why the day count starts on 0th Ja
 done for efficiency reasons in Lotus 1-2-3, because it means you can every forth year is a leap year without needing special logic for 
 1900, which is faster.
 
+See the section on type converters for details on conversion of `Date` and Java 8/JSR-310 types `LocalDate` and `LocalDateTime`.
+
 ### XLString
-This wraps a string type.  This can be a unicode string up to 32K characters long.
+This wraps a string type.  This can be a unicode string up to 32K characters long.  Some typical uses:
+
+```java
+XLString xlString = XLString.of("Hello Excel!")
+String string = xlString.getValue();
+if (xlString.isObject()) { // String has object handle prefix
+  XLObject xlObject = xlString.toXLObject();
+}
+System.out.println(xlString.toString());
+```
 
 ### XLBoolean
 | XLArray          |
