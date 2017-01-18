@@ -11,7 +11,7 @@ import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.examples.Operation;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
@@ -46,7 +46,7 @@ public final class TimeSeries implements Operation<TimeSeries> {
               description = "Create a time series",
               category = "Time series",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries of(@XLArgument(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
+  public static TimeSeries of(@XLParameter(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
     ArgumentChecker.notNull(datesAndValues, "datesAndValues");
     if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
       return ofRange((XLArray) datesAndValues[0]);
@@ -111,8 +111,8 @@ public final class TimeSeries implements Operation<TimeSeries> {
               description = "Create a time series",
               category = "Time series",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries of(@XLArgument(name = "dates", description = "The dates") final XLArray datesArray,
-      @XLArgument(name = "values", description = "The values") final XLArray valuesArray) {
+  public static TimeSeries of(@XLParameter(name = "dates", description = "The dates") final XLArray datesArray,
+      @XLParameter(name = "values", description = "The values") final XLArray valuesArray) {
     ArgumentChecker.notNull(datesArray, "dates");
     ArgumentChecker.notNull(valuesArray, "values");
     ArgumentChecker.isFalse(datesArray.isArea(), "The date array must be either a column or row");

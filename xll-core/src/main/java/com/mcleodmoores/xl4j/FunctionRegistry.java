@@ -128,7 +128,7 @@ public class FunctionRegistry {
       if (method.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = method.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
-      final XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(method);
+      final XLParameter[] xlArgumentAnnotations = getXLParameterAnnotations(method);
       // scan the result type if there is one to determine whether function should return simplest type or always
       // an object type
       final TypeConversionMode resultType =
@@ -159,7 +159,7 @@ public class FunctionRegistry {
       if (constructor.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = constructor.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
-      final XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(constructor);
+      final XLParameter[] xlArgumentAnnotations = getXLParameterAnnotations(constructor);
       // build a constructor invoker
       try {
         final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
@@ -201,7 +201,7 @@ public class FunctionRegistry {
         } else {
           name = classAnnotation.name() + "_" + count;
         }
-        final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, classAnnotation, new XLArgument[0]);
+        final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, classAnnotation, new XLParameter[0]);
         final int allocatedExportNumber = allocateExport();
         final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber, name);
         checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
@@ -242,7 +242,7 @@ public class FunctionRegistry {
             methodNames.add(method.getName());
           }
           // build the meta-data data structure and store it all in a FunctionDefinition
-          final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, classAnnotation, new XLArgument[0]);
+          final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, classAnnotation, new XLParameter[0]);
           final int allocatedExportNumber = allocateExport();
           final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber, name.toString());
           checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
@@ -265,28 +265,28 @@ public class FunctionRegistry {
     }
   }
 
-  private static XLArgument[] getXLArgumentAnnotations(final Method method) {
-    return getXLArgumentAnnotations(method.getParameterAnnotations());
+  private static XLParameter[] getXLParameterAnnotations(final Method method) {
+    return getXLParameterAnnotations(method.getParameterAnnotations());
   }
 
-  private static XLArgument[] getXLArgumentAnnotations(final Constructor<?> constructor) {
-    return getXLArgumentAnnotations(constructor.getParameterAnnotations());
+  private static XLParameter[] getXLParameterAnnotations(final Constructor<?> constructor) {
+    return getXLParameterAnnotations(constructor.getParameterAnnotations());
   }
 
-  private static XLArgument[] getXLArgumentAnnotations(final Annotation[][] allParameterAnnotations) {
-    final XLArgument[] xlArgumentAnnotations = new XLArgument[allParameterAnnotations.length];
+  private static XLParameter[] getXLParameterAnnotations(final Annotation[][] allParameterAnnotations) {
+    final XLParameter[] xlParameterAnnotations = new XLParameter[allParameterAnnotations.length];
     // we rely here on the array being initialized to null
     for (int i = 0; i < allParameterAnnotations.length; i++) {
       if (allParameterAnnotations[i] != null) {
         for (int j = 0; j < allParameterAnnotations[i].length; j++) {
-          if (allParameterAnnotations[i][j].annotationType().equals(XLArgument.class)) {
-            xlArgumentAnnotations[i] = (XLArgument) allParameterAnnotations[i][j];
+          if (allParameterAnnotations[i][j].annotationType().equals(XLParameter.class)) {
+            xlParameterAnnotations[i] = (XLParameter) allParameterAnnotations[i][j];
             break;
           }
         }
       }
     }
-    return xlArgumentAnnotations;
+    return xlParameterAnnotations;
   }
 
   /**

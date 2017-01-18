@@ -4,7 +4,7 @@
 package com.mcleodmoores.xl4j.examples;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.values.XLNumber;
@@ -32,8 +32,8 @@ public final class MyArithmeticFunctions {
   @XLFunction(name = "MyAdd",
               description = "Add 2 numbers",
               category = "Mine", typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLNumber myadd(@XLArgument(name = "num 1", description = "The first number") final XLNumber one,
-      @XLArgument(name = "num 2", description = "The second number") final XLNumber two) {
+  public static XLNumber myadd(@XLParameter(name = "num 1", description = "The first number") final XLNumber one,
+      @XLParameter(name = "num 2", description = "The second number") final XLNumber two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLNumber.of(one.getValue() + two.getValue());
@@ -52,8 +52,8 @@ public final class MyArithmeticFunctions {
               description = "Subtract 2 numbers",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLNumber mysubtract(@XLArgument(name = "num 1", description = "The first number") final XLNumber one,
-      @XLArgument(name = "num 2", description = "The second number") final XLNumber two) {
+  public static XLNumber mysubtract(@XLParameter(name = "num 1", description = "The first number") final XLNumber one,
+      @XLParameter(name = "num 2", description = "The second number") final XLNumber two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLNumber.of(one.getValue() - two.getValue());
@@ -72,8 +72,8 @@ public final class MyArithmeticFunctions {
               description = "Multiply 2 numbers",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLNumber mymultiply(@XLArgument(name = "num 1", description = "The first number") final XLNumber one,
-      @XLArgument(name = "num 2", description = "The second number") final XLNumber two) {
+  public static XLNumber mymultiply(@XLParameter(name = "num 1", description = "The first number") final XLNumber one,
+      @XLParameter(name = "num 2", description = "The second number") final XLNumber two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLNumber.of(one.getValue() * two.getValue());
@@ -92,8 +92,8 @@ public final class MyArithmeticFunctions {
               description = "Divide 2 numbers",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLNumber mydivide(@XLArgument(name = "num 1", description = "The first number") final XLNumber one,
-      @XLArgument(name = "num 2", description = "The second number") final XLNumber two) {
+  public static XLNumber mydivide(@XLParameter(name = "num 1", description = "The first number") final XLNumber one,
+      @XLParameter(name = "num 2", description = "The second number") final XLNumber two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLNumber.of(one.getValue() / two.getValue());
@@ -110,7 +110,7 @@ public final class MyArithmeticFunctions {
               description = "Factorial",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLNumber myfactorial(@XLArgument(name = "num", description = "The number") final XLNumber number) {
+  public static XLNumber myfactorial(@XLParameter(name = "num", description = "The number") final XLNumber number) {
     if ((long) number.getValue() == 1) {
       return XLNumber.of(1);
     }

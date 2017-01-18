@@ -25,7 +25,7 @@ import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
 import com.jimmoores.quandl.util.QuandlRuntimeException;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
@@ -88,14 +88,14 @@ public final class QuandlFunctions {
       isAutoAsynchronous = true,
       isLongRunning = true)
   public synchronized static TabularResult dataSet(
-      @XLArgument(description = "Quandl Code", name = "quandlCode") final String quandlCode,
-      @XLArgument(optional = true, description = "Start Date", name = "StartDate") final LocalDate startDate,
-      @XLArgument(optional = true, description = "End Date", name = "EndDate") final LocalDate endDate,
-      @XLArgument(optional = true, description = "Column Index", name = "ColumnIndex") final Integer columnIndex,
-      @XLArgument(optional = true, description = "Frequency", name = "Frequency") final Frequency frequency,
-      @XLArgument(optional = true, description = "Max Rows", name = "MaxRows") final Integer maxRows,
-      @XLArgument(optional = true, description = "Sort Order", name = "SortOrder") final SortOrder sortOrder,
-      @XLArgument(optional = true, description = "Transform", name = "Transform") final Transform transform) {
+      @XLParameter(description = "Quandl Code", name = "quandlCode") final String quandlCode,
+      @XLParameter(optional = true, description = "Start Date", name = "StartDate") final LocalDate startDate,
+      @XLParameter(optional = true, description = "End Date", name = "EndDate") final LocalDate endDate,
+      @XLParameter(optional = true, description = "Column Index", name = "ColumnIndex") final Integer columnIndex,
+      @XLParameter(optional = true, description = "Frequency", name = "Frequency") final Frequency frequency,
+      @XLParameter(optional = true, description = "Max Rows", name = "MaxRows") final Integer maxRows,
+      @XLParameter(optional = true, description = "Sort Order", name = "SortOrder") final SortOrder sortOrder,
+      @XLParameter(optional = true, description = "Transform", name = "Transform") final Transform transform) {
     LOGGER.info("Fetching Quandl series for {}", quandlCode);
     Builder builder = DataSetRequest.Builder.of(quandlCode);
     if (startDate != null) {
@@ -139,7 +139,7 @@ public final class QuandlFunctions {
    */
   @XLFunction(name = "GetHeaders", category = "Quandl", description = "Get the headers")
   public static String[] getHeaders(
-      @XLArgument(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result) {
+      @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result) {
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();
     if (headerDefinition == null) {
       return null;
@@ -162,8 +162,8 @@ public final class QuandlFunctions {
    */
   @XLFunction(name = "GetRow", category = "Quandl", description = "Get the ith row")
   public static Object[] getRow(
-      @XLArgument(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
-      @XLArgument(description = "The index", name = "index") final int index) {
+      @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
+      @XLParameter(description = "The index", name = "index") final int index) {
     ArgumentChecker.isTrue(index > 0 && index <= result.size(), "Index {} out of range 1 to {}", index, result.size());
     final Row row = result.get(index - 1);
     if (row == null) {
@@ -196,8 +196,8 @@ public final class QuandlFunctions {
    */
   @XLFunction(name = "GetNamedRow", category = "Quandl", description = "Get the named row")
   public static Object[] getRow(
-      @XLArgument(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
-      @XLArgument(description = "The row name", name = "rowName") final String header) {
+      @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
+      @XLParameter(description = "The row name", name = "rowName") final String header) {
     final int index = Arrays.binarySearch(getHeaders(result), header);
     if (index < 0) {
       return null;
@@ -217,8 +217,8 @@ public final class QuandlFunctions {
   @XLFunction(name = "TabularResultAsTimeSeries", category = "Quandl",
       description = "Convert a data from a specific field to a time series")
   public static TimeSeries getTabularResultAsTimeSeries(
-      @XLArgument(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
-      @XLArgument(description = "The row name", name = "rowName") final String header) {
+      @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
+      @XLParameter(description = "The row name", name = "rowName") final String header) {
     ArgumentChecker.notNull(result, "result");
     final Object[] dateArray = getRow(result, 1);
     if (dateArray == null) {
@@ -250,8 +250,8 @@ public final class QuandlFunctions {
       description = "Array function to expand a TabularResult object",
       isAutoAsynchronous = true)
   public static Object[][] expandTabularResult(
-      @XLArgument(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
-      @XLArgument(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
+      @XLParameter(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
+      @XLParameter(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
     //LOGGER.info(result.toPrettyPrintedString());
     final boolean isIncludeHeader = includeHeader == null ? true : includeHeader;
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();

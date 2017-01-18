@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.credit;
 
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
@@ -37,12 +37,12 @@ public final class CdsQuoteConverter {
    */
   @XLFunction(name = "ConvertCDSQuote")
   public static double convertQuote(
-      @XLArgument(description = "CDS", name = "CDS") final CDSAnalytic cds,
-      @XLArgument(description = "Yield curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Quote", name = "Quote") final double quote,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
-      @XLArgument(description = "Quote Type", name = "Quote Type") final String quoteType,
-      @XLArgument(description = "Convert To Type", name = "Convert To Type") final String convertToType) {
+      @XLParameter(description = "CDS", name = "CDS") final CDSAnalytic cds,
+      @XLParameter(description = "Yield curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Quote", name = "Quote") final double quote,
+      @XLParameter(description = "Coupon", name = "Coupon") final double coupon,
+      @XLParameter(description = "Quote Type", name = "Quote Type") final String quoteType,
+      @XLParameter(description = "Convert To Type", name = "Convert To Type") final String convertToType) {
     switch (quoteType.toUpperCase()) {
       case PUF:
       case POINTS_UPFRONT:

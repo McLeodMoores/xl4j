@@ -11,7 +11,7 @@ import static com.opengamma.analytics.financial.credit.isdastandardmodel.IMMDate
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
@@ -48,17 +48,17 @@ public final class CdsTradeDetails {
   @XLFunction(name = "CDS.BuildCDSFromConvention", category = "ISDA CDS model",
       description = "Build a CDS")
   public static CdsTrade createImmCds(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Currency", name = "Currency") final String currency,
-      @XLArgument(description = "Notional", name = "Notional") final double notional,
-      @XLArgument(description = "Buy protection", name = "Buy Protection") final boolean buyProtection,
-      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
-      @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
-      @XLArgument(description = "Initial Market Quote", name = "Initial Market Quote") final double initialMarketQuote,
-      @XLArgument(description = "Initial Quote Type", name = "Initial Quote Type") final String initialQuoteType,
-      @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
-      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Currency", name = "Currency") final String currency,
+      @XLParameter(description = "Notional", name = "Notional") final double notional,
+      @XLParameter(description = "Buy protection", name = "Buy Protection") final boolean buyProtection,
+      @XLParameter(description = "Tenor", name = "Tenor") final String tenor,
+      @XLParameter(description = "Coupon", name = "Coupon") final double coupon,
+      @XLParameter(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
+      @XLParameter(description = "Initial Market Quote", name = "Initial Market Quote") final double initialMarketQuote,
+      @XLParameter(description = "Initial Quote Type", name = "Initial Quote Type") final String initialQuoteType,
+      @XLParameter(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
+      @XLParameter(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
     cdsFactory = cdsFactory.withAccrualDCC(convention.getAccrualDayCount());
     cdsFactory = cdsFactory.withCurveDCC(convention.getCurveDayCount());
@@ -111,24 +111,24 @@ public final class CdsTradeDetails {
   @XLFunction(name = "CDS.BuildCDS", category = "ISDA CDS model",
       description = "Build a CDS")
   public static CdsTrade createImmCds(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Currency", name = "Currency") final String currency,
-      @XLArgument(description = "Notional", name = "Notional") final double notional,
-      @XLArgument(description = "Buy protection", name = "Buy Protection") final boolean buyProtection,
-      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
-      @XLArgument(description = "Coupon", name = "Coupon") final double coupon,
-      @XLArgument(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
-      @XLArgument(description = "Initial Market Quote", name = "Initial Market Quote") final double initialMarketQuote,
-      @XLArgument(description = "Initial Quote Type", name = "Initial Quote Type") final String initialQuoteType,
-      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Currency", name = "Currency") final String currency,
+      @XLParameter(description = "Notional", name = "Notional") final double notional,
+      @XLParameter(description = "Buy protection", name = "Buy Protection") final boolean buyProtection,
+      @XLParameter(description = "Tenor", name = "Tenor") final String tenor,
+      @XLParameter(description = "Coupon", name = "Coupon") final double coupon,
+      @XLParameter(description = "Recovery Rate", name = "Recovery Rate") final double recoveryRate,
+      @XLParameter(description = "Initial Market Quote", name = "Initial Market Quote") final double initialMarketQuote,
+      @XLParameter(description = "Initial Quote Type", name = "Initial Quote Type") final String initialQuoteType,
+      @XLParameter(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLParameter(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLParameter(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLParameter(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLParameter(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
+      @XLParameter(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
     cdsFactory = cdsFactory.withAccrualDCC(DayCountFactory.INSTANCE.instance(accrualDayCountName));
     cdsFactory = cdsFactory.withCurveDCC(DayCountFactory.INSTANCE.instance(curveDayCountName));
@@ -170,14 +170,14 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.AccrualStartDates", category = "CDS Trade")
   public static Object[] accrualStartDates(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Tenor", name = "Tenor") final String tenor,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLParameter(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLParameter(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLParameter(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLParameter(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
     final ISDAPremiumLegSchedule paymentSchedule = getPremiumSchedule(tradeDate, tenor, businessDayConventionName, couponIntervalName,
         stubTypeName, holidayDates);
     final int n = paymentSchedule.getNumPayments();
@@ -202,14 +202,14 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.AccrualEndDates", category = "CDS Trade")
   public static Object[] accrualEndDates(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Tenor", name = "Tenor") final String tenor,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLParameter(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLParameter(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLParameter(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLParameter(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
     final ISDAPremiumLegSchedule paymentSchedule = getPremiumSchedule(tradeDate, tenor, businessDayConventionName, couponIntervalName,
         stubTypeName, holidayDates);
     final int n = paymentSchedule.getNumPayments();
@@ -234,14 +234,14 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.PaymentDates", category = "CDS Trade")
   public static Object[] paymentDates(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Tenor", name = "Tenor") final String tenor,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Tenor", name = "Tenor") final String tenor,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLParameter(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLParameter(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLParameter(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLParameter(optional = true, description = "Holidays", name = "holidays") final LocalDate[] holidayDates) {
     final ISDAPremiumLegSchedule paymentSchedule = getPremiumSchedule(tradeDate, tenor, businessDayConventionName, couponIntervalName,
         stubTypeName, holidayDates);
     final int n = paymentSchedule.getNumPayments();
@@ -284,7 +284,7 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.AccrualStartTimes", category = "CDS Trade")
   public static Object[] accrualStartTimes(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds) {
     final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
     final Object[] result = new Object[coupons.length];
     for (int i = 0; i < coupons.length; i++) {
@@ -300,7 +300,7 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.AccrualEndTimes", category = "CDS Trade")
   public static Object[] accrualEndTimes(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds) {
     final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
     final Object[] result = new Object[coupons.length];
     for (int i = 0; i < coupons.length; i++) {
@@ -316,7 +316,7 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.PaymentTimes", category = "CDS Trade")
   public static Object[] paymentTimes(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds) {
     final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
     final Object[] result = new Object[coupons.length];
     for (int i = 0; i < coupons.length; i++) {
@@ -332,7 +332,7 @@ public final class CdsTradeDetails {
    */
   @XLFunction(name = "CDS.AnnuityPayments", category = "CDS Trade")
   public static Object[] annuityPayments(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds) {
     final CDSCoupon[] coupons = cds.getUnderlyingCds().getCoupons();
     final Object[] result = new Object[coupons.length];
     for (int i = 0; i < coupons.length; i++) {

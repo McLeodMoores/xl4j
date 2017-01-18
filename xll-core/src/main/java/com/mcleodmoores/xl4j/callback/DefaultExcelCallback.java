@@ -6,7 +6,7 @@ package com.mcleodmoores.xl4j.callback;
 import com.mcleodmoores.xl4j.FunctionDefinition;
 import com.mcleodmoores.xl4j.FunctionMetadata;
 import com.mcleodmoores.xl4j.FunctionType;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
@@ -48,7 +48,7 @@ public class DefaultExcelCallback implements ExcelCallback {
   public void registerFunction(final FunctionDefinition functionDefinition) {
     final FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
     final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
-    final XLArgument[] argumentAnnotations = functionMetadata.getArguments();
+    final XLParameter[] argumentAnnotations = functionMetadata.getParameters();
     final String exportName = functionDefinition.getExportName();
     final String functionName = buildFunctionName(functionDefinition);
     final boolean isVarArgs = functionDefinition.isVarArgs();
@@ -68,7 +68,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
-  private static String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
+  private static String[] buildArgsHelp(final XLParameter[] argumentAnnotations) {
     final String[] results = new String[argumentAnnotations.length];
     for (int i = 0; i < argumentAnnotations.length; i++) {
       if (argumentAnnotations[i] != null && !argumentAnnotations[i].description().isEmpty()) {
@@ -147,13 +147,13 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
     }
     // Parameters
-    final XLArgument[] argumentAnnotations = functionDefinition.getFunctionMetadata().getArguments();
+    final XLParameter[] argumentAnnotations = functionDefinition.getFunctionMetadata().getParameters();
     for (int i = 0; i < parameterTypes.length; i++) {
       if (argumentAnnotations.length == 0) { // true if someone has used a class-level @XLFunction annotation, see FunctionRegistry
         // if they wanted anything other than the default, they wouldn't have used a class-level annotation
         signature.append("Q");
       } else {
-        final XLArgument argumentAnnotation = argumentAnnotations[i];
+        final XLParameter argumentAnnotation = argumentAnnotations[i];
         if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
           if (!isMacroEquivalent) {
             throw new Excel4JRuntimeException("Cannot register reference type parameters if not a macro equivalent: "
@@ -216,12 +216,12 @@ public class DefaultExcelCallback implements ExcelCallback {
    *          array of argument annotations, can contain nulls
    * @return the argument annotations separated by a comma
    */
-  private static String buildArgNames(final XLArgument[] argumentAnnotations) {
+  private static String buildArgNames(final XLParameter[] argumentAnnotations) {
     final StringBuilder argumentNames = new StringBuilder();
     int argCounter = 1;
 
     for (int i = 0; i < argumentAnnotations.length; i++) {
-      final XLArgument argumentAnnotation = argumentAnnotations[i];
+      final XLParameter argumentAnnotation = argumentAnnotations[i];
       if (argumentAnnotation != null) {
         if (!argumentAnnotation.name().isEmpty()) {
           argumentNames.append(argumentAnnotation.name());

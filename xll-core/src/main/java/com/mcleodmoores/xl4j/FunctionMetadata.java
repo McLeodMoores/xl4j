@@ -14,7 +14,7 @@ public final class FunctionMetadata {
   /** Information about the function */
   private final XLFunction _functionSpec;
   /** The arguments of the method */
-  private final XLArgument[] _arguments;
+  private final XLParameter[] _parameters;
 
   /**
    * Creates an instance.
@@ -23,47 +23,47 @@ public final class FunctionMetadata {
    *          the namespace
    * @param functionSpec
    *          the function specification
-   * @param arguments
-   *          the arguments to the function
+   * @param parameters
+   *          the parameters to the function
    */
-  private FunctionMetadata(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
+  private FunctionMetadata(final XLNamespace namespace, final XLFunction functionSpec, final XLParameter[] parameters) {
     _namespace = namespace;
     _functionSpec = functionSpec;
-    _arguments = arguments;
+    _parameters = parameters;
   }
 
   /**
-   * Create an instance given a namespace, functionSpec and arguments.
+   * Create an instance given a namespace, functionSpec and parameters.
    * 
    * @param namespace
    *          an XLNamespace annotation or null if no name space
    * @param functionSpec
    *          an XLFunction annotation, not null
-   * @param arguments
-   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
-   *          to signify missing XLArgument annotations.
+   * @param parameters
+   *          a non-null array of XLParameter annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLParameter annotations.
    * @return an instance of a FunctionSpec
    */
-  public static FunctionMetadata of(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
+  public static FunctionMetadata of(final XLNamespace namespace, final XLFunction functionSpec, final XLParameter[] parameters) {
     ArgumentChecker.notNull(functionSpec, "functionSpec");
-    ArgumentChecker.notNull(arguments, "arguments");
-    return new FunctionMetadata(namespace, functionSpec, arguments);
+    ArgumentChecker.notNull(parameters, "parameters");
+    return new FunctionMetadata(namespace, functionSpec, parameters);
   }
 
   /**
-   * Create an instance when no namespace is declared given a functionSpec and arguments.
+   * Create an instance when no namespace is declared given a functionSpec and parameters.
    * 
    * @param functionSpec
    *          an XLFunction annotation, not null
-   * @param arguments
-   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
-   *          to signify missing XLArgument annotations.
+   * @param parameters
+   *          a non-null array of XLParameter annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLParameter annotations.
    * @return an instance of a FunctionSpec
    */
-  public static FunctionMetadata of(final XLFunction functionSpec, final XLArgument[] arguments) {
+  public static FunctionMetadata of(final XLFunction functionSpec, final XLParameter[] parameters) {
     ArgumentChecker.notNull(functionSpec, "functionSpec");
-    ArgumentChecker.notNull(arguments, "arguments");
-    return new FunctionMetadata(null, functionSpec, arguments);
+    ArgumentChecker.notNull(parameters, "parameters");
+    return new FunctionMetadata(null, functionSpec, parameters);
   }
 
   /**
@@ -81,9 +81,9 @@ public final class FunctionMetadata {
   }
 
   /**
-   * @return an array of XLArgument, not null, but possibly containing null elements. Will be same length as method argument list.
+   * @return an array of XLParameter, not null, but possibly containing null elements. Will be same length as method parameter list.
    */
-  public XLArgument[] getArguments() {
-    return _arguments;
+  public XLParameter[] getParameters() {
+    return _parameters;
   }
 }

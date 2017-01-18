@@ -26,8 +26,8 @@ public interface LowLevelExcelCallback {
    *          a string representing the functions return type, parameter types and calling permission, not null
    * @param functionWorksheetName
    *          the name of the function as it is to appear on the worksheet, case sensitive, not null
-   * @param argumentNames
-   *          a comma separated list of function argument names (no padding spaces)
+   * @param parameterNames
+   *          a comma separated list of function parameter names (no padding spaces)
    * @param functionType
    *          an integer representing the function type (1=Function, 2=Command)
    * @param functionCategory
@@ -45,7 +45,7 @@ public interface LowLevelExcelCallback {
   // CHECKSTYLE:OFF -- says we shouldn't have this many parameters. Take it up with Microsoft.
   int xlfRegister(int exportNumber, String functionExportName, boolean isVarArgs, boolean isLongRunning,
       boolean isAutoAsynchronous, boolean isManualAsynchronous, boolean isCallerRequired,
-      String functionSignature, String functionWorksheetName, String argumentNames, int functionType,
+      String functionSignature, String functionWorksheetName, String parameterNames, int functionType,
       String functionCategory, String acceleratorKey, String helpTopic, String description, String... argsHelp);
   // CHECKSTYLE:ON
   /*

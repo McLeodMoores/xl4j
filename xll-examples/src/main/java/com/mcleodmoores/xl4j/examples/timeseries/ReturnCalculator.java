@@ -8,7 +8,7 @@ import java.util.function.Function;
 import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -28,7 +28,7 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
   @XLFunction(
       name = "TimeSeriesReturnCalculator",
       description = "Calculates returns of a time series", category = "Time series")
-  public ReturnCalculator(@XLArgument(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
+  public ReturnCalculator(@XLParameter(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
     _continuous = continuous;
   }
 

@@ -9,7 +9,7 @@ import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePerio
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticSpreadSensitivityCalculator;
@@ -53,9 +53,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.CleanPrice", category = "ISDA CDS model",
       description = "Calculate the clean price of a CDS")
   public static double cleanPrice(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return cds.getNotional() * PRICE_CALCULATOR.pv(cds.getUnderlyingCds(), yieldCurve, creditCurve, cds.getInitialQuote().getCoupon(), PriceType.CLEAN);
   }
 
@@ -69,9 +69,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.DirtyPrice", category = "ISDA CDS model",
       description = "Calculate the dirty price of a CDS for the protection buyer")
   public static double dirtyPrice(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return cds.getNotional() * PRICE_CALCULATOR.pv(cds.getUnderlyingCds(), yieldCurve, creditCurve, cds.getInitialQuote().getCoupon(), PriceType.DIRTY);
   }
 
@@ -85,9 +85,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.Accrued", category = "ISDA CDS model",
       description = "Calculate the accrued of a CDS")
   public static double accruedInterest(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return dirtyPrice(cds, yieldCurve, creditCurve) - cleanPrice(cds, yieldCurve, creditCurve);
   }
 
@@ -101,9 +101,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.ParSpread", category = "ISDA CDS model",
       description = "The par spread of a CDS")
   public static double parSpread(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return PRICE_CALCULATOR.parSpread(cds.getUnderlyingCds(), yieldCurve, creditCurve);
   }
 
@@ -117,9 +117,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.ProtectionLegPrice", category = "ISDA CDS model",
       description = "The present value of the protection leg of a CDS")
   public static double protectionLegPv(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return cds.getNotional() * PRICE_CALCULATOR.protectionLeg(cds.getUnderlyingCds(), yieldCurve, creditCurve);
   }
 
@@ -133,9 +133,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.PremiumLegCleanPrice", category = "ISDA CDS model",
       description = "The clean price of the premium leg of a CDS")
   public static double premiumLegPv(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return -cds.getNotional() * PRICE_CALCULATOR.annuity(cds.getUnderlyingCds(), yieldCurve, creditCurve, PriceType.CLEAN) * cds.getInitialQuote().getCoupon();
   }
 
@@ -149,9 +149,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.RR01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the recovery rate")
   public static double rr01(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return cds.getNotional() * RISK_CALCULATOR.recoveryRateSensitivity(cds.getUnderlyingCds(), yieldCurve, creditCurve) * BPS;
   }
 
@@ -165,9 +165,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.ValueOnDefault", category = "ISDA CDS model",
       description = "The value on default of a CDS")
   public static double valueOnDefault(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return cds.getNotional() * RISK_CALCULATOR.valueOnDefault(cds.getUnderlyingCds(), yieldCurve, creditCurve, cds.getInitialQuote().getCoupon());
   }
 
@@ -181,9 +181,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.IR01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the yield curve")
   public static double ir01(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     return cds.getNotional() * IR_CALCULATOR.parallelIR01(cds.getUnderlyingCds(), cds.getInitialQuote().getCoupon(), creditCurve, yieldCurve);
   }
 
@@ -196,8 +196,8 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.CS01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the market spread")
   public static double cs01(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve) {
     return cds.getNotional() * SPREAD_CALCULATOR.parallelCS01(cds.getUnderlyingCds(), cds.getInitialQuote(), yieldCurve) / 10000;
   }
 
@@ -211,9 +211,9 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.BucketedIR01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the yield curve")
   public static double[] bucketedIr01(
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Credit Curve", name = "Credit Curve") final ISDACompliantCreditCurve creditCurve) {
     final double[] bucketedIr01 = IR_CALCULATOR.bucketedIR01(cds.getUnderlyingCds(), cds.getInitialQuote().getCoupon(), creditCurve, yieldCurve);
     final double[] result = new double[bucketedIr01.length];
     for (int i = 0; i < bucketedIr01.length; i++) {
@@ -239,16 +239,16 @@ public final class CdsPricer {
   @XLFunction(name = "CDS.BucketedCS01", category = "ISDA CDS model",
       description = "The sensitivity of the price to a 1 basis point change in the market spread")
   public static double[] bucketedCs01(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
-      @XLArgument(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
-      @XLArgument(description = "Market Quotes", name = "Market Quotes") final double[] quotes,
-      @XLArgument(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
-      @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLParameter(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
+      @XLParameter(description = "Market Quotes", name = "Market Quotes") final double[] quotes,
+      @XLParameter(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
+      @XLParameter(description = "Coupons", name = "Coupons") final double[] coupons,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Convention", name = "Convention") final IsdaCdsConvention convention,
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     final int n = tenors.length;
     ArgumentChecker.isTrue(n == quoteTypes.length, "Must have one quote type per tenor, have {} tenors and {} quote types", n, quoteTypes.length);
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);
@@ -319,25 +319,25 @@ public final class CdsPricer {
   @XLFunction(name = "ISDACreditCurve.BuildIMMCurve", category = "ISDA CDS model",
       description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
   public static double[] bucketedCs01(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
-      @XLArgument(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
-      @XLArgument(description = "Market Quotes", name = "Market Quotes") final double[] quotes,
-      @XLArgument(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
-      @XLArgument(description = "Coupons", name = "Coupons") final double[] coupons,
-      @XLArgument(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
-      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
-      @XLArgument(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
-      @XLArgument(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
-      @XLArgument(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
-      @XLArgument(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
-      @XLArgument(description = "CDS", name = "CDS") final CdsTrade cds,
-      @XLArgument(description = "Quote Type", name = "Quote Type") final String quoteType,
-      @XLArgument(description = "Market Quote", name = "Market Quote") final double marketQuote,
-      @XLArgument(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLParameter(description = "Quote Type", name = "Quote Types") final String[] quoteTypes,
+      @XLParameter(description = "Market Quotes", name = "Market Quotes") final double[] quotes,
+      @XLParameter(description = "Recovery Rates", name = "Recovery Rates") final double[] recoveryRates,
+      @XLParameter(description = "Coupons", name = "Coupons") final double[] coupons,
+      @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve,
+      @XLParameter(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(optional = true, description = "Coupon Interval", name = "Coupon Interval") final String couponIntervalName,
+      @XLParameter(optional = true, description = "Stub Type", name = "Stub Type") final String stubTypeName,
+      @XLParameter(optional = true, description = "Cash Settlement Days", name = "Cash Settlement Days") final Integer cashSettlementDays,
+      @XLParameter(optional = true, description = "Step In Days", name = "Step In Days") final Integer stepInDays,
+      @XLParameter(optional = true, description = "Pay Accrual On Default", name = "Pay Accrual On Default") final Boolean payAccrualOnDefault,
+      @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
+      @XLParameter(description = "Quote Type", name = "Quote Type") final String quoteType,
+      @XLParameter(description = "Market Quote", name = "Market Quote") final double marketQuote,
+      @XLParameter(optional = true, description = "Holidays", name = "Holidays") final LocalDate[] holidayDates) {
     final int n = tenors.length;
     ArgumentChecker.isTrue(n == quoteTypes.length, "Must have one quote type per tenor, have {} tenors and {} quote types", n, quoteTypes.length);
     ArgumentChecker.isTrue(n == quotes.length, "Must have one quote per tenor, have {} tenors and {} quotes", n, quotes.length);

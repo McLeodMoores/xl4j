@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
@@ -35,12 +35,12 @@ public final class IsdaYieldCurveConvention {
    */
   @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
   public static IsdaYieldCurveConvention of(
-      @XLArgument(description = "Money Market Day Count", name = "Money Market Day Count") final String moneyMarketDayCountName,
-      @XLArgument(description = "Swap Day Count", name = "Swap Day Count") final String swapDayCountName,
-      @XLArgument(description = "Swap Interval", name = "Swap Interval") final String swapIntervalName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(description = "Spot Days", name = "spotDays") final int spotDays) {
+      @XLParameter(description = "Money Market Day Count", name = "Money Market Day Count") final String moneyMarketDayCountName,
+      @XLParameter(description = "Swap Day Count", name = "Swap Day Count") final String swapDayCountName,
+      @XLParameter(description = "Swap Interval", name = "Swap Interval") final String swapIntervalName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(description = "Spot Days", name = "spotDays") final int spotDays) {
     final DayCount moneyMarketDayCount = DayCountFactory.INSTANCE.instance(moneyMarketDayCountName);
     final DayCount swapDayCount = DayCountFactory.INSTANCE.instance(swapDayCountName);
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountName);

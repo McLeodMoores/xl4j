@@ -9,7 +9,7 @@ import java.util.Objects;
 
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
@@ -38,14 +38,14 @@ public final class IsdaCdsConvention {
    */
   @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
   public static IsdaCdsConvention of(
-      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLArgument(description = "Coupon Interval", name = "Coupon Interval", optional = true) final String couponInterval,
-      @XLArgument(description = "Stub Type", name = "Stub Type", optional = true) final String stubType,
-      @XLArgument(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final Integer cashSettlementDays,
-      @XLArgument(description = "Step In Days", name = "Step In Days", optional = true) final Integer stepInDays,
-      @XLArgument(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final Boolean payAccrualOnDefault) {
+      @XLParameter(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
+      @XLParameter(description = "Coupon Interval", name = "Coupon Interval", optional = true) final String couponInterval,
+      @XLParameter(description = "Stub Type", name = "Stub Type", optional = true) final String stubType,
+      @XLParameter(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final Integer cashSettlementDays,
+      @XLParameter(description = "Step In Days", name = "Step In Days", optional = true) final Integer stepInDays,
+      @XLParameter(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final Boolean payAccrualOnDefault) {
     return new IsdaCdsConvention(accrualDayCountName, curveDayCountName, businessDayConventionName, couponInterval,
         stubType, cashSettlementDays, stepInDays, payAccrualOnDefault);
   }
