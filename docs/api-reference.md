@@ -367,6 +367,24 @@ assert id.getSheetId() == 1;
 ```
 
 ### XLObject 
-This is not a direct analogue of an Excel type, but rather a special case of an XLString class that encodes an object handle prefixed
+This is not a direct analogue of an Excel type, but rather a special case of an `XLString` class that encodes an object handle prefixed
 with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being
-present.
+present.  The object is formed of two parts, a class, which can be supplied as a `Class<?>` type or a `String`, and a 64-bit `long` 
+handle.  The class is just used as a prefix to the handle to provide a visual indication to the user of what type of object the 
+handle represents, which is considerably more helpful than just having a long number.  The handle is used to identify the actual
+java object this cell is referring to, which is actually stored in an instance of `Heap`, which is in the `com.mcleodmoores.xl4j.heap`
+package and is accessible via the `Excel` singleton.  The type conversion system will handle object handles transparently so for the 
+most part, no explicit use of `XLObject` is required, but it is used internally and may be used explicitly if required.
+```
+long handle = 1L;
+XLObject xlObject = XLObject.of(Map.class, 1);
+XLObject xlStrObject = XLObject.of("java.util.Map", 1);
+assert xlObject == xlStrObject;
+
+// heap example
+Heap heap = new Heap();
+JFrame jFrame = new JFrame("Hello World");
+XLObject xlObject = XLObject.of(jFrame.getClass(), heap.getHandle(jFrame));
+// send to Excel...
+JFrame JFrameBack = (JFrame) heap.getObject(xlObject.getHandle());
+```
