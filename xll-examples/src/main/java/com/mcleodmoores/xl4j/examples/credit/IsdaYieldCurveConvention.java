@@ -3,51 +3,19 @@
  */
 package com.mcleodmoores.xl4j.examples.credit;
 
-import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePeriod;
-
 import java.util.Objects;
 
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
-import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCount;
-import com.opengamma.financial.convention.daycount.DayCountFactory;
 
 /**
  * Object that contains the convention information required to construct a yield curve
  * using the ISDA model.
  */
 public final class IsdaYieldCurveConvention {
-
-  /**
-   * Constructs a convention. All fields are required.
-   * @param moneyMarketDayCountName  the money market day count name
-   * @param swapDayCountName  the swap day count name
-   * @param swapIntervalName  the swap payment interval name
-   * @param curveDayCountName  the curve day count name
-   * @param businessDayConventionName  the business day convention name
-   * @param spotDays  the number of spot days
-   * @return  a convention
-   */
-  @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
-  public static IsdaYieldCurveConvention of(
-      @XLParameter(description = "Money Market Day Count", name = "Money Market Day Count") final String moneyMarketDayCountName,
-      @XLParameter(description = "Swap Day Count", name = "Swap Day Count") final String swapDayCountName,
-      @XLParameter(description = "Swap Interval", name = "Swap Interval") final String swapIntervalName,
-      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
-      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLParameter(description = "Spot Days", name = "spotDays") final int spotDays) {
-    final DayCount moneyMarketDayCount = DayCountFactory.INSTANCE.instance(moneyMarketDayCountName);
-    final DayCount swapDayCount = DayCountFactory.INSTANCE.instance(swapDayCountName);
-    final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCountName);
-    final BusinessDayConvention businessDayConvention = BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName);
-    final Period swapInterval = parsePeriod(swapIntervalName);
-    return new IsdaYieldCurveConvention(moneyMarketDayCount, swapDayCount, swapInterval, curveDayCount, businessDayConvention, spotDays);
-  }
 
   private final DayCount _moneyMarketDayCount;
   private final DayCount _swapDayCount;
@@ -56,7 +24,16 @@ public final class IsdaYieldCurveConvention {
   private final BusinessDayConvention _businessDayConvention;
   private final int _spotDays;
 
-  private IsdaYieldCurveConvention(final DayCount moneyMarketDayCount, final DayCount swapDayCount, final Period swapInterval, final DayCount curveDayCount,
+  /**
+   * Creates the convention.
+   * @param moneyMarketDayCount  the money market day count, not null
+   * @param swapDayCount  the swap day count, not null
+   * @param swapInterval  the swap payment interval, not null
+   * @param curveDayCount  the curve day count, not null
+   * @param businessDayConvention  the business day convention, not null
+   * @param spotDays  the number of spot days, not null
+   */
+  public IsdaYieldCurveConvention(final DayCount moneyMarketDayCount, final DayCount swapDayCount, final Period swapInterval, final DayCount curveDayCount,
       final BusinessDayConvention businessDayConvention, final int spotDays) {
     ArgumentChecker.notNull(moneyMarketDayCount, "moneyMarketDayCount");
     ArgumentChecker.notNull(swapDayCount, "swapDayCount");

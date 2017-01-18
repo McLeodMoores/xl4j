@@ -18,15 +18,14 @@ import com.jimmoores.quandl.DataSetRequest.Builder;
 import com.jimmoores.quandl.Frequency;
 import com.jimmoores.quandl.HeaderDefinition;
 import com.jimmoores.quandl.QuandlSession;
-import com.jimmoores.quandl.RetryPolicy;
 import com.jimmoores.quandl.Row;
 import com.jimmoores.quandl.SessionOptions;
 import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
 import com.jimmoores.quandl.util.QuandlRuntimeException;
-import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.opengamma.util.ArgumentChecker;
@@ -36,22 +35,22 @@ import com.opengamma.util.ArgumentChecker;
  */
 public final class QuandlFunctions {
   private static final Logger LOGGER = LoggerFactory.getLogger(QuandlFunctions.class);
-  
+
   private static final QuandlSession SESSION;
   private static final boolean API_KEY_PRESENT = System.getProperty("quandl.auth.token") != null;
   private static final String API_KEY_MESSAGE = "No Quandl API key: set JVM property -Dquandl.auth.token=YOUR_KEY via settings on Add-in toolbar";
 
   static {
-    SessionOptions.Builder builder;
-    if (API_KEY_PRESENT) {
-      LOGGER.info("Using Quandl API key from properties");
-      builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));  
-    } else {
-      LOGGER.warn("No Quandl API key detected");
-      builder = SessionOptions.Builder.withoutAuthToken();
-    }
+    //SessionOptions.Builder builder = null;
+    //if (API_KEY_PRESENT) {
+    //  LOGGER.info("Using Quandl API key from properties");
+    //  builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));
+    //} else {
+    //  LOGGER.warn("No Quandl API key detected");
+    //  builder = SessionOptions.Builder.withoutAuthToken();
+    //}
     //SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
-    SESSION = QuandlSession.create();//sessionOptions);
+    SESSION = QuandlSession.create(); //sessionOptions);
   }
 
   /**
@@ -121,9 +120,9 @@ public final class QuandlFunctions {
     }
     try {
       return SESSION.getDataSet(builder.build());
-    } catch (QuandlRuntimeException qre) {
+    } catch (final QuandlRuntimeException qre) {
       if (!API_KEY_PRESENT) {
-        HeaderDefinition headerDefinition = HeaderDefinition.of("Date", "Error");
+        final HeaderDefinition headerDefinition = HeaderDefinition.of("Date", "Error");
         return TabularResult.of(headerDefinition, Collections.singletonList(Row.of(headerDefinition, new String[] { "1970-01-01", API_KEY_MESSAGE })));
       }
       return null;
@@ -252,7 +251,6 @@ public final class QuandlFunctions {
   public static Object[][] expandTabularResult(
       @XLParameter(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
       @XLParameter(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
-    //LOGGER.info(result.toPrettyPrintedString());
     final boolean isIncludeHeader = includeHeader == null ? true : includeHeader;
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();
     final int cols = headerDefinition.size();
@@ -283,7 +281,6 @@ public final class QuandlFunctions {
       }
       row++;
     }
-    //LOGGER.trace(Arrays.deepToString(values));
     return values;
   }
 }

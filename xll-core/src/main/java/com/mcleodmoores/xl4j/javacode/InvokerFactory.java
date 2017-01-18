@@ -4,9 +4,11 @@
 package com.mcleodmoores.xl4j.javacode;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
+import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -57,7 +59,8 @@ public interface InvokerFactory {
    *
    * @param constructor
    *          the constructor to be bound to
-   * @return a ConstructorInvoker that can perform the necessary type conversions each time the method is invoked throws
+   * @return a ConstructorInvoker that can perform the necessary type conversions each time the method is invoked
+   * @throws
    *         Excel4JRuntimeException if a type converter cannot be found
    */
   ConstructorInvoker getConstructorTypeConverter(Constructor<?> constructor);
@@ -70,8 +73,22 @@ public interface InvokerFactory {
    *          the method to be bound to
    * @param typeConversionMode
    *          whether the result should be an object, simplified if possible or passed through unchanged
-   * @return a MethodInvoker that can perform the necessary type conversions each time the method is invoked throws Excel4JRuntimeException
+   * @return a MethodInvoker that can perform the necessary type conversions each time the method is invoked
+   * @throws Excel4JRuntimeException
    *         if a type converter cannot be found
    */
   MethodInvoker getMethodTypeConverter(Method method, TypeConversionMode typeConversionMode);
+
+  /**
+   * Return a field type converter ready to process calls for a given field.
+   *
+   * @param field
+   *          the field
+   * @param typeConversionMode
+   *          whether the result should be an object, simplified or passed through unchanged
+   * @return a FieldInvoker that can perform the necessary type conversions each time the field is requested
+   * @throws Excel4JRuntimeException
+   *          if a type conversion cannot be found
+   */
+  FieldInvoker getFieldTypeConverter(Field field, TypeConversionMode typeConversionMode);
 }

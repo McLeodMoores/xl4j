@@ -5,11 +5,13 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.function.BiFunction;
 
+import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Calculates the sample covariance of two time series.
  */
+@XLFunction()
 public class CovarianceCalculator implements BiFunction<TimeSeries, TimeSeries, Double> {
 
   @Override

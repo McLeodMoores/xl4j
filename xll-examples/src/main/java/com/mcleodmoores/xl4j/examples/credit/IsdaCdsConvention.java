@@ -9,8 +9,6 @@ import java.util.Objects;
 
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
@@ -23,33 +21,6 @@ import com.opengamma.financial.convention.daycount.DayCountFactory;
  * using the ISDA model.
  */
 public final class IsdaCdsConvention {
-
-  /**
-   * Constructs a convention.
-   * @param accrualDayCountName  the accrual day count name
-   * @param curveDayCountName  the curve day count name
-   * @param businessDayConventionName  the business day convention name
-   * @param couponInterval  the coupon interval name, is optional. If not supplied, 3 months is used
-   * @param stubType  the stub type name, is optional: FRONTSHORT; FRONTLONG; BACKSHORT; or BACKLONG. If not supplied, FRONTSHORT is used
-   * @param cashSettlementDays  the number of cash settlement days, is optional. If not supplied, 3 is used
-   * @param stepInDays  the number of step-in days, is optional. If not supplied, 1 is used
-   * @param payAccrualOnDefault  true if the accrued is paid on default, is optional. If not supplied, true is used
-   * @return  the convention
-   */
-  @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
-  public static IsdaCdsConvention of(
-      @XLParameter(description = "Accrual Day Count", name = "Accrual Day Count") final String accrualDayCountName,
-      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final String curveDayCountName,
-      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final String businessDayConventionName,
-      @XLParameter(description = "Coupon Interval", name = "Coupon Interval", optional = true) final String couponInterval,
-      @XLParameter(description = "Stub Type", name = "Stub Type", optional = true) final String stubType,
-      @XLParameter(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final Integer cashSettlementDays,
-      @XLParameter(description = "Step In Days", name = "Step In Days", optional = true) final Integer stepInDays,
-      @XLParameter(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final Boolean payAccrualOnDefault) {
-    return new IsdaCdsConvention(accrualDayCountName, curveDayCountName, businessDayConventionName, couponInterval,
-        stubType, cashSettlementDays, stepInDays, payAccrualOnDefault);
-  }
-
   private final DayCount _accrualDayCount;
   private final DayCount _curveDayCount;
   private final BusinessDayConvention _bdc;
@@ -59,8 +30,20 @@ public final class IsdaCdsConvention {
   private final Integer _stepInDays;
   private final Boolean _payAccrualOnDefault;
 
-  private IsdaCdsConvention(final String accrualDayCount, final String curveDayCount, final String businessDayConvention,
-      final String couponInterval, final String stubType, final Integer cashSettlementDays, final Integer stepInDays, final Boolean payAccrualOnDefault) {
+  /**
+   * Creates the convention.
+   * @param accrualDayCount  the accrual day count, not null
+   * @param curveDayCount  the curve day count, not null
+   * @param businessDayConvention  the business day convention, not null
+   * @param couponInterval  the CDS coupon interval, not null
+   * @param stubType  the CDS stub type, defaults to FRONTSHORT
+   * @param cashSettlementDays  the number of cash settlement days, defaults to 3
+   * @param stepInDays  the number of step-in days, defaults to 1
+   * @param payAccrualOnDefault  true if the accrued interest is paid on default, defaults to true
+   */
+  public IsdaCdsConvention(final String accrualDayCount, final String curveDayCount, final String businessDayConvention,
+      final String couponInterval, final String stubType, final Integer cashSettlementDays, final Integer stepInDays,
+      final Boolean payAccrualOnDefault) {
     ArgumentChecker.notNull(accrualDayCount, "accrualDayCount");
     ArgumentChecker.notNull(curveDayCount, "curveDayCount");
     ArgumentChecker.notNull(businessDayConvention, "businessDayCountConvention");

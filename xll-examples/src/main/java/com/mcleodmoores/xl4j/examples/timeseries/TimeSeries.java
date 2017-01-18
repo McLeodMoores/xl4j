@@ -42,7 +42,7 @@ public final class TimeSeries implements Operation<TimeSeries> {
    *          the dates and values, not null
    * @return a time series
    */
-  @XLFunction(name = "TimeSeries",
+  @XLFunction(name = "TimeSeriesFromRange",
               description = "Create a time series",
               category = "Time series",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
@@ -108,9 +108,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
    * @return a time series
    */
   @XLFunction(name = "TimeSeries",
-              description = "Create a time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Create a time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static TimeSeries of(@XLParameter(name = "dates", description = "The dates") final XLArray datesArray,
       @XLParameter(name = "values", description = "The values") final XLArray valuesArray) {
     ArgumentChecker.notNull(datesArray, "dates");
@@ -291,9 +291,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "add",
-              description = "Element-by-element addition of two time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Element-by-element addition of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries add(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -301,9 +301,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "subtract",
-              description = "Element-by-element substraction of two time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Element-by-element substraction of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries subtract(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -311,9 +311,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "multiply",
-              description = "Element-by-element multiplication of two time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Element-by-element multiplication of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries multiply(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -321,9 +321,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "divide",
-              description = "Element-by-element division of two time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Element-by-element division of two time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries divide(final TimeSeries other) {
     ArgumentChecker.notNull(other, "other");
@@ -331,9 +331,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "scale",
-              description = "Scale the time series by a constant value",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Scale the time series by a constant value",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries scale(final double scale) {
     final Double[] scaled = new Double[size()];
@@ -344,9 +344,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "abs",
-              description = "Absolute values of entries in the time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Absolute values of entries in the time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries abs() {
     final Double[] abs = new Double[size()];
@@ -357,9 +357,9 @@ public final class TimeSeries implements Operation<TimeSeries> {
   }
 
   @XLFunction(name = "reciprocal",
-              description = "Reciprocal values of entries in the time series",
-              category = "Time series",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Reciprocal values of entries in the time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries reciprocal() {
     final Double[] reciprocal = new Double[size()];

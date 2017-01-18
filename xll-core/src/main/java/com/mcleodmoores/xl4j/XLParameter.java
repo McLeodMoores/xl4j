@@ -21,7 +21,7 @@ public @interface XLParameter {
    * The name of the parameter, as it is to appear in the function wizard. If not supplied, the library will attempt to: 1. Use the debug
    * symbol if available (the class must have been compiled with debugging info) 2. Use the JavaDoc name if available. 3. Use 'arg&lt;n&gt;'
    * where &lt;n&gt; is 1-based.
-   * 
+   *
    * @return the name
    */
   String name() default "";
@@ -29,15 +29,21 @@ public @interface XLParameter {
   /**
    * The description of the parameter, as it is to appear in the function wizard. If not supplied, this will default to the JavaDoc
    * description if available.
-   * 
+   *
    * @return the description
    */
   String description() default "";
 
   /**
+<<<<<<< HEAD:xll-core/src/main/java/com/mcleodmoores/xl4j/XLParameter.java
    * Whether the parameter is optional. This defaults to false, i.e. not optional.
    * 
    * @return whether this parameter is optional
+=======
+   * Whether the argument is optional. This defaults to false, i.e. not optional.
+   *
+   * @return whether this argument is optional
+>>>>>>> 0a7d188f64d610ddf71799603f051d6733567722:xll-core/src/main/java/com/mcleodmoores/xl4j/XLArgument.java
    */
   boolean optional() default false;
 

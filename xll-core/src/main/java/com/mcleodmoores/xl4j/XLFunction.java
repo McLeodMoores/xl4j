@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
 public @interface XLFunction {
-  // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
+
   /**
    * The name of the user-defined function as used on the worksheet. If this is not specified, the method name is used, with the name
    * processed into leading capital camel case, e.g. myMethod() becomes MyMethod().
@@ -30,7 +30,6 @@ public @interface XLFunction {
    *
    * @return the category
    */
-  // TODO see StandardCategories.
   String category() default "";
 
   /**
@@ -74,7 +73,7 @@ public @interface XLFunction {
   TypeConversionMode typeConversionMode() default TypeConversionMode.SIMPLEST_RESULT;
 
   /**
-   * The type of function
+   * The type of function.
    *
    * @return the function type, defaults to FUNCTION
    */

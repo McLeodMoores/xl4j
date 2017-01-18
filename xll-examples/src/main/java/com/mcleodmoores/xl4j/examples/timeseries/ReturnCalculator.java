@@ -7,14 +7,13 @@ import java.util.function.Function;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Calculates the returns of a time series, either assuming continuous compounding or at the frequency of the time series data.
  */
+@XLFunction(name = "TimeSeriesReturn", category = "Time Series", description = "Calculates the return of a time series")
 public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
   /** True if continuous returns are required */
   private final boolean _continuous;
@@ -25,18 +24,10 @@ public class ReturnCalculator implements Function<TimeSeries, TimeSeries> {
    * @param continuous
    *            true if continuous compounding is assumed
    */
-  @XLFunction(
-      name = "TimeSeriesReturnCalculator",
-      description = "Calculates returns of a time series", category = "Time series")
-  public ReturnCalculator(@XLParameter(name = "Continuous returns", description = "Continuous returns") final boolean continuous) {
+  public ReturnCalculator(final boolean continuous) {
     _continuous = continuous;
   }
 
-  @XLFunction(
-      name = "TimeSeriesReturnCalculator.Return",
-      description = "Calculates returns of a time series",
-      category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   @Override
   public TimeSeries apply(final TimeSeries ts) {
     ArgumentChecker.notNull(ts, "ts");

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 import com.mcleodmoores.xl4j.Excel;
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLNamespace;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.heap.Heap;
 import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.ObjectXLObjectTypeConverter;
@@ -43,8 +43,8 @@ public final class JField {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jField(
-      @XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
-      @XLArgument(name = "field name", description = "The field name") final XLString fieldName) {
+      @XLParameter(name = "object reference", description = "The object reference") final XLObject objectReference,
+      @XLParameter(name = "field name", description = "The field name") final XLString fieldName) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(objectReference, fieldName, excel);
@@ -71,8 +71,8 @@ public final class JField {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jFieldX(
-      @XLArgument(name = "object reference", description = "The object reference") final XLObject objectReference,
-      @XLArgument(name = "field name", description = "The field name") final XLString fieldName) {
+      @XLParameter(name = "object reference", description = "The object reference") final XLObject objectReference,
+      @XLParameter(name = "field name", description = "The field name") final XLString fieldName) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(objectReference, fieldName, excel);
@@ -99,8 +99,8 @@ public final class JField {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticField(
-      @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
-      @XLArgument(name = "field name", description = "The field name") final XLString fieldName) {
+      @XLParameter(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
+      @XLParameter(name = "field name", description = "The field name") final XLString fieldName) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(className, fieldName);
@@ -127,8 +127,8 @@ public final class JField {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jStaticFieldX(
-      @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
-      @XLArgument(name = "field name", description = "The field name") final XLString fieldName) {
+      @XLParameter(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
+      @XLParameter(name = "field name", description = "The field name") final XLString fieldName) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(className, fieldName);
