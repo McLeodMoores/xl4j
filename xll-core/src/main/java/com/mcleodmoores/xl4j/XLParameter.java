@@ -35,15 +35,9 @@ public @interface XLParameter {
   String description() default "";
 
   /**
-<<<<<<< HEAD:xll-core/src/main/java/com/mcleodmoores/xl4j/XLParameter.java
    * Whether the parameter is optional. This defaults to false, i.e. not optional.
    * 
    * @return whether this parameter is optional
-=======
-   * Whether the argument is optional. This defaults to false, i.e. not optional.
-   *
-   * @return whether this argument is optional
->>>>>>> 0a7d188f64d610ddf71799603f051d6733567722:xll-core/src/main/java/com/mcleodmoores/xl4j/XLArgument.java
    */
   boolean optional() default false;
 
