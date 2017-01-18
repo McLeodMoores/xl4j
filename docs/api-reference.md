@@ -252,12 +252,120 @@ xlBigDataBinary2.getValue().equals("Hello"); // deserialize binary data
 ```
 
 ### XLLocalReference
-### XLMultiReference
-### XLMissing
+This type represents a single block of cells on the currently selected worksheet.  It directly maps from the `XLOPER12` type
+`zltypeSRef`.  In itself, it is probably of limited use, and is really included for completeness.  In most cases this will be
+coerced (type converted in the native part of the add-in using the `xlCoerce` API call) into an `XLMultiReference`, which includes
+a `sheetId` field that identifies which worksheet the cell(s) are on (and additionally supports multple ranges selected at once).
 
-Associated types
+`XLLocalReference` takes an `XLRange` type, which is an ancillary type that just wraps the selected range information itself and 
+is reused in `XLMultiReference`.  Note that `XLLocalReference` will only be passed into a function if a parameter is registered as
+`@XLParameter(referenceType=true)`, and even then, Excel will only pass this type if it is registered as a command or possibly a 
+macro-equivalent function.
+
+`XLLocalReference` implements the marker interface `XLReference` along with `XLMultiReference`.
+
+```java
+// Range covering A1:C3 (0,0) -> (2, 2)
+XLRange blockRange = XLRange.of(0, 0, 2, 2);
+XLLocalReference xlLocalRef = XLLocalReference.of(blockRange);
+assert blockRange == xlLocalRef.getRange();
+// Range just covering single cell B2
+XLRange singleCell = XLRange.ofCell(1, 1);
+XLLocalReference xlLocalRef2 = XLLocalReference.of(singleCell);
+assert singleCell == xlLocalRef2.getRange();
+```
+
+### XLMultiReference
+This type represents one or more ranges of cells selected on a particular worksheet.  It directly maps from the `XLOPER12` type
+`zltypeMRef`.  It can be passed into user defined functions from Excel as a way of referring to cells by reference, the alternative
+being `XLArray`, which is effectively by value.  The idea is then that you can call back into Excel's API to put/set elements of the 
+range.  Because there isn't currently a callback API implemented, this type is currently of limited use, although it should become more
+useful in the future.  Additionally, only parameters registered as `@XLParameter(referenceType=true)` can receive this type, and even
+then, Excel will only pass it if the user defined function in question is registered as a command or possibly a macro-equivalent 
+function.
+
+`XLMultiReference` implements the marker interface `XLReference` along with `XLLocalReference`.
+
+```java
+// in reality the sheet ID would be passed in from Excel via an XLMultiReference argument.
+XLSheetId sheetId = XLSheetId.of(1); 
+// Range covering A1:C3 (0,0) -> (2, 2)
+XLRange blockRange = XLRange.of(0, 0, 2, 2);
+XLMultiReference xlMultiRef = XLMultiReference.of(sheetId, blockRange);
+List<XLRange> ranges = xlMultiRef.getRanges();
+assert ranges.contains(blockRange);
+assert ranges.size() == 1;
+assert sheetId == xlMultiRef.getSheetId();
+assert xlMultiRef.isSingleRange();
+assert xlMultiRef.getSingleRange() == blockRange;
+XLRange[] rangesArray = xlMultiRef.getRangesArray();
+assert rangesArray[0] == blockRange;
+assert rangesArray.length == 1;
+
+// Range just covering single cell B2
+XLRange singleCell = XLRange.ofCell(1, 1);
+XLMultiReference xlMultiRef2 = XLMultiReference.of(sheetId, singleCell);
+
+XLMultiReference xlMultiRef3 = XLMultiReference.of(sheetId, blockRange, singleCell);
+List<XLRange> ranges2 = xlMultiRef3.getRanges();
+assert ranges2.contains(singleCell);
+assert ranges2.contains(blockRange);
+assert ranges2.size() == 2;
+assert ranges2.isSingleRange() == false;
+assert ranges2.getSingleRange() == singleCell; // probably should throw exception in this case, but doesn't
+```
+
+### XLMissing
+This type represents a missing argument in a parameter list.  As the type converter will generally convert this to a `null` if the 
+function isn't expecting an `XLValue`, it's of limited use, but will likely be more useful once a callback API is available.  It is
+implemented as a singleton `enum` called `INSTANCE`.
+
+```java
+XLValue value = XLMissing.INSTANCE;
+```
+
+## Associated types
 ### XLRange
+This type represents a contiguous range of cells in Excel.  It uses the R1C1 style of cell reference in that the column and row are
+denoted by an index rather than the column being a letter or letters (the A1 style of cell reference).  It simply takes the top left 
+and bottom right indexes of the corners of the contiguous rectangular area inclusive.  Utility methods are included for quickly 
+checking if the range is for a single cell, single column or single row of cells.
+
+```java
+// Range just covering single cell B2
+XLRange singleCell = XLRange.ofCell(1, 1);
+assert singleCell.isSingleCell() == true;
+assert singleCell.isSingleRow() == true; // row of 1 is still a row.
+assert singleCell.isSingleColumn() == true; // column of 1 is still a column.
+
+// Range covering column A1:A3 (0, 0) -> (0, 2)
+XLRange column = XLRange.of(0, 0, 0, 2);
+assert column.isSingleColumn() == true;
+assert column.isSingleRow() == false;
+assert column.isSingleCell() == false;
+
+// Range covering row A1:C1 (0, 0) -> (2, 0)
+XLRange row = XLRange.of(0, 0, 2, 0);
+assert.row.isSingleColumn() == false;
+assert row.isSingleRow() == true;
+assert row.isSingleCell() == false;
+
+// Range covering A1:C3 (0, 0) -> (2, 2)
+XLRange blockRange = XLRange.of(0, 0, 2, 2);
+assert blockRange.isSingleCell() == false;
+assert blockRange.isSingleRow() == false; 
+assert blockRange.isSingleColumn() == false;
+```
+
 ### XLSheetId
+This type simply wraps an integer ID of a given worksheet.  It is supplied embedded in an `XLMultiReference` but will become more
+useful as an argument once API access is available.
+
+```java
+XLSheetId id = XLSheetId.of(1);
+assert id.getSheetId() == 1;
+```
+
 ### XLObject 
 This is not a direct analogue of an Excel type, but rather a special case of an XLString class that encodes an object handle prefixed
 with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being
