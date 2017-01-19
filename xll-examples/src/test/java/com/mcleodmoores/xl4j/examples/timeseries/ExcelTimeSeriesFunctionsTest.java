@@ -4,37 +4,33 @@
 package com.mcleodmoores.xl4j.examples.timeseries;
 
 import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
-import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.heap.Heap;
 import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
+import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
  * Tests the example time series functions.
  */
 public class ExcelTimeSeriesFunctionsTest {
-  /** The object heap */
-  private static final Heap HEAP = ExcelFactory.getInstance().getHeap();
   /** The function processor */
   private static final MockFunctionProcessor PROCESSOR = MockFunctionProcessor.getInstance();
   /** An Excel object containing a time series */
-  private static final XLObject XL_TS_1;
+  private static final XLArray XL_TS_1;
   /** An Excel object containing a time series */
-  private static final XLObject XL_TS_2;
+  private static final XLArray XL_TS_2;
   /** A time series */
   private static final TimeSeries TS_1;
   /** A time series */
   private static final TimeSeries TS_2;
-
+  /** The converter */
+  private static final AbstractTypeConverter CONVERTER = new TimeSeriesTypeConverter();
   static {
     final long offset = ChronoUnit.DAYS.between(LocalDate.of(1900, 1, 1),
         LocalDate.ofEpochDay(0)) + 1;
@@ -49,20 +45,21 @@ public class ExcelTimeSeriesFunctionsTest {
       values1[0][i] = i % 2 == 0 ? null : XLNumber.of(i);
       values2[0][i] = XLNumber.of(3.4 * i);
     }
-    XL_TS_1 = (XLObject) PROCESSOR.invoke("TimeSeries", XLArray.of(dates), XLArray.of(values1));
-    XL_TS_2 = (XLObject) PROCESSOR.invoke("TimeSeries", XLArray.of(dates), XLArray.of(values2));
-    TS_1 = (TimeSeries) HEAP.getObject(XL_TS_1.getHandle());
-    TS_2 = (TimeSeries) HEAP.getObject(XL_TS_2.getHandle());
+    XL_TS_1 = (XLArray) PROCESSOR.invoke("TimeSeries", XLArray.of(dates), XLArray.of(values1));
+    XL_TS_2 = (XLArray) PROCESSOR.invoke("TimeSeries", XLArray.of(dates), XLArray.of(values2));
+    TS_1 = (TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, XL_TS_1);
+    TS_2 = (TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, XL_TS_2);
   }
+
 
   /**
    * Tests the addition of two time series.
    */
   @Test
   public void testAdd() {
-    final XLValue xlValue = PROCESSOR.invoke("add", XL_TS_1, XL_TS_2);
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.add(TS_2));
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Add", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Add.apply", calculator, XL_TS_1, XL_TS_2);
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Add().apply(TS_1, TS_2));
   }
 
   /**
@@ -70,9 +67,9 @@ public class ExcelTimeSeriesFunctionsTest {
    */
   @Test
   public void testSubtract() {
-    final XLValue xlValue = PROCESSOR.invoke("subtract", XL_TS_1, XL_TS_2);
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.subtract(TS_2));
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Subtract", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Subtract.apply", calculator, XL_TS_1, XL_TS_2);
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Subtract().apply(TS_1, TS_2));
   }
 
   /**
@@ -80,9 +77,9 @@ public class ExcelTimeSeriesFunctionsTest {
    */
   @Test
   public void testMultiply() {
-    final XLValue xlValue = PROCESSOR.invoke("multiply", XL_TS_1, XL_TS_2);
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.multiply(TS_2));
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Multiply", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Multiply.apply", calculator, XL_TS_1, XL_TS_2);
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Multiply().apply(TS_1, TS_2));
   }
 
   /**
@@ -90,9 +87,9 @@ public class ExcelTimeSeriesFunctionsTest {
    */
   @Test
   public void testDivide() {
-    final XLValue xlValue = PROCESSOR.invoke("divide", XL_TS_1, XL_TS_2);
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.divide(TS_2));
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Divide", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Divide.apply", calculator, XL_TS_1, XL_TS_2);
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Divide().apply(TS_1, TS_2));
   }
 
   /**
@@ -100,9 +97,9 @@ public class ExcelTimeSeriesFunctionsTest {
    */
   @Test
   public void testScale() {
-    final XLValue xlValue = PROCESSOR.invoke("scale", XL_TS_1, XLNumber.of(5));
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.scale(5));
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Scale", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Scale.apply", calculator, XL_TS_1, XLNumber.of(5));
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Scale().apply(TS_1, 5.));
   }
 
   /**
@@ -110,9 +107,9 @@ public class ExcelTimeSeriesFunctionsTest {
    */
   @Test
   public void testAbs() {
-    final XLValue xlValue = PROCESSOR.invoke("abs", XL_TS_1);
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.abs());
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Abs", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Abs.apply", calculator, XL_TS_1);
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Abs().apply(TS_1));
   }
 
   /**
@@ -120,9 +117,9 @@ public class ExcelTimeSeriesFunctionsTest {
    */
   @Test
   public void testReciprocal() {
-    final XLValue xlValue = PROCESSOR.invoke("reciprocal", XL_TS_1);
-    assertTrue(xlValue instanceof XLObject);
-    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), TS_1.reciprocal());
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Reciprocal", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Reciprocal.apply", calculator, XL_TS_1);
+    assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Reciprocal().apply(TS_1));
   }
 
   //  /**

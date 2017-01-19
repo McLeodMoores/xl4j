@@ -14,7 +14,6 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.heap.Heap;
-import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
@@ -104,7 +103,8 @@ public class FunctionSimulatorTests {
     Assert.assertEquals(listObject, Arrays.asList(1., 2., 3., 4.));
     // populated with arrays
     list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"),
-        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1.), XLNumber.of(2.)}}), XLArray.of(new XLValue[][] {new XLValue[]{XLString.of("3"), XLString.of("4")}}));
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1.), XLNumber.of(2.)}}),
+        XLArray.of(new XLValue[][] {new XLValue[]{XLString.of("3"), XLString.of("4")}}));
     assertTrue(list instanceof XLObject);
     listObject = (List<?>) ExcelFactory.getInstance().getHeap().getObject(((XLObject) list).getHandle());
     Assert.assertEquals(listObject, Arrays.asList(new double[] {1., 2.}, new String[] {"3", "4"}));

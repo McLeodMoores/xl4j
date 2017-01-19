@@ -10,8 +10,6 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.javacode.JConstruct;
-import com.mcleodmoores.xl4j.javacode.JMethod;
 import com.mcleodmoores.xl4j.testutil.TestObject;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
@@ -55,6 +53,7 @@ public class JMethodXTest {
     assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()), _testObject.getNumber());
     // TODO fails because arrays can't be returned
     methodResult = JMethod.jMethodX(_testObjectReference, XLString.of("getDoubles"), new XLValue[0]);
+    final Object temp = ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle());
     assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult).getHandle()), new Double[] {10., 20., 30., 40., 50.});
   }
 

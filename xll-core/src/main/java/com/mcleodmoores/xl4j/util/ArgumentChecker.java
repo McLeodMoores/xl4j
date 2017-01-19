@@ -31,7 +31,7 @@ public final class ArgumentChecker {
   public static int notNegative(final int argument, final String name) {
     if (argument < 0) {
       LOGGER.error("Argument {} was negative", name);
-      throw new Excel4JRuntimeException("Value " + name + " was negative");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was negative");
     }
     return argument;
   }
@@ -48,7 +48,7 @@ public final class ArgumentChecker {
   public static long notNegative(final long argument, final String name) {
     if (argument < 0L) {
       LOGGER.error("Argument {} was negative", name);
-      throw new Excel4JRuntimeException("Value " + name + " was negative");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was negative");
     }
     return argument;
   }
@@ -65,7 +65,7 @@ public final class ArgumentChecker {
   public static double notNegative(final double argument, final String name) {
     if (argument < 0d) {
       LOGGER.error("Argument {} was negative", name);
-      throw new Excel4JRuntimeException("Value " + name + " was negative");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was negative");
     }
     return argument;
   }
@@ -84,7 +84,7 @@ public final class ArgumentChecker {
   public static <E> E notNull(final E argument, final String name) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     }
     return argument;
   }
@@ -105,7 +105,7 @@ public final class ArgumentChecker {
   public static <E> E notNull(final E argument, final String name, final Object... args) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     }
     return argument;
   }
@@ -124,10 +124,10 @@ public final class ArgumentChecker {
   public static <E> E[] notNullOrEmpty(final E[] argument, final String name) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     } else if (argument.length == 0) {
       LOGGER.error("Argument {} was empty array", name);
-      throw new Excel4JRuntimeException("Value " + name + " was empty array");
+      throw new Excel4JRuntimeException("Value for " + name + " was empty array");
     }
     return argument;
   }
@@ -146,7 +146,7 @@ public final class ArgumentChecker {
   public static <E> Collection<E> notNullOrEmpty(final Collection<E> argument, final String name) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     } else if (argument.isEmpty()) {
       LOGGER.error("Argument {} was empty collection", name);
       throw new Excel4JRuntimeException("Value " + name + " was empty collection");
@@ -166,7 +166,7 @@ public final class ArgumentChecker {
   public static String notNullOrEmpty(final String argument, final String name) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     } else if (argument.length() == 0) {
       LOGGER.error("Argument {} was empty string", name);
       throw new Excel4JRuntimeException("Value " + name + " was empty string");
@@ -188,7 +188,7 @@ public final class ArgumentChecker {
   public static <E> E[] notNullArray(final E[] argument, final String name) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     }
     for (int i = 0; i < argument.length; i++) {
       if (argument[i] == null) {
@@ -213,7 +213,7 @@ public final class ArgumentChecker {
   public static <E> Collection<E> notNullCollection(final Collection<E> argument, final String name) {
     if (argument == null) {
       LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value " + name + " was null");
+      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
     }
     final Iterator<E> iter = argument.iterator();
     for (int i = 0; i < argument.size(); i++) {

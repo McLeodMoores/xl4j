@@ -23,7 +23,7 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   /**
    * Default constructor.
-   * 
+   *
    * @param excel
    *          the excel object to allow heap access
    */

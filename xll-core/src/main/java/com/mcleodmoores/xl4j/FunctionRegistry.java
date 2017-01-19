@@ -226,11 +226,10 @@ public class FunctionRegistry {
       final Map<String, Integer> methodNames = new HashMap<>();
       for (final Method method : methods) {
         final String methodName = method.getName();
-        if (Modifier.isAbstract(method.getModifiers())) {
-          LOGGER.warn("{} in {} is abstract, not registering function", methodName, method.getDeclaringClass());
+        if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
+          LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
           continue;
         }
-        //TODO do we need a way to allow excluded method names or exclude certain method names inherited from the parent?
         if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
           continue;
         }
@@ -307,7 +306,7 @@ public class FunctionRegistry {
 
   private static void checkForDuplicateFunctionNames(final Set<String> registeredFunctionNames, final FunctionDefinition functionDefinition) {
     if (registeredFunctionNames.contains(functionDefinition.getFunctionName().toUpperCase())) {
-      LOGGER.warn("Have already registered a function called {}, the previous method will be overwritten", functionDefinition.getFunctionName());
+      LOGGER.warn("Have already registered a function called {}, ignoring", functionDefinition.getFunctionName());
     } else {
       registeredFunctionNames.add(functionDefinition.getFunctionName().toUpperCase());
     }

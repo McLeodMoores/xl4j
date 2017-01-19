@@ -18,8 +18,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.javacode.JConstruct;
-import com.mcleodmoores.xl4j.javacode.JMethod;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;

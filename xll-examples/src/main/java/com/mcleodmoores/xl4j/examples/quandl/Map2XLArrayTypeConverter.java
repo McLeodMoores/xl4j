@@ -201,7 +201,7 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
         }
       }
       final Object key = lastKeyConverter.toJavaObject(keyType, keyValue);
-      final Object value = lastKeyConverter.toJavaObject(keyType, keyValue);
+      final Object value = lastValueConverter.toJavaObject(valueType, valueValue);
       targetMap.put(key, value);
     }
     return targetMap;
