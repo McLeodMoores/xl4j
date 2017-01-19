@@ -388,3 +388,74 @@ XLObject xlObject = XLObject.of(jFrame.getClass(), heap.getHandle(jFrame));
 // send to Excel...
 JFrame JFrameBack = (JFrame) heap.getObject(xlObject.getHandle());
 ```
+
+## Type converters
+
+| Priority | Converter Class | Excel Class | Java Type |
+|----------|-----------------|-----------------|---------------|
+| 100 | `XLLocalReferenceIdentityConverter` | `XLLocalReference` | `XLLocalReference` |
+| 100 | `XLErrorIdentityConverter` | `XLError` | `XLError` |
+| 100 | `XLBooleanIdentityConverter` | `XLBoolean` | `XLBoolean` |
+| 100 | `XLMultiReferenceIdentityConverter` | `XLMultiReference` | `XLMultiReference` |
+| 100 | `XLIntegerIdentityConverter` | `XLInteger` | `XLInteger` |
+| 100 | `XLBigDataIdentityConverter` | `XLBigData` | `XLBigData` |
+| 100 | `XLArrayIdentityConverter` | `XLArray` | `XLArray` |
+| 100 | `XLMissingIdentityConverter` | `XLMissing` | `XLMissing` |
+| 100 | `XLObjectIdentityConverter` | `XLObject` | `XLObject` |
+| 100 | `XLNilIdentityConverter` | `XLNil` | `XLNil` |
+| 100 | `XLNumberIdentityConverter` | `XLNumber` | `XLNumber` |
+| 100 | `XLStringIdentityConverter` | `XLString` | `XLString` |
+| 11 | `ObjectArray2DXLArrayTypeConverter` | `XLArray` | `java.lang.Object[][]` |
+| 10 | `StringXLStringTypeConverter` | `XLString` | `java.lang.String` |
+| 10 | `DoubleXLNumberTypeConverter` | `XLNumber` | `java.lang.Double` |
+| 10 | `PrimitiveFloatArrayXLArrayTypeConverter` | `XLArray` | `float[]` |
+| 10 | `ByteXLNumberTypeConverter` | `XLNumber` | `java.lang.Byte` |
+| 10 | `PrimitiveShortArrayXLArrayTypeConverter` | `XLArray` | `short[]` |
+| 10 | `ObjectArrayXLArrayTypeConverter` | `XLArray` | `java.lang.Object[]` |
+| 10 | `PrimitiveDoubleXLNumberTypeConverter` | `XLNumber` | `double` |
+| 10 | `ShortXLNumberTypeConverter` | `XLNumber` | `java.lang.Short` |
+| 10 | `PrimitiveCharArrayXLArrayTypeConverter` | `XLArray` | `char[]` |
+| 10 | `BigDecimalXLNumberTypeConverter` | `XLNumber` | `java.math.BigDecimal` |
+| 10 | `LongXLNumberTypeConverter` | `XLNumber` | `java.lang.Long` |
+| 10 | `PrimitiveByteXLNumberTypeConverter` | `XLNumber` | `byte` |
+| 10 | `PrimitiveShortXLNumberTypeConverter` | `XLNumber` | `short` |
+| 10 | `PrimitiveBooleanArrayXLArrayTypeConverter` | `XLArray` | `boolean[]` |
+| 10 | `FloatXLNumberTypeConverter` | `XLNumber` | `java.lang.Float` |
+| 10 | `PrimitiveBooleanXLBooleanTypeConverter` | `XLBoolean` | `boolean` |
+| 10 | `PrimitiveLongArrayXLArrayTypeConverter` | `XLArray` | `long[]` |
+| 10 | `IntegerXLNumberTypeConverter` | `XLNumber` | `java.lang.Integer` |
+| 10 | `BooleanXLBooleanTypeConverter` | `XLBoolean` | `java.lang.Boolean` |
+| 10 | `PrimitiveLongXLNumberTypeConverter` | `XLNumber` | `long` |
+| 10 | `PrimitiveFloatXLNumberTypeConverter` | `XLNumber` | `float` |
+| 10 | `BigIntegerXLNumberTypeConverter` | `XLNumber` | `java.math.BigInteger` |
+| 10 | `LocalDateXLNumberTypeConverter` | `XLNumber` | `org.threeten.bp.LocalDate` |
+| 10 | `PrimitiveByteArrayXLArrayTypeConverter` | `XLArray` | `int[]` |
+| 10 | `PrimitiveIntegerArrayXLArrayTypeConverter` | `XLArray` | `int[]` |
+| 10 | `PrimitiveDoubleArrayXLArrayTypeConverter` | `XLArray` | `double[]` |
+| 10 | `PrimitiveIntegerXLNumberTypeConverter` | `XLNumber` | `int` |
+| 7 | `XLValueArrayXLValueArrayTypeConverter` | `public abstract final class [LXLValue;` | `XLValue[]` |
+| 7 | `ObjectArray2DXLArrayTypeConverter2 | `XLArray` | `java.lang.Object[][]` |
+| 7 | `EnumXLStringTypeConverter` | `XLString` | `java.lang.Enum` |
+| 6 | `ObjectArrayXLArrayTypeConverter2 | `XLArray` | `java.lang.Object[]` |
+| 6 | `XLValueXLValueTypeConverter` | `public abstract interface XLValue` | `XLValue` |
+| 5 | `ObjectXLObjectTypeConverter` | `XLObject` | `java.lang.Object` |
+| 5 | `InfNaNXLErrorTypeConverter` | `XLError` | `java.lang.Double` |
+| -1 | `CharacterXLStringTypeConverter` | `XLString` | `java.lang.Character` |
+| -1 | `ByteXLStringTypeConverter` | `XLString` | `java.lang.Byte` |
+| -1 | `PrimitiveByteXLStringTypeConverter` | `XLString` | `byte` |
+| -1 | `PrimitiveDoubleXLStringTypeConverter` | `XLString` | `double` |
+| -1 | `BooleanXLStringTypeConverter` | `XLString` | `java.lang.Boolean` |
+| -1 | `DoubleXLStringTypeConverter` | `XLString` | `java.lang.Double` |
+| -1 | `IntegerXLStringTypeConverter` | `XLString` | `java.lang.Integer` |
+| -1 | `PrimitiveFloatXLStringTypeConverter` | `XLString` | `float` |
+| -1 | `FloatXLStringTypeConverter` | `XLString` | `java.lang.Float` |
+| -1 | `PrimitiveIntegerXLStringTypeConverter` | `XLString` | `int` |
+| -1 | `PrimitiveCharXLStringTypeConverter` | `XLString` | `char` |
+| -1 | `ShortXLStringTypeConverter` | `XLString` | `java.lang.Short` |
+| -1 | `PrimitiveBooleanXLStringTypeConverter` | `XLString` | `boolean` |
+| -1 | `LongXLStringTypeConverter` | `XLString` | `java.lang.Long` |
+| -1 | `PrimitiveShortXLStringTypeConverter` | `XLString` | `short` |
+| -1 | `PrimitiveLongXLStringTypeConverter` | `XLString` | `long` |
+| -7 | `ObjectXLNumberTypeConverter` | `XLNumber` | `java.lang.Object` |
+| -7 | `ObjectXLStringTypeConverter` | `XLString` | `java.lang.Object` |
+| -7 | `ObjectXLBooleanTypeConverter` | `XLBoolean` | `java.lang.Object` |
