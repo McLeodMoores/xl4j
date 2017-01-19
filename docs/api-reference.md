@@ -112,7 +112,8 @@ debugging.  They also all extend the `XLValue` interface, which, beyond acting a
 defines a visitor pattern `accept()` method to make it more efficient to implement functionality that depends on the supplied type 
 than a chain of `instanceof` checks.
 
-### XLNumber
+### Core types
+#### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
 `Inf` (infinity) or `NaN` (not-a-number) and sub-normals are truncated to zero.  See `XLError` instances.  It is important to 
 understand that Excel represents percentages, integers, accountancy amounts, even dates, as a formatting issue - the underlying
@@ -133,7 +134,7 @@ float f = xlNumber.getAsFloat();
 double d = xlNumber.getAsDouble(); // same as getValue()
 ```
 
-#### Dates and times
+##### Dates and times
 **Dates** and **times** are actually represented using `XLNumber` - the number represents the number of days since either 0th January
 1900 (yes, the day before 1st January 1900, there is a reason of sorts!) or 0th January 1904, depending on whether the worksheet is in
 1900 or 1904 mode.  
@@ -148,7 +149,7 @@ done for efficiency reasons in Lotus 1-2-3, because it means you can every forth
 
 See the section on type converters for details on conversion of `Date` and Java 8/JSR-310 types `LocalDate` and `LocalDateTime`.
 
-### XLString
+#### XLString
 This wraps a string type.  This can be a unicode string up to 32K characters long.  Some typical uses:
 
 ```java
@@ -160,7 +161,7 @@ if (xlString.isObject()) { // String has object handle prefix
 System.out.println(xlString.toString());
 ```
 
-### XLBoolean
+#### XLBoolean
 This wraps a boolean, and is implemented as a Java `enum`.  It still implements `XLValue` so remains part of the class heirarchy.
 ```java
 XLBoolean xlBooleanT = XLBoolean.TRUE;
@@ -186,7 +187,7 @@ if (converted.getValue()) {
 }
 ```
 
-### XLArray
+#### XLArray
 This type represents an Excel array of either one or two dimensions.  Excel has two ways of specifying an array as an input to a
 function.  One is explicit, using  curly brackets and comma-separated list syntax `{1, 2, 3}`, which is quite rarely used, or a range 
 of the form A1:B2.  A range is not necessarily an array, and if the parameter is registered as a reference type, a range will be passed
@@ -219,7 +220,7 @@ XLValue[][] arr = xlArray.getArray();
 assert arr = xlValueArr; // it's not a copy so take 'immutable' with a pinch of salt.
 ```
 
-### XLError
+#### XLError
 This type is an enum containing the different errors excel functions can return.  For Java, currently exception level information is 
 viewed via the Java log file (see [Logging](https://github.com/McLeodMoores/xl4j/blob/master/docs/logging.md)), although in future
 the intention is to allow per-cell Java exceptions to be accessed more easily (via a function and/or and context sensitive inspector 
@@ -244,14 +245,14 @@ try {
 }
 ```
 
-### XLNil
+#### XLNil
 This type represents an empty worksheet cell and is implemented as a Java `enum` with a single value `INSTANCE`.   As with other enums,
 it remains part of the `XLValue` class heirarchy.
 ```java
 XLValue value = XLNil.INSTANCE;
 ```
 
-### XLBigData
+#### XLBigData
 This type is a strange beast that presently you can probably safely ignore.  It was introduced into Excel to store binary data on a
 worksheet, which sounds really useful.  The problem is that it only works on the current selected worksheet (i.e. where it stores data
 is specific to the GUI state) making it much less useful.  Originally `XLBigData` was crafted to store and retrieve serialized objects
@@ -277,7 +278,7 @@ XLBigData xlBigDataBinary2 - XLBigData.of("Hello"); // serialized data of string
 xlBigDataBinary2.getValue().equals("Hello"); // deserialize binary data
 ```
 
-### XLLocalReference
+#### XLLocalReference
 This type represents a single block of cells on the currently selected worksheet.  It directly maps from the `XLOPER12` type
 `zltypeSRef`.  In itself, it is probably of limited use, and is really included for completeness.  In most cases this will be
 coerced (type converted in the native part of the add-in using the `xlCoerce` API call) into an `XLMultiReference`, which includes
@@ -301,7 +302,7 @@ XLLocalReference xlLocalRef2 = XLLocalReference.of(singleCell);
 assert singleCell == xlLocalRef2.getRange();
 ```
 
-### XLMultiReference
+#### XLMultiReference
 This type represents one or more ranges of cells selected on a particular worksheet.  It directly maps from the `XLOPER12` type
 `zltypeMRef`.  It can be passed into user defined functions from Excel as a way of referring to cells by reference, the alternative
 being `XLArray`, which is effectively by value.  The idea is then that you can call back into Excel's API to put/set elements of the 
@@ -341,7 +342,7 @@ assert ranges2.isSingleRange() == false;
 assert ranges2.getSingleRange() == singleCell; // probably should throw exception in this case, but doesn't
 ```
 
-### XLMissing
+#### XLMissing
 This type represents a missing argument in a parameter list.  As the type converter will generally convert this to a `null` if the 
 function isn't expecting an `XLValue`, it's of limited use, but will likely be more useful once a callback API is available.  It is
 implemented as a singleton `enum` called `INSTANCE`.
@@ -350,8 +351,8 @@ implemented as a singleton `enum` called `INSTANCE`.
 XLValue value = XLMissing.INSTANCE;
 ```
 
-## Associated types
-### XLRange
+### Associated types
+#### XLRange
 This type represents a contiguous range of cells in Excel.  It uses the R1C1 style of cell reference in that the column and row are
 denoted by an index rather than the column being a letter or letters (the A1 style of cell reference).  It simply takes the top left 
 and bottom right indexes of the corners of the contiguous rectangular area inclusive.  Utility methods are included for quickly 
@@ -383,7 +384,7 @@ assert blockRange.isSingleRow() == false;
 assert blockRange.isSingleColumn() == false;
 ```
 
-### XLSheetId
+#### XLSheetId
 This type simply wraps an integer ID of a given worksheet.  It is supplied embedded in an `XLMultiReference` but will become more
 useful as an argument once API access is available.
 
@@ -392,7 +393,7 @@ XLSheetId id = XLSheetId.of(1);
 assert id.getSheetId() == 1;
 ```
 
-### XLObject 
+#### XLObject 
 This is not a direct analogue of an Excel type, but rather a special case of an `XLString` class that encodes an object handle prefixed
 with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being
 present.  The object is formed of two parts, a class, which can be supplied as a `Class<?>` type or a `String`, and a 64-bit `long` 
