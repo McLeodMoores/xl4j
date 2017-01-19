@@ -10,7 +10,6 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.XLValueXLValueTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;

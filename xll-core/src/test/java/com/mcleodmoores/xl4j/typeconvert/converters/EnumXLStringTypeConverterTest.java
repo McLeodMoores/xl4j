@@ -11,7 +11,6 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.EnumXLStringTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;
@@ -30,8 +29,8 @@ public class EnumXLStringTypeConverterTest {
   private static final XLString XL_STRING = XLString.of("TEST");
 
   /** Enum. */
-  private static enum TestEnum {
-    /** Test value */
+  enum TestEnum {
+    /** Test value. */
     TEST
   };
 

@@ -7,7 +7,6 @@ import java.lang.reflect.Type;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
@@ -30,10 +29,10 @@ public class AbstractTypeConverterTest {
       /**
        * No-arg constructor.
        */
-      public NullTypeConverterTest() {
+      NullTypeConverterTest() {
         super((Class<?>) null, XLNumber.class);
       }
-      
+
       @Override
       public Object toXLValue(final Type expectedType, final Object from) {
         return null;
@@ -59,7 +58,7 @@ public class AbstractTypeConverterTest {
       /**
        * No-args constructor.
        */
-      public NullTypeConverterTest() {
+      NullTypeConverterTest() {
         super(Double.class, (Class<? extends XLValue>) null);
       }
 

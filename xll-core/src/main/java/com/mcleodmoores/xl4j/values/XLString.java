@@ -30,11 +30,6 @@ public final class XLString implements XLValue {
     return new XLString(value);
   }
 
-  public static XLString of(final char value) {
-    ArgumentChecker.notNull(value, "value");
-    return new XLString(String.valueOf(value));
-  }
-
   /**
    * @return the value
    */

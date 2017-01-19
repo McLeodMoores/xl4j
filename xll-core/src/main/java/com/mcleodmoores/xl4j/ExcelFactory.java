@@ -48,7 +48,7 @@ public final class ExcelFactory {
 
   /**
    * Get an instance of the Excel interface. Thread-safe.
-   * 
+   *
    * @return an instance of the Excel interface.
    */
   public static Excel getInstance() {

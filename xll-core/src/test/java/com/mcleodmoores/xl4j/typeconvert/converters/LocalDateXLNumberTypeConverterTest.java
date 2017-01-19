@@ -13,7 +13,6 @@ import org.threeten.bp.temporal.ChronoUnit;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.LocalDateXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLNumber;

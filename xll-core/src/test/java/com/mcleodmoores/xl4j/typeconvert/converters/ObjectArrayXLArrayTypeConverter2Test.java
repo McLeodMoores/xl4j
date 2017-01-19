@@ -22,7 +22,7 @@ import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Unit tests for {@link ObjectArrayXLObjectArrayTypeConverter2}.
+ * Unit tests for {@link ObjectArrayXLArrayTypeConverter2}.
  */
 @Test
 public class ObjectArrayXLArrayTypeConverter2Test {

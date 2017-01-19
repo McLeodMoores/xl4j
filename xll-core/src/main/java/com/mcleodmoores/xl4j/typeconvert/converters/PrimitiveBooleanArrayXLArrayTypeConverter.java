@@ -63,8 +63,6 @@ public final class PrimitiveBooleanArrayXLArrayTypeConverter extends AbstractTyp
     ArgumentChecker.notNull(from, "from");
     final XLArray xlArr = (XLArray) from;
     final XLValue[][] arr = xlArr.getArray();
-    final TypeConverter lastConverter = null;
-    final Class<?> lastClass = null;
     if (arr.length == 1) { // array is a single row
       final boolean[] targetArr = new boolean[arr[0].length];
       for (int i = 0; i < arr[0].length; i++) {
