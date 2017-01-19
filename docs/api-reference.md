@@ -433,10 +433,10 @@ JFrame JFrameBack = (JFrame) heap.getObject(xlObject.getHandle());
 | 10 | `PrimitiveIntegerArrayXLArrayTypeConverter` | `XLArray` | `int[]` |
 | 10 | `PrimitiveDoubleArrayXLArrayTypeConverter` | `XLArray` | `double[]` |
 | 10 | `PrimitiveIntegerXLNumberTypeConverter` | `XLNumber` | `int` |
-| 7 | `XLValueArrayXLValueArrayTypeConverter` | `public abstract final class [LXLValue;` | `XLValue[]` |
-| 7 | `ObjectArray2DXLArrayTypeConverter2 | `XLArray` | `java.lang.Object[][]` |
+| 7 | `XLValueArrayXLValueArrayTypeConverter` | `XLValue[]` | `XLValue[]` |
+| 7 | `ObjectArray2DXLArrayTypeConverter2` | `XLArray` | `java.lang.Object[][]` |
 | 7 | `EnumXLStringTypeConverter` | `XLString` | `java.lang.Enum` |
-| 6 | `ObjectArrayXLArrayTypeConverter2 | `XLArray` | `java.lang.Object[]` |
+| 6 | `ObjectArrayXLArrayTypeConverter2` | `XLArray` | `java.lang.Object[]` |
 | 6 | `XLValueXLValueTypeConverter` | `public abstract interface XLValue` | `XLValue` |
 | 5 | `ObjectXLObjectTypeConverter` | `XLObject` | `java.lang.Object` |
 | 5 | `InfNaNXLErrorTypeConverter` | `XLError` | `java.lang.Double` |
