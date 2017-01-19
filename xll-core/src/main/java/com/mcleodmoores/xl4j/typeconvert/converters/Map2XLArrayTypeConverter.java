@@ -1,4 +1,4 @@
-package com.mcleodmoores.xl4j.examples.quandl;
+package com.mcleodmoores.xl4j.typeconvert.converters;
 
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
