@@ -390,6 +390,70 @@ JFrame JFrameBack = (JFrame) heap.getObject(xlObject.getHandle());
 ```
 
 ## Type converters
+To make it easier to work with normal and custom Java types there is a sophisticated type conversion system in place to marshall data
+automatically from Excel types to Java types and back again.  This mostly works transparently as far as the developer and user are
+concerned but there are times it will be useful to add your own custom type converters.  For example, you might want an Excel array
+(range of cells passed by value) to be automatically converted into a request object for a backend system, or a into a time series
+object for analysis.  To do this it's useful to understand the basic structure of the type conversion system and a view of which
+type converters are already available.
+
+Type converters are registered in a `TypeConverterRegistry`, the main implementation of which `ScanningTypeConverterRegistry`.  This
+regsitry scans the classpath for Classes implementing `TypeConverter`, so to implement and register your own type converter, all you
+need to do is create a class implementing `TypeConverter` (or, more likely, extending the abstract utility class
+`AbstractTypeConverter`).
+
+For the most part, which converter is used during a call to your method is statically determined at start-up.  Occasionally, in cases
+such as `Object` arrays, conversion will need to be somewhat dynamic and scan the type conversion registry at run-time.  Usally though,
+when your `@XLFunction`s are registered, a `MethodInvoker` object is created that has all the type converters pre-computed for each
+parameter.  Then, when the native part of the add-in calls into Java to invoke your function, each argument is passed to the
+corresponding `TypeConverter`.  Return values are converted in a similar way, but using the methods that convert in the other direction.
+
+Because sometimes we do call the `TypeConverterRegistry` dynamically, we want it to be as fast as possible.  The slow approach
+would be to ask each type converter in turn if it can do the conversion, but we short circuit this by using two key classes called
+`JavaToExcelTypeMapping` and `ExcelToJavaTypeMapping`.  `CachingTypeConverterRegistry` then uses these to provide fast hash-based
+caching layer on the look-up of the appropriate type converters.
+
+Below is an example of the converter for JSR-310 backport `LocalDate` to and from `XLNumber` (exluding the imports and some comments
+and annotations).
+
+```java
+public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter {
+  private static final int EXCEL_EPOCH_YEAR = 1900;
+
+  public LocalDateXLNumberTypeConverter() {
+    super(LocalDate.class, XLNumber.class);
+  }
+
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), 
+                                                                            LocalDate.ofEpochDay(0)) + 1;
+
+  public Object toXLValue(final Type expectedType, final Object from) {
+    ArgumentChecker.notNull(from, "from");
+    return XLNumber.of(((LocalDate) from).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
+  }
+
+  public Object toJavaObject(final Type expectedType, final Object from) {
+    ArgumentChecker.notNull(from, "from");
+    final long epochDays = (long) ((XLNumber) from).getValue() - DAYS_FROM_EXCEL_EPOCH;
+    return LocalDate.ofEpochDay(epochDays);
+  }
+}
+```
+
+The call to the super-class constructor creates the appropriate `JavaToExcelMapping` and `ExcelToJavaMapping` keys and the super-class
+provides these to the registry.  Note how the converter class deals with conversions in both directions.  In both the `toXLValue` and
+`toJavaObject` methods, we are passed the source object and an *expected type*.  This is of type `java.lang.Type`, which allows us
+to specify primitive types and generic types.  For some converters, it may be useful to delve into the `expectedType` object to 
+get more information about generics, which because they are provided from the method signatures of the classes in question, rather
+than type-erased run-time objects, can actually contain useful information.
+
+There is also a second super-class constructor not used here that takes a *priority* level.  This is used to determine the search 
+order of type converters, with the highest being tried first.  This is useful because it allows, more specific converters to be
+at the front of the queue, falling back to more generic converters later.  Below is a list of the default type converters and their
+priorities.  The number is an ordinal, just used for ordering and the magnitude has no meaning - they are spaced out a bit so 
+other converters and more easily be raised and lowered more easily if required.  Determining the appropriate priority level is a bit
+of a black art, but as a rule of thumb, use the default level unless you run into issues and then raise it if necessary.  Low prioriy
+converters are used for the most generic conversions such as `Object` to `XLObject`.
 
 | Priority | Converter Class | Excel Class | Java Type |
 |----------|-----------------|-----------------|---------------|
