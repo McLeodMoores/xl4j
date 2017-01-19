@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -18,8 +18,8 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Generates a monthly schedule from the end date to start date inclusive. The series is returned
  * with increasing dates.
  */
-@XLNamespace("Schedule")
-@XLFunction(name = "ReverseMonthly", description = "Generates a monthly schedule from the end to start date", category = "Schedule")
+@XLNamespace("Schedule.")
+@XLFunctions(prefix = "ReverseMonthly", description = "Generates a monthly schedule from the end to start date", category = "Schedule")
 public class ReverseMonthlyScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
 
   @Override

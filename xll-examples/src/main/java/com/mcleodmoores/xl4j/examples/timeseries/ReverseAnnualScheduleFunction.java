@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -18,8 +18,8 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Generates an annual schedule from the end date to start date inclusive. The series is returned
  * with increasing dates.
  */
-@XLNamespace("Schedule")
-@XLFunction(name = "ReverseAnnual", description = "Generates an annual schedule from the end to start date", category = "Schedule")
+@XLNamespace("Schedule.")
+@XLFunctions(prefix = "ReverseAnnual", description = "Generates an annual schedule from the end to start date", category = "Schedule")
 public class ReverseAnnualScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
 
   @Override

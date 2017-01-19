@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -12,7 +12,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * as zeros.
  */
 @XLNamespace("TimeSeries.")
-@XLFunction(name = "Multiply", description = "Element-by-element multiplication of two time series", category = "Time series")
+@XLFunctions(prefix = "Multiply", description = "Element-by-element multiplication of two time series", category = "Time series")
 public class Multiply implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

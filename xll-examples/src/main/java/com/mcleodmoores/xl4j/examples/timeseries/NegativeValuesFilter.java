@@ -8,13 +8,15 @@ import java.util.stream.Collectors;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
+import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Removes negative values in a time series.
  */
-@XLFunction(name = "NegativeValuesFilter", description = "Removes negative values from a time series", category = "Time series")
+@XLNamespace("TimeSeries.")
+@XLFunctions(prefix = "NegativeValuesFilter", description = "Removes negative values from a time series", category = "Time series")
 public class NegativeValuesFilter implements TimeSeriesFunction<TimeSeries> {
 
   @Override

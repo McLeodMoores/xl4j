@@ -10,31 +10,30 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for methods and constructors to be exposed as an Excel user-defined function (UDF).
+ * Annotation for constructors and methods for classes to be exposed as an Excel user-defined functions (UDF).
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
-public @interface XLFunction {
+@Target(ElementType.TYPE)
+public @interface XLFunctions {
 
   /**
-   * The name of the user-defined function as used on the worksheet. If this is not specified,
-   * the method name or class name is used (for methods or constructors, respectively), with the name
-   * processed into leading capital camel case, e.g. myMethod() becomes MyMethod().
+   * The prefix for the class name (for constructors) or method name that is used to construct the names
+   * of the user-defined function.
    *
    * @return the name
    */
-  String name() default "";
+  String prefix() default "";
 
   /**
-   * The category this function should be registered in. If this is not specified, it defaults to the class name.
+   * The category these functions should be registered in. If this is not specified, it defaults to the class name.
    *
    * @return the category
    */
   String category() default "";
 
   /**
-   * The description of this function.
+   * The description of this functions.
    *
    * @return the description
    */
@@ -48,23 +47,25 @@ public @interface XLFunction {
   String helpTopic() default "";
 
   /**
-   * Whether the function should be re-evaluated on any sheet changes. In other words, is it a volatile function. If not specified, it is
-   * assumed the function is not volatile.
+   * Whether the functions should be re-evaluated on any sheet changes. If not specified, it is
+   * assumed the functions are not volatile.
    *
-   * @return true, if this function is volatile
+   * @return true, if these functions are volatile
    */
   boolean isVolatile() default false;
 
   /**
-   * Whether the function can be executed from multiple threads safely.
+   * Whether the functions can be executed from multiple threads safely.
    *
-   * @return true, if this function can be executed concurrently safely
+   * @return true, if these functions can be executed concurrently safely
    */
   boolean isMultiThreadSafe() default true;
 
   /**
-   * @return true, if this function needs access to macro-level features. Note this cannot be used in conjunction with isMultiThreadSafe, but
-   *         is required if access to certain call-backs or range references (XLLocalReference or XLMultiReference) are needed.
+   * @return true, if these functions need access to macro-level features. Note this cannot be used in conjunction with
+   *         {@link #isMultiThreadSafe}, but is required if access to certain call-backs or range references
+   *         ({@link com.mcleodmoores.xl4j.values.XLLocalReference} or {@link com.mcleodmoores.xl4j.values.XLMultiReference})
+   *         are needed.
    */
   boolean isMacroEquivalent() default false;
 

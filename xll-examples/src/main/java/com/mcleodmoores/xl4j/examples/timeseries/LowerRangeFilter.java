@@ -5,13 +5,15 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.stream.Collectors;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
+import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Removes values below an amount from a time series.
  */
-@XLFunction(name = "LowerValueFilter", description = "Removes values below an amount from a time series", category = "Time series")
+@XLNamespace("TimeSeries.")
+@XLFunctions(prefix = "LowerValueFilter", description = "Removes values below an amount from a time series", category = "Time series")
 public class LowerRangeFilter implements TimeSeriesBiFunction<Double, TimeSeries> {
 
   @Override

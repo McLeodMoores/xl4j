@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -11,7 +11,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the arithmetic mean of a time series of values.
  */
 @XLNamespace("TimeSeries")
-@XLFunction(name = "Mean", category = "Time Series", description = "Calculates the arithmetic mean of a time series")
+@XLFunctions(prefix = "Mean", category = "Time Series", description = "Calculates the arithmetic mean of a time series")
 public class MeanCalculator implements TimeSeriesFunction<Double> {
 
   @Override

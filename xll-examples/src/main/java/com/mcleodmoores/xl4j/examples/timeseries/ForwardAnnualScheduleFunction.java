@@ -9,15 +9,15 @@ import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Generates an annual schedule from the start date to end date inclusive.
  */
-@XLNamespace("Schedule")
-@XLFunction(name = "ForwardAnnual", description = "Generates an annual schedule from the start to end date", category = "Schedule")
+@XLNamespace("Schedule.")
+@XLFunctions(prefix = "ForwardAnnual", description = "Generates an annual schedule from the start to end date", category = "Schedule")
 public class ForwardAnnualScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
 
   @Override

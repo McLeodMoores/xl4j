@@ -58,9 +58,9 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
     }
     try {
       final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
+      LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getName());
       switch (functionDefinition.getJavaTypeForFunction()) {
         case METHOD: {
-          LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getFunctionSpec().name());
           final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
           LOGGER.info("method invoker = {}", methodInvoker.getMethodName());
           if (methodInvoker.isStatic()) {

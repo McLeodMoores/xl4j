@@ -5,7 +5,7 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.stream.Collectors;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
@@ -13,7 +13,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Returns a time series containing the reciprocals of the original values. A null value is treated as a 0.
  */
 @XLNamespace("TimeSeries.")
-@XLFunction(name = "Reciprocal", description = "Return the reciprocal values of a time series", category = "Time series")
+@XLFunctions(prefix = "Reciprocal", description = "Return the reciprocal values of a time series", category = "Time series")
 public class Reciprocal implements TimeSeriesFunction<TimeSeries> {
 
   @Override

@@ -9,15 +9,15 @@ import java.util.TreeMap;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Calculates the returns of a time series assuming continuous compounding.
  */
-@XLNamespace("TimeSeries")
-@XLFunction(name = "ContinuousReturn", description = "Calculates the continuous return of a time series", category = "Time Series")
+@XLNamespace("TimeSeries.")
+@XLFunctions(prefix = "ContinuousReturn", description = "Calculates the continuous return of a time series", category = "Time Series")
 public class ContinuousReturnCalculator implements TimeSeriesFunction<TimeSeries> {
 
   @Override

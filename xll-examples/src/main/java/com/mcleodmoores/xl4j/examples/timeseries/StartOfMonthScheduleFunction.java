@@ -10,15 +10,15 @@ import java.util.function.BiFunction;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.TemporalAdjusters;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
  * Generates a start-of-month schedule of dates from the start date to end date inclusive.
  */
-@XLNamespace("Schedule")
-@XLFunction(name = "StartOfMonth", description = "Generates a start-of-month schedule", category = "Schedule")
+@XLNamespace("Schedule.")
+@XLFunctions(prefix = "StartOfMonth", description = "Generates a start-of-month schedule", category = "Schedule")
 public class StartOfMonthScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
 
   @Override
