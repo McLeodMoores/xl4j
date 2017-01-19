@@ -13,27 +13,26 @@ import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Unit tests for {@link PrimitiveLongArrayXLArrayTypeConverter}.
+ * Unit tests for {@link PrimitiveByteArrayXLArrayTypeConverter}.
  */
 @Test
-public class PrimitiveLongArrayXLArrayTypeConverterTest {
+public class PrimitiveByteArrayXLArrayTypeConverterTest {
   /** The expected priority */
-  private static final long EXPECTED_PRIORITY = 10;
+  private static final byte EXPECTED_PRIORITY = 10;
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new PrimitiveLongArrayXLArrayTypeConverter();
+  private static final AbstractTypeConverter CONVERTER = new PrimitiveByteArrayXLArrayTypeConverter();
 
   /**
-   * Tests that the java type is long[].
+   * Tests that the java type is byte[].
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLArray.class, long[].class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLArray.class, byte[].class));
   }
 
   /**
@@ -41,7 +40,7 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(long[].class, XLArray.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(byte[].class, XLArray.class));
   }
 
   /**
@@ -57,7 +56,7 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, new long[] {10});
+    CONVERTER.toXLValue(null, new byte[] {10});
   }
 
   /**
@@ -73,7 +72,7 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXLValue() {
-    CONVERTER.toJavaObject(long[].class, null);
+    CONVERTER.toJavaObject(byte[].class, null);
   }
 
   /**
@@ -81,7 +80,7 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToJavaConversion() {
-    CONVERTER.toJavaObject(long[].class, new Long[] {10L});
+    CONVERTER.toJavaObject(byte[].class, new byte[] {10});
   }
 
   /**
@@ -93,32 +92,14 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
   }
 
   /**
-   * Tests the behaviour when there is no available converter to a long.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNoConverterToLongRow() {
-    final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE, XLBoolean.FALSE}});
-    CONVERTER.toJavaObject(long[].class, xlArray);
-  }
-
-  /**
-   * Tests the behaviour when there is no available converter to a long.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNoConverterToLongColumn() {
-    final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE}, new XLValue[]{XLBoolean.FALSE}});
-    CONVERTER.toJavaObject(long[].class, xlArray);
-  }
-
-  /**
    * Tests the conversion from XLArray containing a single row where the input contains only XLNumber.
    */
   @Test
   public void testToJavaConversionFromRow1() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20), XLNumber.of(30)}});
-    final Object converted = CONVERTER.toJavaObject(long[].class, xlArray);
-    final long[] array = (long[]) converted;
-    assertEquals(array, new long[] {10, 20, 30});
+    final Object converted = CONVERTER.toJavaObject(byte[].class, xlArray);
+    final byte[] array = (byte[]) converted;
+    assertEquals(array, new byte[] {10, 20, 30});
   }
 
   /**
@@ -127,9 +108,9 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
   @Test
   public void testToJavaConversionFromRow2() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLString.of("20"), XLNumber.of(30)}});
-    final Object converted = CONVERTER.toJavaObject(long[].class, xlArray);
-    final long[] array = (long[]) converted;
-    assertEquals(array, new long[] {10, 20, 30});
+    final Object converted = CONVERTER.toJavaObject(byte[].class, xlArray);
+    final byte[] array = (byte[]) converted;
+    assertEquals(array, new byte[] {10, 20, 30});
   }
 
   /**
@@ -138,9 +119,9 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
   @Test
   public void testToJavaConversionFromColumn1() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10)}, new XLValue[] {XLNumber.of(20)}, new XLValue[] {XLNumber.of(30)}});
-    final Object converted = CONVERTER.toJavaObject(long[].class, xlArray);
-    final long[] array = (long[]) converted;
-    assertEquals(array, new long[] {10, 20, 30});
+    final Object converted = CONVERTER.toJavaObject(byte[].class, xlArray);
+    final byte[] array = (byte[]) converted;
+    assertEquals(array, new byte[] {10, 20, 30});
   }
 
   /**
@@ -149,17 +130,17 @@ public class PrimitiveLongArrayXLArrayTypeConverterTest {
   @Test
   public void testToJavaConversionFromColumn2() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10)}, new XLValue[] {XLString.of("20")}, new XLValue[] {XLNumber.of(30)}});
-    final Object converted = CONVERTER.toJavaObject(long[].class, xlArray);
-    final long[] array = (long[]) converted;
-    assertEquals(array, new long[] {10, 20, 30});
+    final Object converted = CONVERTER.toJavaObject(byte[].class, xlArray);
+    final byte[] array = (byte[]) converted;
+    assertEquals(array, new byte[] {10, 20, 30});
   }
 
   /**
-   * Tests the conversion from long[].
+   * Tests the conversion from byte[].
    */
   @Test
-  public void testToXLConversionFrom1dPrimitiveLongArray() {
-    final long[] array = new long[] {10, 20, 30};
+  public void testToXLConversionFrom1dPrimitiveByteArray() {
+    final byte[] array = new byte[] {10, 20, 30};
     final XLValue converted = (XLValue) CONVERTER.toXLValue(XLNumber.class, array);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;

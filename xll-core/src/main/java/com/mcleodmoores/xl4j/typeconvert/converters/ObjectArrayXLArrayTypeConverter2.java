@@ -30,7 +30,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
 
   /**
    * Default constructor.
-   * 
+   *
    * @param excel
    *          the excel context object, used to access the type converter registry, not null
    */
@@ -47,7 +47,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
       throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
     Type componentType = null;
-    if (expectedType instanceof Class) {
+    if (expectedType == null || expectedType instanceof Class) {
       final Class<?> expectedClass = from.getClass();
       componentType = expectedClass.getComponentType();
       // REVIEW: this will never fail because of the isArray() test

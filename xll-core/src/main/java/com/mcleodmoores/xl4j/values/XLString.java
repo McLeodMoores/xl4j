@@ -20,7 +20,7 @@ public final class XLString implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * 
+   *
    * @param value
    *          the string, not null
    * @return an instance
@@ -28,6 +28,11 @@ public final class XLString implements XLValue {
   public static XLString of(final String value) {
     ArgumentChecker.notNull(value, "value");
     return new XLString(value);
+  }
+
+  public static XLString of(final char value) {
+    ArgumentChecker.notNull(value, "value");
+    return new XLString(String.valueOf(value));
   }
 
   /**

@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.mcleodmoores.xl4j.typeconvert.converters;
+package com.mcleodmoores.xl4j.javacode;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;

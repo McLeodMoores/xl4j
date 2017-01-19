@@ -1,11 +1,10 @@
 /**
  *
  */
-package com.mcleodmoores.xl4j.typeconvert.converters;
+package com.mcleodmoores.xl4j.javacode;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
 
 import org.testng.annotations.Test;
 
@@ -52,11 +51,10 @@ public class StringConstructionTest extends TypeConstructionTests {
    */
   @Test
   public void testJConstructCharArray() {
-    fail();
-    final char[] charArray = {'H', 'e', 'l', 'l', 'o' , ' ', 'W', 'o', 'r', 'l', 'd'};
+    final char[] charArray = {'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd'};
     final XLValue[][] xlCharArray = new XLValue[1][charArray.length];
     for (int i = 0; i < charArray.length; i++) {
-      xlCharArray[0][i] = null; //TODO
+      xlCharArray[0][i] = XLString.of(charArray[i]);
     }
     final XLValue xlValue = PROCESSOR.invoke("JConstruct", XLString.of("java.lang.String"), XLArray.of(xlCharArray));
     assertTrue(xlValue instanceof XLObject);
@@ -76,6 +74,6 @@ public class StringConstructionTest extends TypeConstructionTests {
     final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(object instanceof String);
     final String string = (String) object;
-    assertEquals(string, String.valueOf(10d));
+    assertEquals(string, String.valueOf(10));
   }
 }

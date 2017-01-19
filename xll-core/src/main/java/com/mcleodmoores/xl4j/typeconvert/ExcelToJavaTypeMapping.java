@@ -35,7 +35,7 @@ public final class ExcelToJavaTypeMapping {
 
   /**
    * Static factory method.
-   * 
+   *
    * @param excelType
    *          the Excel type
    * @param javaType
@@ -69,7 +69,7 @@ public final class ExcelToJavaTypeMapping {
 
   /**
    * Checks whether both the excel type and java type are assignable from the other type (i.e. are the types compatible).
-   * 
+   *
    * @param other
    *          the ExcelToJavaTypeMapping to compare against
    * @return true, if both the excel and java types are assignable from

@@ -34,9 +34,8 @@ public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
         return XLError.NA;
       } else if (fromd.isInfinite()) {
         return XLError.Div0;
-      } else {
-        return XLNumber.of(fromd);
       }
+      return XLNumber.of(fromd);
     }
     throw new Excel4JRuntimeException("Should not attempt to directly convert from a Java object to XLError");
   }

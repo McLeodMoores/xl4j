@@ -1,4 +1,4 @@
-package com.mcleodmoores.xl4j.simulator;
+package com.mcleodmoores.xl4j.javacode.simulator;
 
 import static org.testng.Assert.assertTrue;
 
@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.heap.Heap;
+import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
@@ -25,7 +26,6 @@ import com.mcleodmoores.xl4j.values.XLValue;
  */
 public class FunctionSimulatorTests {
   private static final String CLASSNAME_LIST = "java.util.ArrayList";
-  //private static final String CLASSNAME2 = "java.util.HashSet";
   private static final String CLASSNAME_INTEGER = "java.lang.Integer";
   private static final String CLASSNAME_MAP = "java.util.HashMap";
 

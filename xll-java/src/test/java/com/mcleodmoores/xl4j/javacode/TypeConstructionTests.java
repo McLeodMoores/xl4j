@@ -1,7 +1,7 @@
 /**
  *
  */
-package com.mcleodmoores.xl4j.typeconvert.converters;
+package com.mcleodmoores.xl4j.javacode;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.heap.Heap;

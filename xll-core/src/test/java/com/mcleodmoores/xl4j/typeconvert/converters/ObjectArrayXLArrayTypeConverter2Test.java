@@ -13,7 +13,6 @@ import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.ObjectArrayXLArrayTypeConverter2;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLBoolean;
@@ -60,14 +59,6 @@ public class ObjectArrayXLArrayTypeConverter2Test {
   @Test
   public void testPriority() {
     assertEquals(CONVERTER.getPriority(), 6);
-  }
-
-  /**
-   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, ARRAY_OF_DOUBLE);
   }
 
   /**

@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.xl4j.profiling;
+package com.mcleodmoores.xl4j.examples.profiling;
 
 import java.util.Random;
 
