@@ -9,9 +9,9 @@ import org.slf4j.LoggerFactory;
 import com.mcleodmoores.xl4j.Excel;
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLNamespace;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.typeconvert.converters.EnumXLStringTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.xl4j.values.XLArray;
@@ -33,7 +33,7 @@ public class JEnum {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jEnum(
-      @XLArgument(name = "enum name", description = "The fully-qualified enum name") final XLString enumName) {
+      @XLParameter(name = "enum name", description = "The fully-qualified enum name") final XLString enumName) {
     try {
       final Class<?> clazz = Class.forName(enumName.getValue());
       final Object[] values = clazz.getEnumConstants();
@@ -54,7 +54,7 @@ public class JEnum {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object jEnumX(
-      @XLArgument(name = "enum name", description = "The fully-qualified enum name") final XLString enumName) {
+      @XLParameter(name = "enum name", description = "The fully-qualified enum name") final XLString enumName) {
     try {
       final Excel excel = ExcelFactory.getInstance();
       final ObjectXLObjectTypeConverter typeConverter = new ObjectXLObjectTypeConverter(excel);

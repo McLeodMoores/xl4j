@@ -7,7 +7,7 @@ import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePerio
 
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLNumber;
@@ -34,12 +34,12 @@ public final class ConventionFunctions {
    */
   @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
   public static IsdaYieldCurveConvention buildYieldCurveConvention(
-      @XLArgument(description = "Money Market Day Count", name = "Money Market Day Count") final XLString xlMoneyMarketDayCountName,
-      @XLArgument(description = "Swap Day Count", name = "Swap Day Count") final XLString xlSwapDayCountName,
-      @XLArgument(description = "Swap Interval", name = "Swap Interval") final XLString xlSwapIntervalName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
-      @XLArgument(description = "Spot Days", name = "spotDays") final XLNumber xlSpotDays) {
+      @XLParameter(description = "Money Market Day Count", name = "Money Market Day Count") final XLString xlMoneyMarketDayCountName,
+      @XLParameter(description = "Swap Day Count", name = "Swap Day Count") final XLString xlSwapDayCountName,
+      @XLParameter(description = "Swap Interval", name = "Swap Interval") final XLString xlSwapIntervalName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
+      @XLParameter(description = "Spot Days", name = "spotDays") final XLNumber xlSpotDays) {
     final DayCount moneyMarketDayCount = DayCountFactory.INSTANCE.instance(xlMoneyMarketDayCountName.getValue());
     final DayCount swapDayCount = DayCountFactory.INSTANCE.instance(xlSwapDayCountName.getValue());
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(xlCurveDayCountName.getValue());
@@ -62,14 +62,14 @@ public final class ConventionFunctions {
    */
   @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
   public static IsdaCdsConvention buildCdsConvention(
-      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final XLString xlAccrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
-      @XLArgument(description = "Coupon Interval", name = "Coupon Interval", optional = true) final XLString xlCouponInterval,
-      @XLArgument(description = "Stub Type", name = "Stub Type", optional = true) final XLString xlStubType,
-      @XLArgument(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final XLNumber xlCashSettlementDays,
-      @XLArgument(description = "Step In Days", name = "Step In Days", optional = true) final XLNumber xlStepInDays,
-      @XLArgument(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final XLBoolean xlPayAccrualOnDefault) {
+      @XLParameter(description = "Accrual Day Count", name = "Accrual Day Count") final XLString xlAccrualDayCountName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
+      @XLParameter(description = "Coupon Interval", name = "Coupon Interval", optional = true) final XLString xlCouponInterval,
+      @XLParameter(description = "Stub Type", name = "Stub Type", optional = true) final XLString xlStubType,
+      @XLParameter(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final XLNumber xlCashSettlementDays,
+      @XLParameter(description = "Step In Days", name = "Step In Days", optional = true) final XLNumber xlStepInDays,
+      @XLParameter(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final XLBoolean xlPayAccrualOnDefault) {
     final String stubType = xlStubType == null ? null : xlStubType.getValue();
     final Integer cashSettlementDays = xlCashSettlementDays == null ? null : xlCashSettlementDays.getAsInt();
     final Integer stepInDays = xlStepInDays == null ? null : xlStepInDays.getAsInt();

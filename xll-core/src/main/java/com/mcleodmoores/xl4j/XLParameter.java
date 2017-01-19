@@ -10,14 +10,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for method arguments to provide extra meta-data to Excel.
+ * Annotation for method parameters to provide extra meta-data to Excel.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER })
-public @interface XLArgument {
+public @interface XLParameter {
+  // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
   /**
-   * The name of the argument, as it is to appear in the function wizard. If not supplied, the library will attempt to: 1. Use the debug
+   * The name of the parameter, as it is to appear in the function wizard. If not supplied, the library will attempt to: 1. Use the debug
    * symbol if available (the class must have been compiled with debugging info) 2. Use the JavaDoc name if available. 3. Use 'arg&lt;n&gt;'
    * where &lt;n&gt; is 1-based.
    *
@@ -26,7 +27,7 @@ public @interface XLArgument {
   String name() default "";
 
   /**
-   * The description of the argument, as it is to appear in the function wizard. If not supplied, this will default to the JavaDoc
+   * The description of the parameter, as it is to appear in the function wizard. If not supplied, this will default to the JavaDoc
    * description if available.
    *
    * @return the description
@@ -34,14 +35,14 @@ public @interface XLArgument {
   String description() default "";
 
   /**
-   * Whether the argument is optional. This defaults to false, i.e. not optional.
-   *
-   * @return whether this argument is optional
+   * Whether the parameter is optional. This defaults to false, i.e. not optional.
+   * 
+   * @return whether this parameter is optional
    */
   boolean optional() default false;
 
   /**
-   * @return true, if the argument is a reference type (e.g. an XLLocalReference or XLMultiReference or XLArray byref)
+   * @return true, if the parameter is a reference type (e.g. an XLLocalReference or XLMultiReference or XLArray byref)
    */
   boolean referenceType() default false;
 }

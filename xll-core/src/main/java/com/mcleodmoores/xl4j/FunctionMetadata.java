@@ -17,7 +17,7 @@ public final class FunctionMetadata {
   /** Information about the function */
   private final XLConstant _constantSpec;
   /** The arguments of the method */
-  private final XLArgument[] _arguments;
+  private final XLParameter[] _parameters;
 
   /**
    * Creates an instance for a function representing a method or constructor.
@@ -26,14 +26,14 @@ public final class FunctionMetadata {
    *          the namespace
    * @param functionSpec
    *          the function specification
-   * @param arguments
-   *          the arguments to the function
+   * @param parameters
+   *          the parameters to the function
    */
-  private FunctionMetadata(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
+  private FunctionMetadata(final XLNamespace namespace, final XLFunction functionSpec, final XLParameter[] parameters) {
     _namespace = namespace;
     _functionSpec = functionSpec;
     _constantSpec = null;
-    _arguments = arguments;
+    _parameters = parameters;
   }
 
   /**
@@ -48,7 +48,7 @@ public final class FunctionMetadata {
     _namespace = namespace;
     _functionSpec = null;
     _constantSpec = constantSpec;
-    _arguments = null;
+    _parameters = null;
   }
 
   /**
@@ -58,15 +58,15 @@ public final class FunctionMetadata {
    *          an XLNamespace annotation or null if no name space
    * @param functionSpec
    *          an XLFunction annotation, not null
-   * @param arguments
+   * @param parameters
    *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
    *          to signify missing XLArgument annotations.
    * @return the function metadata
    */
-  public static FunctionMetadata of(final XLNamespace namespace, final XLFunction functionSpec, final XLArgument[] arguments) {
+  public static FunctionMetadata of(final XLNamespace namespace, final XLFunction functionSpec, final XLParameter[] parameters) {
     ArgumentChecker.notNull(functionSpec, "functionSpec");
-    ArgumentChecker.notNull(arguments, "arguments");
-    return new FunctionMetadata(namespace, functionSpec, arguments);
+    ArgumentChecker.notNull(parameters, "parameters");
+    return new FunctionMetadata(namespace, functionSpec, parameters);
   }
 
   /**
@@ -74,15 +74,15 @@ public final class FunctionMetadata {
    *
    * @param functionSpec
    *          an XLFunction annotation, not null
-   * @param arguments
-   *          a non-null array of XLArgument annotations, must be same length as method parameter list. The array itself may contain nulls
-   *          to signify missing XLArgument annotations.
+   * @param parameters
+   *          a non-null array of XLParameter annotations, must be same length as method parameter list. The array itself may contain nulls
+   *          to signify missing XLParameter annotations.
    * @return the function metadata
    */
-  public static FunctionMetadata of(final XLFunction functionSpec, final XLArgument[] arguments) {
+  public static FunctionMetadata of(final XLFunction functionSpec, final XLParameter[] parameters) {
     ArgumentChecker.notNull(functionSpec, "functionSpec");
-    ArgumentChecker.notNull(arguments, "arguments");
-    return new FunctionMetadata(null, functionSpec, arguments);
+    ArgumentChecker.notNull(parameters, "parameters");
+    return new FunctionMetadata(null, functionSpec, parameters);
   }
 
   /**
@@ -146,16 +146,16 @@ public final class FunctionMetadata {
     return _functionSpec == null ? _constantSpec.name() : _functionSpec.name();
   }
   /**
-   * @return an array of XLArgument. For a function representing a method or constructor, this will not be null,
-   * but may contain null elements, and will be same length as method argument list.
+   * @return an array of XLParameter. For a function representing a method or constructor, this will not be null,
+   * but may contain null elements, and will be same length as method parameter list.
    * @throws Excel4JRuntimeException
    *          if the function represents a constant or field
    */
-  public XLArgument[] getArguments() {
+  public XLParameter[] getParameters() {
     if (_functionSpec == null) {
       // have a XLConstant
       throw new Excel4JRuntimeException("Cannot get argument annotations for a field or enum");
     }
-    return _arguments;
+    return _parameters;
   }
 }

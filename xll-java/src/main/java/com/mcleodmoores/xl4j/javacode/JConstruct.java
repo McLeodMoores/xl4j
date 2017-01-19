@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.mcleodmoores.xl4j.Excel;
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.values.XLError;
@@ -43,8 +43,8 @@ public final class JConstruct {
               category = "Java",
               typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static XLValue jconstruct(
-      @XLArgument(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
-      @XLArgument(name = "args", description = "") final XLValue... args) {
+      @XLParameter(name = "class name", description = "The class name, fully qualified or short if registered") final XLString className,
+      @XLParameter(name = "args", description = "") final XLValue... args) {
     try {
       final Excel excelFactory = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excelFactory.getInvokerFactory();

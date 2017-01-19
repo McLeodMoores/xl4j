@@ -42,7 +42,7 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
  */
 public class FunctionRegistry {
   private static final Set<String> EXCLUDED_METHOD_NAMES = new HashSet<>();
-  private static final XLArgument[] EMPTY_ARGUMENT_ARRAY = new XLArgument[0];
+  private static final XLParameter[] EMPTY_PARAMETER_ARRAY = new XLParameter[0];
   static {
     EXCLUDED_METHOD_NAMES.add("clone");
     EXCLUDED_METHOD_NAMES.add("equals");
@@ -176,10 +176,11 @@ public class FunctionRegistry {
       if (method.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = method.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
-      final XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(method);
+      final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(method);
       final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation,
           method.getDeclaringClass().getSimpleName(), method.getName(), false, 1);
-      addMethod(method, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation, xlArgumentAnnotations, functionName);
+      addMethod(method, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName);
+
     }
   }
 
@@ -192,11 +193,11 @@ public class FunctionRegistry {
       if (constructor.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = constructor.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
-      final XLArgument[] xlArgumentAnnotations = getXLArgumentAnnotations(constructor);
+      final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(constructor);
       final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, functionAnnotation,
           constructor.getDeclaringClass().getSimpleName(), 1);
       addConstructor(constructor, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation,
-          xlArgumentAnnotations, functionName);
+          xlParameterAnnotations, functionName);
     }
   }
 
@@ -218,7 +219,7 @@ public class FunctionRegistry {
       int count = 1;
       for (final Constructor<?> constructor : constructors) {
         final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation, className, count);
-        addConstructor(constructor, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_ARGUMENT_ARRAY, functionName);
+        addConstructor(constructor, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName);
         count++;
       }
       // build the method invokers
@@ -236,7 +237,7 @@ public class FunctionRegistry {
         final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
         methodNames.put(methodName, methodNameCount);
         final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation, className, methodName, true, methodNameCount);
-        addMethod(method, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_ARGUMENT_ARRAY, functionName);
+        addMethod(method, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName);
       }
     }
   }
@@ -263,7 +264,7 @@ public class FunctionRegistry {
   }
 
   private void addMethod(final Method method, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final XLFunction functionAnnotation, final XLNamespace namespaceAnnotation, final XLArgument[] argumentAnnotations, final String functionName) {
+      final XLFunction functionAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
     // scan the result type if there is one to determine whether function should return simplest type or always
     // an object type
     final TypeConversionMode resultType =
@@ -272,7 +273,7 @@ public class FunctionRegistry {
     try {
       final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
       // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, argumentAnnotations);
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations);
       final int allocatedExportNumber = allocateExport();
       final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber, functionName);
       checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
@@ -287,11 +288,11 @@ public class FunctionRegistry {
 
   private void addConstructor(@SuppressWarnings("rawtypes") final Constructor constructor, final InvokerFactory invokerFactory,
       final Set<String> registeredFunctionNames, final XLFunction functionAnnotation, final XLNamespace namespaceAnnotation,
-      final XLArgument[] argumentAnnotations, final String functionName) {
+      final XLParameter[] parameterAnnotations, final String functionName) {
     try {
       final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
       // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, argumentAnnotations);
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations);
       final int allocatedExportNumber = allocateExport();
       final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber, functionName);
       checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
@@ -312,28 +313,28 @@ public class FunctionRegistry {
     }
   }
 
-  private static XLArgument[] getXLArgumentAnnotations(final Method method) {
-    return getXLArgumentAnnotations(method.getParameterAnnotations());
+  private static XLParameter[] getXLParameterAnnotations(final Method method) {
+    return getXLParameterAnnotations(method.getParameterAnnotations());
   }
 
-  private static XLArgument[] getXLArgumentAnnotations(final Constructor<?> constructor) {
-    return getXLArgumentAnnotations(constructor.getParameterAnnotations());
+  private static XLParameter[] getXLParameterAnnotations(final Constructor<?> constructor) {
+    return getXLParameterAnnotations(constructor.getParameterAnnotations());
   }
 
-  private static XLArgument[] getXLArgumentAnnotations(final Annotation[][] allParameterAnnotations) {
-    final XLArgument[] xlArgumentAnnotations = new XLArgument[allParameterAnnotations.length];
+  private static XLParameter[] getXLParameterAnnotations(final Annotation[][] allParameterAnnotations) {
+    final XLParameter[] xlParameterAnnotations = new XLParameter[allParameterAnnotations.length];
     // we rely here on the array being initialized to null
     for (int i = 0; i < allParameterAnnotations.length; i++) {
       if (allParameterAnnotations[i] != null) {
         for (int j = 0; j < allParameterAnnotations[i].length; j++) {
-          if (allParameterAnnotations[i][j].annotationType().equals(XLArgument.class)) {
-            xlArgumentAnnotations[i] = (XLArgument) allParameterAnnotations[i][j];
+          if (allParameterAnnotations[i][j].annotationType().equals(XLParameter.class)) {
+            xlParameterAnnotations[i] = (XLParameter) allParameterAnnotations[i][j];
             break;
           }
         }
       }
     }
-    return xlArgumentAnnotations;
+    return xlParameterAnnotations;
   }
 
   /**

@@ -16,6 +16,7 @@ import com.opengamma.financial.convention.daycount.DayCount;
  * using the ISDA model.
  */
 public final class IsdaYieldCurveConvention {
+
   private final DayCount _moneyMarketDayCount;
   private final DayCount _swapDayCount;
   private final Period _swapInterval;

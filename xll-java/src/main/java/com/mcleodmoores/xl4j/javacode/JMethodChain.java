@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLNamespace;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
@@ -45,10 +45,10 @@ public final class JMethodChain {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object methodChain(
-      @XLArgument(name = "Class name", description = "The class name") final XLString objectName,
-      @XLArgument(name = "Constructor arguments", description = "The constructor arguments") final XLArray objectArguments,
-      @XLArgument(name = "The method names", description = "The method names") final XLArray methodNames,
-      @XLArgument(name = "The method arguments", description = "The method arguments") final XLArray methodArguments) {
+      @XLParameter(name = "Class name", description = "The class name") final XLString objectName,
+      @XLParameter(name = "Constructor arguments", description = "The constructor arguments") final XLArray objectArguments,
+      @XLParameter(name = "The method names", description = "The method names") final XLArray methodNames,
+      @XLParameter(name = "The method arguments", description = "The method arguments") final XLArray methodArguments) {
     ArgumentChecker.isFalse(objectArguments.isArea(), "The arguments must be either a row or column");
     // collapse arguments to 1D array
     final List<XLValue> args = new ArrayList<>();
@@ -97,9 +97,9 @@ public final class JMethodChain {
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
   public static Object methodChain(
-      @XLArgument(name = "Object", description = "The object") final XLObject objectReference,
-      @XLArgument(name = "The method names", description = "The method arguments") final XLArray methodNames,
-      @XLArgument(name = "The method arguments", description = "The method arguments") final XLArray methodArguments) {
+      @XLParameter(name = "Object", description = "The object") final XLObject objectReference,
+      @XLParameter(name = "The method names", description = "The method arguments") final XLArray methodNames,
+      @XLParameter(name = "The method arguments", description = "The method arguments") final XLArray methodArguments) {
     ArgumentChecker.isFalse(methodNames.isArea(), "Method names array must be either a row or column");
     final XLValue[][] methodNamesArray = methodNames.getArray();
     final boolean isMethodNameColumn = methodNames.isColumn();

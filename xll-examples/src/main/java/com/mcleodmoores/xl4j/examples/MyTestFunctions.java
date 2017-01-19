@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.values.XLArray;
@@ -34,7 +34,7 @@ public final class MyTestFunctions {
               description = "Wait for n seconds", 
               category = "Mine",
               isAutoAsynchronous = true)
-  public static XLNumber myAsyncWait(@XLArgument(name = "delay", description = "delay in seconds") final XLNumber delay) {
+  public static XLNumber myAsyncWait(@XLParameter(name = "delay", description = "delay in seconds") final XLNumber delay) {
     try {
       Thread.sleep((int) delay.getAsDouble() * 1000);
     } catch (InterruptedException ie) {
@@ -56,8 +56,8 @@ public final class MyTestFunctions {
               description = "Concat 2 strings",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLString myStringCat(@XLArgument(name = "string 1", description = "The first string") final XLString one,
-      @XLArgument(name = "string 2", description = "The second string") final XLString two) {
+  public static XLString myStringCat(@XLParameter(name = "string 1", description = "The first string") final XLString one,
+      @XLParameter(name = "string 2", description = "The second string") final XLString two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLString.of("Hello" + one.getValue() + two.getValue());
@@ -76,8 +76,8 @@ public final class MyTestFunctions {
               description = "XOR 2 booleans",
               category = "Mine",
               typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLBoolean myXOR(@XLArgument(name = "boolean 1", description = "The first boolean") final XLBoolean one,
-      @XLArgument(name = "boolean 2", description = "The second boolean") final XLBoolean two) {
+  public static XLBoolean myXOR(@XLParameter(name = "boolean 1", description = "The first boolean") final XLBoolean one,
+      @XLParameter(name = "boolean 2", description = "The second boolean") final XLBoolean two) {
     ArgumentChecker.notNull(one, "one");
     ArgumentChecker.notNull(two, "two");
     return XLBoolean.from(one.getValue() ^ two.getValue());
@@ -97,7 +97,7 @@ public final class MyTestFunctions {
               isMacroEquivalent = true,
               isMultiThreadSafe = false)
   public static XLString myLocalReference(
-      @XLArgument(name = "local reference", description = "The local reference (range)") final XLLocalReference ref) {
+      @XLParameter(name = "local reference", description = "The local reference (range)") final XLLocalReference ref) {
     ArgumentChecker.notNull(ref, "ref");
     return XLString.of(ref.toString());
   }
@@ -116,7 +116,7 @@ public final class MyTestFunctions {
               isMacroEquivalent = true,
               isMultiThreadSafe = false)
   public static XLString myMultiReference(
-      @XLArgument(name = "multi reference", description = "The multi reference (range)") final XLMultiReference ref) {
+      @XLParameter(name = "multi reference", description = "The multi reference (range)") final XLMultiReference ref) {
     ArgumentChecker.notNull(ref, "ref");
     return XLString.of(ref.toString());
   }
@@ -147,7 +147,7 @@ public final class MyTestFunctions {
               description = "Make a list from a range/array",
               category = "Mine",
               typeConversionMode = TypeConversionMode.OBJECT_RESULT)
-  public static List<?> makeList(@XLArgument(name = "entries", description = "The values to put in the list (range)") final XLArray arr) {
+  public static List<?> makeList(@XLParameter(name = "entries", description = "The values to put in the list (range)") final XLArray arr) {
     ArgumentChecker.notNull(arr, "arr");
     final ArrayList<XLValue> list = new ArrayList<>();
     final XLValue[][] array = arr.getArray();

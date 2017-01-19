@@ -17,8 +17,8 @@ import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -46,7 +46,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
       description = "Create a time series",
       category = "Time series",
       typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static TimeSeries of(@XLArgument(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
+  public static TimeSeries of(@XLParameter(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
     ArgumentChecker.notNull(datesAndValues, "datesAndValues");
     if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
       return ofRange((XLArray) datesAndValues[0]);

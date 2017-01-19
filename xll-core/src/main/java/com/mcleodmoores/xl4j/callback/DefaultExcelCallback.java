@@ -6,7 +6,7 @@ package com.mcleodmoores.xl4j.callback;
 import com.mcleodmoores.xl4j.FunctionDefinition;
 import com.mcleodmoores.xl4j.FunctionMetadata;
 import com.mcleodmoores.xl4j.FunctionType;
-import com.mcleodmoores.xl4j.XLArgument;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLConstant;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
@@ -54,7 +54,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String functionCategory = buildFunctionCategory(functionDefinition);
     if (functionMetadata.isFunctionSpec()) {
       final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
-      final XLArgument[] argumentAnnotations = functionMetadata.getArguments();
+      final XLParameter[] argumentAnnotations = functionMetadata.getParameters();
       final boolean isVarArgs = functionDefinition.isVarArgs();
       final boolean isLongRunning = functionAnnotation.isLongRunning();
       final boolean isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
@@ -79,7 +79,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     }
   }
 
-  private static String[] buildArgsHelp(final XLArgument[] argumentAnnotations) {
+  private static String[] buildArgsHelp(final XLParameter[] argumentAnnotations) {
     final String[] results = new String[argumentAnnotations.length];
     for (int i = 0; i < argumentAnnotations.length; i++) {
       if (argumentAnnotations[i] != null && !argumentAnnotations[i].description().isEmpty()) {
@@ -186,14 +186,14 @@ public class DefaultExcelCallback implements ExcelCallback {
         }
       }
       // Parameters
-      final XLArgument[] argumentAnnotations = functionMetadata.getArguments();
+      final XLParameter[] parameterAnnotations = functionMetadata.getParameters();
       for (int i = 0; i < parameterTypes.length; i++) {
-        if (argumentAnnotations.length == 0) { // true if someone has used a class-level @XLFunction annotation, see FunctionRegistry
+        if (parameterAnnotations.length == 0) { // true if someone has used a class-level @XLFunction annotation, see FunctionRegistry
           // if they wanted anything other than the default, they wouldn't have used a class-level annotation
           signature.append("Q");
         } else {
-          final XLArgument argumentAnnotation = argumentAnnotations[i];
-          if (argumentAnnotation != null && argumentAnnotation.referenceType()) {
+          final XLParameter parameterAnnotation = parameterAnnotations[i];
+          if (parameterAnnotation != null && parameterAnnotation.referenceType()) {
             if (!isMacroEquivalent) {
               throw new Excel4JRuntimeException("Cannot register reference type parameters if not a macro equivalent: "
                   + "function annotation @XLFunction(isMacroEquivalent = true) required");
@@ -208,7 +208,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         if (parameterTypes.length == 0) {
           throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
         }
-        final boolean isLastTypeReferenceType = argumentAnnotations[parameterTypes.length - 1].referenceType();
+        final boolean isLastTypeReferenceType = parameterAnnotations[parameterTypes.length - 1].referenceType();
         for (int i = 0; i < VARARGS_MAX_PARAMS - parameterTypes.length; i++) {
           if (isLastTypeReferenceType) {
             signature.append("U"); // XLOPER12 byref
@@ -249,33 +249,33 @@ public class DefaultExcelCallback implements ExcelCallback {
   /**
    * Build the string containing a list of argument annotations.
    *
-   * @param argumentAnnotations
+   * @param parameterAnnotations
    *          array of argument annotations, can contain nulls
    * @return the argument annotations separated by a comma
    */
-  private static String buildArgNames(final XLArgument[] argumentAnnotations) {
-    final StringBuilder argumentNames = new StringBuilder();
+  private static String buildArgNames(final XLParameter[] parameterAnnotations) {
+    final StringBuilder parameterNames = new StringBuilder();
     int argCounter = 1;
 
-    for (int i = 0; i < argumentAnnotations.length; i++) {
-      final XLArgument argumentAnnotation = argumentAnnotations[i];
-      if (argumentAnnotation != null) {
-        if (!argumentAnnotation.name().isEmpty()) {
-          argumentNames.append(argumentAnnotation.name());
+    for (int i = 0; i < parameterAnnotations.length; i++) {
+      final XLParameter parameterAnnotation = parameterAnnotations[i];
+      if (parameterAnnotation != null) {
+        if (!parameterAnnotation.name().isEmpty()) {
+          parameterNames.append(parameterAnnotation.name());
         } else {
           // TODO: try paranamer/JavaDocs? #46
-          argumentNames.append(Integer.toString(argCounter));
+          parameterNames.append(Integer.toString(argCounter));
         }
       } else {
         // TODO: try paranamer/JavaDocs? #46
-        argumentNames.append(Integer.toString(argCounter));
+        parameterNames.append(Integer.toString(argCounter));
       }
-      if (i < argumentAnnotations.length - 1) {
-        argumentNames.append(",");
+      if (i < parameterAnnotations.length - 1) {
+        parameterNames.append(",");
       }
       argCounter++;
     }
-    return argumentNames.toString();
+    return parameterNames.toString();
   }
 
   /**

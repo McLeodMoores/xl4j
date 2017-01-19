@@ -6,8 +6,8 @@ package com.mcleodmoores.xl4j.javacode;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mcleodmoores.xl4j.XLArgument;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLString;
@@ -29,7 +29,7 @@ public final class ExcelUtils {
       category = "Utils",
       description = "Create an array from a list of inputs")
   public static XLValue[] array(
-      @XLArgument(name = "inputs", description = "The inputs to put into an array") final XLValue... inputs) {
+      @XLParameter(name = "inputs", description = "The inputs to put into an array") final XLValue... inputs) {
     final List<Object> arrayList = new ArrayList<>();
     for (final XLValue value : inputs) {
       if (value instanceof XLArray) {
@@ -73,8 +73,8 @@ public final class ExcelUtils {
       category = "Utils",
       description = "Append a prefix to a range of values if they are strings, or leaves them unchanged otherwise")
   public static XLValue[] prefix(
-      @XLArgument(name = "prefix", description = "The prefix") final String prefix,
-      @XLArgument(name = "inputs", description = "The inputs") final XLValue... inputs) {
+      @XLParameter(name = "prefix", description = "The prefix") final String prefix,
+      @XLParameter(name = "inputs", description = "The inputs") final XLValue... inputs) {
     final List<Object> arrayList = new ArrayList<>();
     for (final XLValue value : inputs) {
       if (value instanceof XLArray) {
@@ -106,7 +106,7 @@ public final class ExcelUtils {
       category = "Utils",
       description = "Remove any whitespace in a string, or leaves the value unchanged otherwise")
   public static XLValue[] removeWhitespace(
-      @XLArgument(name = "inputs", description = "The inputs") final XLValue... inputs) {
+      @XLParameter(name = "inputs", description = "The inputs") final XLValue... inputs) {
     final List<Object> arrayList = new ArrayList<>();
     for (final XLValue value : inputs) {
       if (value instanceof XLArray) {
