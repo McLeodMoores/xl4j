@@ -1,6 +1,32 @@
 API Reference
 =============
-
+# Table of Contents
+ - [Annotations](#annotations)
+   - [@XLNamespace](#xlnamespace)
+   - [@XLFunction](#xlfunction)
+   - [@XLParameter](#xlparameter)
+   - [@XLConstant](#xlconstant)
+ - [The type system](#the-type-system)
+   - Core types
+     - [XLNumber](#xlnumber)
+       - [Dates and times](#dates-and-times)
+     - [XLString](#xlstring)
+     - [XLBoolean](#xlboolean)
+     - [XLArray](#xlarray)
+     - [XLError](#xlerror)
+     - [XLNil](#xlnil)
+     - [XLBigData](#xlbigdata)
+     - [XLLocalReference](#xllocalreference)
+     - [XLMultiReference](#xlmultireference)
+     - [XLMissing](#xlmissing)
+   - [Associated types](#associated-types)
+     - [XLRange](#xlrange)
+     - [XLSheetId](#xlsheetid)
+     - [XLObject](#xlobject)
+ - [Type converters](#type-converters)
+   - [List of default converters](#list-of-default-converters)
+ 
+   
 ## Annotations
 ### @XLNamespace
 This annotation applies at the class level and specifies a prefix to be prepended to all `@XLFunction` annotated functions within
@@ -454,6 +480,8 @@ priorities.  The number is an ordinal, just used for ordering and the magnitude 
 other converters and more easily be raised and lowered more easily if required.  Determining the appropriate priority level is a bit
 of a black art, but as a rule of thumb, use the default level unless you run into issues and then raise it if necessary.  Low prioriy
 converters are used for the most generic conversions such as `Object` to `XLObject`.
+
+### List of default converters
 
 | Priority | Converter Class | Excel Class | Java Type |
 |----------|-----------------|-----------------|---------------|
