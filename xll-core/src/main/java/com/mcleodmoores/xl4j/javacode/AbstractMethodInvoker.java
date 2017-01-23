@@ -65,11 +65,10 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
         } else {
-          final Type expectedClass = _method.getParameterTypes()[i];
+          final Type expectedClass = _method.getGenericParameterTypes()[i];
           // handle the case where nothing is passed and this should be converted to a null
           // which happens unless the method is expecting an XLValue.
-          if (arguments[i] instanceof XLMissing
-              && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+          if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
             args[i] = null;
           } else {
             args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
@@ -79,7 +78,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       final XLValue[] varArgs = new XLValue[nVarArgs];
       System.arraycopy(arguments, varArgIndex, varArgs, 0, nVarArgs);
       final XLValue[][] varArgsAsArray = new XLValue[][] { varArgs };
-      final Type expectedClass = _method.getParameterTypes()[varArgIndex];
+      final Type expectedClass = _method.getGenericParameterTypes()[varArgIndex];
       args[args.length - 1] = _argumentConverters[_argumentConverters.length - 1].toJavaObject(expectedClass, XLArray.of(varArgsAsArray));
     } else {
       args = new Object[arguments.length];
@@ -89,17 +88,13 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
         if (arguments[i].getClass().isArray()) {
           args[i] = arguments[i];
         } else {
-          final Type expectedClass = _method.getParameterTypes()[i];
+          final Type expectedClass = _method.getGenericParameterTypes()[i];
           // handle the case where nothing is passed and this should be converted to a null
           // which happens unless the method is expecting an XLValue.
           if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
             args[i] = null;
           } else {
-            try {
-              args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
-            } catch (final ClassCastException e) {
-              throw e;
-            }
+            args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
           }
         }
       }

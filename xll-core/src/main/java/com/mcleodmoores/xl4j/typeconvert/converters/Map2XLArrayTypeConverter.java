@@ -1,7 +1,12 @@
+/**
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -23,12 +28,11 @@ import com.mcleodmoores.xl4j.values.XLValue;
  */
 public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
   /** The logger */
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(Map2XLArrayTypeConverter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Map2XLArrayTypeConverter.class);
   /** The priority */
   private static final int PRIORITY = 6;
   /** The Excel context */
-  private final Excel _excel;;
+  private final Excel _excel;
 
   /**
    * Default constructor.
@@ -39,77 +43,42 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
    */
   public Map2XLArrayTypeConverter(final Excel excel) {
     super(Map.class, XLArray.class, PRIORITY);
-    ArgumentChecker.notNull(excel, "excel");
-    _excel = excel;
+    _excel =  ArgumentChecker.notNull(excel, "excel");
   }
 
   @Override
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    if (!from.getClass().isAssignableFrom(Map.class)) {
+    if (!Map.class.isAssignableFrom(from.getClass())) {
       throw new Excel4JRuntimeException("\"from\" parameter must be a Map");
     }
     final Map<?, ?> fromMap = (Map<?, ?>) from;
     if (fromMap.size() == 0) { // empty array
       return XLArray.of(new XLValue[1][1]);
     }
-    Type keyType = null;
-    Type valueType = null;
-    if (expectedType instanceof Class) {
-      final Class<?> expectedClass = from.getClass();
-      final TypeVariable<?>[] typeParameters = expectedClass
-          .getTypeParameters();
-      final Type[] keyUpperBounds = typeParameters[0].getBounds();
-      switch (keyUpperBounds.length) {
-        case 0:
-          keyType = Object.class;
-          break;
-        case 1:
-          keyType = keyUpperBounds[0];
-          break;
-        default:
-          keyType = keyUpperBounds[0];
-          LOGGER.warn(
-              "Map key type parameter has multiple upper bounds, only considering first in conversion");
-          break;
-      }
-      keyType = keyUpperBounds[0];
-      final Type[] valueUpperBounds = typeParameters[1].getBounds();
-      switch (valueUpperBounds.length) {
-        case 0:
-          valueType = Object.class;
-          break;
-        case 1:
-          valueType = valueUpperBounds[0];
-          break;
-        default:
-          valueType = valueUpperBounds[0];
-          LOGGER.warn(
-              "Map value parameter has multiple upper bounds, only considering first in conversion");
-          break;
-      }
-      valueType = valueUpperBounds[0];
-    } else {
-      throw new Excel4JRuntimeException("expectedType not a Class");
-    }
-
     // we know the length is > 0
     final XLValue[][] toArr = new XLValue[fromMap.size()][2];
-    // get converters for keys and values
-    final TypeConverter keyConverter = _excel.getTypeConverterRegistry()
-        .findConverter(keyType);
-    final TypeConverter valueConverter = _excel.getTypeConverterRegistry()
-        .findConverter(valueType);
-    int i = 0;
-    // convert each element of the map with the converters
-    for (final Map.Entry<?, ?> entry : fromMap.entrySet()) {
-      final XLValue key = (XLValue) keyConverter.toXLValue(keyType,
-          entry.getKey());
-      final XLValue value = (XLValue) valueConverter.toXLValue(valueType,
-          entry.getValue());
-      toArr[i][0] = key;
-      toArr[i][1] = value;
-      i++;
+    TypeConverter lastKeyConverter = null, lastValueConverter = null;
+    Class<?> lastKeyClass = null, lastValueClass = null;
+    final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
+    final Iterator<?> iter = fromMap.entrySet().iterator();
+    for (int i = 0; i < fromMap.size(); i++) {
+      final Map.Entry<?, ?> nextEntry = (Map.Entry<?, ?>) iter.next();
+      final Object key = nextEntry.getKey();
+      final Object value = nextEntry.getValue();
+      // get converters for key and value
+      if (lastKeyConverter == null || !key.getClass().equals(lastKeyClass)) {
+        lastKeyClass = key.getClass();
+        lastKeyConverter = typeConverterRegistry.findConverter(lastKeyClass);
+      }
+      if (lastValueConverter == null || !value.getClass().equals(lastValueClass)) {
+        lastValueClass = value.getClass();
+        lastValueConverter = typeConverterRegistry.findConverter(lastValueClass);
+      }
+      final XLValue xlKey = (XLValue) lastKeyConverter.toXLValue(null, key);
+      final XLValue xlValue = (XLValue) lastValueConverter.toXLValue(null, value);
+      toArr[i][0] = xlKey;
+      toArr[i][1] = xlValue;
     }
     return XLArray.of(toArr);
   }
@@ -118,86 +87,60 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     final XLArray xlArr = (XLArray) from;
-    Type keyType = null;
-    Type valueType = null;
+    final Type keyType;
+    final Type valueType;
     if (expectedType instanceof Class) {
-
-      final Class<?> expectedClass = (Class<?>) expectedType;
-      if (!expectedClass.isAssignableFrom(Map.class)) {
+      if (!Map.class.isAssignableFrom((Class<?>) expectedType)) {
         throw new Excel4JRuntimeException("expectedType is not a Map");
       }
-      final TypeVariable<?>[] typeParameters = expectedClass
-          .getTypeParameters();
-      if (typeParameters.length != 2) {
-        keyType = Object.class;
-        valueType = Object.class;
-        LOGGER.warn(
-            "No type information available on Map, defaulting to Map<Object, Object>");
+      keyType = Object.class;
+      valueType = Object.class;
+    } else if (expectedType instanceof ParameterizedType) {
+      final ParameterizedType parameterizedType = (ParameterizedType) expectedType;
+      if (!(parameterizedType.getRawType() instanceof Class && Map.class.isAssignableFrom((Class<?>) parameterizedType.getRawType()))) {
+        throw new Excel4JRuntimeException("expectedType is not a Map");
+      }
+      final Type[] typeArguments = parameterizedType.getActualTypeArguments();
+      if (typeArguments.length == 2) {
+        keyType = getBound(typeArguments[0]);
+        valueType = getBound(typeArguments[1]);
       } else {
-        final Type[] keyBounds = typeParameters[0].getBounds();
-        switch (keyBounds.length) {
-          case 0:
-            keyType = Object.class;
-            break;
-          case 1:
-            keyType = keyBounds[0];
-            break;
-          default:
-            keyType = keyBounds[0];
-            LOGGER.warn(
-                "Map value parameter has multiple upper bounds, only considering first in conversion");
-            break;
-        }
-        final Type[] valueUpperBounds = typeParameters[1].getBounds();
-        switch (valueUpperBounds.length) {
-          case 0:
-            valueType = Object.class;
-            break;
-          case 1:
-            valueType = valueUpperBounds[0];
-            break;
-          default:
-            valueType = valueUpperBounds[0];
-            LOGGER.warn(
-                "Map value parameter has multiple upper bounds, only considering first in conversion");
-            break;
-        }
-        valueType = valueUpperBounds[0];
+        throw new Excel4JRuntimeException("Could not get two type argument from " + expectedType);
       }
     } else {
-      throw new Excel4JRuntimeException("expectedType not Class");
+      throw new Excel4JRuntimeException("expectedType not Class or ParameterizedType");
     }
     final XLValue[][] arr = xlArr.getArray();
     final Map<Object, Object> targetMap = new LinkedHashMap<>();
-    TypeConverter lastKeyConverter = null;
-    TypeConverter lastValueConverter = null;
-    Class<?> lastKeyClass = null;
-    Class<?> lastValueClass = null;
-    final TypeConverterRegistry typeConverterRegistry = _excel
-        .getTypeConverterRegistry();
-    for (final XLValue[] element : arr) {
-      final XLValue keyValue = element[0];
-      final XLValue valueValue = element[1];
+    TypeConverter lastKeyConverter = null, lastValueConverter = null;
+    Class<?> lastKeyClass = null, lastValueClass = null;
+    final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
+    final int n = arr.length == 2 ? arr[0].length : arr.length;
+    for (int i = 0; i < n; i++) {
+      final XLValue keyValue, valueValue;
+      if (arr.length == 2) { // row
+        keyValue = arr[0][i];
+        valueValue = arr[1][i];
+      } else { // column
+        keyValue = arr[i][0];
+        valueValue = arr[i][1];
+      }
       // This is a rather weak attempt at optimizing converter lookup - other
       // options seemed to have greater overhead.
-      if (lastKeyConverter == null
-          || !keyValue.getClass().equals(lastKeyClass)) {
+      if (lastKeyConverter == null || !keyValue.getClass().equals(lastKeyClass)) {
         lastKeyClass = keyValue.getClass();
-        lastKeyConverter = typeConverterRegistry
-            .findConverter(ExcelToJavaTypeMapping.of(lastKeyClass, keyType));
+        lastKeyConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastKeyClass, keyType));
         if (lastKeyConverter == null) {
-          throw new Excel4JRuntimeException("Could not find type converter for "
-              + lastKeyClass + " using component type " + keyType);
+          // TODO should we use conversion to Object here?
+          throw new Excel4JRuntimeException("Could not find type converter for " + lastKeyClass + " using component type " + keyType);
         }
       }
-      if (lastValueConverter == null
-          || !valueValue.getClass().equals(lastValueClass)) {
+      if (lastValueConverter == null || !valueValue.getClass().equals(lastValueClass)) {
         lastValueClass = valueValue.getClass();
-        lastValueConverter = typeConverterRegistry.findConverter(
-            ExcelToJavaTypeMapping.of(lastValueClass, valueType));
+        lastValueConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastValueClass, valueType));
         if (lastValueConverter == null) {
-          throw new Excel4JRuntimeException("Could not find type converter for "
-              + lastValueClass + " using component type " + valueType);
+          // TODO should we use conversion to Object here?
+          throw new Excel4JRuntimeException("Could not find type converter for " + lastValueClass + " using component type " + valueType);
         }
       }
       final Object key = lastKeyConverter.toJavaObject(keyType, keyValue);
@@ -205,5 +148,30 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
       targetMap.put(key, value);
     }
     return targetMap;
+  }
+
+  private static Type getBound(final Type type) {
+    if (type instanceof WildcardType) {
+      final Type[] upperBounds = ((WildcardType) type).getUpperBounds();
+      final Type[] lowerBounds = ((WildcardType) type).getLowerBounds();
+      Type[] bounds;
+      if (upperBounds.length > 0 && lowerBounds.length > 0) { //TODO is this even possible?
+        LOGGER.warn("Only using upper bound in conversion");
+        bounds = upperBounds;
+      } else {
+        bounds = lowerBounds.length > 0 ? lowerBounds : upperBounds;
+      }
+      switch (bounds.length) {
+        case 0:
+          return Object.class; //TODO is this possible?
+        case 1:
+          return bounds[0];
+        default:
+          // should never be reached
+          LOGGER.warn("Map value parameter has multiple bounds, only considering first in conversion");
+          return bounds[0];
+      }
+    }
+    return type;
   }
 }
