@@ -155,9 +155,9 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
       final Type[] upperBounds = ((WildcardType) type).getUpperBounds();
       final Type[] lowerBounds = ((WildcardType) type).getLowerBounds();
       Type[] bounds;
-      if (upperBounds.length > 0 && lowerBounds.length > 0) { //TODO is this even possible?
-        LOGGER.warn("Only using upper bound in conversion");
-        bounds = upperBounds;
+      if (upperBounds.length > 0 && lowerBounds.length > 0) {
+        // ? super X, so use the lower bound as it's the most specific
+        bounds = lowerBounds;
       } else {
         bounds = lowerBounds.length > 0 ? lowerBounds : upperBounds;
       }
