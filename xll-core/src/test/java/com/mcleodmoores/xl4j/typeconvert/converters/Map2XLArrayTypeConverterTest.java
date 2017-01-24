@@ -8,6 +8,7 @@ import static org.testng.Assert.assertTrue;
 
 import java.awt.Dimension;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -16,6 +17,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
@@ -141,12 +143,70 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testExpectedTypeNotAClass() {
-    CONVERTER.toXLValue(new GenericArrayType() {
+    CONVERTER.toJavaObject(new GenericArrayType() {
       @Override
       public Type getGenericComponentType() {
         return null;
       }
-    }, M1);
+    }, XLArray.of(COLUMN1));
+  }
+
+  /**
+   * Tests that the parameterized type must be a class.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testParameterizedTypeNotAClass() {
+    CONVERTER.toJavaObject(new ParameterizedType() {
+
+      @Override
+      public Type[] getActualTypeArguments() {
+        return null;
+      }
+
+      @Override
+      public Type getOwnerType() {
+        return null;
+      }
+
+      @Override
+      public Type getRawType() {
+        return null;
+      }
+
+    }, XLArray.of(COLUMN1));
+  }
+
+  /**
+   * Tests that the parameterized type must be a Map.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testParameterizedTypeNotAMap() {
+    CONVERTER.toJavaObject(new ParameterizedType() {
+
+      @Override
+      public Type[] getActualTypeArguments() {
+        return null;
+      }
+
+      @Override
+      public Type getOwnerType() {
+        return null;
+      }
+
+      @Override
+      public Type getRawType() {
+        return Set.class;
+      }
+
+    }, XLArray.of(COLUMN1));
+  }
+
+  /**
+   * Tests that the expected type must be a Map.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testExpectedTypeNotAMap() {
+    CONVERTER.toJavaObject(Object.class, XLArray.of(ROW1));
   }
 
   /**
@@ -290,11 +350,11 @@ public class Map2XLArrayTypeConverterTest {
       final Map.Entry<LocalDate, List<? extends Double>> entry = iter.next();
       assertTrue(xlArray[i][0] instanceof XLNumber);
       assertTrue(xlArray[i][1] instanceof XLArray);
-      assertEquals(((XLArray) xlArray[i][1]).getArray().length, 1);
-      assertEquals(((XLArray) xlArray[i][1]).getArray()[0].length, 2);
+      assertEquals(((XLArray) xlArray[i][1]).getArray().length, 2);
+      assertEquals(((XLArray) xlArray[i][1]).getArray()[0].length, 1);
       assertEquals(((XLNumber) xlArray[i][0]).getAsDouble(), XlDateUtils.getDaysFromXlEpoch(entry.getKey()), 1e-15);
       assertEquals(((XLNumber) ((XLArray) xlArray[i][1]).getArray()[0][0]).getAsDouble(), entry.getValue().get(0), 1e-15);
-      assertEquals(((XLNumber) ((XLArray) xlArray[i][1]).getArray()[0][1]).getAsDouble(), entry.getValue().get(1), 1e-15);
+      assertEquals(((XLNumber) ((XLArray) xlArray[i][1]).getArray()[1][0]).getAsDouble(), entry.getValue().get(1), 1e-15);
     }
   }
 
@@ -459,7 +519,7 @@ public class Map2XLArrayTypeConverterTest {
         assertEquals(entry1.getValue().get(i), entry2.getValue().get(i), 1e-15);
       }
     }
-    return -33;
+    return -44;
   }
 
   /**

@@ -11,11 +11,9 @@ import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.testng.annotations.Test;
@@ -38,9 +36,9 @@ import com.mcleodmoores.xl4j.values.XLValue;
 import com.mcleodmoores.xl4j.values.XLValueVisitor;
 
 /**
- * Unit tests for {@link Set2XLArrayTypeConverter}.
+ * Unit tests for {@link List2XLArrayTypeConverter}.
  */
-public class Set2XLArrayTypeConverterTest {
+public class ListXLArrayTypeConverterTest {
   private static final int N = 50;
   private static final XLValue[][] ROW1 = new XLValue[1][N];
   private static final XLValue[][] ROW2 = new XLValue[1][N];
@@ -50,12 +48,12 @@ public class Set2XLArrayTypeConverterTest {
   private static final XLValue[][] COLUMN2 = new XLValue[N][1];
   private static final XLValue[][] COLUMN3 = new XLValue[N][1];
   private static final XLValue[][] COLUMN4 = new XLValue[N][1];
-  private static final Set<? super LocalDate> S1 = new LinkedHashSet<>();
-  private static final Set S2 = new LinkedHashSet();
-  private static final Set<Double[]> S3 = new LinkedHashSet<>();
-  private static final Set<List<? extends Double>> S4 = new LinkedHashSet<>();
+  private static final List<? super LocalDate> L1 = new LinkedList<>();
+  private static final List L2 = new LinkedList();
+  private static final List<Double[]> L3 = new LinkedList<>();
+  private static final List<List<? extends Double>> L4 = new LinkedList<>();
   private static final Excel EXCEL = ExcelFactory.getInstance();
-  private static final TypeConverter CONVERTER = new Set2XLArrayTypeConverter(EXCEL);
+  private static final TypeConverter CONVERTER = new List2XLArrayTypeConverter(EXCEL);
   private static final MockFunctionProcessor PROCESSOR = MockFunctionProcessor.getInstance();
 
   static {
@@ -74,10 +72,10 @@ public class Set2XLArrayTypeConverterTest {
       COLUMN2[i][0] = ROW2[0][i];
       COLUMN3[i][0] = ROW3[0][i];
       COLUMN4[i][0] = ROW4[0][i];
-      S1.add(date);
-      S2.add(date);
-      S3.add(new Double[] {objectNumber.doubleValue(), primitiveDouble * 15});
-      S4.add(Arrays.asList(objectNumber.doubleValue(), primitiveDouble * 15));
+      L1.add(date);
+      L2.add(date);
+      L3.add(new Double[] {objectNumber.doubleValue(), primitiveDouble * 15});
+      L4.add(Arrays.asList(objectNumber.doubleValue(), primitiveDouble * 15));
     }
   }
 
@@ -86,7 +84,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testGetExcelToJavaTypeMapping() {
-    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLArray.class, Set.class));
+    assertEquals(CONVERTER.getExcelToJavaTypeMapping(), ExcelToJavaTypeMapping.of(XLArray.class, List.class));
   }
 
   /**
@@ -94,7 +92,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testGetJavaToExcelTypeMapping() {
-    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(Set.class, XLArray.class));
+    assertEquals(CONVERTER.getJavaToExcelTypeMapping(), JavaToExcelTypeMapping.of(List.class, XLArray.class));
   }
 
   /**
@@ -110,7 +108,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullXlValue() {
-    CONVERTER.toJavaObject(Set.class, null);
+    CONVERTER.toJavaObject(List.class, null);
   }
 
   /**
@@ -126,14 +124,14 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullExpectedType() {
-    CONVERTER.toXLValue(null, S1);
+    CONVERTER.toXLValue(null, L1);
   }
 
   /**
-   * Tests that the expected type must be a Set.
+   * Tests that the expected type must be a List.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testExpectedTypeNotASet() {
+  public void testExpectedTypeNotAList() {
     CONVERTER.toJavaObject(Object.class, XLArray.of(ROW1));
   }
 
@@ -147,7 +145,7 @@ public class Set2XLArrayTypeConverterTest {
       public Type getGenericComponentType() {
         return null;
       }
-    }, XLArray.of(COLUMN2));
+    }, XLArray.of(ROW3));
   }
 
   /**
@@ -176,10 +174,10 @@ public class Set2XLArrayTypeConverterTest {
   }
 
   /**
-   * Tests that the parameterized type must be a Set.
+   * Tests that the parameterized type must be a List.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testParameterizedTypeNotASet() {
+  public void testParameterizedTypeNotAList() {
     CONVERTER.toJavaObject(new ParameterizedType() {
 
       @Override
@@ -194,17 +192,17 @@ public class Set2XLArrayTypeConverterTest {
 
       @Override
       public Type getRawType() {
-        return Map.class;
+        return Set.class;
       }
 
     }, XLArray.of(COLUMN1));
   }
 
   /**
-   * Tests that the type to convert must be a Set.
+   * Tests that the type to convert must be a List.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNotASet() {
+  public void testNotAList() {
     CONVERTER.toXLValue(XLArray.class, new Object());
   }
 
@@ -217,11 +215,11 @@ public class Set2XLArrayTypeConverterTest {
   }
 
   /**
-   * Tests an empty set.
+   * Tests an empty List.
    */
   @Test
-  public void testEmptySet() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, new HashSet<>());
+  public void testEmptyList() {
+    final Object result = CONVERTER.toXLValue(XLArray.class, new LinkedList<>());
     assertTrue(result instanceof XLArray);
     final XLArray xlArray = (XLArray) result;
     assertEquals(xlArray.getArray().length, 1);
@@ -230,14 +228,14 @@ public class Set2XLArrayTypeConverterTest {
   }
 
   /**
-   * Tests the conversion of Set<? super LocalDate> to an XLArray.
+   * Tests the conversion of List<? super LocalDate> to an XLArray.
    */
   @Test
-  public void testConvertSet1() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S1);
+  public void testConvertList1() {
+    final Object result = CONVERTER.toXLValue(XLArray.class, L1);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
-    final Iterator<? super LocalDate> iter = S1.iterator();
+    final Iterator<? super LocalDate> iter = L1.iterator();
     for (int i = 0; i < N; i++) {
       final LocalDate entry = (LocalDate) iter.next();
       assertTrue(xlArray[i][0] instanceof XLNumber);
@@ -246,25 +244,25 @@ public class Set2XLArrayTypeConverterTest {
   }
 
   /**
-   * Tests conversion to Set<? super LocalDate>.
+   * Tests conversion to List<? super LocalDate>.
    */
   @Test
   public void testConvertArray1() {
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest1", XLArray.of(ROW1))).getAsInt(), -1);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest1", XLArray.of(COLUMN1))).getAsInt(), -1);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest1_varargs", XLArray.of(ROW1))).getAsInt(), -11);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest1_varargs", XLArray.of(COLUMN1))).getAsInt(), -11);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest1", XLArray.of(ROW1))).getAsInt(), -1);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest1", XLArray.of(COLUMN1))).getAsInt(), -1);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest1_varargs", XLArray.of(ROW1))).getAsInt(), -11);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest1_varargs", XLArray.of(COLUMN1))).getAsInt(), -11);
   }
 
   /**
-   * Tests the conversion of Set (i.e. a raw type) to an XLArray.
+   * Tests the conversion of List (i.e. a raw type) to an XLArray.
    */
   @Test
-  public void testConvertSet2() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S2);
+  public void testConvertList2() {
+    final Object result = CONVERTER.toXLValue(XLArray.class, L2);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
-    final Iterator<Object> iter = S2.iterator();
+    final Iterator<Object> iter = L2.iterator();
     for (int i = 0; i < N; i++) {
       final Object entry = iter.next();
       assertTrue(xlArray[i][0] instanceof XLNumber);
@@ -273,25 +271,25 @@ public class Set2XLArrayTypeConverterTest {
   }
 
   /**
-   * Tests conversion to Set (i.e. a raw type).
+   * Tests conversion to List (i.e. a raw type).
    */
   @Test
   public void testConvertArray2() {
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest2", XLArray.of(ROW2))).getAsInt(), -2);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest2", XLArray.of(COLUMN2))).getAsInt(), -2);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest2_varargs", XLArray.of(ROW2))).getAsInt(), -22);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest2_varargs", XLArray.of(COLUMN2))).getAsInt(), -22);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest2", XLArray.of(ROW2))).getAsInt(), -2);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest2", XLArray.of(COLUMN2))).getAsInt(), -2);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest2_varargs", XLArray.of(ROW2))).getAsInt(), -22);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest2_varargs", XLArray.of(COLUMN2))).getAsInt(), -22);
   }
 
   /**
-   * Tests the conversion of Set<Double[]> to an XLArray.
+   * Tests the conversion of List<Double[]> to an XLArray.
    */
   @Test
-  public void testConvertSet3() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S3);
+  public void testConvertList3() {
+    final Object result = CONVERTER.toXLValue(XLArray.class, L3);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
-    final Iterator<Double[]> iter = S3.iterator();
+    final Iterator<Double[]> iter = L3.iterator();
     for (int i = 0; i < N; i++) {
       final Double[] entry = iter.next();
       assertTrue(xlArray[i][0] instanceof XLArray);
@@ -302,64 +300,65 @@ public class Set2XLArrayTypeConverterTest {
   }
 
   /**
-   * Tests conversion to Set<Double[]>.
+   * Tests conversion to List<Double[]>.
    */
   @Test
   public void testConvertArray3() {
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest3", XLArray.of(ROW3))).getAsInt(), -3);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest3", XLArray.of(COLUMN3))).getAsInt(), -3);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest3_varargs", XLArray.of(ROW3))).getAsInt(), -33);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest3_varargs", XLArray.of(COLUMN3))).getAsInt(), -33);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest3", XLArray.of(ROW3))).getAsInt(), -3);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest3", XLArray.of(COLUMN3))).getAsInt(), -3);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest3_varargs", XLArray.of(ROW3))).getAsInt(), -33);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest3_varargs", XLArray.of(COLUMN3))).getAsInt(), -33);
   }
 
   /**
-   * Tests the conversion of Set<List<? extends Double>> to an XLArray.
+   * Tests the conversion of List<List<? extends Double>> to an XLArray.
    */
   @Test
-  public void testConvertSet4() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S4);
+  public void testConvertList4() {
+    final Object result = CONVERTER.toXLValue(XLArray.class, L4);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
-    final Iterator<List<? extends Double>> iter = S4.iterator();
+    final Iterator<List<? extends Double>> iter = L4.iterator();
     for (int i = 0; i < N; i++) {
       final List<? extends Double> entry = iter.next();
+      assertTrue(xlArray[i][0] instanceof XLArray);
       assertEquals(((XLNumber) ((XLArray) xlArray[i][0]).getArray()[0][0]).getAsDouble(), entry.get(0), 1e-15);
       assertEquals(((XLNumber) ((XLArray) xlArray[i][0]).getArray()[1][0]).getAsDouble(), entry.get(1), 1e-15);
     }
   }
 
   /**
-   * Tests conversion to Set<List<? extends Double>>.
+   * Tests conversion to List<List<? extends Double>>.
    */
   @Test
   public void testConvertArray4() {
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest4", XLArray.of(ROW4))).getAsInt(), -4);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest4", XLArray.of(COLUMN4))).getAsInt(), -4);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest4_varargs", XLArray.of(ROW4))).getAsInt(), -44);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest4_varargs", XLArray.of(COLUMN4))).getAsInt(), -44);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest4", XLArray.of(ROW4))).getAsInt(), -4);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest4", XLArray.of(COLUMN4))).getAsInt(), -4);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest4_varargs", XLArray.of(ROW4))).getAsInt(), -44);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest4_varargs", XLArray.of(COLUMN4))).getAsInt(), -44);
   }
 
   /**
-   * Tests conversion to Set<? extends LocalDate>.
+   * Tests conversion to List<? extends LocalDate>.
    */
   @Test
   public void testConvertArray5() {
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest5", XLArray.of(ROW1))).getAsInt(), -5);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest5", XLArray.of(COLUMN1))).getAsInt(), -5);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest5_varargs", XLArray.of(ROW1))).getAsInt(), -55);
-    assertEquals(((XLNumber) PROCESSOR.invoke("SetTest5_varargs", XLArray.of(COLUMN1))).getAsInt(), -55);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest5", XLArray.of(ROW1))).getAsInt(), -5);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest5", XLArray.of(COLUMN1))).getAsInt(), -5);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest5_varargs", XLArray.of(ROW1))).getAsInt(), -55);
+    assertEquals(((XLNumber) PROCESSOR.invoke("ListTest5_varargs", XLArray.of(COLUMN1))).getAsInt(), -55);
   }
 
   /**
    * Test function.
-   * @param s  the set
+   * @param l  the List
    * @return -1
    */
-  @XLFunction(name = "SetTest1")
-  public static int testMethod1(@XLParameter final Set<? super LocalDate> s) {
-    assertEquals(s.size(), S1.size());
-    final Iterator<?> iter = S1.iterator();
-    for (final Object entry1 : s) {
+  @XLFunction(name = "ListTest1")
+  public static int testMethod1(@XLParameter final List<? super LocalDate> l) {
+    assertEquals(l.size(), L1.size());
+    final Iterator<?> iter = L1.iterator();
+    for (final Object entry1 : l) {
       final Object entry2 = iter.next();
       assertEquals(entry1, entry2);
     }
@@ -368,15 +367,15 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param sets  array of sets
+   * @param lists  array of Lists
    * @return -11
    */
-  @XLFunction(name = "SetTest1_varargs")
-  public static int testMethod1Varargs(@XLParameter final Set<? super LocalDate>... sets) {
-    assertEquals(sets.length, 1);
-    assertEquals(sets[0].size(), S1.size());
-    final Iterator<?> iter = S1.iterator();
-    for (final Object entry1 : sets[0]) {
+  @XLFunction(name = "ListTest1_varargs")
+  public static int testMethod1Varargs(@XLParameter final List<? super LocalDate>... lists) {
+    assertEquals(lists.length, 1);
+    assertEquals(lists[0].size(), L1.size());
+    final Iterator<?> iter = L1.iterator();
+    for (final Object entry1 : lists[0]) {
       final Object entry2 = iter.next();
       assertEquals(entry1, entry2);
     }
@@ -385,15 +384,15 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param s  the set
+   * @param l  the List
    * @return -2
    */
   @SuppressWarnings("rawtypes")
-  @XLFunction(name = "SetTest2")
-  public static int testMethod2(@XLParameter final Set s) {
-    assertEquals(s.size(), S2.size());
-    final Iterator<LocalDate> iter = S2.iterator();
-    for (final Object entry1 : s) {
+  @XLFunction(name = "ListTest2")
+  public static int testMethod2(@XLParameter final List l) {
+    assertEquals(l.size(), L2.size());
+    final Iterator<LocalDate> iter = L2.iterator();
+    for (final Object entry1 : l) {
       final LocalDate entry2 = iter.next();
       // as there is no type information, the date from Excel will be treated as a number
       assertEquals((double) entry1, XlDateUtils.getDaysFromXlEpoch(entry2), 1e-15);
@@ -403,16 +402,16 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param sets  the sets
+   * @param lists  the Lists
    * @return -22
    */
   @SuppressWarnings("rawtypes")
-  @XLFunction(name = "SetTest2_varargs")
-  public static int testMethod2Varargs(@XLParameter final Set... sets) {
-    assertEquals(sets.length, 1);
-    assertEquals(sets[0].size(), S2.size());
-    final Iterator<LocalDate> iter = S2.iterator();
-    for (final Object entry1 : sets[0]) {
+  @XLFunction(name = "ListTest2_varargs")
+  public static int testMethod2Varargs(@XLParameter final List... lists) {
+    assertEquals(lists.length, 1);
+    assertEquals(lists[0].size(), L2.size());
+    final Iterator<LocalDate> iter = L2.iterator();
+    for (final Object entry1 : lists[0]) {
       final LocalDate entry2 = iter.next();
       // as there is no type information, the date from Excel will be treated as a number
       assertEquals((double) entry1, XlDateUtils.getDaysFromXlEpoch(entry2), 1e-15);
@@ -422,14 +421,14 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param s  the set
+   * @param l  the List
    * @return -3
    */
-  @XLFunction(name = "SetTest3")
-  public static int testMethod3(@XLParameter final Set<Double[]> s) {
-    assertEquals(s.size(), S3.size());
-    final Iterator<Double[]> iter = S3.iterator();
-    for (final Double[] entry1 : s) {
+  @XLFunction(name = "ListTest3")
+  public static int testMethod3(@XLParameter final List<Double[]> l) {
+    assertEquals(l.size(), L3.size());
+    final Iterator<Double[]> iter = L3.iterator();
+    for (final Double[] entry1 : l) {
       final Double[] entry2 = iter.next();
       for (int i = 0; i < entry2.length; i++) {
         assertEquals(entry1[i], entry2[i], 1e-15);
@@ -440,15 +439,15 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param sets  the sets
+   * @param lists  the Lists
    * @return -33
    */
-  @XLFunction(name = "SetTest3_varargs")
-  public static int testMethod3Varargs(@XLParameter final Set<Double[]>... sets) {
-    assertEquals(sets.length, 1);
-    assertEquals(sets[0].size(), S3.size());
-    final Iterator<Double[]> iter = S3.iterator();
-    for (final Double[] entry1 : sets[0]) {
+  @XLFunction(name = "ListTest3_varargs")
+  public static int testMethod3Varargs(@XLParameter final List<Double[]>... lists) {
+    assertEquals(lists.length, 1);
+    assertEquals(lists[0].size(), L3.size());
+    final Iterator<Double[]> iter = L3.iterator();
+    for (final Double[] entry1 : lists[0]) {
       final Double[] entry2 = iter.next();
       for (int i = 0; i < entry2.length; i++) {
         assertEquals(entry1[i], entry2[i], 1e-15);
@@ -459,14 +458,14 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param s  the set
+   * @param l  the List
    * @return -4
    */
-  @XLFunction(name = "SetTest4")
-  public static int testMethod4(@XLParameter final Set<List<? extends Double>> s) {
-    assertEquals(s.size(), S4.size());
-    final Iterator<List<? extends Double>> iter = S4.iterator();
-    for (final List<? extends Double> entry1 : s) {
+  @XLFunction(name = "ListTest4")
+  public static int testMethod4(@XLParameter final List<List<? extends Double>> l) {
+    assertEquals(l.size(), L4.size());
+    final Iterator<List<? extends Double>> iter = L4.iterator();
+    for (final List<? extends Double> entry1 : l) {
       final List<? extends Double> entry2 = iter.next();
       for (int i = 0; i < entry2.size(); i++) {
         assertEquals(entry1.get(i), entry2.get(i), 1e-15);
@@ -477,15 +476,15 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param sets  the sets
+   * @param lists  the Lists
    * @return -44
    */
-  @XLFunction(name = "SetTest4_varargs")
-  public static int testMethod4Varargs(@XLParameter final Set<List<? extends Double>>... sets) {
-    assertEquals(sets.length, 1);
-    assertEquals(sets[0].size(), S4.size());
-    final Iterator<List<? extends Double>> iter = S4.iterator();
-    for (final List<? extends Double> entry1 : sets[0]) {
+  @XLFunction(name = "ListTest4_varargs")
+  public static int testMethod4Varargs(@XLParameter final List<List<? extends Double>>... lists) {
+    assertEquals(lists.length, 1);
+    assertEquals(lists[0].size(), L4.size());
+    final Iterator<List<? extends Double>> iter = L4.iterator();
+    for (final List<? extends Double> entry1 : lists[0]) {
       final List<? extends Double> entry2 = iter.next();
       for (int i = 0; i < entry2.size(); i++) {
         assertEquals(entry1.get(i), entry2.get(i), 1e-15);
@@ -496,24 +495,24 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param set  the set
+   * @param list  the List
    * @return  0
    */
   @XLFunction(name = "NoConverter")
-  public static int testNoKeyConverter(@XLParameter final Set<Dimension> set) {
+  public static int testNoKeyConverter(@XLParameter final List<Dimension> list) {
     return 0;
   }
 
   /**
    * Test function.
-   * @param s  the set
+   * @param l  the List
    * @return -5
    */
-  @XLFunction(name = "SetTest5")
-  public static int testMethod5(@XLParameter final Set<? extends LocalDate> s) {
-    assertEquals(s.size(), S1.size());
-    final Iterator<?> iter = S1.iterator();
-    for (final LocalDate entry1 : s) {
+  @XLFunction(name = "ListTest5")
+  public static int testMethod5(@XLParameter final List<? extends LocalDate> l) {
+    assertEquals(l.size(), L1.size());
+    final Iterator<?> iter = L1.iterator();
+    for (final LocalDate entry1 : l) {
       final Object entry2 = iter.next();
       assertEquals(entry1, entry2);
     }
@@ -522,15 +521,15 @@ public class Set2XLArrayTypeConverterTest {
 
   /**
    * Test function.
-   * @param sets  array of sets
+   * @param lists  array of Lists
    * @return -55
    */
-  @XLFunction(name = "SetTest5_varargs")
-  public static int testMethod5Varargs(@XLParameter final Set<? extends LocalDate>... sets) {
-    assertEquals(sets.length, 1);
-    assertEquals(sets[0].size(), S1.size());
-    final Iterator<?> iter = S1.iterator();
-    for (final LocalDate entry1 : sets[0]) {
+  @XLFunction(name = "ListTest5_varargs")
+  public static int testMethod5Varargs(@XLParameter final List<? extends LocalDate>... lists) {
+    assertEquals(lists.length, 1);
+    assertEquals(lists[0].size(), L1.size());
+    final Iterator<?> iter = L1.iterator();
+    for (final LocalDate entry1 : lists[0]) {
       final Object entry2 = iter.next();
       assertEquals(entry1, entry2);
     }

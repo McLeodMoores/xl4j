@@ -5,13 +5,9 @@ package com.mcleodmoores.xl4j.typeconvert.converters;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.lang.reflect.WildcardType;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.xl4j.Excel;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
@@ -27,8 +23,6 @@ import com.mcleodmoores.xl4j.values.XLValue;
  * Type converter for maps to {@link XLArray}.
  */
 public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
-  /** The logger */
-  private static final Logger LOGGER = LoggerFactory.getLogger(Map2XLArrayTypeConverter.class);
   /** The priority */
   private static final int PRIORITY = 6;
   /** The Excel context */
@@ -53,7 +47,7 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
       throw new Excel4JRuntimeException("\"from\" parameter must be a Map");
     }
     final Map<?, ?> fromMap = (Map<?, ?>) from;
-    if (fromMap.size() == 0) { // empty array
+    if (fromMap.size() == 0) {
       return XLArray.of(new XLValue[1][1]);
     }
     // we know the length is > 0
@@ -102,9 +96,10 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
       }
       final Type[] typeArguments = parameterizedType.getActualTypeArguments();
       if (typeArguments.length == 2) {
-        keyType = getBound(typeArguments[0]);
-        valueType = getBound(typeArguments[1]);
+        keyType = ConverterUtils.getBound(typeArguments[0]);
+        valueType = ConverterUtils.getBound(typeArguments[1]);
       } else {
+        // will never get here
         throw new Excel4JRuntimeException("Could not get two type argument from " + expectedType);
       }
     } else {
@@ -150,28 +145,4 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
     return targetMap;
   }
 
-  private static Type getBound(final Type type) {
-    if (type instanceof WildcardType) {
-      final Type[] upperBounds = ((WildcardType) type).getUpperBounds();
-      final Type[] lowerBounds = ((WildcardType) type).getLowerBounds();
-      Type[] bounds;
-      if (upperBounds.length > 0 && lowerBounds.length > 0) {
-        // ? super X, so use the lower bound as it's the most specific
-        bounds = lowerBounds;
-      } else {
-        bounds = lowerBounds.length > 0 ? lowerBounds : upperBounds;
-      }
-      switch (bounds.length) {
-        case 0:
-          return Object.class; //TODO is this possible?
-        case 1:
-          return bounds[0];
-        default:
-          // should never be reached
-          LOGGER.warn("Map value parameter has multiple bounds, only considering first in conversion");
-          return bounds[0];
-      }
-    }
-    return type;
-  }
 }

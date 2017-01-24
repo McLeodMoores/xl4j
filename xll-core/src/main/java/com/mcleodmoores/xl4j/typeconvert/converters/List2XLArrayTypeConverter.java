@@ -5,9 +5,9 @@ package com.mcleodmoores.xl4j.typeconvert.converters;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.List;
 
 import com.mcleodmoores.xl4j.Excel;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
@@ -20,9 +20,9 @@ import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Type converter for sets to {@link XLArray}.
+ * Type converter for lists to {@link XLArray}.
  */
-public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
+public final class List2XLArrayTypeConverter extends AbstractTypeConverter {
   /** The priority */
   private static final int PRIORITY = 6;
   /** The Excel context */
@@ -35,28 +35,28 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
    *          the excel context object, used to access the type converter
    *          registry, not null
    */
-  public Set2XLArrayTypeConverter(final Excel excel) {
-    super(Set.class, XLArray.class, PRIORITY);
+  public List2XLArrayTypeConverter(final Excel excel) {
+    super(List.class, XLArray.class, PRIORITY);
     _excel =  ArgumentChecker.notNull(excel, "excel");
   }
 
   @Override
   public Object toXLValue(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    if (!Set.class.isAssignableFrom(from.getClass())) {
-      throw new Excel4JRuntimeException("\"from\" parameter must be a Set");
+    if (!List.class.isAssignableFrom(from.getClass())) {
+      throw new Excel4JRuntimeException("\"from\" parameter must be a List");
     }
-    final Set<?> fromSet = (Set<?>) from;
-    if (fromSet.size() == 0) {
+    final List<?> fromList = (List<?>) from;
+    if (fromList.size() == 0) {
       return XLArray.of(new XLValue[1][1]);
     }
     // we know the length is > 0
-    final XLValue[][] toArr = new XLValue[fromSet.size()][1];
+    final XLValue[][] toArr = new XLValue[fromList.size()][1];
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
-    final Iterator<?> iter = fromSet.iterator();
-    for (int i = 0; i < fromSet.size(); i++) {
+    final Iterator<?> iter = fromList.iterator();
+    for (int i = 0; i < fromList.size(); i++) {
       final Object nextEntry = iter.next();
       if (lastConverter == null || !nextEntry.getClass().equals(lastClass)) {
         lastClass = nextEntry.getClass();
@@ -74,14 +74,14 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
     final XLArray xlArr = (XLArray) from;
     final Type type;
     if (expectedType instanceof Class) {
-      if (!Set.class.isAssignableFrom((Class<?>) expectedType)) {
-        throw new Excel4JRuntimeException("expectedType is not a Set");
+      if (!List.class.isAssignableFrom((Class<?>) expectedType)) {
+        throw new Excel4JRuntimeException("expectedType is not a List");
       }
       type = Object.class;
     } else if (expectedType instanceof ParameterizedType) {
       final ParameterizedType parameterizedType = (ParameterizedType) expectedType;
-      if (!(parameterizedType.getRawType() instanceof Class && Set.class.isAssignableFrom((Class<?>) parameterizedType.getRawType()))) {
-        throw new Excel4JRuntimeException("expectedType is not a Set");
+      if (!(parameterizedType.getRawType() instanceof Class && List.class.isAssignableFrom((Class<?>) parameterizedType.getRawType()))) {
+        throw new Excel4JRuntimeException("expectedType is not a List");
       }
       final Type[] typeArguments = parameterizedType.getActualTypeArguments();
       if (typeArguments.length == 1) {
@@ -94,18 +94,16 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
       throw new Excel4JRuntimeException("expectedType not Class or ParameterizedType");
     }
     final XLValue[][] arr = xlArr.getArray();
-    final Set<Object> targetSet = new LinkedHashSet<>();
+    final List<Object> targetList = new ArrayList<>();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
-    final int n = arr.length == 1 ? arr[0].length : arr.length;
+    final boolean isRow = arr.length == 1;
+    final int n = isRow ? arr[0].length : arr.length;
     for (int i = 0; i < n; i++) {
-      final XLValue value;
-      if (arr.length == 1) { // row
-        value = arr[0][i];
-      } else { // column
-        value = arr[i][0];
-      }
+      final XLValue value = isRow ? arr[0][i] : arr[i][0];
+      // This is a rather weak attempt at optimizing converter lookup - other
+      // options seemed to have greater overhead.
       if (lastConverter == null || !value.getClass().equals(lastClass)) {
         lastClass = value.getClass();
         lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, type));
@@ -114,9 +112,9 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
           throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + type);
         }
       }
-      targetSet.add(lastConverter.toJavaObject(type, value));
+      targetList.add(lastConverter.toJavaObject(type, value));
     }
-    return targetSet;
+    return targetList;
   }
 
 }
