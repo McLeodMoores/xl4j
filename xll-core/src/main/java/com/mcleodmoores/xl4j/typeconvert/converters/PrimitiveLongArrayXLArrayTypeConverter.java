@@ -32,26 +32,12 @@ public final class PrimitiveLongArrayXLArrayTypeConverter extends AbstractTypeCo
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
-    if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
-    }
-    Type componentType = null;
-    if (expectedType instanceof Class) {
-      final Class<?> expectedClass = from.getClass();
-      componentType = expectedClass.getComponentType();
-      // REVIEW: this will never fail because of the isArray() test
-      if (componentType == null) {
-        throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
-      }
-    } else {
-      throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
-    }
     final long[] fromArr = (long[]) from;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
     for (int i = 0; i < fromArr.length; i++) {
-      final XLValue value = (XLValue) CONVERTER.toXLValue(componentType, fromArr[i]);
+      final XLValue value = (XLValue) CONVERTER.toXLValue(fromArr[i]);
       toArr[0][i] = value;
     }
     return XLArray.of(toArr);

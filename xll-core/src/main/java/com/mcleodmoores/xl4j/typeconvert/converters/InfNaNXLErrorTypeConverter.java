@@ -27,7 +27,7 @@ public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     if (from instanceof Double) {
       final Double fromd = (Double) from;
       if (fromd.isNaN()) {

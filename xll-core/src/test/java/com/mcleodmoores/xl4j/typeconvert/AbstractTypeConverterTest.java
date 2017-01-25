@@ -34,7 +34,7 @@ public class AbstractTypeConverterTest {
       }
 
       @Override
-      public Object toXLValue(final Type expectedType, final Object from) {
+      public Object toXLValue(final Object from) {
         return null;
       }
 
@@ -63,7 +63,7 @@ public class AbstractTypeConverterTest {
       }
 
       @Override
-      public Object toXLValue(final Type expectedType, final Object from) {
+      public Object toXLValue(final Object from) {
         return null;
       }
 

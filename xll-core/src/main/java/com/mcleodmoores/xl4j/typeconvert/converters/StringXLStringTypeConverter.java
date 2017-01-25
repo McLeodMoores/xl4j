@@ -22,7 +22,7 @@ public final class StringXLStringTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLString.of((String) from);
   }

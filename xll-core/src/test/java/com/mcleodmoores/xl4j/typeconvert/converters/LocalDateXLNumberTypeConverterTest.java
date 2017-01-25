@@ -62,19 +62,11 @@ public class LocalDateXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, LOCAL_DATE);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLNumber.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -114,15 +106,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Integer.valueOf(10));
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLBoolean.class, LOCAL_DATE), XLNumber.of(DAYS));
+    CONVERTER.toXLValue(Integer.valueOf(10));
   }
 
   /**
@@ -130,7 +114,7 @@ public class LocalDateXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromLocalDate() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_DATE.getClass(), LOCAL_DATE);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(LOCAL_DATE);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), DAYS, 0);

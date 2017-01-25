@@ -53,19 +53,11 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected type fails because it is not a class type.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, new int[] {10});
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLArray.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -87,9 +79,9 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   /**
    * Tests that passing in an object to convert that is not an array fails.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLArray.class, true);
+    CONVERTER.toXLValue(true);
   }
 
   /**
@@ -160,7 +152,7 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   @Test
   public void testToXLConversionFrom1dPrimitiveIntegerArray() {
     final int[] array = new int[] {10, 20, 30};
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLNumber.class, array);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(array);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     assertEquals(xlArray, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20), XLNumber.of(30)}}));

@@ -26,7 +26,7 @@ public class EnumXLStringTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     final Enum<?> enumeration = (Enum<?>) from;
     return XLString.of(enumeration.name());

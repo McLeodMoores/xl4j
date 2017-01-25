@@ -170,7 +170,7 @@ public class TypeConverterRegistryTest {
     final Object javaObject = converter.toJavaObject(TestEnum.class, XLString.of("A"));
     Assert.assertEquals(javaObject.getClass(), TestEnum.class);
     Assert.assertEquals(javaObject, TestEnum.A);
-    final Object excelObject = converter.toXLValue(XLString.class, TestEnum.A);
+    final Object excelObject = converter.toXLValue(TestEnum.A);
     Assert.assertEquals(excelObject.getClass(), XLString.class);
     Assert.assertEquals(excelObject, XLString.of("A"));
   }

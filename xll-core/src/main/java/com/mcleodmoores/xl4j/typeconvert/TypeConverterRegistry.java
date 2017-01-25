@@ -12,7 +12,7 @@ public interface TypeConverterRegistry {
 
   /**
    * Find a type converter to perform the required conversion, searching linearly in priority order and returning the first match.
-   * 
+   *
    * @param requiredMapping
    *          the required conversion
    * @return a type converter to perform the conversion
@@ -21,8 +21,8 @@ public interface TypeConverterRegistry {
 
   /**
    * Find a type converter to perform the required conversion, searching linearly in priority order. This method is used to find a converter
-   * from Java back into Excel, when you don't know the target Excel type. and returning the first match.
-   * 
+   * from Java back into Excel, when you don't know the target Excel type, and returning the first match.
+   *
    * @param requiredJava
    *          the Java type required to convert from.
    * @return a type converter to perform the conversion

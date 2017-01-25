@@ -33,7 +33,7 @@ public class SimpleResultMethodInvoker extends AbstractMethodInvoker {
   protected XLValue convertResult(final Object object, final TypeConverter returnConverter) {
     if (object != null) {
       final AbstractTypeConverter scalarTypeConverter = (AbstractTypeConverter) returnConverter;
-      return (XLValue) scalarTypeConverter.toXLValue(getMethodReturnType(), object);
+      return (XLValue) scalarTypeConverter.toXLValue(object);
     }
     return XLMissing.INSTANCE;
   }

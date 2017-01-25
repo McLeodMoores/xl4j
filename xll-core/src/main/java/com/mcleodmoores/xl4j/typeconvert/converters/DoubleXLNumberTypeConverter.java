@@ -22,7 +22,7 @@ public final class DoubleXLNumberTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     final Double d = (Double) from;
     if (d.isInfinite()) {

@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -38,7 +40,7 @@ import com.mcleodmoores.xl4j.values.XLValueVisitor;
 /**
  * Unit tests for {@link List2XLArrayTypeConverter}.
  */
-public class ListXLArrayTypeConverterTest {
+public class List2XLArrayTypeConverterTest {
   private static final int N = 50;
   private static final XLValue[][] ROW1 = new XLValue[1][N];
   private static final XLValue[][] ROW2 = new XLValue[1][N];
@@ -116,15 +118,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLArray.class, null);
-  }
-
-  /**
-   * Test that the expected type cannot be null.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedType() {
-    CONVERTER.toXLValue(null, L1);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -203,7 +197,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNotAList() {
-    CONVERTER.toXLValue(XLArray.class, new Object());
+    CONVERTER.toXLValue(new Object());
   }
 
   /**
@@ -219,7 +213,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test
   public void testEmptyList() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, new LinkedList<>());
+    final Object result = CONVERTER.toXLValue(new LinkedList<>());
     assertTrue(result instanceof XLArray);
     final XLArray xlArray = (XLArray) result;
     assertEquals(xlArray.getArray().length, 1);
@@ -232,7 +226,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test
   public void testConvertList1() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, L1);
+    final Object result = CONVERTER.toXLValue(L1);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<? super LocalDate> iter = L1.iterator();
@@ -259,7 +253,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test
   public void testConvertList2() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, L2);
+    final Object result = CONVERTER.toXLValue(L2);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Object> iter = L2.iterator();
@@ -286,7 +280,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test
   public void testConvertList3() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, L3);
+    final Object result = CONVERTER.toXLValue(L3);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Double[]> iter = L3.iterator();
@@ -315,7 +309,7 @@ public class ListXLArrayTypeConverterTest {
    */
   @Test
   public void testConvertList4() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, L4);
+    final Object result = CONVERTER.toXLValue(L4);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<List<? extends Double>> iter = L4.iterator();
@@ -535,6 +529,26 @@ public class ListXLArrayTypeConverterTest {
     }
     return -55;
   }
+
+  @Test
+  public void testConvertArray11() {
+    final XLArray xlArray = XLArray.of(new XLValue[][] {
+      new XLValue[] {XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4)}
+    });
+    final Object result = PROCESSOR.invoke("ObjectArrayTest1", xlArray);
+    int i = 0;
+    i = i + 1;
+  }
+
+  @XLFunction(name = "ObjectArrayTest1")
+  public static <T extends Number, U extends Number> List<U> objectArrayTest1(@XLParameter final List<? extends T> array) {
+    final List<U> result = new ArrayList<>();
+    for (final T t : array) {
+      result.add((U) BigDecimal.valueOf(t.doubleValue() * 2));
+    }
+    return result;
+  }
+
   private static class TestXlValue implements XLValue {
 
     public static TestXlValue of(final double height, final double width) {

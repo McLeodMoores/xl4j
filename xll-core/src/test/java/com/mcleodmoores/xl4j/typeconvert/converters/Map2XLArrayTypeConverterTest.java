@@ -127,15 +127,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLArray.class, null);
-  }
-
-  /**
-   * Test that the expected type cannot be null.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedType() {
-    CONVERTER.toXLValue(null, M1);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -214,7 +206,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNotAMap() {
-    CONVERTER.toXLValue(XLArray.class, new Object());
+    CONVERTER.toXLValue(new Object());
   }
 
   /**
@@ -239,7 +231,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test
   public void testEmptyMap() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, new HashMap<>());
+    final Object result = CONVERTER.toXLValue(new HashMap<>());
     assertTrue(result instanceof XLArray);
     final XLArray xlArray = (XLArray) result;
     assertEquals(xlArray.getArray().length, 1);
@@ -252,7 +244,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertMap1() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, M1);
+    final Object result = CONVERTER.toXLValue(M1);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Map.Entry<LocalDate, Double>> iter = M1.entrySet().iterator();
@@ -281,7 +273,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertMap2() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, M2);
+    final Object result = CONVERTER.toXLValue(M2);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Map.Entry> iter = M2.entrySet().iterator();
@@ -310,7 +302,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertMap3() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, M3);
+    final Object result = CONVERTER.toXLValue(M3);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Map.Entry<LocalDate, Double[]>> iter = M3.entrySet().iterator();
@@ -342,7 +334,7 @@ public class Map2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertMap4() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, M4);
+    final Object result = CONVERTER.toXLValue(M4);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Map.Entry<LocalDate, List<? extends Double>>> iter = M4.entrySet().iterator();

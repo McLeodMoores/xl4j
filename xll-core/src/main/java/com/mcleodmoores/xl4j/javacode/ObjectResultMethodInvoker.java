@@ -40,7 +40,7 @@ public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
       // this happens in case of JMethod/JConstruct etc.
       return (XLValue) object;
     }
-    return (XLValue) _objectXlObjectConverter.toXLValue(getMethodReturnType(), object);
+    return (XLValue) _objectXlObjectConverter.toXLValue(object);
   }
 
 }

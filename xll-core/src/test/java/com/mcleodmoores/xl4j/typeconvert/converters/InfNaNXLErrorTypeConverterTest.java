@@ -53,7 +53,7 @@ public class InfNaNXLErrorTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testCannotConvertFromJava() {
-    CONVERTER.toXLValue(Double.class, new Object());
+    CONVERTER.toXLValue(new Object());
   }
 
   /**

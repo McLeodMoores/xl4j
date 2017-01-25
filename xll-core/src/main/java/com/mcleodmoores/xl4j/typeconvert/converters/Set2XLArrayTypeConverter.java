@@ -41,7 +41,7 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!Set.class.isAssignableFrom(from.getClass())) {
       throw new Excel4JRuntimeException("\"from\" parameter must be a Set");
@@ -62,7 +62,7 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
         lastClass = nextEntry.getClass();
         lastConverter = typeConverterRegistry.findConverter(lastClass);
       }
-      final XLValue xlValue = (XLValue) lastConverter.toXLValue(null, nextEntry);
+      final XLValue xlValue = (XLValue) lastConverter.toXLValue(nextEntry);
       toArr[i][0] = xlValue;
     }
     return XLArray.of(toArr);

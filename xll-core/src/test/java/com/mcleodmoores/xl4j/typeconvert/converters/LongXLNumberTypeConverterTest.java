@@ -14,7 +14,6 @@ import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
@@ -65,19 +64,11 @@ public class LongXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, LONG);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLNumber.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -117,15 +108,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, TEN_D);
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1L), XLNumber.of(1));
+    CONVERTER.toXLValue(TEN_D);
   }
 
   /**
@@ -133,7 +116,7 @@ public class LongXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromLong() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_LONG.getClass(), LONG);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(LONG);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_I, 0);

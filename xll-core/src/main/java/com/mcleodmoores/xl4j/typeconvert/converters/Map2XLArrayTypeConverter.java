@@ -41,7 +41,7 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!Map.class.isAssignableFrom(from.getClass())) {
       throw new Excel4JRuntimeException("\"from\" parameter must be a Map");
@@ -69,8 +69,8 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
         lastValueClass = value.getClass();
         lastValueConverter = typeConverterRegistry.findConverter(lastValueClass);
       }
-      final XLValue xlKey = (XLValue) lastKeyConverter.toXLValue(null, key);
-      final XLValue xlValue = (XLValue) lastValueConverter.toXLValue(null, value);
+      final XLValue xlKey = (XLValue) lastKeyConverter.toXLValue(key);
+      final XLValue xlValue = (XLValue) lastValueConverter.toXLValue(value);
       toArr[i][0] = xlKey;
       toArr[i][1] = xlValue;
     }

@@ -25,7 +25,7 @@ public final class ObjectXLNumberTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (from instanceof Number) {
       final Number num = (Number) from;

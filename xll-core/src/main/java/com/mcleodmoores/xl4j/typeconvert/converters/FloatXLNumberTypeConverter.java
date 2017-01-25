@@ -22,7 +22,7 @@ public final class FloatXLNumberTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     final Float f = (Float) from;
     if (f.isInfinite()) {

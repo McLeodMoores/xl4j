@@ -35,7 +35,7 @@ public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter 
       + 1;
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLNumber.of(((LocalDate) from).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
   }

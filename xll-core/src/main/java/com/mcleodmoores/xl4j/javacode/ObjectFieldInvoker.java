@@ -30,7 +30,7 @@ public class ObjectFieldInvoker extends AbstractFieldInvoker {
   @Override
   public XLValue invoke(final Object object) {
     try {
-      return (XLValue) _converter.toXLValue(null, getField().get(object));
+      return (XLValue) _converter.toXLValue(getField().get(object));
     } catch (final IllegalAccessException e) {
       throw new Excel4JRuntimeException("Error getting field", e);
     }

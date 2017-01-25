@@ -21,7 +21,7 @@ public final class BooleanXLBooleanTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLBoolean.from((Boolean) from);
   }

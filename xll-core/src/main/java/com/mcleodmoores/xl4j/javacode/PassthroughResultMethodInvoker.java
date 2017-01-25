@@ -44,7 +44,7 @@ public class PassthroughResultMethodInvoker extends AbstractMethodInvoker {
       return (XLValue) object;
     }
     LOGGER.error("Resulting passthrough object is not an XLValue, which is not allowed.  Converting to heap object.");
-    return (XLValue) _objectXlObjectConverter.toXLValue(null, object);
+    return (XLValue) _objectXlObjectConverter.toXLValue(object);
   }
 
 }

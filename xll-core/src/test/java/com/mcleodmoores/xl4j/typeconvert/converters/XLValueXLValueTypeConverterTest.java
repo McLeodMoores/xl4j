@@ -51,7 +51,7 @@ public class XLValueXLValueTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void textNullJavaObjectToConvert() {
-    CONVERTER.toXLValue(XLValue.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -68,7 +68,7 @@ public class XLValueXLValueTypeConverterTest {
   @Test
   public void testWrongExpectedTypeIgnored() {
     assertEquals(CONVERTER.toJavaObject(Integer.class, XLString.of("10")), XLString.of("10"));
-    assertEquals(CONVERTER.toXLValue(XLNumber.class, XLString.of("10")), XLString.of("10"));
+    assertEquals(CONVERTER.toXLValue(XLString.of("10")), XLString.of("10"));
   }
 
   /**
@@ -78,6 +78,6 @@ public class XLValueXLValueTypeConverterTest {
   public void testConverters() {
     final XLValue xlValue = XLNumber.of(100);
     assertEquals(CONVERTER.toJavaObject(XLValue.class, xlValue), xlValue);
-    assertEquals(CONVERTER.toXLValue(XLValue.class, xlValue), xlValue);
+    assertEquals(CONVERTER.toXLValue(xlValue), xlValue);
   }
 }

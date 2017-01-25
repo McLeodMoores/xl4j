@@ -32,7 +32,7 @@ public final class ObjectArray2DXLArrayTypeConverter2 extends AbstractTypeConver
 
   /**
    * Default constructor.
-   * 
+   *
    * @param excel
    *          the excel context object, used to access the type converter registry, not null
    */
@@ -43,11 +43,12 @@ public final class ObjectArray2DXLArrayTypeConverter2 extends AbstractTypeConver
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!from.getClass().isArray()) {
       throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
+    final Type expectedType = from.getClass();
     Type componentType = null;
     if (expectedType instanceof Class) {
       final Class<?> expectedClass = from.getClass();
@@ -74,7 +75,7 @@ public final class ObjectArray2DXLArrayTypeConverter2 extends AbstractTypeConver
     final TypeConverter converter = _excel.getTypeConverterRegistry().findConverter(componentType);
     for (int i = 0; i < fromArr.length; i++) {
       for (int j = 0; j < fromArr[i].length; j++) {
-        final XLValue value = (XLValue) converter.toXLValue(componentType, fromArr[i][j]);
+        final XLValue value = (XLValue) converter.toXLValue(fromArr[i][j]);
         toArr[i][j] = value;
       }
     }

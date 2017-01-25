@@ -41,11 +41,12 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!from.getClass().isArray()) {
       throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
+    final Type expectedType = from.getClass();
     Type componentType = null;
     if (expectedType == null || expectedType instanceof Class) {
       final Class<?> expectedClass = from.getClass();
@@ -68,7 +69,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
     final TypeConverter converter = _excel.getTypeConverterRegistry().findConverter(componentType);
     for (int i = 0; i < fromArr.length; i++) {
-      final XLValue value = (XLValue) converter.toXLValue(componentType, fromArr[i]);
+      final XLValue value = (XLValue) converter.toXLValue(fromArr[i]);
       toArr[0][i] = value;
     }
     return XLArray.of(toArr);

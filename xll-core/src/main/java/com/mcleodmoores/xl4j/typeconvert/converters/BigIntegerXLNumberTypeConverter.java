@@ -23,7 +23,7 @@ public final class BigIntegerXLNumberTypeConverter extends AbstractTypeConverter
   }
 
   @Override
-  public XLValue toXLValue(final Type expectedType, final Object from) {
+  public XLValue toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLNumber.of(((BigInteger) from).doubleValue());
   }

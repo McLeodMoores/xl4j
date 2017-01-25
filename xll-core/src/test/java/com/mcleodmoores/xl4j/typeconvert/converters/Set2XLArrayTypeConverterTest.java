@@ -118,15 +118,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLArray.class, null);
-  }
-
-  /**
-   * Test that the expected type cannot be null.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedType() {
-    CONVERTER.toXLValue(null, S1);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -205,7 +197,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNotASet() {
-    CONVERTER.toXLValue(XLArray.class, new Object());
+    CONVERTER.toXLValue(new Object());
   }
 
   /**
@@ -221,7 +213,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testEmptySet() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, new HashSet<>());
+    final Object result = CONVERTER.toXLValue(new HashSet<>());
     assertTrue(result instanceof XLArray);
     final XLArray xlArray = (XLArray) result;
     assertEquals(xlArray.getArray().length, 1);
@@ -234,7 +226,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertSet1() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S1);
+    final Object result = CONVERTER.toXLValue(S1);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<? super LocalDate> iter = S1.iterator();
@@ -261,7 +253,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertSet2() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S2);
+    final Object result = CONVERTER.toXLValue(S2);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Object> iter = S2.iterator();
@@ -288,7 +280,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertSet3() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S3);
+    final Object result = CONVERTER.toXLValue(S3);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<Double[]> iter = S3.iterator();
@@ -317,7 +309,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testConvertSet4() {
-    final Object result = CONVERTER.toXLValue(XLArray.class, S4);
+    final Object result = CONVERTER.toXLValue(S4);
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) result).getArray();
     final Iterator<List<? extends Double>> iter = S4.iterator();
