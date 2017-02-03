@@ -4,6 +4,7 @@
 #include "../helper/TypeLib.h"
 #include "resource.h"
 #include <shellapi.h>
+#include "helper/LicenseChecker.h"
 
 CAddinEnvironment::CAddinEnvironment () {
 	InitializeCriticalSection(&m_csState);
@@ -64,9 +65,16 @@ bool CAddinEnvironment::EnterNotRunningState() {
 
 HRESULT CAddinEnvironment::Start() {
 	EnterStartingState();
+	HRESULT hr;
+	CLicenseChecker lc;
+	if (FAILED(hr = lc.Validate())) {
+		LOGERROR("License checker validation failed");
+	} else {
+		LOGTRACE("License checker validation succeeded");
+	}
 	m_pTypeLib = new TypeLib();
 	m_pSettings = new CSettings(TEXT("inproc"), TEXT("default"), CSettings::INIT_APPDATA);
-	HRESULT hr;
+	
 	if (FAILED(hr = InitFromSettings())) {
 		LOGFATAL("Could not initialise add-in from settings");
 		return hr;

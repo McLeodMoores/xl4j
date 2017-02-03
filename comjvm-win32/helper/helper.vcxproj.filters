@@ -27,6 +27,12 @@
     <ClInclude Include="TypeLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LicenseChecker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -38,5 +44,18 @@
     <ClCompile Include="TypeLib.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LicenseChecker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="helper.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="license.pem">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
