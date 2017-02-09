@@ -7,7 +7,7 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.testutil.TestEnum;
+import com.mcleodmoores.xl4j.javacode.testutils.TestEnum;
 import com.mcleodmoores.xl4j.values.XLError;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;

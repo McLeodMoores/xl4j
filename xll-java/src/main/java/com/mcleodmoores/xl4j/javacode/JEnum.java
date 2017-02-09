@@ -39,7 +39,7 @@ public class JEnum {
       final Object[] values = clazz.getEnumConstants();
       final XLValue[][] array = new XLValue[values.length][1];
       for (int i = 0; i < values.length; i++) {
-        array[i][0] = (XLValue) ENUM_CONVERTER.toXLValue(null, values[i]);
+        array[i][0] = (XLValue) ENUM_CONVERTER.toXLValue(values[i]);
       }
       return XLArray.of(array);
     } catch (final ClassNotFoundException e) {
@@ -62,7 +62,7 @@ public class JEnum {
       final Object[] values = clazz.getEnumConstants();
       final XLValue[][] array = new XLValue[values.length][1];
       for (int i = 0; i < values.length; i++) {
-        array[i][0] = (XLValue) typeConverter.toXLValue(null, values[i]);
+        array[i][0] = (XLValue) typeConverter.toXLValue(values[i]);
       }
       return XLArray.of(array);
     } catch (final ClassNotFoundException e) {
