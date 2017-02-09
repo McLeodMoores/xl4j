@@ -5,16 +5,10 @@ package com.mcleodmoores.xl4j.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
-
-import com.mcleodmoores.xl4j.Excel;
-import com.mcleodmoores.xl4j.typeconvert.ScanningTypeConverterRegistry;
-import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.TypeConverterRegistry;
 
 /**
  * Some common utility methods for reflection-based operations. Called Excel4JReflectionUtils so it didn't clash with ReflectionUtils of the
@@ -26,10 +20,10 @@ public final class Excel4JReflectionUtils {
 
   /**
    * Reduce a generic Type to its Class erasure.
-   * 
+   *
    * @param type
    *          the generic type
-   * @return it's underlying Class
+   * @return its underlying Class
    */
   public static Class<?> reduceToClass(final Type type) {
     if (type instanceof Class) {
@@ -50,23 +44,4 @@ public final class Excel4JReflectionUtils {
     }
   }
 
-  @SuppressWarnings("unused")
-  private static Class<?>[] getExpectedExcelTypes(final Excel excel, final Method method) {
-    final Type[] genericParameterTypes = method.getGenericParameterTypes();
-    final Class<?>[] excelTypes = new Class[genericParameterTypes.length];
-    final TypeConverterRegistry typeConverterRegistry = new ScanningTypeConverterRegistry(excel);
-    int i = 0;
-    for (final Type parameterType : genericParameterTypes) {
-      final TypeConverter converter = typeConverterRegistry.findConverter(parameterType);
-      if (converter != null) {
-        final Class<?> excelClass = converter.getJavaToExcelTypeMapping().getExcelClass();
-        excelTypes[i] = excelClass;
-      } else {
-        throw new Excel4JRuntimeException(
-            "Can't find Java->Excel converter for parameter type " + parameterType + " (arg " + i + ") of method " + method);
-      }
-      i++;
-    }
-    return excelTypes;
-  }
 }

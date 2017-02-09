@@ -24,7 +24,7 @@ public class TenorXLStringTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     final Tenor tenor = (Tenor) from;
     if (tenor.isBusinessDayTenor()) {

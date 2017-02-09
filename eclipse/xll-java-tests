@@ -1,0 +1,1943 @@
+15:30:21.436 [main] DEBUG org.reflections.Reflections - going to scan these urls:
+file:/C:/Users/mcleo/.m2/repository/ch/qos/logback/logback-core/1.0.13/logback-core-1.0.13.jar
+file:/C:/Users/mcleo/.m2/repository/com/google/guava/guava/15.0/guava-15.0.jar
+file:/C:/Users/mcleo/.m2/repository/org/reflections/reflections/0.9.9-RC2/reflections-0.9.9-RC2.jar
+file:/C:/Users/mcleo/McLeodMoores/xl4j/xll-java/target/classes/
+file:/C:/Users/mcleo/.m2/repository/com/google/code/findbugs/annotations/2.0.1/annotations-2.0.1.jar
+file:/C:/Users/mcleo/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar
+file:/C:/Users/mcleo/McLeodMoores/xl4j/xll-core/target/classes/
+file:/C:/Users/mcleo/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
+file:/C:/Users/mcleo/.eclipse/org.eclipse.platform_4.5.2_867647348_win32_win32_x86_64/plugins/org.testng.eclipse_6.9.13.201609291640/lib/testng-remote.jar
+file:/C:/Users/mcleo/.m2/repository/org/javassist/javassist/3.18.2-GA/javassist-3.18.2-GA.jar
+file:/C:/Users/mcleo/.m2/repository/org/beanshell/bsh/2.0b4/bsh-2.0b4.jar
+file:/C:/Users/mcleo/.m2/repository/org/testng/testng/6.8.8/testng-6.8.8.jar
+file:/C:/Users/mcleo/.m2/repository/org/threeten/threetenbp/0.9/threetenbp-0.9.jar
+file:/C:/Users/mcleo/.m2/repository/ch/qos/logback/logback-classic/1.0.13/logback-classic-1.0.13.jar
+file:/C:/Users/mcleo/.m2/repository/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar
+file:/C:/Users/mcleo/McLeodMoores/xl4j/xll-java/target/test-classes/
+file:/C:/Users/mcleo/.m2/repository/com/beust/jcommander/1.27/jcommander-1.27.jar
+15:30:22.221 [main] INFO  org.reflections.Reflections - Reflections took 777 ms to scan 17 urls, producing 1076 keys and 4878 values 
+15:30:22.397 [main] INFO  c.mcleodmoores.xl4j.FunctionRegistry - registerFunctions called with com.mcleodmoores.xl4j.callback.DefaultExcelCallback@5b7aa898
+15:30:22.415 [Thread-0] DEBUG org.reflections.Reflections - going to scan these urls:
+file:/C:/Users/mcleo/.m2/repository/ch/qos/logback/logback-core/1.0.13/logback-core-1.0.13.jar
+file:/C:/Users/mcleo/.m2/repository/com/google/guava/guava/15.0/guava-15.0.jar
+file:/C:/Users/mcleo/.m2/repository/org/reflections/reflections/0.9.9-RC2/reflections-0.9.9-RC2.jar
+file:/C:/Users/mcleo/McLeodMoores/xl4j/xll-java/target/classes/
+file:/C:/Users/mcleo/.m2/repository/com/google/code/findbugs/annotations/2.0.1/annotations-2.0.1.jar
+file:/C:/Users/mcleo/.m2/repository/xml-apis/xml-apis/1.0.b2/xml-apis-1.0.b2.jar
+file:/C:/Users/mcleo/McLeodMoores/xl4j/xll-core/target/classes/
+file:/C:/Users/mcleo/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar
+file:/C:/Users/mcleo/.eclipse/org.eclipse.platform_4.5.2_867647348_win32_win32_x86_64/plugins/org.testng.eclipse_6.9.13.201609291640/lib/testng-remote.jar
+file:/C:/Users/mcleo/.m2/repository/org/javassist/javassist/3.18.2-GA/javassist-3.18.2-GA.jar
+file:/C:/Users/mcleo/.m2/repository/org/beanshell/bsh/2.0b4/bsh-2.0b4.jar
+file:/C:/Users/mcleo/.m2/repository/org/testng/testng/6.8.8/testng-6.8.8.jar
+file:/C:/Users/mcleo/.m2/repository/org/threeten/threetenbp/0.9/threetenbp-0.9.jar
+file:/C:/Users/mcleo/.m2/repository/ch/qos/logback/logback-classic/1.0.13/logback-classic-1.0.13.jar
+file:/C:/Users/mcleo/.m2/repository/org/slf4j/slf4j-api/1.7.5/slf4j-api-1.7.5.jar
+file:/C:/Users/mcleo/McLeodMoores/xl4j/xll-java/target/test-classes/
+file:/C:/Users/mcleo/.m2/repository/com/beust/jcommander/1.27/jcommander-1.27.jar
+15:30:23.307 [Thread-0] INFO  org.reflections.Reflections - Reflections took 891 ms to scan 17 urls, producing 6500 keys and 78279 values 
+15:30:23.323 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 0 to function JConstruct
+15:30:23.325 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 1 to function RemoveWhitespace
+15:30:23.328 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 2 to function JObjectAndMethodChain
+15:30:23.331 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 3 to function Array
+15:30:23.334 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 4 to function JMethodChain
+15:30:23.335 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 5 to function JStaticMethod
+15:30:23.337 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 6 to function JMethodX
+15:30:23.339 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 7 to function JFieldX
+15:30:23.340 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 8 to function JStaticField
+15:30:23.340 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 9 to function After
+15:30:23.341 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 10 to function JEnum
+15:30:23.342 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 11 to function JField
+15:30:23.343 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 12 to function Null
+15:30:23.344 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 13 to function JStaticMethodX
+15:30:23.345 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 14 to function Prefix
+15:30:23.346 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 15 to function JMethod
+15:30:23.347 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 16 to function JStaticFieldX
+15:30:23.348 [Thread-0] WARN  c.mcleodmoores.xl4j.FunctionRegistry - Have already registered a function called JEnum, ignoring
+15:30:23.349 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Allocating export number 17 to function JEnum
+15:30:23.369 [Thread-0] INFO  c.mcleodmoores.xl4j.FunctionRegistry - Scan and create finished, putting to Blocking Queue
+15:30:23.371 [main] INFO  c.mcleodmoores.xl4j.FunctionRegistry - got collection from finishedFunctionScan queue, iterating over them...
+15:30:23.375 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.376 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.376 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.376 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.376 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.376 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.377 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.377 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.377 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.377 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.377 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.378 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.378 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.378 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.378 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.379 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.379 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.379 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - just added entry to entries table
+15:30:23.379 [main] INFO  c.mcleodmoores.xl4j.FunctionRegistry - finished registering functions
+15:30:23.379 [main] INFO  c.m.x.x.XLLAccumulatingFunctionRegistry - getEntries() called, returning 18 items
+[TestNG] Running:
+  C:\Users\mcleo\AppData\Local\Temp\testng-eclipse--2003722033\testng-customsuite.xml
+
+15:30:24.070 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:24.070 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:24.071 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:24.072 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:24.073 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:24.092 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.BigDecimalConstructionTest.testJConstruct(BigDecimalConstructionTest.java:40) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.math.BigDecimal
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 32 common frames omitted
+15:30:24.094 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:24.094 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:24.094 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:24.094 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:24.094 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:24.094 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.526 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.527 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.527 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.527 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.527 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.528 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.533 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.533 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.533 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.533 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.534 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.534 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.547 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.548 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.548 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.548 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.548 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.548 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.553 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.BigDecimalConstructionTest.testJMethod(BigDecimalConstructionTest.java:71) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching method called valueOf with args [] for class class java.math.BigDecimal
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getMethodTypeConverter(ReflectiveInvokerFactory.java:228) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(JMethod.java:260) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.557 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.557 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.557 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.557 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.557 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.557 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.557 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.558 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigDecimal java.math.BigDecimal.valueOf(double) on null
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.559 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.559 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigDecimal java.math.BigDecimal.valueOf(double) on null
+15:30:28.559 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.561 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.561 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.561 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.561 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.562 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.563 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.563 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigDecimal java.math.BigDecimal.valueOf(double) on null
+15:30:28.563 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.563 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigDecimal]
+15:30:28.563 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.563 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.564 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.564 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.564 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.564 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigDecimal java.math.BigDecimal.valueOf(double) on null
+15:30:28.583 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.583 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.583 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.583 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.585 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.BigIntegerConstructionTest.testJConstruct(BigIntegerConstructionTest.java:40) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.math.BigInteger
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.587 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.588 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.588 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.588 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=12]
+15:30:28.588 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=8.0]
+15:30:28.588 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.589 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.589 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.599 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.599 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.599 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.600 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.600 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.600 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.602 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.BigIntegerConstructionTest.testJMethod(BigIntegerConstructionTest.java:62) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching method called valueOf with args [] for class class java.math.BigInteger
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getMethodTypeConverter(ReflectiveInvokerFactory.java:228) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(JMethod.java:260) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.603 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.604 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigInteger java.math.BigInteger.valueOf(long) on null
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.604 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.604 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigInteger java.math.BigInteger.valueOf(long) on null
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.604 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.604 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.606 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigInteger java.math.BigInteger.valueOf(long) on null
+15:30:28.606 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.606 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.math.BigInteger]
+15:30:28.606 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.606 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.606 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.606 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.606 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.608 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.math.BigInteger java.math.BigInteger.valueOf(long) on null
+15:30:28.617 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.628 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Boolean]
+15:30:28.628 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.628 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.628 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.629 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.BooleanConstructionTest.testJConstruct(BooleanConstructionTest.java:31) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.lang.Boolean
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.630 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.630 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Boolean]
+15:30:28.630 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLBoolean[FALSE]
+15:30:28.630 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.630 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.631 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.631 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.631 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Boolean]
+15:30:28.631 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=True]
+15:30:28.631 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.631 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.631 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.636 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.636 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Boolean]
+15:30:28.637 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.637 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLBoolean[FALSE]
+15:30:28.637 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.637 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.637 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.638 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Boolean java.lang.Boolean.valueOf(boolean) on null
+15:30:28.638 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.638 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Boolean]
+15:30:28.638 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.638 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=true]
+15:30:28.638 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.638 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.638 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.638 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Boolean java.lang.Boolean.valueOf(boolean) on null
+15:30:28.651 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.651 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Double]
+15:30:28.651 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.652 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.652 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.657 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.DoubleConstructionTest.testJConstruct(DoubleConstructionTest.java:34) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.lang.Double
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.658 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.658 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Double]
+15:30:28.658 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.658 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.660 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.664 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.666 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.666 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Double]
+15:30:28.666 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.666 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.666 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.666 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Double]
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.674 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.674 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Double java.lang.Double.valueOf(java.lang.String) throws java.lang.NumberFormatException on null
+15:30:28.674 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Double java.lang.Double.valueOf(double) on null
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.674 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Double]
+15:30:28.676 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.676 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.676 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.676 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.677 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.677 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Double java.lang.Double.valueOf(java.lang.String) throws java.lang.NumberFormatException on null
+15:30:28.685 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.685 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=com.mcleodmoores.xl4j.testutil.TestEnum]
+15:30:28.685 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.685 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.685 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.688 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.EnumConstructionTest.testJConstructNoArgs(EnumConstructionTest.java:29) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class com.mcleodmoores.xl4j.testutil.TestEnum
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.695 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.695 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=com.mcleodmoores.xl4j.testutil.TestEnum]
+15:30:28.695 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=TEST]
+15:30:28.696 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=0.0]
+15:30:28.696 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.696 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.696 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.697 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.EnumConstructionTest.testJConstructNoVisibleConstructor(EnumConstructionTest.java:38) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [class com.mcleodmoores.xl4j.values.XLString, class com.mcleodmoores.xl4j.values.XLNumber] for class class com.mcleodmoores.xl4j.testutil.TestEnum
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 32 common frames omitted
+15:30:28.708 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.708 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=com.mcleodmoores.xl4j.testutil.TestEnum]
+15:30:28.708 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.708 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=TEST]
+15:30:28.710 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.714 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.722 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.723 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestEnum com.mcleodmoores.xl4j.testutil.TestEnum.valueOf(java.lang.String) on null
+15:30:28.736 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.739 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Float]
+15:30:28.739 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.739 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.739 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.740 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.743 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.743 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Float]
+15:30:28.743 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.743 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.744 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.760 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.FloatConstructionTest.testJConstructNoArgs(FloatConstructionTest.java:34) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source) ~[na:na]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.lang.Float
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 31 common frames omitted
+15:30:28.762 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.762 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Float]
+15:30:28.763 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.763 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.763 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.763 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.767 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.767 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Float]
+15:30:28.767 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.767 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.767 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.767 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.767 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.769 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Float java.lang.Float.valueOf(float) on null
+15:30:28.771 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.771 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Float]
+15:30:28.771 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.771 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.771 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.771 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.771 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.771 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Float java.lang.Float.valueOf(float) on null
+15:30:28.775 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.776 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Integer]
+15:30:28.776 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.776 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.776 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.778 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.IntegerConstructionTest.testJConstruct(IntegerConstructionTest.java:34) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source) ~[na:na]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.lang.Integer
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 31 common frames omitted
+15:30:28.779 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.779 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Integer]
+15:30:28.779 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.779 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.779 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.779 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.780 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:28.780 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Integer]
+15:30:28.781 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.781 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:28.781 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:28.781 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.783 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.783 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Integer]
+15:30:28.783 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.783 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:28.783 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.784 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.784 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.785 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Integer java.lang.Integer.valueOf(int) on null
+15:30:28.785 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.785 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Integer]
+15:30:28.785 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.785 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:28.785 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.785 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.785 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.786 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Integer java.lang.Integer.valueOf(int) on null
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Integer]
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=12]
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=8.0]
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:28.787 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:28.787 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:28.789 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Integer java.lang.Integer.valueOf(java.lang.String,int) throws java.lang.NumberFormatException on null
+15:30:28.842 [main] ERROR c.m.xl4j.javacode.JConstruct - Could not construct class called XLString[value=com.mcleodmoores.xl4j.testutil.TestObject] with arguments [XLInteger[value=1]]
+15:30:28.964 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:28.968 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:28.998 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public boolean java.util.ArrayList.add(java.lang.Object) on ArrayList
+15:30:29.023 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble(int) on TestObject
+15:30:29.036 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.036 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(int,java.lang.String,int[]) on TestObject
+15:30:29.039 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.041 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(int,java.lang.String,java.lang.Object[]) on TestObject
+15:30:29.048 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.049 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(int,java.lang.String,int[]) on TestObject
+15:30:29.051 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.053 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble() on TestObject
+15:30:29.054 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble(int) on TestObject
+15:30:29.057 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.072 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.String java.lang.StringBuilder.toString() on StringBuilder
+15:30:29.072 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public int java.lang.StringBuilder.length() on StringBuilder
+15:30:29.075 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble(int) on TestObject
+15:30:29.077 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.079 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble(int) on TestObject
+15:30:29.090 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.095 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(int,java.lang.String,int[]) on TestObject
+15:30:29.097 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.098 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(int,java.lang.String,java.lang.Object[]) on TestObject
+15:30:29.104 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.104 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(int,java.lang.String,int[]) on TestObject
+15:30:29.121 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.123 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble() on TestObject
+15:30:29.127 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public int com.mcleodmoores.xl4j.testutil.TestObject.getNumber() on TestObject
+15:30:29.127 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double[] com.mcleodmoores.xl4j.testutil.TestObject.getDoubles() on TestObject
+15:30:29.131 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble(int) on TestObject
+15:30:29.132 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.133 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.String java.lang.StringBuilder.toString() on StringBuilder
+15:30:29.134 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public int java.lang.StringBuilder.length() on StringBuilder
+15:30:29.136 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public java.lang.Double com.mcleodmoores.xl4j.testutil.TestObject.getDouble(int) on TestObject
+15:30:29.137 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public double com.mcleodmoores.xl4j.testutil.TestObject.getDoublesSum(java.lang.Object[]) on TestObject
+15:30:29.139 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.141 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double[]) on null
+15:30:29.144 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.147 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String) on null
+15:30:29.148 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Double) on null
+15:30:29.150 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double[]) on null
+15:30:29.171 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String) on null
+15:30:29.172 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Double) on null
+15:30:29.172 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Object) on null
+15:30:29.174 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Object[]) on null
+15:30:29.190 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String) on null
+15:30:29.197 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String[]) on null
+15:30:29.208 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of() on null
+15:30:29.214 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.226 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.String) on null
+15:30:29.227 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int) on null
+15:30:29.236 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Object[]) on null
+15:30:29.248 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.String java.lang.String.valueOf(boolean) on null
+15:30:29.250 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Double java.lang.Double.valueOf(java.lang.String) throws java.lang.NumberFormatException on null
+15:30:29.256 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.String[],java.lang.String[]) on null
+15:30:29.263 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.268 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String[]) on null
+15:30:29.271 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.274 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double[]) on null
+15:30:29.279 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.290 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String) on null
+15:30:29.290 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Double) on null
+15:30:29.295 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double[]) on null
+15:30:29.299 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String) on null
+15:30:29.299 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Double) on null
+15:30:29.301 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Object) on null
+15:30:29.304 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Object[]) on null
+15:30:29.305 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String) on null
+15:30:29.308 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String[]) on null
+15:30:29.311 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of() on null
+15:30:29.312 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.313 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.String) on null
+15:30:29.313 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int) on null
+15:30:29.316 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.Object[]) on null
+15:30:29.345 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.String java.lang.String.valueOf(boolean) on null
+15:30:29.347 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Double java.lang.Double.valueOf(java.lang.String) throws java.lang.NumberFormatException on null
+15:30:29.349 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.String[],java.lang.String[]) on null
+15:30:29.352 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(java.lang.Double) on null
+15:30:29.355 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.testutil.TestObject com.mcleodmoores.xl4j.testutil.TestObject.of(int,java.lang.String[]) on null
+15:30:29.361 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.361 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=org.threeten.bp.LocalDate]
+15:30:29.361 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.361 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.361 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.363 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.LocalDateConstructionTest.testJConstructAndJMethod(LocalDateConstructionTest.java:41) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source) ~[na:na]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class org.threeten.bp.LocalDate
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 31 common frames omitted
+15:30:29.363 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.364 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=org.threeten.bp.LocalDate]
+15:30:29.364 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=ofEpochDay]
+15:30:29.364 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10957.0]
+15:30:29.364 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.364 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.364 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.377 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static org.threeten.bp.LocalDate org.threeten.bp.LocalDate.ofEpochDay(long) on null
+15:30:29.386 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.387 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Long]
+15:30:29.388 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:29.388 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.389 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.390 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.402 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.402 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Long]
+15:30:29.403 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.403 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.404 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.417 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.LongConstructionTest.testJConstructNoArgs(LongConstructionTest.java:34) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source) ~[na:na]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.lang.Long
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 31 common frames omitted
+15:30:29.425 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.426 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Long]
+15:30:29.426 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:29.427 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.427 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.428 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.434 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.435 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Long]
+15:30:29.436 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.436 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:29.437 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.437 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.438 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.439 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Long java.lang.Long.valueOf(long) on null
+15:30:29.446 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.447 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Long]
+15:30:29.448 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.449 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:29.450 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.458 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.459 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.459 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Long java.lang.Long.valueOf(long) on null
+15:30:29.465 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.466 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Long]
+15:30:29.466 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.467 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=12]
+15:30:29.468 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=8.0]
+15:30:29.468 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.469 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.470 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.470 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Long java.lang.Long.valueOf(java.lang.String,int) throws java.lang.NumberFormatException on null
+15:30:29.478 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.479 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.util.ArrayList]
+15:30:29.479 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.480 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.481 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.489 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.490 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Object]
+15:30:29.491 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.491 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.491 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.492 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.492 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.util.Random]
+15:30:29.492 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=123456.0]
+15:30:29.492 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.492 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.493 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.494 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.494 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=com.google.common.collect.Lists]
+15:30:29.494 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=newArrayList]
+15:30:29.494 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.494 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.494 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.496 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.util.ArrayList com.google.common.collect.Lists.newArrayList(java.lang.Object[]) on null with empty array
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=com.google.common.collect.Lists]
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=newArrayList]
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=1.0]
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=2.0]
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.497 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.497 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.506 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.util.ArrayList com.google.common.collect.Lists.newArrayList(java.lang.Object[]) on null
+15:30:29.513 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.530 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.util.Collections]
+15:30:29.531 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=singletonList]
+15:30:29.532 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=1.0]
+15:30:29.532 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.532 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.532 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.534 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.util.List java.util.Collections.singletonList(java.lang.Object) on null
+15:30:29.551 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.552 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Short]
+15:30:29.556 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.556 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.557 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.560 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - Exception occurred while invoking method, returning XLError
+com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Error invoking method
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:107) ~[classes/:na]
+	at com.mcleodmoores.xl4j.DefaultExcelFunctionCallHandler.invoke(DefaultExcelFunctionCallHandler.java:67) ~[classes/:na]
+	at com.mcleodmoores.xl4j.simulator.MockFunctionProcessor.invoke(MockFunctionProcessor.java:79) [classes/:na]
+	at com.mcleodmoores.xl4j.javacode.ShortConstructionTest.testJConstruct(ShortConstructionTest.java:35) [test-classes/:na]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[na:1.8.0_111]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901) [testng-6.8.8.jar:na]
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127) [testng-6.8.8.jar:na]
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.privateRun(TestRunner.java:767) [testng-6.8.8.jar:na]
+	at org.testng.TestRunner.run(TestRunner.java:617) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52) [testng-6.8.8.jar:na]
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149) [testng-6.8.8.jar:na]
+	at org.testng.TestNG.run(TestNG.java:1057) [testng-6.8.8.jar:na]
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236) [testng-remote.jar:na]
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81) [testng-remote.jar:na]
+Caused by: java.lang.reflect.InvocationTargetException: null
+	at sun.reflect.GeneratedMethodAccessor2.invoke(Unknown Source) ~[na:na]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source) ~[na:1.8.0_111]
+	at java.lang.reflect.Method.invoke(Unknown Source) ~[na:1.8.0_111]
+	at com.mcleodmoores.xl4j.javacode.AbstractMethodInvoker.invoke(AbstractMethodInvoker.java:104) ~[classes/:na]
+	... 27 common frames omitted
+Caused by: com.mcleodmoores.xl4j.util.Excel4JRuntimeException: Could not find matching constructor with args [] for class class java.lang.Short
+	at com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory.getConstructorTypeConverter(ReflectiveInvokerFactory.java:120) ~[classes/:na]
+	at com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(JConstruct.java:51) ~[classes/:na]
+	... 31 common frames omitted
+15:30:29.561 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.561 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Short]
+15:30:29.562 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:29.563 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.563 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.563 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.564 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.570 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Short]
+15:30:29.570 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:29.570 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.570 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.570 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.579 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.580 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Short]
+15:30:29.580 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.580 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:29.580 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.580 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.580 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.581 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Short java.lang.Short.valueOf(short) on null
+15:30:29.585 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.585 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Short]
+15:30:29.585 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.585 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=10]
+15:30:29.585 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.585 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.585 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.585 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Short java.lang.Short.valueOf(short) on null
+15:30:29.587 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.589 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.Short]
+15:30:29.594 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.595 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=12]
+15:30:29.595 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=8.0]
+15:30:29.596 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.596 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.596 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.596 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Short java.lang.Short.valueOf(java.lang.String,int) throws java.lang.NumberFormatException on null
+15:30:29.602 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 0
+15:30:29.602 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.String]
+15:30:29.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JConstruct
+15:30:29.603 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jconstruct
+15:30:29.603 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static com.mcleodmoores.xl4j.values.XLValue com.mcleodmoores.xl4j.javacode.JConstruct.jconstruct(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.613 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - invoke called with 13
+15:30:29.613 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=java.lang.String]
+15:30:29.613 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLString[value=valueOf]
+15:30:29.613 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - arg = XLNumber[value=10.0]
+15:30:29.613 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - functionDefinition = JStaticMethodX
+15:30:29.613 [main] INFO  c.m.x.DefaultExcelFunctionCallHandler - method invoker = jStaticMethodX
+15:30:29.613 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.Object com.mcleodmoores.xl4j.javacode.JMethod.jStaticMethodX(com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLString,com.mcleodmoores.xl4j.values.XLValue[]) on null
+15:30:29.613 [main] INFO  c.m.x.javacode.AbstractMethodInvoker - invoking method public static java.lang.String java.lang.String.valueOf(int) on null
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstructNoArgs
+PASSED: testJConstructNoVisibleConstructor
+PASSED: testJMethod
+PASSED: testJConstructFloat
+PASSED: testJConstructNoArgs
+PASSED: testJConstructString
+PASSED: testJStaticMethodXFloat
+PASSED: testJStaticMethodXString
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testExpectedFailureIntConstructor
+PASSED: testIntConstructor
+PASSED: testIntDoublesConstructor
+PASSED: testIntObjectConstructor
+PASSED: testIntStringConstructor
+PASSED: testNoArgsConstructor
+PASSED: testObjectsConstructor
+PASSED: testStringArrayStringsConstructor
+PASSED: testStringsConstructor
+PASSED: testField
+PASSED: testFieldX
+PASSED: testStaticField
+PASSED: testStaticFieldX
+PASSED: testIsAssignableFrom
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJMethodReflective1
+PASSED: testJMethodReflective1_5
+PASSED: testJMethodReflective1_75
+PASSED: testJMethodReflective2
+PASSED: testJMethodReflective3
+PASSED: testJMethodReflective4
+PASSED: testJMethodReflective5
+PASSED: testIntGetMethod
+PASSED: testIntStringIntsSumMethod
+PASSED: testIntStringObjectsSumMethod
+PASSED: testIntStringStringsSumMethod
+PASSED: testIntsSumMethod
+PASSED: testNoArgsGetMethod
+PASSED: testObjectGetMethod
+PASSED: testObjectsSumMethod
+PASSED: testReturnType
+PASSED: testStringGetMethod
+PASSED: testStringsSumMethod
+PASSED: testIntGetMethod
+PASSED: testIntStringIntsSumMethod
+PASSED: testIntStringObjectsSumMethod
+PASSED: testIntStringStringsSumMethod
+PASSED: testIntsSumMethod
+PASSED: testNoArgsGetMethod
+PASSED: testObjectGetMethod
+PASSED: testObjectsSumMethod
+PASSED: testReturnType
+PASSED: testStringGetMethod
+PASSED: testStringsSumMethod
+PASSED: testDoubleConstructor
+PASSED: testDoublesConstructor
+PASSED: testIntObjectConstructor
+PASSED: testIntObjectsConstructor
+PASSED: testIntStringConstructor
+PASSED: testIntStringsConstructor
+PASSED: testNoArgsConstructor
+PASSED: testReturnType
+PASSED: testStringArrayStringsConstructor
+PASSED: testDoubleConstructor
+PASSED: testDoublesConstructor
+PASSED: testIntObjectConstructor
+PASSED: testIntObjectsConstructor
+PASSED: testIntStringConstructor
+PASSED: testIntStringsConstructor
+PASSED: testNoArgsConstructor
+PASSED: testReturnType
+PASSED: testStringArrayStringsConstructor
+PASSED: testJConstructAndJMethod
+PASSED: testJConstructLong
+PASSED: testJConstructNoArgs
+PASSED: testJConstructString
+PASSED: testJStaticMethodXLong
+PASSED: testJStaticMethodXString
+PASSED: testJStaticMethodXStringNumber
+PASSED: testJConstructList
+PASSED: testJConstructObject
+PASSED: testJConstructRandom
+PASSED: testJMethodLists
+PASSED: testJMethodListsWithVarArgs
+PASSED: testJMethodSingletonList
+PASSED: testJConstruct
+PASSED: testJStaticMethodXShort
+PASSED: testJStaticMethodXString
+PASSED: testJStaticMethodXStringNumber
+PASSED: testJConstruct
+PASSED: testJMethod
+FAILED: testDoubleConstructor
+java.lang.AssertionError: expected [Double constructor [doubles=[6.0] number=-400]] but found [int constructor [doubles=[] number=6]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testDoubleConstructor(JConstructTest.java:113)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testDoublesConstructor
+java.lang.AssertionError: expected [Double... constructor [doubles=[100.0, 101.0, 102.0] number=-600]] but found [int, Double... constructor [doubles=[101.0, 102.0] number=100]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testDoublesConstructor(JConstructTest.java:161)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntDoubleConstructor
+java.lang.AssertionError: expected [int, Object constructor [doubles=[50.0] number=5]] but found [int, Double constructor [doubles=[50.0] number=5]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testIntDoubleConstructor(JConstructTest.java:102)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntObjectsConstructor
+java.lang.AssertionError: expected [int, Object... constructor [doubles=[110.0, 111.0, 112.0] number=11]] but found [Object... constructor [doubles=[11.0, 110.0, 111.0, 112.0] number=-700]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testIntObjectsConstructor(JConstructTest.java:175)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntStringsConstructor
+java.lang.AssertionError: expected [int, String... constructor [doubles=[90.0, 91.0, 92.0] number=9]] but found [int, Double... constructor [doubles=[90.0, 91.0, 92.0] number=9]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testIntStringsConstructor(JConstructTest.java:149)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testObjectConstructor
+java.lang.AssertionError: expected [Object constructor [doubles=[3.0] number=-200]] but found [int constructor [doubles=[] number=3]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testObjectConstructor(JConstructTest.java:79)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testStringConstructor
+java.lang.AssertionError: expected [String constructor [doubles=[2.0] number=-300]] but found [int constructor [doubles=[] number=2]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JConstructTest.testStringConstructor(JConstructTest.java:67)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testNonOverloadedGetters
+java.lang.AssertionError:  expected [5] but found [4]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertArrayEquals(Assert.java:151)
+	at org.testng.Assert.assertEquals(Assert.java:117)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JMethodXTest.testNonOverloadedGetters(JMethodXTest.java:57)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntConstructor
+java.lang.AssertionError: expected [static int constructor [doubles=[] number=1]] but found [static Double constructor [doubles=[1.0] number=-4000]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testIntConstructor(JStaticMethodTest.java:54)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntDoubleConstructor
+java.lang.AssertionError: expected [static int, Object constructor [doubles=[50.0] number=5]] but found [static int, Double constructor [doubles=[50.0] number=5]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testIntDoubleConstructor(JStaticMethodTest.java:101)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntDoublesConstructor
+java.lang.AssertionError: expected [static int, Double... constructor [doubles=[120.0, 121.0, 122.0] number=12]] but found [static Double... constructor [doubles=[12.0, 120.0, 121.0, 122.0] number=-6000]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testIntDoublesConstructor(JStaticMethodTest.java:186)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testObjectConstructor
+java.lang.AssertionError: expected [static Object constructor [doubles=[3.0] number=-2000]] but found [static int constructor [doubles=[] number=3]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testObjectConstructor(JStaticMethodTest.java:78)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testObjectsConstructor
+java.lang.AssertionError: expected [static Object... constructor [doubles=[130.0, 131.0, 132.0] number=-7000]] but found [static int, Object... constructor [doubles=[131.0, 132.0] number=130]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testObjectsConstructor(JStaticMethodTest.java:200)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testStringConstructor
+java.lang.AssertionError: expected [static String constructor [doubles=[2.0] number=-3000]] but found [static Double constructor [doubles=[2.0] number=-4000]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testStringConstructor(JStaticMethodTest.java:66)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testStringsConstructor
+java.lang.AssertionError: expected [static String... constructor [doubles=[80.0, 81.0, 82.0] number=-5000]] but found [static int, String... constructor [doubles=[81.0, 82.0] number=80]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodTest.testStringsConstructor(JStaticMethodTest.java:136)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntConstructor
+java.lang.AssertionError: expected [static int constructor [doubles=[] number=1]] but found [static Double constructor [doubles=[1.0] number=-4000]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testIntConstructor(JStaticMethodXTest.java:56)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntDoubleConstructor
+java.lang.AssertionError: expected [static int, Object constructor [doubles=[50.0] number=5]] but found [static int, Double constructor [doubles=[50.0] number=5]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testIntDoubleConstructor(JStaticMethodXTest.java:103)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testIntDoublesConstructor
+java.lang.AssertionError: expected [static int, Double... constructor [doubles=[120.0, 121.0, 122.0] number=12]] but found [static Double... constructor [doubles=[12.0, 120.0, 121.0, 122.0] number=-6000]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testIntDoublesConstructor(JStaticMethodXTest.java:188)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testObjectConstructor
+java.lang.AssertionError: expected [static Object constructor [doubles=[3.0] number=-2000]] but found [static int constructor [doubles=[] number=3]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testObjectConstructor(JStaticMethodXTest.java:80)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testObjectsConstructor
+java.lang.AssertionError: expected [static Object... constructor [doubles=[130.0, 131.0, 132.0] number=-7000]] but found [static int, Object... constructor [doubles=[131.0, 132.0] number=130]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testObjectsConstructor(JStaticMethodXTest.java:202)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testStringConstructor
+java.lang.AssertionError: expected [static String constructor [doubles=[2.0] number=-3000]] but found [static Double constructor [doubles=[2.0] number=-4000]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testStringConstructor(JStaticMethodXTest.java:68)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+FAILED: testStringsConstructor
+java.lang.AssertionError: expected [static String... constructor [doubles=[80.0, 81.0, 82.0] number=-5000]] but found [static int, String... constructor [doubles=[81.0, 82.0] number=80]]
+	at org.testng.Assert.fail(Assert.java:94)
+	at org.testng.Assert.failNotEquals(Assert.java:494)
+	at org.testng.Assert.assertEquals(Assert.java:123)
+	at org.testng.Assert.assertEquals(Assert.java:165)
+	at com.mcleodmoores.xl4j.javacode.JStaticMethodXTest.testStringsConstructor(JStaticMethodXTest.java:138)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+	at java.lang.reflect.Method.invoke(Unknown Source)
+	at org.testng.internal.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:84)
+	at org.testng.internal.Invoker.invokeMethod(Invoker.java:714)
+	at org.testng.internal.Invoker.invokeTestMethod(Invoker.java:901)
+	at org.testng.internal.Invoker.invokeTestMethods(Invoker.java:1231)
+	at org.testng.internal.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:127)
+	at org.testng.internal.TestMethodWorker.run(TestMethodWorker.java:111)
+	at org.testng.TestRunner.privateRun(TestRunner.java:767)
+	at org.testng.TestRunner.run(TestRunner.java:617)
+	at org.testng.SuiteRunner.runTest(SuiteRunner.java:348)
+	at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:343)
+	at org.testng.SuiteRunner.privateRun(SuiteRunner.java:305)
+	at org.testng.SuiteRunner.run(SuiteRunner.java:254)
+	at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+	at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:86)
+	at org.testng.TestNG.runSuitesSequentially(TestNG.java:1224)
+	at org.testng.TestNG.runSuitesLocally(TestNG.java:1149)
+	at org.testng.TestNG.run(TestNG.java:1057)
+	at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:132)
+	at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:236)
+	at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:81)
+
+
+===============================================
+    com.mcleodmoores.xl4j.javacode
+    Tests run: 122, Failures: 22, Skips: 0
+===============================================
+
+
+===============================================
+xll-java by packages
+Total tests run: 122, Failures: 22, Skips: 0
+===============================================
+
+[TestNG] Time taken by [FailedReporter passed=0 failed=0 skipped=0]: 32 ms
+[TestNG] Time taken by org.testng.reporters.XMLReporter@448ff1a8: 263 ms
+[TestNG] Time taken by org.testng.reporters.EmailableReporter2@145eaa29: 37 ms
+[TestNG] Time taken by org.testng.reporters.jq.Main@971d0d8: 197 ms
+[TestNG] Time taken by org.testng.reporters.SuiteHTMLReporter@4f9a3314: 861 ms
+[TestNG] Time taken by org.testng.reporters.JUnitReportReporter@4c40b76e: 121 ms

@@ -49,7 +49,7 @@ public final class JField {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(objectReference, fieldName, excel);
       final TypeConverter typeConverter = excel.getTypeConverterRegistry().findConverter(value.getClass());
-      return typeConverter.toXLValue(null, value);
+      return typeConverter.toXLValue(value);
     } catch (final NoSuchFieldException | IllegalAccessException e) {
       LOGGER.error("Problem getting field called {} in {}: {}", fieldName.getValue(), objectReference.getClazz(), e);
       return XLError.Null;
@@ -77,7 +77,7 @@ public final class JField {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(objectReference, fieldName, excel);
       final TypeConverter typeConverter = new ObjectXLObjectTypeConverter(excel);
-      return typeConverter.toXLValue(null, value);
+      return typeConverter.toXLValue(value);
     } catch (final NoSuchFieldException | IllegalAccessException e) {
       LOGGER.error("Problem getting field called {} in {}: {}", fieldName.getValue(), objectReference.getClazz(), e);
       return XLError.Null;
@@ -105,7 +105,7 @@ public final class JField {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(className, fieldName);
       final TypeConverter typeConverter = excel.getTypeConverterRegistry().findConverter(value.getClass());
-      return typeConverter.toXLValue(null, value);
+      return typeConverter.toXLValue(value);
     } catch (final NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
       LOGGER.error("Problem getting field called {} in {}: {}", fieldName.getValue(), className.getValue(), e);
       return XLError.Null;
@@ -133,7 +133,7 @@ public final class JField {
       final Excel excel = ExcelFactory.getInstance();
       final Object value = getField(className, fieldName);
       final TypeConverter typeConverter = new ObjectXLObjectTypeConverter(excel);
-      return typeConverter.toXLValue(null, value);
+      return typeConverter.toXLValue(value);
     } catch (final NoSuchFieldException | IllegalAccessException | ClassNotFoundException e) {
       LOGGER.error("Problem getting field called {} in {}: {}", fieldName.getValue(), className.getValue(), e);
       return XLError.Null;

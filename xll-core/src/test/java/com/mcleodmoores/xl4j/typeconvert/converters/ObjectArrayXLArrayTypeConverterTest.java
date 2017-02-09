@@ -110,7 +110,7 @@ public class ObjectArrayXLArrayTypeConverterTest {
   /**
    * Tests the behaviour when the object is not an array.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = ClassCastException.class)
   public void testObjectToConvertNotAnArray() {
     CONVERTER.toXLValue(new Object());
   }
@@ -271,27 +271,59 @@ public class ObjectArrayXLArrayTypeConverterTest {
   }
 
   @Test
-  public void testConvertArray1() {
-    final XLArray xlArray = XLArray.of(new XLValue[][] {
-      new XLValue[] {XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4)}
-    });
-    final Object result = PROCESSOR.invoke("ObjectArrayTest3", xlArray);
-    int i = 0;
-    i = i + 1;
+  public void testArrayOfGenericList() {
+    final XLArray numberArray = XLArray.of(new XLValue[][] {new XLValue[] {
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1), XLNumber.of(-2), XLString.of("3")}}),
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(4), XLNumber.of(-5)}}),
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(6)}})
+    }});
+    final Object result = PROCESSOR.invoke("GenericsTestHelper.f0", numberArray);
+    assertTrue(result instanceof XLNumber);
+    final double expectedResult = 1 - 2 + 3 + 4 - 5 + 6;
+    assertEquals(((XLNumber) result).getAsDouble(), expectedResult, 1e-15);
+  }
+
+  /**
+   * Tests DoubleConstOperation -> Operation<Double, Double> and QuadrupleConstOperation -> Operation<Double, U extends Number>.
+   * The generic bound is matched by finding a class or superclass that can be assigned from the parameterized type.
+   */
+  @Test
+  public void testArrayOfGenericListAndOperations() {
+    final XLArray numberArray = XLArray.of(new XLValue[][] {new XLValue[] {
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1), XLNumber.of(-2)}}),
+        XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(3), XLNumber.of(-6)}})}});
+    final XLArray operationArguments = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(8), XLString.of("5")}});
+    final Object result = PROCESSOR.invoke("GenericsTestHelper.f1", numberArray, operationArguments);
+    assertTrue(result instanceof XLNumber);
+    final double expectedResult = (1 - 2 + 3 - 6) * (8 * 2 + 2 * 5 * 2);
+    assertEquals(((XLNumber) result).getAsDouble(), expectedResult, 1e-15);
+  }
+
+  /**
+   * Tests SumAndScaleAsFloatOperation -> ToString. There is no available converter for the other interface that is
+   * implemented (Operation&lt;U[], Float&gt;).
+   */
+  @Test
+  public void testBothInterfacesChecked() {
+    final XLArray numberInputs = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(-1), XLNumber.of(-2)}});
+    final XLArray operationArguments = XLArray.of(new XLValue[][] {new XLValue[] {XLString.of("4"), XLString.of("6"), XLString.of("8")}});
+    Object result = PROCESSOR.invoke("GenericsTestHelper.f2", operationArguments);
+    assertTrue(result instanceof XLString);
+    final String expectedString = "Sum and scale as Float, Sum and scale as Float, Sum and scale as Float";
+    assertEquals(((XLString) result).getValue(), expectedString);
+    result = PROCESSOR.invoke("GenericsTestHelper.f3", numberInputs, operationArguments);
+    assertTrue(result instanceof XLNumber);
+    final float expectedResult = (-1 + -2) * (4 + 6 + 8);
+    assertEquals(((XLNumber) result).getAsFloat(), expectedResult, 1e-8);
+  }
+
+  @Test
+  public void test() {
+    final XLArray operationArguments = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1), XLNumber.of(-2)}});
   }
 
   @XLFunction(name = "ObjectArrayTest1")
-  public static <T extends Number, U extends Number> U[] objectArrayTest1(@XLParameter final T[] array) {
-    final BigDecimal[] result = new BigDecimal[array.length];
-    int i = 0;
-    for (final T t : array) {
-      result[i++] = BigDecimal.valueOf(t.doubleValue());
-    }
-    return (U[]) result;
-  }
-
-  @XLFunction(name = "ObjectArrayTest2")
-  public static BigDecimal[] objectArrayTest2(@XLParameter final Double[] array) {
+  public static BigDecimal[] objectArrayTest1(@XLParameter final Double[] array) {
     final BigDecimal[] result = new BigDecimal[array.length];
     int i = 0;
     for (final Double t : array) {
@@ -309,4 +341,15 @@ public class ObjectArrayXLArrayTypeConverterTest {
     }
     return (U[]) result;
   }
+
+  @XLFunction(name = "ObjectArrayTest3")
+  public static <T extends Number, U extends Number> U[] objectArrayTest3(@XLParameter final T[] array) {
+    final Number[] result = new Number[array.length];
+    int i = 0;
+    for (final T t : array) {
+      result[i++] = BigDecimal.valueOf(t.doubleValue());
+    }
+    return (U[]) result;
+  }
+
 }

@@ -3,7 +3,11 @@
  */
 package com.mcleodmoores.xl4j.typeconvert;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JReflectionUtils;
@@ -85,9 +89,67 @@ public final class ExcelToJavaTypeMapping {
       return false;
     }
     if (!_javaClass.isAssignableFrom(other.getJavaClass())) {
+      if (other.getJavaType() instanceof ParameterizedType) {
+        final ParameterizedType otherParameterizedType = (ParameterizedType) other.getJavaType();
+        final Type[] genericTypes = _javaClass.getGenericInterfaces();
+        if (matchesGenericSignature(genericTypes, otherParameterizedType)) {
+          return true;
+        }
+        // try super classes
+        Class<?> superClass = _javaClass.getSuperclass();
+        while (superClass != null) {
+          final Type[] superClassGenericTypes = superClass.getGenericInterfaces();
+          if (matchesGenericSignature(superClassGenericTypes, otherParameterizedType)) {
+            return true;
+          }
+          superClass = superClass.getSuperclass();
+        }
+      }
       return false;
     }
     return true;
+  }
+
+  private boolean matchesGenericSignature(final Type[] genericTypes, final ParameterizedType otherParameterizedType) {
+    if (genericTypes.length == 0) {
+      return false;
+    }
+    for (final Type genericType : genericTypes) {
+      if (genericType instanceof ParameterizedType) {
+        final ParameterizedType parameterizedType = (ParameterizedType) genericType;
+        if (parameterizedType.getRawType().equals(otherParameterizedType.getRawType())) {
+          final Type[] typeArguments = parameterizedType.getActualTypeArguments();
+          final Type[] otherTypeArguments = otherParameterizedType.getActualTypeArguments();
+          if (typeArguments.length == otherTypeArguments.length) {
+            for (int i = 0; i < typeArguments.length; i++) {
+              final Type typeArgument = typeArguments[i];
+              final Type otherTypeArgument = otherTypeArguments[i];
+              if (typeArgument instanceof Class) {
+                final Class<?> typeClass = (Class<?>) typeArgument;
+                if (otherTypeArgument instanceof Class) {
+                  final Class<?> otherTypeClass = (Class<?>) otherTypeArgument;
+                  if (!typeClass.isAssignableFrom(otherTypeClass)) {
+                    return false;
+                  }
+                } else if (otherTypeArgument instanceof TypeVariable) {
+                  final Type[] bounds = ((TypeVariable<?>) otherTypeArgument).getBounds();
+                  for (final Type bound : bounds) {
+                    if (bound instanceof Class && !((Class<?>) bound).isAssignableFrom(typeClass)) {
+                      return false;
+                    }
+                  }
+                  return true;
+                } else if (otherTypeArgument instanceof WildcardType) {
+                } else if (otherTypeArgument instanceof GenericArrayType) {
+                }
+              }
+            }
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   }
 
   @Override

@@ -43,29 +43,11 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
   @Override
   public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
-    if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
-    }
-    final Type expectedType = from.getClass();
-    Type componentType = null;
-    if (expectedType == null || expectedType instanceof Class) {
-      final Class<?> expectedClass = from.getClass();
-      componentType = expectedClass.getComponentType();
-      // REVIEW: this will never fail because of the isArray() test
-      if (componentType == null) {
-        throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
-        // REVIEW: why was this commented out? it isn't in the other array tests
-        // } else if (expectedType instanceof GenericArrayType) {
-        // final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-        // componentType = genericArrayType.getGenericComponentType();
-      }
-    } else {
-      throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
-    }
     final Object[] fromArr = (Object[]) from;
     if (fromArr.length == 0) {
       return XLArray.of(new XLValue[1][1]);
     }
+    final Type componentType = from.getClass().getComponentType();
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
     final TypeConverter converter = _excel.getTypeConverterRegistry().findConverter(componentType);
     for (int i = 0; i < fromArr.length; i++) {
@@ -84,12 +66,10 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
       final Class<?> expectedClass = (Class<?>) expectedType;
       componentType = expectedClass.getComponentType();
     } else if (expectedType instanceof GenericArrayType) {
-      final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-      componentType = genericArrayType.getGenericComponentType();
+      componentType = ConverterUtils.getComponentTypeForGenericArray(expectedType);
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;

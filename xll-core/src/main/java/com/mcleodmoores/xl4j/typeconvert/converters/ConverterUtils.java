@@ -3,11 +3,18 @@
  */
 package com.mcleodmoores.xl4j.typeconvert.converters;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.GenericDeclaration;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 
 /**
  * Utility classes for converters.
@@ -42,6 +49,30 @@ public final class ConverterUtils {
       }
     }
     return type;
+  }
+
+  public static Type getComponentTypeForGenericArray(final Type expectedType) {
+    final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
+    final Type genericComponentType = genericArrayType.getGenericComponentType();
+    if (genericComponentType instanceof TypeVariable) {
+      final GenericDeclaration genericDeclaration = ((TypeVariable<?>) genericComponentType).getGenericDeclaration();
+      final TypeVariable<?>[] typeParameters = genericDeclaration.getTypeParameters();
+      for (final TypeVariable<?> typeParameter : typeParameters) {
+        if (typeParameter.getName().equals(genericComponentType.getTypeName())) {
+          final Type[] bounds = typeParameter.getBounds();
+          if (bounds == null) {
+            throw new Excel4JRuntimeException("Could not get bounds for " + genericDeclaration);
+          }
+          if (bounds.length != 1) {
+            throw new Excel4JRuntimeException("Could not get handle bounds " + Arrays.toString(bounds));
+          }
+          return getBound(bounds[0]);
+        }
+      }
+    } else if (genericComponentType instanceof ParameterizedType) {
+      return genericComponentType;
+    }
+    throw new Excel4JRuntimeException("GenericComponentType of " + expectedType + " was not a TypeVariable: have " + genericComponentType);
   }
 
   /**

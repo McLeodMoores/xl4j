@@ -104,7 +104,7 @@ public class ObjectArrayXLArrayTypeConverter2Test {
   /**
    * Tests the behaviour when the object is not an array.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = ClassCastException.class)
   public void testObjectToConvertNotAnArray() {
     CONVERTER.toXLValue(new Object());
   }

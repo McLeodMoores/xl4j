@@ -45,25 +45,11 @@ public final class ObjectArray2DXLArrayTypeConverter2 extends AbstractTypeConver
   @Override
   public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
-    if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
-    }
-    final Type expectedType = from.getClass();
-    Type componentType = null;
-    if (expectedType instanceof Class) {
-      final Class<?> expectedClass = from.getClass();
-      componentType = expectedClass.getComponentType().getComponentType(); // as it's 2D
-    } else if (expectedType instanceof GenericArrayType) {
-      // REVIEW this is commented out in the 1D version. Which is correct?
-      final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-      componentType = genericArrayType.getGenericComponentType(); // yes it's odd that you don't need to do it twice, see ScratchTests.java
-    } else {
-      throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
-    }
     final Object[][] fromArr = (Object[][]) from;
     if (fromArr.length == 0) { // empty array
       return XLArray.of(new XLValue[1][1]);
     }
+    final Type componentType = from.getClass().getComponentType().getComponentType(); // as it's 2D
     // we know the length is > 0
     int maxColumns = fromArr[0].length;
     for (int i = 1; i < fromArr.length; i++) {
@@ -96,8 +82,7 @@ public final class ObjectArray2DXLArrayTypeConverter2 extends AbstractTypeConver
         componentType = ((Class<?>) componentType).getComponentType();
       }
     } else if (expectedType instanceof GenericArrayType) {
-      final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-      componentType = genericArrayType.getGenericComponentType();
+      componentType = ConverterUtils.getComponentTypeForGenericArray(expectedType);
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }

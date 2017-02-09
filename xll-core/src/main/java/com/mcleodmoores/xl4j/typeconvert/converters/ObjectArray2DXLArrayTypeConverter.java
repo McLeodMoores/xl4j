@@ -20,7 +20,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
  * Type converter to convert from arrays of Object arrays to Excel arrays and back again. When converting back to Java, the most specific
- * converter that can be found is used (e.g. Boolean -&gt; XLBoolean, rather than an XLObject wrapping a boolean).This converter is higher
+ * converter that can be found is used (e.g. Boolean -&gt; XLBoolean, rather than an XLObject wrapping a boolean). This converter is higher
  * priority than {@link ObjectArray2DXLArrayTypeConverter2}, which only converts to XLObjects.
  * <p>
  * This class assumes that the input array from / to Excel is rectangular.
@@ -45,25 +45,11 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
   @Override
   public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
-    if (!from.getClass().isArray()) {
-      throw new Excel4JRuntimeException("\"from\" parameter must be an array");
-    }
     final Object[][] fromArr = (Object[][]) from;
-    final Type expectedType = from.getClass();
-    Type componentType = null;
-    if (expectedType instanceof Class) {
-      final Class<?> expectedClass = from.getClass();
-      componentType = expectedClass.getComponentType().getComponentType(); // as it's 2D
-    } else if (expectedType instanceof GenericArrayType) {
-      // REVIEW this is commented out in the 1D version. Which is correct?
-      final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-      componentType = genericArrayType.getGenericComponentType(); // yes it's odd that you don't need to do it twice, see ScratchTests.java
-    } else {
-      throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
-    }
-    if (fromArr.length == 0) { // empty array
+    if (fromArr.length == 0) {
       return XLArray.of(new XLValue[1][1]);
     }
+    final Type componentType = from.getClass().getComponentType();
     // we know the length is > 0
     int maxColumns = fromArr[0].length;
     for (int i = 1; i < fromArr.length; i++) {
@@ -110,8 +96,7 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
         componentType = ((Class<?>) componentType).getComponentType();
       }
     } else if (expectedType instanceof GenericArrayType) {
-      final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-      componentType = genericArrayType.getGenericComponentType();
+      componentType = ConverterUtils.getComponentTypeForGenericArray(expectedType);
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }

@@ -60,5 +60,4 @@ public abstract class AbstractTypeConverter implements TypeConverter {
     return _priority;
   }
 
-  // REVIEW emcleod 21-7-2014 hashCode and equals?
 }

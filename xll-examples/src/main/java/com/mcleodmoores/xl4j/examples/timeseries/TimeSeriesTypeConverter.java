@@ -38,15 +38,15 @@ public class TimeSeriesTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     final TimeSeries ts = (TimeSeries) from;
     final XLValue[][] toArr = new XLValue[ts.size()][2];
     int i = 0;
     // convert each element of the map with the converters
     for (final Map.Entry<LocalDate, Double> entry : ts.entrySet()) {
-      final XLValue key = (XLValue) KEY_CONVERTER.toXLValue(LocalDate.class, entry.getKey());
-      final XLValue value = entry.getValue() == null ? null : (XLValue) VALUE_CONVERTER.toXLValue(Double.class, entry.getValue());
+      final XLValue key = (XLValue) KEY_CONVERTER.toXLValue(entry.getKey());
+      final XLValue value = entry.getValue() == null ? null : (XLValue) VALUE_CONVERTER.toXLValue(entry.getValue());
       toArr[i][0] = key;
       toArr[i][1] = value;
       i++;
