@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLBoolean;
@@ -29,20 +29,20 @@ public final class MyTestFunctions {
    */
   private MyTestFunctions() {
   }
-  
-  @XLFunction(name = "AsyncWait", 
-              description = "Wait for n seconds", 
-              category = "Mine",
-              isAutoAsynchronous = true)
+
+  @XLFunction(name = "AsyncWait",
+      description = "Wait for n seconds",
+      category = "Mine",
+      isAutoAsynchronous = true)
   public static XLNumber myAsyncWait(@XLParameter(name = "delay", description = "delay in seconds") final XLNumber delay) {
     try {
       Thread.sleep((int) delay.getAsDouble() * 1000);
-    } catch (InterruptedException ie) {
+    } catch (final InterruptedException ie) {
       return XLNumber.of(-1);
     }
     return delay;
   }
-  
+
   /**
    * String concatenation test.
    *
@@ -53,9 +53,9 @@ public final class MyTestFunctions {
    * @return a string
    */
   @XLFunction(name = "MyStringCat",
-              description = "Concat 2 strings",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Concat 2 strings",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static XLString myStringCat(@XLParameter(name = "string 1", description = "The first string") final XLString one,
       @XLParameter(name = "string 2", description = "The second string") final XLString two) {
     ArgumentChecker.notNull(one, "one");
@@ -73,9 +73,9 @@ public final class MyTestFunctions {
    * @return XOR
    */
   @XLFunction(name = "MyXOR",
-              description = "XOR 2 booleans",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "XOR 2 booleans",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static XLBoolean myXOR(@XLParameter(name = "boolean 1", description = "The first boolean") final XLBoolean one,
       @XLParameter(name = "boolean 2", description = "The second boolean") final XLBoolean two) {
     ArgumentChecker.notNull(one, "one");
@@ -91,11 +91,11 @@ public final class MyTestFunctions {
    * @return the reference string
    */
   @XLFunction(name = "MyLocalReference",
-              description = "Local reference tostring",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT,
-              isMacroEquivalent = true,
-              isMultiThreadSafe = false)
+      description = "Local reference tostring",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT,
+      isMacroEquivalent = true,
+      isMultiThreadSafe = false)
   public static XLString myLocalReference(
       @XLParameter(name = "local reference", description = "The local reference (range)") final XLLocalReference ref) {
     ArgumentChecker.notNull(ref, "ref");
@@ -110,11 +110,11 @@ public final class MyTestFunctions {
    * @return the reference string
    */
   @XLFunction(name = "MyMultiReference",
-              description = "Multi reference tostring",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT,
-              isMacroEquivalent = true,
-              isMultiThreadSafe = false)
+      description = "Multi reference tostring",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT,
+      isMacroEquivalent = true,
+      isMultiThreadSafe = false)
   public static XLString myMultiReference(
       @XLParameter(name = "multi reference", description = "The multi reference (range)") final XLMultiReference ref) {
     ArgumentChecker.notNull(ref, "ref");
@@ -127,9 +127,9 @@ public final class MyTestFunctions {
    * @return the array
    */
   @XLFunction(name = "MyArray",
-              description = "Creates an array",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      description = "Creates an array",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static XLArray myArray() {
     final XLValue[][] arr = { { XLNumber.of(1), XLString.of("Two"), XLNumber.of(3) },
         { XLString.of("One"), XLNumber.of(2), XLString.of("3") } };
@@ -144,9 +144,9 @@ public final class MyTestFunctions {
    * @return the list
    */
   @XLFunction(name = "MakeList",
-              description = "Make a list from a range/array",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.OBJECT_RESULT)
+      description = "Make a list from a range/array",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.OBJECT_RESULT)
   public static List<?> makeList(@XLParameter(name = "entries", description = "The values to put in the list (range)") final XLArray arr) {
     ArgumentChecker.notNull(arr, "arr");
     final ArrayList<XLValue> list = new ArrayList<>();
@@ -160,20 +160,22 @@ public final class MyTestFunctions {
   }
 
   /**
-   * Gets an element from a list.
+   * Gets an element from a list. Note the input type - if List were used, the List converter would be used, which
+   * is not the behaviour that is being tested.
    *
-   * @param list
+   * @param object
    *          the list, not null
    * @param index
    *          the index
    * @return the element
    */
   @XLFunction(name = "ListElement",
-              description = "Get an element from a list",
-              category = "Mine",
-              typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
-  public static XLValue listElem(final List<XLValue> list, final int index) {
-    ArgumentChecker.notNull(list, "list");
+      description = "Get an element from a list",
+      category = "Mine",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  public static XLValue listElem(final Object object, final int index) {
+    ArgumentChecker.notNull(object, "object");
+    final List<XLValue> list = (List<XLValue>) object;
     if (index >= list.size() || index < 0) {
       return XLError.NA;
     }
