@@ -1,9 +1,13 @@
 
 # An Excel Primer for Developers
+This document is intended to focus on terminology and unusual behaviour of Excel itself (as opposed to XL4J) that a developer 
+new to Excel might not find obvious.
+
 ## Document Structure
 Excel documents are known as *Workbooks*.  Workbooks are made up of one or more *Sheets* or *Worksheets*, which are the tabs you 
 can switch around at the bottom of each window.  Each sheet is made up of a grid of *cells*.  Each cell has a *reference* which can
 be used to refer to it.
+
 ### Cell References
 Cell references come in two flavours
  - A1, where the column is denoted by letters and the row is denoted by a number e.g. D18.
