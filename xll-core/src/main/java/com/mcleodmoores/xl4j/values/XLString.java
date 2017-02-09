@@ -45,8 +45,8 @@ public final class XLString implements XLValue {
   }
 
   /**
-   * @return XLObject if string contains object handle, throws Excel4JRuntimeException otherwise Check with isXLObject before calling. Note
-   *         this does not check validity on heap.
+   * @return XLObject if string contains object handle, throws Excel4JRuntimeException otherwise
+   * Checks with {@link #isXLObject} before calling. Note this does not check validity on heap.
    */
   public XLObject toXLObject() {
     if (isXLObject()) {
@@ -54,7 +54,7 @@ public final class XLString implements XLValue {
       if (split.length != 2) {
         throw new Excel4JRuntimeException("String has object prefix character but cannot split on hyphen");
       }
-      return XLObject.of(split[0], Long.parseUnsignedLong(split[1]));
+      return XLObject.of(split[0].substring(1), Long.parseUnsignedLong(split[1]));
     }
     throw new Excel4JRuntimeException("XLString is not object handle");
   }

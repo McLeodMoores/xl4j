@@ -11,7 +11,7 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLString;
 
 /**
- * Type converter to convert from doubless to Excel strings and back again. This converter has a low priority, as it is more likely that
+ * Type converter to convert from chars to Excel strings and back again. This converter has a low priority, as it is more likely that
  * conversion to and from XLNumber is required.
  */
 public final class PrimitiveCharXLStringTypeConverter extends AbstractTypeConverter {

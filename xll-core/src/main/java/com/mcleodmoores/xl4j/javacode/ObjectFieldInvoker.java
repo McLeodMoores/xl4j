@@ -32,7 +32,7 @@ public class ObjectFieldInvoker extends AbstractFieldInvoker {
     try {
       return (XLValue) _converter.toXLValue(getField().get(object));
     } catch (final IllegalAccessException e) {
-      throw new Excel4JRuntimeException("Error getting field", e);
+      throw new Excel4JRuntimeException("Error getting field " + getFieldName() + " from " + getFieldDeclaringClass(), e);
     }
   }
 }
