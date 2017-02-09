@@ -31,6 +31,7 @@ import com.mcleodmoores.xl4j.typeconvert.converters.ObjectArrayXLArrayTypeConver
 import com.mcleodmoores.xl4j.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveBooleanArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveBooleanXLBooleanTypeConverter;
+import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveByteArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveDoubleArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveDoubleXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveFloatArrayXLArrayTypeConverter;
@@ -39,6 +40,7 @@ import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveIntegerArrayXLArray
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveIntegerXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveLongArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveLongXLNumberTypeConverter;
+import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveShortArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.ShortXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.StringXLStringTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.XLValueArrayXLValueArrayTypeConverter;
@@ -168,7 +170,7 @@ public class TypeConverterRegistryTest {
     final Object javaObject = converter.toJavaObject(TestEnum.class, XLString.of("A"));
     Assert.assertEquals(javaObject.getClass(), TestEnum.class);
     Assert.assertEquals(javaObject, TestEnum.A);
-    final Object excelObject = converter.toXLValue(XLString.class, TestEnum.A);
+    final Object excelObject = converter.toXLValue(TestEnum.A);
     Assert.assertEquals(excelObject.getClass(), XLString.class);
     Assert.assertEquals(excelObject, XLString.of("A"));
   }
@@ -191,19 +193,8 @@ public class TypeConverterRegistryTest {
     { PrimitiveFloatArrayXLArrayTypeConverter.class, float[].class, XLArray.class },
     { PrimitiveIntegerArrayXLArrayTypeConverter.class, int[].class, XLArray.class },
     { PrimitiveLongArrayXLArrayTypeConverter.class, long[].class, XLArray.class },
-    //    { ObjectArrayXLArrayrTypeConverter.class, XLValue[].class, XLArray.class },
-    //    { XLValueIdentityConverters.XLArrayIdentityConverter.class, XLArray.class, XLArray.class },
-    //    { XLValueIdentityConverters.XLBigDataIdentityConverter.class, XLBigData[].class, XLBigData.class },
-    //    { XLValueIdentityConverters.XLBooleanIdentityConverter.class, XLBoolean[].class, XLBoolean.class },
-    //    { XLValueIdentityConverters.XLErrorIdentityConverter.class, XLError[].class, XLError.class },
-    //    { XLValueIdentityConverters.XLIntegerIdentityConverter.class, XLInteger[].class, XLInteger.class },
-    //    { XLValueIdentityConverters.XLLocalReferenceIdentityConverter.class, XLLocalReference[].class, XLLocalReference.class },
-    //    { XLValueIdentityConverters.XLMissingIdentityConverter.class, XLMissing.class, XLMissing.class },
-    //    { XLValueIdentityConverters.XLNilIdentityConverter.class, XLNil.class, XLNil.class },
-    //    { XLValueIdentityConverters.XLNumberIdentityConverter.class, XLNumber.class, XLNumber.class },
-    //    { XLValueIdentityConverters.XLObjectIdentityConverter.class, XLObject.class, XLObject.class },
-    //    { XLValueIdentityConverters.XLStringIdentityConverter.class, XLString.class, XLString.class },
-    //    { XLValueIdentityConverters.XLMultiReferenceIdentityConverter.class, XLMultiReference.class, XLMultiReference.class }
+    { PrimitiveShortArrayXLArrayTypeConverter.class, short[].class, XLArray.class },
+    { PrimitiveByteArrayXLArrayTypeConverter.class, byte[].class, XLArray.class },
   };
 
   /**

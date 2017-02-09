@@ -21,11 +21,11 @@ public class ObjectArrayConvertersTest {
     final long testRuns = 100;
     final Object[] toConvert = new Object[] {Boolean.FALSE, 1, 1.5d};
     for (long i = 0; i < hotspotWarmup; i++) {
-      converter.toXLValue(Object.class, toConvert);
+      converter.toXLValue(toConvert);
     }
     final long startTime = System.nanoTime();
     for (long i = 0; i < testRuns; i++) {
-      converter.toXLValue(Object.class, toConvert);
+      converter.toXLValue(toConvert);
     }
     final long endTime = System.nanoTime();
     System.err.println("testConvertToMostSpecificXlType: " + (endTime - startTime) / 1000000 + "ms");
@@ -38,11 +38,11 @@ public class ObjectArrayConvertersTest {
     final long testRuns = 100;
     final Object[] toConvert = new Object[] {Boolean.FALSE, 1, 1.5d};
     for (long i = 0; i < hotspotWarmup; i++) {
-      converter.toXLValue(Object.class, toConvert);
+      converter.toXLValue(toConvert);
     }
     final long startTime = System.nanoTime();
     for (long i = 0; i < testRuns; i++) {
-      converter.toXLValue(Object.class, toConvert);
+      converter.toXLValue(toConvert);
     }
     final long endTime = System.nanoTime();
     System.err.println("testConvertToXlObject: " + (endTime - startTime) / 1000000 + "ms");

@@ -11,7 +11,6 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.EnumXLStringTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;
@@ -30,8 +29,8 @@ public class EnumXLStringTypeConverterTest {
   private static final XLString XL_STRING = XLString.of("TEST");
 
   /** Enum. */
-  private static enum TestEnum {
-    /** Test value */
+  enum TestEnum {
+    /** Test value. */
     TEST
   };
 
@@ -63,19 +62,11 @@ public class EnumXLStringTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, TestEnum.TEST);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLString.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -115,7 +106,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, TEN_D);
+    CONVERTER.toXLValue(TEN_D);
   }
 
   /**
@@ -123,7 +114,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test
   public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, TestEnum.TEST);
+    CONVERTER.toXLValue(TestEnum.TEST);
   }
 
   /**
@@ -131,7 +122,7 @@ public class EnumXLStringTypeConverterTest {
    */
   @Test
   public void testConversionFromString() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_STRING.getClass(), TestEnum.TEST);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(TestEnum.TEST);
     assertTrue(converted instanceof XLString);
     final XLString xlString = (XLString) converted;
     assertEquals(xlString.getValue(), TestEnum.TEST.name());

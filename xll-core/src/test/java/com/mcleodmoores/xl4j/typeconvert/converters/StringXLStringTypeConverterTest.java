@@ -11,7 +11,6 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.StringXLStringTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;
@@ -57,19 +56,11 @@ public class StringXLStringTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, STRING);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLString.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -109,15 +100,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, TEN_D);
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLNumber.class, STRING), XL_STRING);
+    CONVERTER.toXLValue(TEN_D);
   }
 
   /**
@@ -125,7 +108,7 @@ public class StringXLStringTypeConverterTest {
    */
   @Test
   public void testConversionFromString() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_STRING.getClass(), STRING);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(STRING);
     assertTrue(converted instanceof XLString);
     final XLString xlString = (XLString) converted;
     assertEquals(xlString, XL_STRING);

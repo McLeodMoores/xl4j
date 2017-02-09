@@ -130,7 +130,7 @@ public class FunctionRegistry {
     @SuppressWarnings("rawtypes")
     final Set<Constructor> constructorsAnnotatedWithFunction = reflections.getConstructorsAnnotatedWith(XLFunction.class);
     addAnnotatedConstructors(invokerFactory, registeredFunctionNames, constructorsAnnotatedWithFunction);
-    final Set<Class<?>> classesAnnotatedWithFunction = reflections.getTypesAnnotatedWith(XLFunction.class);
+    final Set<Class<?>> classesAnnotatedWithFunction = reflections.getTypesAnnotatedWith(XLFunctions.class);
     addAnnotatedClasses(invokerFactory, registeredFunctionNames, classesAnnotatedWithFunction);
     final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);
     addAnnotatedFields(invokerFactory, registeredFunctionNames, classesAnnotatedWithConstant);
@@ -177,13 +177,12 @@ public class FunctionRegistry {
         namespaceAnnotation = method.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
       final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(method);
-      final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation,
+      final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation.name(),
           method.getDeclaringClass().getSimpleName(), method.getName(), false, 1);
       addMethod(method, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName);
 
     }
   }
-
 
   private void addAnnotatedConstructors(final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
       @SuppressWarnings("rawtypes") final Set<Constructor> constructorsAnnotatedWith) {
@@ -194,7 +193,7 @@ public class FunctionRegistry {
         namespaceAnnotation = constructor.getDeclaringClass().getAnnotation(XLNamespace.class);
       }
       final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(constructor);
-      final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, functionAnnotation,
+      final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, functionAnnotation.name(),
           constructor.getDeclaringClass().getSimpleName(), 1);
       addConstructor(constructor, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation,
           xlParameterAnnotations, functionName);
@@ -209,7 +208,7 @@ public class FunctionRegistry {
         continue;
       }
       final String className = clazz.getSimpleName();
-      final XLFunction classAnnotation = clazz.getAnnotation(XLFunction.class);
+      final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
       XLNamespace namespaceAnnotation = null;
       if (clazz.isAnnotationPresent(XLNamespace.class)) {
         namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
@@ -218,7 +217,7 @@ public class FunctionRegistry {
       final Constructor<?>[] constructors = clazz.getConstructors();
       int count = 1;
       for (final Constructor<?> constructor : constructors) {
-        final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation, className, count);
+        final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, count);
         addConstructor(constructor, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName);
         count++;
       }
@@ -227,17 +226,16 @@ public class FunctionRegistry {
       final Map<String, Integer> methodNames = new HashMap<>();
       for (final Method method : methods) {
         final String methodName = method.getName();
-        if (Modifier.isAbstract(method.getModifiers())) {
-          LOGGER.warn("{} in {} is abstract, not registering function", methodName, method.getDeclaringClass());
+        if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
+          LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
           continue;
         }
-        //TODO do we need a way to allow excluded method names or exclude certain method names inherited from the parent?
         if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
           continue;
         }
         final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
         methodNames.put(methodName, methodNameCount);
-        final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation, className, methodName, true, methodNameCount);
+        final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName, true, methodNameCount);
         addMethod(method, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName);
       }
     }
@@ -251,12 +249,12 @@ public class FunctionRegistry {
         constantAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : constantAnnotation.typeConversionMode();
     try {
       final FieldInvoker fieldInvoker = invokerFactory.getFieldTypeConverter(field, resultType);
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, constantAnnotation);
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, constantAnnotation, functionName);
       final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, fieldInvoker, allocatedExportNumber, functionName);
+      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, fieldInvoker, allocatedExportNumber);
       checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
       // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionDefinition.getFunctionName());
+      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionMetadata.getName());
       _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
       _functionDefinitions.add(functionDefinition);
     } catch (final Exception e) {
@@ -274,12 +272,35 @@ public class FunctionRegistry {
     try {
       final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
       // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations);
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations, functionName);
       final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber, functionName);
+      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
       checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
       // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionDefinition.getFunctionName());
+      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionMetadata.getName());
+      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
+      _functionDefinitions.add(functionDefinition);
+    } catch (final Exception e) {
+      LOGGER.error("Exception while scanning annotated method", e);
+    }
+  }
+
+  private void addMethod(final Method method, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
+      final XLFunctions functionsAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
+    // scan the result type if there is one to determine whether function should return simplest type or always
+    // an object type
+    final TypeConversionMode resultType =
+        functionsAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : functionsAnnotation.typeConversionMode();
+    // build a method invoker
+    try {
+      final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
+      // build the meta-data data structure and store it all in a FunctionDefinition
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionsAnnotation, parameterAnnotations, functionName);
+      final int allocatedExportNumber = allocateExport();
+      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
+      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
+      // put the definition in some look-up tables.
+      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionMetadata.getName());
       _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
       _functionDefinitions.add(functionDefinition);
     } catch (final Exception e) {
@@ -293,12 +314,31 @@ public class FunctionRegistry {
     try {
       final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
       // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations);
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations, functionName);
       final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber, functionName);
+      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber);
       checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
       // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to {}", allocatedExportNumber, functionDefinition.getFunctionName());
+      LOGGER.info("Allocating export number {} to {}", allocatedExportNumber, functionMetadata.getName());
+      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
+      _functionDefinitions.add(functionDefinition);
+    } catch (final Exception e) {
+      LOGGER.error("Exception while scanning annotated constructor", e);
+    }
+  }
+
+  private void addConstructor(@SuppressWarnings("rawtypes") final Constructor constructor, final InvokerFactory invokerFactory,
+      final Set<String> registeredFunctionNames, final XLFunctions functionsAnnotation, final XLNamespace namespaceAnnotation,
+      final XLParameter[] parameterAnnotations, final String functionName) {
+    try {
+      final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
+      // build the meta-data data structure and store it all in a FunctionDefinition
+      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionsAnnotation, parameterAnnotations, functionName);
+      final int allocatedExportNumber = allocateExport();
+      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber);
+      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
+      // put the definition in some look-up tables.
+      LOGGER.info("Allocating export number {} to {}", allocatedExportNumber, functionMetadata.getName());
       _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
       _functionDefinitions.add(functionDefinition);
     } catch (final Exception e) {
@@ -307,10 +347,11 @@ public class FunctionRegistry {
   }
 
   private static void checkForDuplicateFunctionNames(final Set<String> registeredFunctionNames, final FunctionDefinition functionDefinition) {
-    if (registeredFunctionNames.contains(functionDefinition.getFunctionName().toUpperCase())) {
-      LOGGER.warn("Have already registered a function called {}, the previous method will be overwritten", functionDefinition.getFunctionName());
+    final String name = functionDefinition.getFunctionMetadata().getName();
+    if (registeredFunctionNames.contains(name.toUpperCase())) {
+      LOGGER.warn("Have already registered a function called {}, ignoring", name);
     } else {
-      registeredFunctionNames.add(functionDefinition.getFunctionName().toUpperCase());
+      registeredFunctionNames.add(name.toUpperCase());
     }
   }
 
@@ -381,14 +422,14 @@ public class FunctionRegistry {
     return functionName.toString();
   }
 
-  private static String generateFunctionNameForMethod(final XLNamespace namespace, final XLFunction function, final String className,
+  private static String generateFunctionNameForMethod(final XLNamespace namespace, final String nameOrPrefix, final String className,
       final String methodName, final boolean appendMethodName, final int methodNumber) {
     final StringBuilder functionName = new StringBuilder();
     if (namespace != null) {
       functionName.append(namespace.value());
     }
-    if (!function.name().isEmpty()) {
-      functionName.append(function.name());
+    if (!nameOrPrefix.isEmpty()) {
+      functionName.append(nameOrPrefix);
     } else {
       functionName.append(className);
     }
@@ -403,14 +444,14 @@ public class FunctionRegistry {
     return functionName.toString();
   }
 
-  private static String generateFunctionNameForConstructor(final XLNamespace namespace, final XLFunction function, final String className,
+  private static String generateFunctionNameForConstructor(final XLNamespace namespace, final String nameOrPrefix, final String className,
       final int constructorNumber) {
     final StringBuilder functionName = new StringBuilder();
     if (namespace != null) {
       functionName.append(namespace.value());
     }
-    if (!function.name().isEmpty()) {
-      functionName.append(function.name());
+    if (!nameOrPrefix.isEmpty()) {
+      functionName.append(nameOrPrefix);
     } else {
       functionName.append(className);
     }
@@ -420,4 +461,5 @@ public class FunctionRegistry {
     }
     return functionName.toString();
   }
+
 }

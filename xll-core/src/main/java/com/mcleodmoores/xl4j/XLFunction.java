@@ -10,15 +10,16 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation for methods to be exposed as an Excel user-defined function (UDF).
+ * Annotation for methods and constructors to be exposed as an Excel user-defined function (UDF).
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.TYPE })
+@Target({ ElementType.METHOD, ElementType.CONSTRUCTOR })
 public @interface XLFunction {
 
   /**
-   * The name of the user-defined function as used on the worksheet. If this is not specified, the method name is used, with the name
+   * The name of the user-defined function as used on the worksheet. If this is not specified,
+   * the method name or class name is used (for methods or constructors, respectively), with the name
    * processed into leading capital camel case, e.g. myMethod() becomes MyMethod().
    *
    * @return the name

@@ -12,10 +12,8 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveBooleanXLBooleanTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLBoolean;
-import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -58,19 +56,11 @@ public class PrimitiveBooleanXLBooleanTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLBoolean} is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, false);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLBoolean.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -110,15 +100,7 @@ public class PrimitiveBooleanXLBooleanTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLBoolean.class, Integer.valueOf(TEN_I));
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLInteger.class, false), XLBoolean.FALSE);
+    CONVERTER.toXLValue(Integer.valueOf(TEN_I));
   }
 
   /**
@@ -126,7 +108,7 @@ public class PrimitiveBooleanXLBooleanTypeConverterTest {
    */
   @Test
   public void testConversionFromBoolean() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLBoolean.class, false);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(false);
     assertTrue(converted instanceof XLBoolean);
     final XLBoolean xlBoolean = (XLBoolean) converted;
     assertFalse(xlBoolean.getValue());

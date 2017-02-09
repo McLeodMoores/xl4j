@@ -27,16 +27,15 @@ public class InfNaNXLErrorTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     if (from instanceof Double) {
       final Double fromd = (Double) from;
       if (fromd.isNaN()) {
         return XLError.NA;
       } else if (fromd.isInfinite()) {
         return XLError.Div0;
-      } else {
-        return XLNumber.of(fromd);
       }
+      return XLNumber.of(fromd);
     }
     throw new Excel4JRuntimeException("Should not attempt to directly convert from a Java object to XLError");
   }

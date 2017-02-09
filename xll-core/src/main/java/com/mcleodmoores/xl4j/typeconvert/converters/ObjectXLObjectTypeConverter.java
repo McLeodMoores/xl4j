@@ -23,7 +23,7 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
 
   /**
    * Default constructor.
-   * 
+   *
    * @param excel
    *          the excel object to allow heap access
    */
@@ -33,7 +33,7 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLObject.of(from.getClass().getSimpleName(), _heap.getHandle(from));
   }

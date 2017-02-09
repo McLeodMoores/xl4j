@@ -25,7 +25,7 @@ public final class ObjectXLStringTypeConverter extends AbstractTypeConverter {
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (from instanceof String) {
       return XLString.of((String) from);

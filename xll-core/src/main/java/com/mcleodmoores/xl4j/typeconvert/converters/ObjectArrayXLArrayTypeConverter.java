@@ -40,32 +40,25 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!from.getClass().isArray()) {
       throw new Excel4JRuntimeException("\"from\" parameter must be an array");
     }
-    Type componentType = null;
-    if (expectedType == null || expectedType instanceof Class) {
-      final Class<?> expectedClass = from.getClass();
-      componentType = expectedClass.getComponentType();
-      // REVIEW: this will never fail because of the isArray() test
-      if (componentType == null) {
-        throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
-        // REVIEW: why was this commented out? it isn't in the other array tests
-        // } else if (expectedType instanceof GenericArrayType) {
-        // final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
-        // componentType = genericArrayType.getGenericComponentType();
-      }
-    } else {
-      throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
+    final Type componentType = from.getClass().getComponentType();
+    if (componentType == null) {
+      //      throw new Excel4JRuntimeException("component type of \"from\" parameter is null");
+      // REVIEW: why was this commented out? it isn't in the other array tests
+      // } else if (expectedType instanceof GenericArrayType) {
+      // final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
+      // componentType = genericArrayType.getGenericComponentType();
     }
-    TypeConverter lastConverter = null;
-    Class<?> lastClass = null;
     final Object[] fromArr = (Object[]) from;
     if (fromArr.length == 0) {
       return XLArray.of(new XLValue[1][1]);
     }
+    TypeConverter lastConverter = null;
+    Class<?> lastClass = null;
     final XLValue[][] toArr = new XLValue[1][fromArr.length];
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
     for (int i = 0; i < fromArr.length; i++) {
@@ -81,7 +74,7 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
       if (lastConverter == null) {
         throw new Excel4JRuntimeException("Could not find type converter for " + lastClass + " or component type " + componentType);
       }
-      final XLValue value = (XLValue) lastConverter.toXLValue(componentType, obj);
+      final XLValue value = (XLValue) lastConverter.toXLValue(obj);
       toArr[0][i] = value;
     }
     return XLArray.of(toArr);

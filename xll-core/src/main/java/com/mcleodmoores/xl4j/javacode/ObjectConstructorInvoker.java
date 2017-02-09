@@ -92,7 +92,7 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
       if (result.getClass().isArray()) {
         throw new Excel4JRuntimeException("Return of array types not supported");
       }
-      return (XLValue) _returnConverter.toXLValue(null, result);
+      return (XLValue) _returnConverter.toXLValue(result);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException e) {
       throw new Excel4JRuntimeException("Error invoking constructor: " + e.getMessage(), e);
     }

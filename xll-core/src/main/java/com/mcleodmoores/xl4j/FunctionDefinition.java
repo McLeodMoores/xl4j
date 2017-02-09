@@ -28,8 +28,6 @@ public final class FunctionDefinition {
   private final JavaTypeForFunction _functionType;
   /** Function export number in registry */
   private final int _exportNumber;
-  /** The name of the function */
-  private final String _name;
 
   /**
    * Creates an instance for a method.
@@ -40,18 +38,14 @@ public final class FunctionDefinition {
    *          the method invoker
    * @param exportNumber
    *          the export number
-   * @param name
-   *          the function name
    */
-  private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber,
-      final String name) {
+  private FunctionDefinition(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {
     _functionMetadata = functionMetadata;
     _methodInvoker = methodInvoker;
     _exportNumber = exportNumber;
     _constructorInvoker = null;
     _fieldInvoker = null;
     _functionType = JavaTypeForFunction.METHOD;
-    _name = name;
   }
 
   /**
@@ -62,29 +56,32 @@ public final class FunctionDefinition {
    *          the constructor invoker
    * @param exportNumber
    *          the export number
-   * @param name
-   *          the function name
    */
-  private FunctionDefinition(final FunctionMetadata functionMetadata, final ConstructorInvoker constructorInvoker, final int exportNumber,
-      final String name) {
+  private FunctionDefinition(final FunctionMetadata functionMetadata, final ConstructorInvoker constructorInvoker, final int exportNumber) {
     _functionMetadata = functionMetadata;
     _constructorInvoker = constructorInvoker;
     _exportNumber = exportNumber;
     _methodInvoker = null;
     _fieldInvoker = null;
     _functionType = JavaTypeForFunction.CONSTRUCTOR;
-    _name = name;
   }
 
-  private FunctionDefinition(final FunctionMetadata functionMetadata, final FieldInvoker fieldInvoker, final int exportNumber,
-      final String name) {
+  /**
+   * Creates an instance for a field.
+   * @param functionMetadata
+   *          the meta-data
+   * @param fieldInvoker
+   *          the field invoker
+   * @param exportNumber
+   *          the export number
+   */
+  private FunctionDefinition(final FunctionMetadata functionMetadata, final FieldInvoker fieldInvoker, final int exportNumber) {
     _functionMetadata = functionMetadata;
     _fieldInvoker = fieldInvoker;
     _exportNumber = exportNumber;
     _methodInvoker = null;
     _constructorInvoker = null;
     _functionType = JavaTypeForFunction.FIELD;
-    _name = name;
   }
 
   /**
@@ -96,16 +93,12 @@ public final class FunctionDefinition {
    *          the type conversion and method invocation binding for this function, not null
    * @param exportNumber
    *          the number of the DLL export that handles this function (only unique to the number of parameters used)
-   * @param name
-   *          the name of the function, not null
    * @return an instance of a FunctionDefinition
    */
-  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber,
-      final String name) {
+  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final MethodInvoker methodInvoker, final int exportNumber) {
     ArgumentChecker.notNull(functionMetadata, "functionMetadata");
     ArgumentChecker.notNull(methodInvoker, "methodInvoker");
-    ArgumentChecker.notNull(name, "name");
-    return new FunctionDefinition(functionMetadata, methodInvoker, exportNumber, name);
+    return new FunctionDefinition(functionMetadata, methodInvoker, exportNumber);
   }
 
   /**
@@ -117,16 +110,12 @@ public final class FunctionDefinition {
    *          the type conversion and constructor instantiation binding for this function, not null
    * @param exportNumber
    *          the number of the DLL export that handles this function (only unique to the number of parameters used)
-   * @param name
-   *          the name of the function, not null
    * @return an instance of a FunctionDefinition
    */
-  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final ConstructorInvoker constructorInvoker, final int exportNumber,
-      final String name) {
+  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final ConstructorInvoker constructorInvoker, final int exportNumber) {
     ArgumentChecker.notNull(functionMetadata, "functionMetadata");
     ArgumentChecker.notNull(constructorInvoker, "constructorInvoker");
-    ArgumentChecker.notNull(name, "name");
-    return new FunctionDefinition(functionMetadata, constructorInvoker, exportNumber, name);
+    return new FunctionDefinition(functionMetadata, constructorInvoker, exportNumber);
   }
 
   /**
@@ -138,15 +127,12 @@ public final class FunctionDefinition {
    *          the type conversion binding for this function, not null
    * @param exportNumber
    *          the number of the DLL export that handles this function (only unique to the number of parameters used)
-   * @param name
-   *          the name of the function, not null
    * @return an instance of a FunctionDefinition
    */
-  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final FieldInvoker fieldInvoker, final int exportNumber,
-      final String name) {
+  public static FunctionDefinition of(final FunctionMetadata functionMetadata, final FieldInvoker fieldInvoker, final int exportNumber) {
     ArgumentChecker.notNull(functionMetadata, "functionMetadata");
     ArgumentChecker.notNull(fieldInvoker, "fieldInvoker");
-    return new FunctionDefinition(functionMetadata, fieldInvoker, exportNumber, name);
+    return new FunctionDefinition(functionMetadata, fieldInvoker, exportNumber);
   }
 
   /**
@@ -161,28 +147,6 @@ public final class FunctionDefinition {
    */
   public JavaTypeForFunction getJavaTypeForFunction() {
     return _functionType;
-  }
-
-  /**
-   * @return  the name of the function, either user defined, taken from the annotation name() property or taken from the constructor or method name
-   */
-  public String getFunctionName() {
-    if (_name != null) {
-      return _name;
-    }
-    if (_functionMetadata.getName().isEmpty()) {
-      switch (_functionType) {
-        case METHOD:
-          return _methodInvoker.getMethodName();
-        case CONSTRUCTOR:
-          return _constructorInvoker.getDeclaringClass().getName();
-        case FIELD:
-          return _fieldInvoker.getFieldName();
-        default:
-          throw new Excel4JRuntimeException("Unhandled type " + _functionType);
-      }
-    }
-    return _functionMetadata.getName();
   }
 
   /**

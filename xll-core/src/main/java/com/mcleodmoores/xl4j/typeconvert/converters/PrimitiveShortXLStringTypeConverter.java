@@ -25,7 +25,7 @@ public final class PrimitiveShortXLStringTypeConverter extends AbstractTypeConve
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     // cast here is for consistent behaviour with other converters
     return XLString.of(((Short) from).toString());

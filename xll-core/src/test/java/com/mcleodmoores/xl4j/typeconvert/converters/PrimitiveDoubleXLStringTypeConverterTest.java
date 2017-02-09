@@ -11,10 +11,8 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveDoubleXLStringTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLBoolean;
-import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -51,19 +49,11 @@ public class PrimitiveDoubleXLStringTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected type is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, 3d);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(Double.TYPE, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -103,15 +93,7 @@ public class PrimitiveDoubleXLStringTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLString.class, Integer.valueOf(10));
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLInteger.class, 4d), XLString.of("4.0"));
+    CONVERTER.toXLValue(Integer.valueOf(10));
   }
 
   /**
@@ -119,7 +101,7 @@ public class PrimitiveDoubleXLStringTypeConverterTest {
    */
   @Test
   public void testConversionFromDouble() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLString.class, 2d);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(2d);
     assertTrue(converted instanceof XLString);
     final XLString xlString = (XLString) converted;
     assertEquals(xlString.getValue(), Double.valueOf(2d).toString());

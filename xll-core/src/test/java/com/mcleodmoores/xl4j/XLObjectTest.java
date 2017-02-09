@@ -68,7 +68,7 @@ public class XLObjectTest {
     final XLObject xlStringArray = XLObject.of(String[].class, LONG_1234);
     final String expected = "XLObject[class=String[], 1234]";
     assertEquals(xlStringArray.toString(), expected);
-    final XLString expectedXLString = XLString.of('\u001A' + "String[]-1234");
+    final XLString expectedXLString = XLString.of('\u00BB' + "String[]-1234");
     assertEquals(xlStringArray.toXLString(), expectedXLString);
   }
 }

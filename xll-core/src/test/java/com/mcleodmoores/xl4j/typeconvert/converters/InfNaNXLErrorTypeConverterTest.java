@@ -11,7 +11,6 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.InfNaNXLErrorTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLError;
 import com.mcleodmoores.xl4j.values.XLNumber;
@@ -21,7 +20,7 @@ import com.mcleodmoores.xl4j.values.XLNumber;
  */
 public class InfNaNXLErrorTypeConverterTest {
   /** The expected priority */
-  private static final int EXPECTED_PRIORITY = 50;
+  private static final int EXPECTED_PRIORITY = 5;
   /** The converter. */
   private static final AbstractTypeConverter CONVERTER = new InfNaNXLErrorTypeConverter();
 
@@ -54,7 +53,7 @@ public class InfNaNXLErrorTypeConverterTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testCannotConvertFromJava() {
-    CONVERTER.toXLValue(Double.class, Double.POSITIVE_INFINITY);
+    CONVERTER.toXLValue(new Object());
   }
 
   /**

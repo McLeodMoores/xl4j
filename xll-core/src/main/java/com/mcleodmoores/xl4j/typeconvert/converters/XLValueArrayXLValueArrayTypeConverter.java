@@ -24,7 +24,7 @@ public final class XLValueArrayXLValueArrayTypeConverter extends AbstractTypeCon
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return from;
   }

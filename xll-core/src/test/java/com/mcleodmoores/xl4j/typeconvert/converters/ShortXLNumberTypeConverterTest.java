@@ -11,9 +11,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.ShortXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
@@ -68,19 +66,11 @@ public class ShortXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, SHORT);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLNumber.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -120,15 +110,7 @@ public class ShortXLNumberTypeConverterTest {
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, TEN_L);
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLBoolean.class, (short) 1), XLNumber.of(1));
+    CONVERTER.toXLValue(TEN_L);
   }
 
   /**
@@ -136,7 +118,7 @@ public class ShortXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromShort() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_SHORT.getClass(), SHORT);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(SHORT);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_I, 0);

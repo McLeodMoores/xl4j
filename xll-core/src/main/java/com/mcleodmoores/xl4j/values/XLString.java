@@ -20,7 +20,7 @@ public final class XLString implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * 
+   *
    * @param value
    *          the string, not null
    * @return an instance

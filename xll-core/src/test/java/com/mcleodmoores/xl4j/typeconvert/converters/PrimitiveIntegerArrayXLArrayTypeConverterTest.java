@@ -8,16 +8,12 @@ import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.Excel;
-import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveIntegerArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLBoolean;
-import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
@@ -29,10 +25,8 @@ import com.mcleodmoores.xl4j.values.XLValue;
 public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   /** The expected priority */
   private static final int EXPECTED_PRIORITY = 10;
-  /** Excel */
-  private static final Excel EXCEL = ExcelFactory.getInstance();
   /** The converter. */
-  private static final AbstractTypeConverter CONVERTER = new PrimitiveIntegerArrayXLArrayTypeConverter(EXCEL);
+  private static final AbstractTypeConverter CONVERTER = new PrimitiveIntegerArrayXLArrayTypeConverter();
 
   /**
    * Tests that the java type is int[].
@@ -59,27 +53,11 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected type fails because it is not a class type.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, new int[] {10});
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLArray.class, null);
-  }
-
-  /**
-   * Tests that passing in a null expected Java class fails because it is not an array or generic array.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10)}}));
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -99,34 +77,18 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   }
 
   /**
-   * Tests that the component type (taken from the expected type) is used when trying to find the converter.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testWrongComponentTypeToJavaConversion() {
-    CONVERTER.toJavaObject(boolean[].class, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}));
-  }
-
-  /**
    * Tests that passing in an object to convert that is not an array fails.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLArray.class, true);
-  }
-
-  /**
-   * Tests that the expected type must be an XLArray.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testExpectedTypeNotAnArray() {
-    CONVERTER.toXLValue(XLInteger.class, new int[] {10, 20});
+    CONVERTER.toXLValue(true);
   }
 
   /**
    * Tests the behaviour when there is no available converter to a int.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNoConverterToFloatRow() {
+  public void testNoConverterToIntRow() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE, XLBoolean.FALSE}});
     CONVERTER.toJavaObject(int[].class, xlArray);
   }
@@ -135,7 +97,7 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
    * Tests the behaviour when there is no available converter to a int.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNoConverterToFloatColumn() {
+  public void testNoConverterToIntColumn() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {new XLValue[] {XLBoolean.FALSE}, new XLValue[]{XLBoolean.FALSE}});
     CONVERTER.toJavaObject(int[].class, xlArray);
   }
@@ -190,7 +152,7 @@ public class PrimitiveIntegerArrayXLArrayTypeConverterTest {
   @Test
   public void testToXLConversionFrom1dPrimitiveIntegerArray() {
     final int[] array = new int[] {10, 20, 30};
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLNumber.class, array);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(array);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     assertEquals(xlArray, XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20), XLNumber.of(30)}}));

@@ -58,16 +58,17 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
     }
     try {
       final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
+      LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getName());
       switch (functionDefinition.getJavaTypeForFunction()) {
         case METHOD: {
-          LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getFunctionSpec().name());
           final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
           LOGGER.info("method invoker = {}", methodInvoker.getMethodName());
           if (methodInvoker.isStatic()) {
             return methodInvoker.invoke(null, args);
           }
+          final Object obj;
           final XLObject object = (XLObject) args[0];
-          final Object obj = _heap.getObject(object.getHandle());
+          obj = _heap.getObject(object.getHandle());
           if (obj == null) {
             LOGGER.error("Object handle was invalid, returning XLError.Ref");
             return XLError.Ref;

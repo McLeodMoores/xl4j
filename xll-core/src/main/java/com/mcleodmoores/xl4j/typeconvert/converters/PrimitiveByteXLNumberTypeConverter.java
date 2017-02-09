@@ -21,7 +21,7 @@ public final class PrimitiveByteXLNumberTypeConverter extends AbstractTypeConver
   }
 
   @Override
-  public Object toXLValue(final Type expectedType, final Object from) {
+  public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     return XLNumber.of((Byte) from);
   }
@@ -29,6 +29,6 @@ public final class PrimitiveByteXLNumberTypeConverter extends AbstractTypeConver
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    return (int) ((XLNumber) from).getValue();
+    return (byte) ((XLNumber) from).getValue();
   }
 }

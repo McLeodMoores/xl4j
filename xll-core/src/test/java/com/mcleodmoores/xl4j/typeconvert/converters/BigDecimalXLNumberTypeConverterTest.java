@@ -13,9 +13,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.BigDecimalXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
@@ -61,19 +59,11 @@ public class BigDecimalXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, BIG_DECIMAL);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLNumber.class, null);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -101,19 +91,11 @@ public class BigDecimalXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that the expected type is ignored during conversions to Java.
-   */
-  @Test
-  public void testWrongExpectedClassToJavaConversion() {
-    assertEquals(CONVERTER.toJavaObject(Boolean.class, XL_NUMBER_DOUBLE), BIG_DECIMAL);
-  }
-
-  /**
    * Tests for the exception when the {@link XLValue} to convert is the wrong type.
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(10));
+    CONVERTER.toXLValue(Double.valueOf(10));
   }
 
   /**
@@ -121,7 +103,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test
   public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLBoolean.class, BigDecimal.ONE), XLNumber.of(1));
+    assertEquals(CONVERTER.toXLValue(BigDecimal.ONE), XLNumber.of(1));
   }
 
   /**
@@ -129,7 +111,7 @@ public class BigDecimalXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromBigDecimal() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_DOUBLE.getClass(), BIG_DECIMAL);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(BIG_DECIMAL);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), 10, 0);

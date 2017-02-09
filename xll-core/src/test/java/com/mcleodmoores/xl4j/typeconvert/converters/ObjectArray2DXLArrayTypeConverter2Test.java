@@ -13,7 +13,6 @@ import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.ObjectArray2DXLArrayTypeConverter2;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLBoolean;
@@ -23,16 +22,14 @@ import com.mcleodmoores.xl4j.values.XLString;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Unit tests for {@link ObjectArray2DXLObjectArrayTypeConverter2}.
+ * Unit tests for {@link ObjectArray2DXLArrayTypeConverter2}.
  */
 @Test
 public class ObjectArray2DXLArrayTypeConverter2Test {
   /** Array of array of Integer */
-  private static final Integer[][] ARRAY_OF_INTEGER =
-      new Integer[][]{new Integer[]{Integer.valueOf(1), Integer.valueOf(2)}, new Integer[]{Integer.valueOf(3), Integer.valueOf(4)}};
+  private static final Integer[][] ARRAY_OF_INTEGER = new Integer[][]{{1, 2}, {3, 4}};
   /** Array of array of Double */
-  private static final Double[][] ARRAY_OF_DOUBLE =
-      new Double[][]{new Double[]{Double.valueOf(1.), Double.valueOf(2.)}, new Double[]{Double.valueOf(3.), Double.valueOf(4.)}};
+  private static final Double[][] ARRAY_OF_DOUBLE = new Double[][]{{1., 2.}, {3., 4.}};
   /** XLObject. */
   private static final XLArray XL_ARRAY_OF_DOUBLE =
       XLArray.of(new XLValue[][]{new XLValue[]{XLNumber.of(1), XLNumber.of(2)}, new XLValue[]{XLNumber.of(3), XLNumber.of(4)}});
@@ -62,23 +59,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testPriority() {
-    assertEquals(CONVERTER.getPriority(), 6);
-  }
-
-  /**
-   * Tests that passing in a null expected {@link XLValue} class gives the expected exception.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, XL_ARRAY_OF_DOUBLE);
-  }
-
-  /**
-   * Tests that passing in a null object gives the expected exception.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullObject() {
-    CONVERTER.toXLValue(Object[][].class, null);
+    assertEquals(CONVERTER.getPriority(), 7);
   }
 
   /**
@@ -114,27 +95,11 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
   }
 
   /**
-   * Test demonstrates how pointless expectedType is here.
-   */
-  @Test
-  public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLArray.class, ARRAY_OF_INTEGER);
-  }
-
-  /**
-   * Test demonstrates how pointless expectedType is here.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    CONVERTER.toXLValue(XLArray.class, ARRAY_OF_DOUBLE);
-  }
-
-  /**
    * Tests the behaviour when the object is not an array.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testObjectToConvertNotAnArray() {
-    CONVERTER.toXLValue(XLArray.class, new Object());
+    CONVERTER.toXLValue(new Object());
   }
 
   /**
@@ -142,7 +107,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionOfEmptyArray() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_ARRAY_OF_DOUBLE.getClass(), new Double[0][0]);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(new Double[0][0]);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     assertEquals(xlArray.getArray(), new XLValue[1][1]);
@@ -153,7 +118,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObject() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_ARRAY_OF_DOUBLE.getClass(), ARRAY_OF_DOUBLE);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(ARRAY_OF_DOUBLE);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     assertEquals(xlArray, XL_ARRAY_OF_DOUBLE);
@@ -182,7 +147,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObjectIntegers() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_ARRAY_OF_DOUBLE.getClass(), ARRAY_OF_INTEGER);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(ARRAY_OF_INTEGER);
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     assertEquals(xlArray, XL_ARRAY_OF_DOUBLE);
@@ -193,7 +158,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObjectBooleans() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class, new Boolean[][]{new Boolean[]{true}, new Boolean[]{false}});
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(new Boolean[][]{new Boolean[]{true}, new Boolean[]{false}});
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     final XLArray booleanArray = XLArray.of(new XLValue[][]{new XLValue[]{XLBoolean.TRUE}, new XLValue[]{XLBoolean.FALSE}});
@@ -205,7 +170,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testNonRectangularJavaArray() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class,
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(
         new Boolean[][]{new Boolean[] {true, true}, new Boolean[] {false}, new Boolean[] {false, false, true}});
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
@@ -219,7 +184,8 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObjectBooleansMultiple() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class, new Boolean[][]{new Boolean[] {true, false}, new Boolean[]{true, true}});
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(
+        new Boolean[][]{new Boolean[] {true, false}, new Boolean[]{true, true}});
     assertTrue(converted instanceof XLArray);
     final XLArray xlArray = (XLArray) converted;
     final XLArray booleanArray = XLArray.of(new XLValue[][]{new XLValue[]{XLBoolean.TRUE, XLBoolean.FALSE}, new XLValue[]{XLBoolean.TRUE, XLBoolean.TRUE}});
@@ -231,7 +197,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObjectBooleansObjs() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class, new Object[][]{new Object[] {Boolean.TRUE}});
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(new Object[][]{new Object[] {Boolean.TRUE}});
     assertTrue(converted instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) converted).getArray();
     assertTrue(xlArray[0][0] instanceof XLObject);
@@ -243,7 +209,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObjectBooleansMultipleObjs() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class, new Object[][] {new Object[] {true, false}, new Object[]{false, false}});
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(new Object[][] {new Object[] {true, false}, new Object[]{false, false}});
     assertTrue(converted instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) converted).getArray();
     assertTrue(xlArray[0][0] instanceof XLObject);
@@ -283,7 +249,7 @@ public class ObjectArray2DXLArrayTypeConverter2Test {
    */
   @Test
   public void testConversionFromObjectMixedObjs() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XLArray.class, new Object[][] {new Object[]{Boolean.TRUE, 10.}, new Object[]{1, "test1"}});
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(new Object[][] {new Object[]{Boolean.TRUE, 10.}, new Object[]{1, "test1"}});
     assertTrue(converted instanceof XLArray);
     final XLValue[][] xlArray = ((XLArray) converted).getArray();
     assertTrue(xlArray[0][0] instanceof XLObject);

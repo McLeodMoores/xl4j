@@ -6,16 +6,12 @@ package com.mcleodmoores.xl4j.typeconvert.converters;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import java.math.BigDecimal;
-
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.typeconvert.JavaToExcelTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.converters.FloatXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.xl4j.values.XLBoolean;
 import com.mcleodmoores.xl4j.values.XLError;
 import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLNumber;
@@ -69,27 +65,11 @@ public class FloatXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that passing in a null expected {@link XLValue} class is successful.
-   */
-  @Test
-  public void testNullExpectedXLValueClass() {
-    CONVERTER.toXLValue(null, FLOAT);
-  }
-
-  /**
    * Tests that passing in a null object gives the expected exception.
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullObject() {
-    CONVERTER.toXLValue(XLNumber.class, null);
-  }
-
-  /**
-   * Tests that passing in a null expected Java class is successful.
-   */
-  @Test
-  public void testNullExpectedClass() {
-    CONVERTER.toJavaObject(null, XL_NUMBER_FLOAT);
+    CONVERTER.toXLValue(null);
   }
 
   /**
@@ -109,27 +89,11 @@ public class FloatXLNumberTypeConverterTest {
   }
 
   /**
-   * Tests that the expected type is ignored during conversions to Java.
-   */
-  @Test
-  public void testWrongExpectedClassToJavaConversion() {
-    CONVERTER.toJavaObject(BigDecimal.class, XLNumber.of(TEN_D));
-  }
-
-  /**
    * Tests for the exception when {@link XLValue} to convert is the wrong type.
    */
   @Test(expectedExceptions = ClassCastException.class)
   public void testWrongTypeToXLConversion() {
-    CONVERTER.toXLValue(XLNumber.class, Double.valueOf(TEN_D));
-  }
-
-  /**
-   * Tests that the expected type is ignored during conversion to a XL class.
-   */
-  @Test
-  public void testWrongExpectedClassToXLConversion() {
-    assertEquals(CONVERTER.toXLValue(XLBoolean.class, 1F), XLNumber.of(1));
+    CONVERTER.toXLValue(Double.valueOf(TEN_D));
   }
 
   /**
@@ -137,7 +101,7 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test
   public void testConversionFromFloat() {
-    final XLValue converted = (XLValue) CONVERTER.toXLValue(XL_NUMBER_FLOAT.getClass(), FLOAT);
+    final XLValue converted = (XLValue) CONVERTER.toXLValue(FLOAT);
     assertTrue(converted instanceof XLNumber);
     final XLNumber xlNumber = (XLNumber) converted;
     assertEquals(xlNumber.getValue(), TEN_D, 0);
@@ -167,9 +131,9 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test
   public void testInfinite() {
-    Object converted = CONVERTER.toXLValue(Float.class, Float.POSITIVE_INFINITY);
+    Object converted = CONVERTER.toXLValue(Float.POSITIVE_INFINITY);
     assertEquals(converted, XLError.Div0);
-    converted = CONVERTER.toXLValue(Float.class, Float.NEGATIVE_INFINITY);
+    converted = CONVERTER.toXLValue(Float.NEGATIVE_INFINITY);
     assertEquals(converted, XLError.Div0);
   }
 
@@ -178,7 +142,7 @@ public class FloatXLNumberTypeConverterTest {
    */
   @Test
   public void testNaN() {
-    final Object converted = CONVERTER.toXLValue(Float.class, Float.NaN);
+    final Object converted = CONVERTER.toXLValue(Float.NaN);
     assertEquals(converted, XLError.NA);
   }
 

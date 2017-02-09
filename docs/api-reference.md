@@ -1,6 +1,32 @@
 API Reference
 =============
-
+# Table of Contents
+ - [Annotations](#annotations)
+   - [@XLNamespace](#xlnamespace)
+   - [@XLFunction](#xlfunction)
+   - [@XLParameter](#xlparameter)
+   - [@XLConstant](#xlconstant)
+ - [The type system](#the-type-system)
+   - Core types
+     - [XLNumber](#xlnumber)
+       - [Dates and times](#dates-and-times)
+     - [XLString](#xlstring)
+     - [XLBoolean](#xlboolean)
+     - [XLArray](#xlarray)
+     - [XLError](#xlerror)
+     - [XLNil](#xlnil)
+     - [XLBigData](#xlbigdata)
+     - [XLLocalReference](#xllocalreference)
+     - [XLMultiReference](#xlmultireference)
+     - [XLMissing](#xlmissing)
+   - [Associated types](#associated-types)
+     - [XLRange](#xlrange)
+     - [XLSheetId](#xlsheetid)
+     - [XLObject](#xlobject)
+ - [Type converters](#type-converters)
+   - [List of default converters](#list-of-default-converters)
+ 
+   
 ## Annotations
 ### @XLNamespace
 This annotation applies at the class level and specifies a prefix to be prepended to all `@XLFunction` annotated functions within
@@ -86,7 +112,8 @@ debugging.  They also all extend the `XLValue` interface, which, beyond acting a
 defines a visitor pattern `accept()` method to make it more efficient to implement functionality that depends on the supplied type 
 than a chain of `instanceof` checks.
 
-### XLNumber
+### Core types
+#### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
 `Inf` (infinity) or `NaN` (not-a-number) and sub-normals are truncated to zero.  See `XLError` instances.  It is important to 
 understand that Excel represents percentages, integers, accountancy amounts, even dates, as a formatting issue - the underlying
@@ -107,7 +134,7 @@ float f = xlNumber.getAsFloat();
 double d = xlNumber.getAsDouble(); // same as getValue()
 ```
 
-#### Dates and times
+##### Dates and times
 **Dates** and **times** are actually represented using `XLNumber` - the number represents the number of days since either 0th January
 1900 (yes, the day before 1st January 1900, there is a reason of sorts!) or 0th January 1904, depending on whether the worksheet is in
 1900 or 1904 mode.  
@@ -122,7 +149,7 @@ done for efficiency reasons in Lotus 1-2-3, because it means you can every forth
 
 See the section on type converters for details on conversion of `Date` and Java 8/JSR-310 types `LocalDate` and `LocalDateTime`.
 
-### XLString
+#### XLString
 This wraps a string type.  This can be a unicode string up to 32K characters long.  Some typical uses:
 
 ```java
@@ -134,7 +161,7 @@ if (xlString.isObject()) { // String has object handle prefix
 System.out.println(xlString.toString());
 ```
 
-### XLBoolean
+#### XLBoolean
 This wraps a boolean, and is implemented as a Java `enum`.  It still implements `XLValue` so remains part of the class heirarchy.
 ```java
 XLBoolean xlBooleanT = XLBoolean.TRUE;
@@ -160,7 +187,7 @@ if (converted.getValue()) {
 }
 ```
 
-### XLArray
+#### XLArray
 This type represents an Excel array of either one or two dimensions.  Excel has two ways of specifying an array as an input to a
 function.  One is explicit, using  curly brackets and comma-separated list syntax `{1, 2, 3}`, which is quite rarely used, or a range 
 of the form A1:B2.  A range is not necessarily an array, and if the parameter is registered as a reference type, a range will be passed
@@ -193,7 +220,7 @@ XLValue[][] arr = xlArray.getArray();
 assert arr = xlValueArr; // it's not a copy so take 'immutable' with a pinch of salt.
 ```
 
-### XLError
+#### XLError
 This type is an enum containing the different errors excel functions can return.  For Java, currently exception level information is 
 viewed via the Java log file (see [Logging](https://github.com/McLeodMoores/xl4j/blob/master/docs/logging.md)), although in future
 the intention is to allow per-cell Java exceptions to be accessed more easily (via a function and/or and context sensitive inspector 
@@ -218,14 +245,14 @@ try {
 }
 ```
 
-### XLNil
+#### XLNil
 This type represents an empty worksheet cell and is implemented as a Java `enum` with a single value `INSTANCE`.   As with other enums,
 it remains part of the `XLValue` class heirarchy.
 ```java
 XLValue value = XLNil.INSTANCE;
 ```
 
-### XLBigData
+#### XLBigData
 This type is a strange beast that presently you can probably safely ignore.  It was introduced into Excel to store binary data on a
 worksheet, which sounds really useful.  The problem is that it only works on the current selected worksheet (i.e. where it stores data
 is specific to the GUI state) making it much less useful.  Originally `XLBigData` was crafted to store and retrieve serialized objects
@@ -251,7 +278,7 @@ XLBigData xlBigDataBinary2 - XLBigData.of("Hello"); // serialized data of string
 xlBigDataBinary2.getValue().equals("Hello"); // deserialize binary data
 ```
 
-### XLLocalReference
+#### XLLocalReference
 This type represents a single block of cells on the currently selected worksheet.  It directly maps from the `XLOPER12` type
 `zltypeSRef`.  In itself, it is probably of limited use, and is really included for completeness.  In most cases this will be
 coerced (type converted in the native part of the add-in using the `xlCoerce` API call) into an `XLMultiReference`, which includes
@@ -275,7 +302,7 @@ XLLocalReference xlLocalRef2 = XLLocalReference.of(singleCell);
 assert singleCell == xlLocalRef2.getRange();
 ```
 
-### XLMultiReference
+#### XLMultiReference
 This type represents one or more ranges of cells selected on a particular worksheet.  It directly maps from the `XLOPER12` type
 `zltypeMRef`.  It can be passed into user defined functions from Excel as a way of referring to cells by reference, the alternative
 being `XLArray`, which is effectively by value.  The idea is then that you can call back into Excel's API to put/set elements of the 
@@ -315,7 +342,7 @@ assert ranges2.isSingleRange() == false;
 assert ranges2.getSingleRange() == singleCell; // probably should throw exception in this case, but doesn't
 ```
 
-### XLMissing
+#### XLMissing
 This type represents a missing argument in a parameter list.  As the type converter will generally convert this to a `null` if the 
 function isn't expecting an `XLValue`, it's of limited use, but will likely be more useful once a callback API is available.  It is
 implemented as a singleton `enum` called `INSTANCE`.
@@ -324,8 +351,8 @@ implemented as a singleton `enum` called `INSTANCE`.
 XLValue value = XLMissing.INSTANCE;
 ```
 
-## Associated types
-### XLRange
+### Associated types
+#### XLRange
 This type represents a contiguous range of cells in Excel.  It uses the R1C1 style of cell reference in that the column and row are
 denoted by an index rather than the column being a letter or letters (the A1 style of cell reference).  It simply takes the top left 
 and bottom right indexes of the corners of the contiguous rectangular area inclusive.  Utility methods are included for quickly 
@@ -357,7 +384,7 @@ assert blockRange.isSingleRow() == false;
 assert blockRange.isSingleColumn() == false;
 ```
 
-### XLSheetId
+#### XLSheetId
 This type simply wraps an integer ID of a given worksheet.  It is supplied embedded in an `XLMultiReference` but will become more
 useful as an argument once API access is available.
 
@@ -366,7 +393,7 @@ XLSheetId id = XLSheetId.of(1);
 assert id.getSheetId() == 1;
 ```
 
-### XLObject 
+#### XLObject 
 This is not a direct analogue of an Excel type, but rather a special case of an `XLString` class that encodes an object handle prefixed
 with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being
 present.  The object is formed of two parts, a class, which can be supplied as a `Class<?>` type or a `String`, and a 64-bit `long` 
@@ -388,3 +415,140 @@ XLObject xlObject = XLObject.of(jFrame.getClass(), heap.getHandle(jFrame));
 // send to Excel...
 JFrame JFrameBack = (JFrame) heap.getObject(xlObject.getHandle());
 ```
+
+## Type converters
+To make it easier to work with normal and custom Java types there is a sophisticated type conversion system in place to marshall data
+automatically from Excel types to Java types and back again.  This mostly works transparently as far as the developer and user are
+concerned but there are times it will be useful to add your own custom type converters.  For example, you might want an Excel array
+(range of cells passed by value) to be automatically converted into a request object for a backend system, or a into a time series
+object for analysis.  To do this it's useful to understand the basic structure of the type conversion system and a view of which
+type converters are already available.
+
+Type converters are registered in a `TypeConverterRegistry`, the main implementation of which `ScanningTypeConverterRegistry`.  This
+regsitry scans the classpath for Classes implementing `TypeConverter`, so to implement and register your own type converter, all you
+need to do is create a class implementing `TypeConverter` (or, more likely, extending the abstract utility class
+`AbstractTypeConverter`).
+
+For the most part, which converter is used during a call to your method is statically determined at start-up.  Occasionally, in cases
+such as `Object` arrays, conversion will need to be somewhat dynamic and scan the type conversion registry at run-time.  Usally though,
+when your `@XLFunction`s are registered, a `MethodInvoker` object is created that has all the type converters pre-computed for each
+parameter.  Then, when the native part of the add-in calls into Java to invoke your function, each argument is passed to the
+corresponding `TypeConverter`.  Return values are converted in a similar way, but using the methods that convert in the other direction.
+
+Because sometimes we do call the `TypeConverterRegistry` dynamically, we want it to be as fast as possible.  The slow approach
+would be to ask each type converter in turn if it can do the conversion, but we short circuit this by using two key classes called
+`JavaToExcelTypeMapping` and `ExcelToJavaTypeMapping`.  `CachingTypeConverterRegistry` then uses these to provide fast hash-based
+caching layer on the look-up of the appropriate type converters.
+
+Below is an example of the converter for JSR-310 backport `LocalDate` to and from `XLNumber` (exluding the imports and some comments
+and annotations).
+
+```java
+public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter {
+  private static final int EXCEL_EPOCH_YEAR = 1900;
+
+  public LocalDateXLNumberTypeConverter() {
+    super(LocalDate.class, XLNumber.class);
+  }
+
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), 
+                                                                            LocalDate.ofEpochDay(0)) + 1;
+
+  public Object toXLValue(final Type expectedType, final Object from) {
+    ArgumentChecker.notNull(from, "from");
+    return XLNumber.of(((LocalDate) from).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
+  }
+
+  public Object toJavaObject(final Type expectedType, final Object from) {
+    ArgumentChecker.notNull(from, "from");
+    final long epochDays = (long) ((XLNumber) from).getValue() - DAYS_FROM_EXCEL_EPOCH;
+    return LocalDate.ofEpochDay(epochDays);
+  }
+}
+```
+
+The call to the super-class constructor creates the appropriate `JavaToExcelMapping` and `ExcelToJavaMapping` keys and the super-class
+provides these to the registry.  Note how the converter class deals with conversions in both directions.  In both the `toXLValue` and
+`toJavaObject` methods, we are passed the source object and an *expected type*.  This is of type `java.lang.Type`, which allows us
+to specify primitive types and generic types.  For some converters, it may be useful to delve into the `expectedType` object to 
+get more information about generics, which because they are provided from the method signatures of the classes in question, rather
+than type-erased run-time objects, can actually contain useful information.
+
+There is also a second super-class constructor not used here that takes a *priority* level.  This is used to determine the search 
+order of type converters, with the highest being tried first.  This is useful because it allows, more specific converters to be
+at the front of the queue, falling back to more generic converters later.  Below is a list of the default type converters and their
+priorities.  The number is an ordinal, just used for ordering and the magnitude has no meaning - they are spaced out a bit so 
+other converters and more easily be raised and lowered more easily if required.  Determining the appropriate priority level is a bit
+of a black art, but as a rule of thumb, use the default level unless you run into issues and then raise it if necessary.  Low prioriy
+converters are used for the most generic conversions such as `Object` to `XLObject`.
+
+### List of default converters
+
+| Priority | Converter Class | Excel Class | Java Type |
+|----------|-----------------|-----------------|---------------|
+| 100 | `XLLocalReferenceIdentityConverter` | `XLLocalReference` | `XLLocalReference` |
+| 100 | `XLErrorIdentityConverter` | `XLError` | `XLError` |
+| 100 | `XLBooleanIdentityConverter` | `XLBoolean` | `XLBoolean` |
+| 100 | `XLMultiReferenceIdentityConverter` | `XLMultiReference` | `XLMultiReference` |
+| 100 | `XLIntegerIdentityConverter` | `XLInteger` | `XLInteger` |
+| 100 | `XLBigDataIdentityConverter` | `XLBigData` | `XLBigData` |
+| 100 | `XLArrayIdentityConverter` | `XLArray` | `XLArray` |
+| 100 | `XLMissingIdentityConverter` | `XLMissing` | `XLMissing` |
+| 100 | `XLObjectIdentityConverter` | `XLObject` | `XLObject` |
+| 100 | `XLNilIdentityConverter` | `XLNil` | `XLNil` |
+| 100 | `XLNumberIdentityConverter` | `XLNumber` | `XLNumber` |
+| 100 | `XLStringIdentityConverter` | `XLString` | `XLString` |
+| 11 | `ObjectArray2DXLArrayTypeConverter` | `XLArray` | `java.lang.Object[][]` |
+| 10 | `StringXLStringTypeConverter` | `XLString` | `java.lang.String` |
+| 10 | `DoubleXLNumberTypeConverter` | `XLNumber` | `java.lang.Double` |
+| 10 | `PrimitiveFloatArrayXLArrayTypeConverter` | `XLArray` | `float[]` |
+| 10 | `ByteXLNumberTypeConverter` | `XLNumber` | `java.lang.Byte` |
+| 10 | `PrimitiveShortArrayXLArrayTypeConverter` | `XLArray` | `short[]` |
+| 10 | `ObjectArrayXLArrayTypeConverter` | `XLArray` | `java.lang.Object[]` |
+| 10 | `PrimitiveDoubleXLNumberTypeConverter` | `XLNumber` | `double` |
+| 10 | `ShortXLNumberTypeConverter` | `XLNumber` | `java.lang.Short` |
+| 10 | `PrimitiveCharArrayXLArrayTypeConverter` | `XLArray` | `char[]` |
+| 10 | `BigDecimalXLNumberTypeConverter` | `XLNumber` | `java.math.BigDecimal` |
+| 10 | `LongXLNumberTypeConverter` | `XLNumber` | `java.lang.Long` |
+| 10 | `PrimitiveByteXLNumberTypeConverter` | `XLNumber` | `byte` |
+| 10 | `PrimitiveShortXLNumberTypeConverter` | `XLNumber` | `short` |
+| 10 | `PrimitiveBooleanArrayXLArrayTypeConverter` | `XLArray` | `boolean[]` |
+| 10 | `FloatXLNumberTypeConverter` | `XLNumber` | `java.lang.Float` |
+| 10 | `PrimitiveBooleanXLBooleanTypeConverter` | `XLBoolean` | `boolean` |
+| 10 | `PrimitiveLongArrayXLArrayTypeConverter` | `XLArray` | `long[]` |
+| 10 | `IntegerXLNumberTypeConverter` | `XLNumber` | `java.lang.Integer` |
+| 10 | `BooleanXLBooleanTypeConverter` | `XLBoolean` | `java.lang.Boolean` |
+| 10 | `PrimitiveLongXLNumberTypeConverter` | `XLNumber` | `long` |
+| 10 | `PrimitiveFloatXLNumberTypeConverter` | `XLNumber` | `float` |
+| 10 | `BigIntegerXLNumberTypeConverter` | `XLNumber` | `java.math.BigInteger` |
+| 10 | `LocalDateXLNumberTypeConverter` | `XLNumber` | `org.threeten.bp.LocalDate` |
+| 10 | `PrimitiveByteArrayXLArrayTypeConverter` | `XLArray` | `int[]` |
+| 10 | `PrimitiveIntegerArrayXLArrayTypeConverter` | `XLArray` | `int[]` |
+| 10 | `PrimitiveDoubleArrayXLArrayTypeConverter` | `XLArray` | `double[]` |
+| 10 | `PrimitiveIntegerXLNumberTypeConverter` | `XLNumber` | `int` |
+| 7 | `XLValueArrayXLValueArrayTypeConverter` | `XLValue[]` | `XLValue[]` |
+| 7 | `ObjectArray2DXLArrayTypeConverter2` | `XLArray` | `java.lang.Object[][]` |
+| 7 | `EnumXLStringTypeConverter` | `XLString` | `java.lang.Enum` |
+| 6 | `ObjectArrayXLArrayTypeConverter2` | `XLArray` | `java.lang.Object[]` |
+| 6 | `XLValueXLValueTypeConverter` | `XLValue` | `XLValue` |
+| 5 | `ObjectXLObjectTypeConverter` | `XLObject` | `java.lang.Object` |
+| 5 | `InfNaNXLErrorTypeConverter` | `XLError` | `java.lang.Double` |
+| -1 | `CharacterXLStringTypeConverter` | `XLString` | `java.lang.Character` |
+| -1 | `ByteXLStringTypeConverter` | `XLString` | `java.lang.Byte` |
+| -1 | `PrimitiveByteXLStringTypeConverter` | `XLString` | `byte` |
+| -1 | `PrimitiveDoubleXLStringTypeConverter` | `XLString` | `double` |
+| -1 | `BooleanXLStringTypeConverter` | `XLString` | `java.lang.Boolean` |
+| -1 | `DoubleXLStringTypeConverter` | `XLString` | `java.lang.Double` |
+| -1 | `IntegerXLStringTypeConverter` | `XLString` | `java.lang.Integer` |
+| -1 | `PrimitiveFloatXLStringTypeConverter` | `XLString` | `float` |
+| -1 | `FloatXLStringTypeConverter` | `XLString` | `java.lang.Float` |
+| -1 | `PrimitiveIntegerXLStringTypeConverter` | `XLString` | `int` |
+| -1 | `PrimitiveCharXLStringTypeConverter` | `XLString` | `char` |
+| -1 | `ShortXLStringTypeConverter` | `XLString` | `java.lang.Short` |
+| -1 | `PrimitiveBooleanXLStringTypeConverter` | `XLString` | `boolean` |
+| -1 | `LongXLStringTypeConverter` | `XLString` | `java.lang.Long` |
+| -1 | `PrimitiveShortXLStringTypeConverter` | `XLString` | `short` |
+| -1 | `PrimitiveLongXLStringTypeConverter` | `XLString` | `long` |
+| -7 | `ObjectXLNumberTypeConverter` | `XLNumber` | `java.lang.Object` |
+| -7 | `ObjectXLStringTypeConverter` | `XLString` | `java.lang.Object` |
+| -7 | `ObjectXLBooleanTypeConverter` | `XLBoolean` | `java.lang.Object` |
