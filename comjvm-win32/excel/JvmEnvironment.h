@@ -8,7 +8,7 @@ class CJvmEnvironment;
 #include "Converter.h"
 #include "GarbageCollector.h"
 #include "ExcelUtils.h"
-#include "../settings/SettingsDialog.h"
+#include "../settings/SettingsDialogInterface.h"
 #include "../settings/SplashScreenInterface.h"
 #include "../core/Settings.h"
 #include "../core/internal.h"

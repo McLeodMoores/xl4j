@@ -5,6 +5,7 @@
 #include "resource.h"
 #include <shellapi.h>
 #include "helper/LicenseChecker.h"
+#include "../settings/LicenseInfoInterface.h"
 
 CAddinEnvironment::CAddinEnvironment () {
 	InitializeCriticalSection(&m_csState);
@@ -12,6 +13,7 @@ CAddinEnvironment::CAddinEnvironment () {
 	m_pTypeLib = nullptr;
 	m_pSettings = nullptr;
 	m_pConverter = nullptr;
+	m_pLicenseChecker = nullptr;
 	m_idRegisterSomeFunctions = 0;
 	m_idSettings = 0;
 	m_idGarbageCollect = 0;
@@ -66,8 +68,8 @@ bool CAddinEnvironment::EnterNotRunningState() {
 HRESULT CAddinEnvironment::Start() {
 	EnterStartingState();
 	HRESULT hr;
-	CLicenseChecker lc;
-	if (FAILED(hr = lc.Validate())) {
+	m_pLicenseChecker = new CLicenseChecker();
+	if (FAILED(hr = m_pLicenseChecker->Validate())) {
 		LOGERROR("License checker validation failed");
 	} else {
 		LOGTRACE("License checker validation succeeded");
@@ -90,6 +92,7 @@ HRESULT CAddinEnvironment::Start() {
 	m_idGarbageCollect = ExcelUtils::RegisterCommand(TEXT("GarbageCollect"));
 	m_idViewJavaLogs = ExcelUtils::RegisterCommand(TEXT("ViewJavaLogs"));
 	m_idViewCppLogs = ExcelUtils::RegisterCommand(TEXT("ViewCppLogs"));
+	m_idLicenseInfo = ExcelUtils::RegisterCommand(TEXT("LicenseInfo"));
 	EnterStartedState();
 	return S_OK;
 }
@@ -104,7 +107,8 @@ HRESULT CAddinEnvironment::Shutdown() {
 	if (m_pTypeLib) delete m_pTypeLib;
 	LOGTRACE("Deleting settings object");
 	if (m_pSettings) delete m_pSettings;
-
+	LOGTRACE("Deleting license checker");
+	if (m_pLicenseChecker) delete m_pLicenseChecker;
 	/* We don't unregister GarbageColect so that it doesn't get called by xlOnTime after it's been deregistered.  It's not hugely important to deregister anyway. */
 	// if (m_idGarbageCollect) {
 	//	 if (FAILED(ExcelUtils::UnregisterFunction (_T ("GarbageCollect"), m_idGarbageCollect))) {
@@ -198,7 +202,7 @@ void CAddinEnvironment::AddToolbar() {
 	XLOPER12 xTest;
 	Excel12f(xlfGetToolbar, &xTest, 2, TempInt12(1), TempStr12(L"XL4J"));
 	if (xTest.xltype == xltypeErr) {
-		const int ROWS = 3;
+		const int ROWS = 4;
 		XLOPER12 xlaToolRef[9 * ROWS];
 		XLOPER12 xlArr;
 		xlArr.xltype = xltypeMulti;
@@ -265,11 +269,32 @@ void CAddinEnvironment::AddToolbar() {
 			xlaToolRef[j + 8].xltype = xltypeStr;
 			xlaToolRef[j + 8].val.str = TempStr12(L"C++ Log Files")->val.str;
 		}
+		{
+			int j = 3 * 9;
+			xlaToolRef[j + 0].xltype = xltypeStr;
+			xlaToolRef[j + 0].val.str = TempStr12(L"211")->val.str;
+			xlaToolRef[j + 1].xltype = xltypeStr;
+			xlaToolRef[j + 1].val.str = TempStr12(L"LicenseInfo")->val.str;
+			xlaToolRef[j + 2].xltype = xltypeStr;
+			xlaToolRef[j + 2].val.str = TempStr12(L"FALSE")->val.str;;
+			xlaToolRef[j + 3].xltype = xltypeStr;
+			xlaToolRef[j + 3].val.str = TempStr12(L"TRUE")->val.str;
+			xlaToolRef[j + 4].xltype = xltypeMissing;
+			xlaToolRef[j + 5].xltype = xltypeStr;
+			xlaToolRef[j + 5].val.str = TempStr12(L"View License Info")->val.str;
+			xlaToolRef[j + 6].xltype = xltypeStr;
+			xlaToolRef[j + 6].val.str = TempStr12(L"View License Info")->val.str;
+			xlaToolRef[j + 7].xltype = xltypeStr;
+			xlaToolRef[j + 7].val.str = TempStr12(L"XL4J")->val.str;
+			xlaToolRef[j + 8].xltype = xltypeStr;
+			xlaToolRef[j + 8].val.str = TempStr12(L"License Info")->val.str;
+		}
 		int retVal = Excel12f(xlfAddToolbar, NULL, 2, TempStr12(TEXT("XL4J")), &xlArr);
 		// put icon on clipboard
 		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_SPANNER), 1);
 		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_VIEWJAVALOGS), 2);
 		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_VIEWCPPLOGS), 3);
+		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_LICENSEINFO), 4);
 		LOGTRACE("xlfAddToolbar retval = %d", retVal);
 		Excel12f(xlcShowToolbar, NULL, 10, TempStr12(L"XL4J"), TempBool12(1),
 			TempInt12(2), TempMissing12(), TempMissing12(), TempMissing12()/*TempInt12 (999)*/, TempInt12(0), // no protection, 
@@ -316,6 +341,103 @@ HRESULT CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
 		LeaveCriticalSection(&m_csState);
 		return E_NOT_VALID_STATE;
 	}
+}
+
+HRESULT CAddinEnvironment::ShowLicenseInfo() {
+	EnterCriticalSection(&m_csState);
+	if (m_state == STARTED) {
+		ILicenseInfo *pLicenseInfo;
+		_bstr_t addinName = ExcelUtils::GetAddinSetting(L"AddinName", L"XL4J");
+		wchar_t *szLicenseeText;
+		wchar_t *szNoLicenseeText = TEXT("No commercial license, GPL applies to linked code");
+		wchar_t *szLicenseText;
+		if (m_pLicenseChecker->IsLicenseValidated()) {
+			if (FAILED(m_pLicenseChecker->GetLicenseText(&szLicenseeText))) {
+				szLicenseeText = szNoLicenseeText;
+			}
+		} else {
+			szLicenseeText = szNoLicenseeText;
+		}
+		if (FAILED(LoadEULA(&szLicenseText))) {
+			szLicenseText = TEXT("The LICENSE-AGREEMENT.txt file is missing.");
+			LOGERROR("LoadEULA failed");
+		}
+		HWND hWnd;
+		ExcelUtils::GetHWND(&hWnd);
+		LOGINFO("Settings rich text edit control with %s", szLicenseText);
+		CLicenseInfoFactory::Create(hWnd, addinName, szLicenseeText, szLicenseText, &pLicenseInfo);
+
+		pLicenseInfo->Open(hWnd);
+		LeaveCriticalSection(&m_csState);
+		return S_OK;
+	} else {
+		LeaveCriticalSection(&m_csState);
+		return E_NOT_VALID_STATE;
+	}
+}
+
+HRESULT CAddinEnvironment::LoadEULA(wchar_t **szEULA) {
+	wchar_t szEULAPath[MAX_PATH + 1];
+	FileUtils::GetAddinAbsolutePath(szEULAPath, MAX_PATH + 1, L"..\\LICENSE-AGREEMENT.txt");
+	LOGTRACE("EULA filename = %s", szEULAPath);
+	HANDLE hEULA = CreateFile(szEULAPath, GENERIC_READ,
+		0,
+		NULL,
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+	if (hEULA == INVALID_HANDLE_VALUE) {
+		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+		_com_error err(hr);
+		LOGERROR("Can't find LICENSE-AGREEMENT.txt in add-in base directory (%s): %s", szEULAPath, err.ErrorMessage());
+		return hr;
+	}
+	DWORD dwFileSize = GetFileSize(hEULA, NULL);
+	if (dwFileSize == INVALID_FILE_SIZE) {
+		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+		_com_error err(hr);
+		LOGERROR("Can't get file size of LICENSE-AGREEMENT.txt: %s", err.ErrorMessage());
+		return hr;
+	}
+	LOGTRACE("File size (low word) is %d", dwFileSize);
+	LPVOID pBuffer = calloc(dwFileSize + 1, sizeof (BYTE)); // add room for a NULL terminator and pre-clear it
+	if (!pBuffer) {
+		LOGERROR("calloc failed");
+		return E_OUTOFMEMORY;
+	}
+	if (!ReadFile(hEULA, pBuffer, dwFileSize, nullptr, nullptr)) {
+		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+		_com_error err(hr);
+		LOGERROR("Problem reading LICENSE-AGREEMENT.txt: %s", err.ErrorMessage());
+		free(pBuffer);
+		return hr;
+	}
+	CloseHandle(hEULA);
+	size_t chEULA = MultiByteToWideChar(CP_UTF8, 0, (LPCCH) pBuffer, -1, NULL, 0);
+	LOGTRACE("MultiByteToWideChar returned %d", chEULA);
+	if (!chEULA) {
+		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+		_com_error err(hr);
+		LOGERROR("Couldn't get size when converting LICENSE-AGREEMENT text to Unicode: %s", err.ErrorMessage());
+		free(pBuffer);
+		return hr;
+	}
+	// NB: chLicenseText includes NULL terminator.
+	wchar_t *szUnicodeLicenseAgreement = (wchar_t *)calloc(chEULA, sizeof(wchar_t));
+	if (!szUnicodeLicenseAgreement) {
+		LOGERROR("calloc failed");
+		return E_OUTOFMEMORY;
+	}
+	if (!MultiByteToWideChar(CP_UTF8, 0, (LPCCH) pBuffer, -1, szUnicodeLicenseAgreement, chEULA)) {
+		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+		_com_error err(hr);
+		LOGERROR("Couldn't convert license text to Unicode: %s", err.ErrorMessage());
+		free(pBuffer);
+		return hr;
+	}
+	free(pBuffer);
+	*szEULA = szUnicodeLicenseAgreement;
+	return S_OK;
 }
 
 

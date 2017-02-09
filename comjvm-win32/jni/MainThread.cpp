@@ -138,7 +138,7 @@ static BOOL StartJVMImpl (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DW
 	std::string strClasspath ("-Djava.class.path=");
 	strClasspath += pszClasspath;
 	aOptions[0].optionString = const_cast<char*>(strClasspath.data ());
-	for (int i = 0; i < cOptions; i++) {
+	for (unsigned int i = 0; i < cOptions; i++) {
 		aOptions[i + 1].optionString = const_cast<char*>(ppszOptions[i]);
 	}
 	args.version = JNI_VERSION_1_6;

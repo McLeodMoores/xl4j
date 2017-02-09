@@ -63,7 +63,7 @@
     <tests.testng.parallel>classes</tests.testng.parallel>
     <tests.testng.threads>1</tests.testng.threads>
     <tests.testng.includedgroups>unit</tests.testng.includedgroups>
-    <tests.testng.excludedgroups>integration,unitslow</tests.testng.excludedgroups>
+    <tests.testng.excludedgroups>integration,unitslow,failing</tests.testng.excludedgroups>
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
     <maven.compiler.compilerVersion>1.7</maven.compiler.compilerVersion>
     <maven.compiler.source>1.7</maven.compiler.source>

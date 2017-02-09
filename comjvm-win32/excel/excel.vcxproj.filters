@@ -124,5 +124,8 @@
     <Image Include="javalog.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="licenseinfo.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -18,6 +18,7 @@ EXPORTS
 	Settings
 	ViewJavaLogs
 	ViewCppLogs
+	LicenseInfo
 	UDF
 	UDF_0
 	UDF_1

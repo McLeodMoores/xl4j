@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #define COMJVM_EXCEL_EXPORT
 #include "ExcelUtils.h"
-#include "../settings/SettingsDialog.h"
+#include "../settings/SettingsDialogInterface.h"
 #include "../core/Settings.h"
 #include "../utils/FileUtils.h"
 #include "Lifecycle.h"
@@ -108,8 +108,13 @@ __declspec(dllexport) int ViewJavaLogs() {
 	return 1;
 }
 
-_declspec(dllexport) int ViewCppLogs() {
+__declspec(dllexport) int ViewCppLogs() {
 	g_pAddinEnv->ViewLogs(TEXT("xl4j-cpp.log"));
+	return 1;
+}
+
+__declspec(dllexport) int LicenseInfo() {
+	g_pAddinEnv->ShowLicenseInfo();
 	return 1;
 }
 

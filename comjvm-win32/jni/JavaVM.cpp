@@ -183,7 +183,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMW (PDWORD plJvmRef, PJAVA_VM_PARAMETERSW p
 		params.ppszOptions = new PCSTR[params.cOptions];
 		ZeroMemory (params.ppszOptions, params.cOptions * sizeof PCSTR); // prevent bad clean-ups
 		// now do each option in the array
-		for (int i = 0; i < pParams->cOptions; i++) {
+		for (unsigned int i = 0; i < pParams->cOptions; i++) {
 			int cchOption = wcslen(pParams->ppszOptions[i]);
 			char *pszOption;
 			if (cchOption) {
@@ -206,7 +206,7 @@ HRESULT COMJVM_JNI_API JNICreateJavaVMW (PDWORD plJvmRef, PJAVA_VM_PARAMETERSW p
 		HRESULT result = JNICreateJavaVMA (plJvmRef, &params);
 		if (params.ppszOptions) {
 			// clean-up
-			for (int i = 0; i < params.cOptions; i++) {
+			for (unsigned int i = 0; i < params.cOptions; i++) {
 				if (params.ppszOptions[i]) {
 					delete[] params.ppszOptions[i];
 				}

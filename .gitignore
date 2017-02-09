@@ -33,6 +33,9 @@ ipch/
 [Rr]elease*/
 Ankh.NoLoad
 *.VC.db
+*.xdc
+*.idb
+*.pdb
 
 #MonoDevelop
 *.pidb

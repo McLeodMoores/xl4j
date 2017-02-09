@@ -1,6 +1,6 @@
 #include "stdafx.h"
+#include "SettingsDialogInterface.h"
 #include "SettingsDialog.h"
-#include "SettingsDialogImpl.h"
 #include "../utils/Debug.h"
 HRESULT CSettingsDialogFactory::Create (CSettings *pSettings, ISettingsDialog **ppDialog) {
 	LOGTRACE("About to init MFC");
@@ -9,6 +9,6 @@ HRESULT CSettingsDialogFactory::Create (CSettings *pSettings, ISettingsDialog **
 		return E_ABORT;
 	}
 	//AFX_MANAGE_STATE (AfxGetStaticModuleState ());
-	*ppDialog = new CSettingsDialogImpl (pSettings);
+	*ppDialog = new CSettingsDialog (pSettings);
 	return S_OK;
 }

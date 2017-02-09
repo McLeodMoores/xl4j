@@ -17,13 +17,16 @@ class COMJVM_HELPER_API CLicenseChecker {
 private:
 	PCCERT_CONTEXT m_pCertContext;
 	HCERTSTORE m_hMemoryStore;
+	bool m_bLicenseValidated;
+	wchar_t *szDefaultLicenseText = _wcsdup(L"Commercial License not present\nGNU Public License v3 applies\nto linked code");
 public:
 	CLicenseChecker();
 	HRESULT LoadCert(HMODULE * phModule, HGLOBAL * phResource, HRSRC * phResourceInfo);
-	HRESULT Init();
 	~CLicenseChecker();
 	HRESULT Validate();
-	HRESULT Parse(const char * pBuffer, char ** pszBoundaryString, char ** pszFirstBlock, char ** pszSecondBlock);
+	bool IsLicenseValidated();
+	HRESULT ParseFile(char ** pszLicenseText, char ** pszSignature);
+	HRESULT Parse(const char * pBuffer, char ** pszFirstBlock, char ** pszSecondBlock);
 	HRESULT GetLicenseText(wchar_t **ppszLicenseText);
 };
 

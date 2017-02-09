@@ -76,7 +76,7 @@ HRESULT Debug::print_HRESULT (HRESULT hResult) {
 void Debug::LOGTRACE_SAFEARRAY(SAFEARRAY *psa) {
 	LOGTRACE("VT_ARRAY(%dD)", SafeArrayGetDim(psa));
 	long elems = 1;
-	for (int i = 1; i <= SafeArrayGetDim(psa); i++) {
+	for (unsigned int i = 1; i <= SafeArrayGetDim(psa); i++) {
 		long lowerBound;
 		SafeArrayGetLBound(psa, i, &lowerBound);
 		long upperBound;
@@ -290,16 +290,15 @@ void Debug::SetLogTarget(LOGTARGET logTarget) {
 		if (SUCCEEDED(hr)) {
 			OutputDebugStringW(TEXT("Full log path is:"));
 			OutputDebugStringW(buffer);
-			m_fdLogFile = _tfopen(buffer, _T("w"));
-			if (!m_fdLogFile) {
+			if (_wfopen_s(&m_fdLogFile, buffer, _T("w"))) {
 				OutputDebugStringW(TEXT("Could not open log file"));
-				m_fdLogFile = _tfopen(TEXT("nul"), _T("w"));
+				_tfopen_s(&m_fdLogFile, TEXT("nul"), _T("w"));
 			}
 		} else {
 			OutputDebugString(TEXT("Error getting temporary filename:"));
 			_com_error err(hr);
 			OutputDebugString(err.ErrorMessage());
-			m_fdLogFile = _tfopen(TEXT("nul"), _T("w"));
+			_tfopen_s(&m_fdLogFile, TEXT("nul"), _T("w"));
 		}
 	} else /* if (logTarget == LOGTARGET_WINDEBUG) */ {
 		if (m_fdLogFile) {

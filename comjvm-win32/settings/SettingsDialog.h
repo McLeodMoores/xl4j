@@ -2,19 +2,21 @@
 #include <string>
 #include <comdef.h>
 #include "..\core\Settings.h"
+#include "SettingsDialog.h"
+#include "AddinPropertyPage.h"
+#include "ClasspathPropertyPage.h"
+#include "VmOptionsPropertyPage.h"
 
-#ifdef COMJVM_SETTINGSDIALOG_EXPORT
-# define COMJVM_SETTINGSDIALOG_API __declspec(dllexport)
-#else
-# define COMJVM_SETTINGSDIALOG_API __declspec(dllimport)
-#endif /* ifndef COMJVM_DEBUG_API */
-
-class COMJVM_SETTINGSDIALOG_API ISettingsDialog {
+class CSettingsDialog : public ISettingsDialog {
+private:
+	CAddinPropertyPage *m_pAddinPropertyPage;
+	CClasspathPropertyPage *m_pClasspathPropertyPage;
+	CVmOptionsPropertyPage *m_pVmOptionsPropertyPage;
+	CSettings *m_pSettings;
+	void init ();
 public:
-	virtual INT_PTR Open (HWND hwndParent) = 0;
+	CSettingsDialog (CSettings *pSettings);
+	~CSettingsDialog ();
+	virtual INT_PTR Open (HWND hwndParent);
 };
 
-class COMJVM_SETTINGSDIALOG_API CSettingsDialogFactory {
-public:
-	static HRESULT Create (CSettings *pSettings, ISettingsDialog **ppDialog);
-};

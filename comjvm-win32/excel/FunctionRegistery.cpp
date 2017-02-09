@@ -266,7 +266,6 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis)
 
 HRESULT FunctionRegistry::UnregsiterFunctions () {
 	for (unsigned int i = 0; i < m_cFunctions; i++) {
-		HRESULT hr;
 		FUNCTIONINFO fi = m_pFunctions[i];
 		XLOPER12 result;
 		Excel12f (xlfUnregister, &result, 1, TempInt12 (fi.iRegisterId));
