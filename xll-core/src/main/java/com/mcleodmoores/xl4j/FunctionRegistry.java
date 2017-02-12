@@ -163,7 +163,7 @@ public class FunctionRegistry {
       }
       final XLConstant constantAnnotation = field.getAnnotation(XLConstant.class);
       final String functionName = generateFunctionNameForField(namespaceAnnotation, constantAnnotation,
-          field.getDeclaringClass().getName(), field.getName(), false);
+          field.getDeclaringClass().getName(), field.getName(), constantAnnotation.name().isEmpty());
       addField(field, invokerFactory, registeredFunctionNames, constantAnnotation, namespaceAnnotation, functionName);
     }
   }
@@ -178,7 +178,7 @@ public class FunctionRegistry {
       }
       final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(method);
       final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation.name(),
-          method.getDeclaringClass().getSimpleName(), method.getName(), false, 1);
+          method.getDeclaringClass().getSimpleName(), method.getName(), functionAnnotation.name().isEmpty(), 1);
       addMethod(method, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName);
 
     }

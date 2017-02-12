@@ -15,7 +15,7 @@ import com.mcleodmoores.xl4j.typeconvert.converters.ObjectArrayXLArrayTypeConver
 public class ObjectArrayConvertersTest {
 
   @Test
-  public void btestConvertToMostSpecificXlType() {
+  public void testConvertToMostSpecificXlType() {
     final ObjectArrayXLArrayTypeConverter converter = new ObjectArrayXLArrayTypeConverter(ExcelFactory.getInstance());
     final long hotspotWarmup = 10;
     final long testRuns = 100;
@@ -32,7 +32,7 @@ public class ObjectArrayConvertersTest {
   }
 
   @Test
-  public void atestConvertToXlObject() {
+  public void testConvertToXlObject() {
     final ObjectArrayXLArrayTypeConverter2 converter = new ObjectArrayXLArrayTypeConverter2(ExcelFactory.getInstance());
     final long hotspotWarmup = 10;
     final long testRuns = 100;

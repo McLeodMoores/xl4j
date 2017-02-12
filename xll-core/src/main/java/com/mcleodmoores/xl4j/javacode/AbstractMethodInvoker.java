@@ -3,6 +3,7 @@
  */
 package com.mcleodmoores.xl4j.javacode;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
+import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLMissing;
@@ -37,9 +39,9 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
    *          the converter required to convert he result back to an Excel type
    */
   public AbstractMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter) {
-    _method = method;
-    _argumentConverters = argumentConverters;
-    _returnConverter = returnConverter;
+    _method = ArgumentChecker.notNull(method, "method");
+    _argumentConverters = ArgumentChecker.notNull(argumentConverters, "argumentConverters");
+    _returnConverter = ArgumentChecker.notNull(returnConverter, "returnConverter");
   }
 
   @Override
@@ -48,10 +50,16 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
     if (_method.isVarArgs()) {
       args = new Object[_method.getParameterCount()];
       if (arguments.length == 0) {
-        //
         try {
+          // find the appropriate type for the empty array
+          final Class<?>[] parameterTypes = _method.getParameterTypes();
+          final Class<?> varArgType = parameterTypes[parameterTypes.length - 1].getComponentType();
+          if (varArgType == null) {
+            LOGGER.error("Last argument for varargs method was not an array: should never happen");
+            throw new Excel4JRuntimeException("Error invoking method: last argument for varargs method was not an array");
+          }
           LOGGER.info("invoking method {} on {} with empty array", _method, object == null ? "null" : object.getClass().getSimpleName());
-          final Object result = _method.invoke(object, (Object) new Object[0]);
+          final Object result = _method.invoke(object, Array.newInstance(varArgType, 0));
           return convertResult(result, _returnConverter);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
           throw new Excel4JRuntimeException("Error invoking method", e);
@@ -60,19 +68,13 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
       final int varArgIndex = _method.getParameterCount() - 1;
       final int nVarArgs = arguments.length - varArgIndex;
       for (int i = 0; i < varArgIndex; i++) {
-        // TODO not sure about this logic - isArray() never seems to be true.
-        // what was the intended use?
-        if (arguments[i].getClass().isArray()) {
-          args[i] = arguments[i];
+        final Type expectedClass = _method.getGenericParameterTypes()[i];
+        // handle the case where nothing is passed and this should be converted to a null
+        // which happens unless the method is expecting an XLValue.
+        if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+          args[i] = null;
         } else {
-          final Type expectedClass = _method.getGenericParameterTypes()[i];
-          // handle the case where nothing is passed and this should be converted to a null
-          // which happens unless the method is expecting an XLValue.
-          if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
-            args[i] = null;
-          } else {
-            args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
-          }
+          args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
         }
       }
       final XLValue[] varArgs = new XLValue[nVarArgs];
@@ -83,19 +85,13 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
     } else {
       args = new Object[arguments.length];
       for (int i = 0; i < _argumentConverters.length; i++) {
-        // TODO not sure about this logic - isArray() never seems to be true.
-        // what was the intended use?
-        if (arguments[i].getClass().isArray()) {
-          args[i] = arguments[i];
+        final Type expectedClass = _method.getGenericParameterTypes()[i];
+        // handle the case where nothing is passed and this should be converted to a null
+        // which happens unless the method is expecting an XLValue.
+        if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+          args[i] = null;
         } else {
-          final Type expectedClass = _method.getGenericParameterTypes()[i];
-          // handle the case where nothing is passed and this should be converted to a null
-          // which happens unless the method is expecting an XLValue.
-          if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
-            args[i] = null;
-          } else {
-            args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
-          }
+          args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
         }
       }
     }
@@ -122,9 +118,9 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
   @Override
   public Class<?>[] getExcelParameterTypes() {
     final Class<?>[] parameterTypes = new Class[_argumentConverters.length];
-    final int i = 0;
+    int i = 0;
     for (final TypeConverter typeConverter : _argumentConverters) {
-      parameterTypes[i] = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
+      parameterTypes[i++] = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
     }
     return parameterTypes;
   }

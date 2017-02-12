@@ -90,27 +90,6 @@ public final class ArgumentChecker {
   }
 
   /**
-   * Throws an exception if the argument is null.
-   *
-   * @param <E>
-   *          the type of the argument
-   * @param argument
-   *          the object to check
-   * @param name
-   *          the name of the parameter
-   * @param args
-   *          the message arguments
-   * @return the argument
-   */
-  public static <E> E notNull(final E argument, final String name, final Object... args) {
-    if (argument == null) {
-      LOGGER.error("Argument {} was null", name);
-      throw new Excel4JRuntimeException("Value for \"" + name + "\" was null");
-    }
-    return argument;
-  }
-
-  /**
    * Throws an exception if the array argument is null or empty.
    *
    * @param <E>

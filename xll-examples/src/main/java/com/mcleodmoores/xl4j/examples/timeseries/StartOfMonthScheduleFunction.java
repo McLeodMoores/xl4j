@@ -27,7 +27,6 @@ public class StartOfMonthScheduleFunction implements BiFunction<LocalDate, Local
     ArgumentChecker.notNull(endInclusive, "endInclusive");
     final List<LocalDate> result = new ArrayList<>();
     LocalDate date = start.getDayOfMonth() == 1 ? start : start.with(TemporalAdjusters.firstDayOfNextMonth());
-    System.err.println(date);
     while (!date.isAfter(endInclusive)) {
       result.add(date);
       date = date.plusMonths(1);

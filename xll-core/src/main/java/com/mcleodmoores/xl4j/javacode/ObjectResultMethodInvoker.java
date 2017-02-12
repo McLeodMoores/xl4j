@@ -6,6 +6,7 @@ package com.mcleodmoores.xl4j.javacode;
 import java.lang.reflect.Method;
 
 import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
+import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -23,14 +24,14 @@ public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
    * @param argumentConverters
    *          the converters required to call the method
    * @param returnConverter
-   *          the converter required to convert he result back to an Excel type
+   *          the converter required to convert the result back to an Excel type
    * @param objectXlObjectConverter
    *          a converter to convert the object into an object if necessary
    */
   public ObjectResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter,
       final TypeConverter objectXlObjectConverter) {
     super(method, argumentConverters, returnConverter);
-    _objectXlObjectConverter = objectXlObjectConverter;
+    _objectXlObjectConverter = ArgumentChecker.notNull(objectXlObjectConverter, "objectXlObjectConverter");
   }
 
   @Override

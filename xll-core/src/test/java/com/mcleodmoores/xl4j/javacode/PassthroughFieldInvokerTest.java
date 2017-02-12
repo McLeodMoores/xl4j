@@ -10,34 +10,31 @@ import java.lang.reflect.Field;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.converters.IntegerXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
- * Unit tests for {@link ObjectFieldInvoker}.
+ * Unit tests for {@link PassthroughFieldInvoker}.
  */
-public class ObjectFieldInvokerTest {
+public class PassthroughFieldInvokerTest {
   private static final Field FIELD;
-  private static final ObjectFieldInvokerTest OBJECT = new ObjectFieldInvokerTest();
-  private static final TypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
+  private static final PassthroughFieldInvokerTest OBJECT = new PassthroughFieldInvokerTest();
   private static final FieldInvoker INVOKER;
   /** Visible field. */
-  public final Integer _integer1 = 4;
+  public final XLNumber _xlNumber1 = XLNumber.of(4);
   /** Inaccessible field */
-  private final Integer _integer2 = 2;
+  private final XLNumber _xlNumber2 = XLNumber.of(2);
 
   static {
     Field field;
     try {
-      field = ObjectFieldInvokerTest.class.getDeclaredField("_integer1");
+      field = PassthroughFieldInvokerTest.class.getDeclaredField("_xlNumber1");
     } catch (NoSuchFieldException | SecurityException e) {
       field = null;
     }
     FIELD = field;
-    INVOKER = new ObjectFieldInvoker(FIELD, CONVERTER);
+    INVOKER = new PassthroughFieldInvoker(FIELD);
   }
 
   /**
@@ -45,15 +42,7 @@ public class ObjectFieldInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullField() {
-    new ObjectFieldInvoker(null, CONVERTER);
-  }
-
-  /**
-   * Tests that the converter cannot be null.
-   */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
-  public void testNullConverter() {
-    new ObjectFieldInvoker(FIELD, null);
+    new PassthroughFieldInvoker(null);
   }
 
   /**
@@ -63,11 +52,11 @@ public class ObjectFieldInvokerTest {
   public void testPrivateField() {
     Field field;
     try {
-      field = ObjectFieldInvokerTest.class.getDeclaredField("_integer2");
+      field = PassthroughFieldInvokerTest.class.getDeclaredField("_xlNumber2");
     } catch (NoSuchFieldException | SecurityException e) {
       field = null;
     }
-    final ObjectFieldInvoker invoker = new ObjectFieldInvoker(field, CONVERTER);
+    final PassthroughFieldInvoker invoker = new PassthroughFieldInvoker(field);
     invoker.invoke(OBJECT);
   }
 
@@ -76,10 +65,10 @@ public class ObjectFieldInvokerTest {
    */
   @Test
   public void testFieldInformation() {
-    assertEquals(INVOKER.getExcelReturnType(), Integer.class);
-    assertEquals(INVOKER.getFieldDeclaringClass(), ObjectFieldInvokerTest.class.getName());
-    assertEquals(INVOKER.getFieldName(), "_integer1");
-    assertEquals(INVOKER.getFieldType(), Integer.class);
+    assertEquals(INVOKER.getExcelReturnType(), XLNumber.class);
+    assertEquals(INVOKER.getFieldDeclaringClass(), PassthroughFieldInvokerTest.class.getName());
+    assertEquals(INVOKER.getFieldName(), "_xlNumber1");
+    assertEquals(INVOKER.getFieldType(), XLNumber.class);
     assertFalse(INVOKER.isStatic());
   }
 
@@ -89,6 +78,6 @@ public class ObjectFieldInvokerTest {
   @Test
   public void testInvoke() {
     final XLValue xlValue = INVOKER.invoke(OBJECT);
-    assertEquals(xlValue, XLNumber.of(_integer1));
+    assertEquals(xlValue,_xlNumber1);
   }
 }

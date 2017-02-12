@@ -24,7 +24,7 @@ public class PassthroughMethodInvoker implements MethodInvoker {
 
   /**
    * Constructor.
-   * 
+   *
    * @param method
    *          the method to call.
    */
@@ -34,10 +34,6 @@ public class PassthroughMethodInvoker implements MethodInvoker {
 
   @Override
   public XLValue invoke(final Object object, final XLValue[] arguments) {
-    // note that the seemingly obvious invariant of arguments.length == _argumentConverters.length is not
-    // always true because of a VarArgs might have no arguments to its converter may be surplus to
-    // requirements. For this reason we base the conversion on the length of arguments.
-
     try {
       LOGGER.info("invoking " + object + " with " + Arrays.toString(arguments));
       return (XLValue) _method.invoke(object, new Object[] { arguments });

@@ -248,8 +248,7 @@ public final class FunctionMetadata {
    *          if the function represents a constant or field
    */
   public XLParameter[] getParameters() {
-    if (_functionSpec == null && _functionsSpec == null) {
-      // have a XLConstant
+    if (isConstantSpec()) {
       throw new Excel4JRuntimeException("Cannot get argument annotations for a field or enum");
     }
     return _parameters;
