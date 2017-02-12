@@ -20,8 +20,16 @@ public interface LowLevelExcelCallback {
    * @param isLongRunning
    *          true if the function is likely to be long-running
    * @param isAutoAsynchronous
+   *          true if the function should be made called in a thread drawn from a pool and excel notified
+   *          asynchronously on completion.  Allows long running functions not to block Excel
    * @param isManualAsynchronous
+   *          true if the function should handle asynchronous execution itself.  Currently this is a 
+   *          synonym for isAutoAsynchronou, although it's really just a placeholder until the functionality
+   *          is implemented.  Do not use. 
    * @param isCallerRequired
+   *          true if the function should be provided with an extra argument detailing the calling context,
+   *          i.e. which cell or cells are being calculated.  This is not currently supported and is just
+   *          a placeholder until the functionality is implemented.  Do not use.
    * @param functionSignature
    *          a string representing the functions return type, parameter types and calling permission, not null
    * @param functionWorksheetName

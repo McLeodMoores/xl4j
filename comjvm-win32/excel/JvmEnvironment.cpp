@@ -26,7 +26,13 @@ void CJvmEnvironment::Start() {
 	EnterStartingState();
 	LOGTRACE("JVM Environment being created");
 	HRESULT hr;
-	if (FAILED(hr = CSplashScreenFactory::Create(L"Commercial License not present\nGNU Public License v3 applies\nto linked code", &m_pSplashScreen))) {
+	wchar_t *szLicenseText;
+	if (FAILED(hr = m_pAddinEnvironment->GetLicenseText(&szLicenseText))) {
+		_com_error err(hr);
+		LOGERROR("Could not get license text, failing: %s", err.ErrorMessage());
+		return;
+	}
+	if (FAILED(hr = CSplashScreenFactory::Create(szLicenseText, &m_pSplashScreen))) {
 		_com_error err(hr);
 		LOGERROR("Could not open splash screen, failing: %s", err.ErrorMessage());
 		return;

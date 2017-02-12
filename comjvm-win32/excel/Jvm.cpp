@@ -52,7 +52,7 @@ Jvm::Jvm () : m_lRefCount (1) {
 		ClasspathUtils::AddEntries(entries, szLibPath);
 	}
 	catch (_com_error& e) {
-		LOGERROR("Could not find Java lib directory at %s", szLibPath);
+		LOGERROR("Could not find Java lib directory at %s (%s)", szLibPath, e.ErrorMessage());
 	}
 	wchar_t szXL4JPath[MAX_PATH];
 	if (FAILED (hr = FileUtils::GetAddinAbsolutePath (szXL4JPath, MAX_PATH, TEXT ("..\\..\\..\\xll-core\\target\\xll-core-0.1.0-SNAPSHOT.jar")))) {
@@ -65,6 +65,7 @@ Jvm::Jvm () : m_lRefCount (1) {
 		ClasspathUtils::AddEntry(entries, szXL4JPath);
 	}
 	catch (_com_error& e) {
+		e.ErrorMessage(); // shut up compiler
 		LOGERROR("Could not add xll-core jar in neighbouring project.  This is fine if you're working from a command line build.");
 	}
 	// Load settings.

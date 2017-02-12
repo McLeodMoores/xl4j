@@ -300,6 +300,7 @@
     <ResourceCompile Include="excel.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="licenseinfo.bmp" />
     <Image Include="cpplog.bmp" />
     <Image Include="icon1.ico" />
     <Image Include="javalog.bmp" />

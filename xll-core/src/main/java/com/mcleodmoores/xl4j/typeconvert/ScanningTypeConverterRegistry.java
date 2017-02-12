@@ -138,5 +138,36 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
     }
     return null;
   }
-
+  
+  /**
+   * Print out an ordered table of the type conversion registry in Markdown format.
+   */
+  /*package*/ void dumpRegistry() {
+    System.out.println("| Priority | Converter Class | E2J Excel Class | E2J Java Type | J2E Java Type | J2E Excel Class |");
+    System.out.println("|----------|-----------------|-----------------|---------------|---------------|-----------------|");
+    for (final int priority : _converters.keySet()) {
+      final List<TypeConverter> converters = _converters.get(priority);
+      for (final TypeConverter typeConverter: converters) {
+        Class<?> e2jExcelClass = typeConverter.getExcelToJavaTypeMapping().getExcelClass();
+        Type e2jJavaType = typeConverter.getExcelToJavaTypeMapping().getJavaType();
+        Class<?> j2eExcelClass = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
+        Type j2eJavaType = typeConverter.getJavaToExcelTypeMapping().getJavaType();
+        if (e2jExcelClass.equals(j2eExcelClass) && e2jJavaType.equals(e2jJavaType)) {
+          System.out.println("| " + priority 
+              + " | " + typeConverter.getClass().getSimpleName() 
+              + " | " + e2jExcelClass.toGenericString() 
+              + " | " + e2jJavaType.getTypeName() 
+              + "| | |");
+        } else {
+          System.out.println("| " + priority 
+              + " | " + typeConverter.getClass().getSimpleName() 
+              + " | " + e2jExcelClass.toGenericString() 
+              + " | " + e2jJavaType.getTypeName()
+              + " | " + j2eJavaType.getTypeName() 
+              + " | " + j2eExcelClass.toGenericString() 
+              + "|");
+        }
+      }
+    }
+  }
 }
