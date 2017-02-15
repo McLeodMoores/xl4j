@@ -1,9 +1,7 @@
 /*
- * JVM as a COM object
- *
- * Copyright 2014 by Andrew Ian William Griffin <griffin@beerdragon.co.uk>
- * Released under the GNU General Public License.
- */
+* Copyright 2014-present by Andrew Ian William Griffin <griffin@beerdragon.co.uk> and McLeod Moores Software Limited.
+* See distribution for license.
+*/
 
 [
 	uuid (543e6036-0fe1-4b46-9165-a01cd13c4bd2),
