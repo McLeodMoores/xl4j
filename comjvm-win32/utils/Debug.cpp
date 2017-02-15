@@ -57,8 +57,10 @@ void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLine
 				if (Debug::m_logTarget == LOGTARGET_WINDEBUG) {
 					OutputDebugString(finalBuffer);
 				} else {
-					_ftprintf(m_fdLogFile, finalBuffer);
-					fflush(m_fdLogFile);
+					if (m_fdLogFile) {
+						_ftprintf(m_fdLogFile, finalBuffer);
+						fflush(m_fdLogFile);
+					}
 				}
 				return;
 			}
@@ -290,15 +292,15 @@ void Debug::SetLogTarget(LOGTARGET logTarget) {
 		if (SUCCEEDED(hr)) {
 			OutputDebugStringW(TEXT("Full log path is:"));
 			OutputDebugStringW(buffer);
-			if (_wfopen_s(&m_fdLogFile, buffer, _T("w"))) {
+			if (!_wfopen_s(&m_fdLogFile, buffer, _T("w"))) {
 				OutputDebugStringW(TEXT("Could not open log file"));
-				_tfopen_s(&m_fdLogFile, TEXT("nul"), _T("w"));
+				m_fdLogFile = nullptr;
 			}
 		} else {
 			OutputDebugString(TEXT("Error getting temporary filename:"));
 			_com_error err(hr);
 			OutputDebugString(err.ErrorMessage());
-			_tfopen_s(&m_fdLogFile, TEXT("nul"), _T("w"));
+			m_fdLogFile = nullptr;
 		}
 	} else /* if (logTarget == LOGTARGET_WINDEBUG) */ {
 		if (m_fdLogFile) {

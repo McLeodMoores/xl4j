@@ -6,10 +6,14 @@
 
 const int HELPER_MODULE_ANCHOR = 1;
 
+/**
+ * Constructor, set's validated flag to false.
+ */
 CLicenseChecker::CLicenseChecker() {
 	m_bLicenseValidated = false;
 }
 
+// This is now only here so we can get a handle on the module in LoadCert using it's address!
 PCCERT_CONTEXT WINAPI CryptGetSignerCertificateCallback(
 	_In_ void       *pvGetArg,
 	_In_ DWORD      dwCertEncodingType,
@@ -21,6 +25,12 @@ PCCERT_CONTEXT WINAPI CryptGetSignerCertificateCallback(
 	return p;
 }
 
+/**
+ * Load the public signing certificate from the module's resources.
+ * @param phModule out ptr to the HMODULE handle
+ * @param phResource out ptr to the HGLOBAL resource handle
+ * @param phResourceInfo out ptr to the HRSRC resource info handle
+ */
 HRESULT CLicenseChecker::LoadCert(HMODULE *phModule, HGLOBAL *phResource, HRSRC *phResourceInfo) {
 	HRESULT  hr = S_OK;
 	HMODULE hModule;
@@ -51,7 +61,9 @@ HRESULT CLicenseChecker::LoadCert(HMODULE *phModule, HGLOBAL *phResource, HRSRC 
 CLicenseChecker::~CLicenseChecker() {
 }
 
-
+/**
+ * Validate the license file, @returns S_OK if valid, various possible HRESULT errors otherwise.
+ */
 HRESULT CLicenseChecker::Validate() {
 	HRESULT hr;
 	char *szContent;
@@ -59,16 +71,11 @@ HRESULT CLicenseChecker::Validate() {
 	if (FAILED(hr = ParseFile(&szContent, &szSignature))) {
 		return hr;
 	}
-	LOGTRACE("Content =\n%S", szContent);
-	LOGTRACE("Strlen signature = %d", strlen(szSignature));
-	OutputDebugStringA(szSignature); // LOG* limited to 2K.
-	
 	DWORD cbSignatureBuf = 0;
 	if (!CryptStringToBinaryA(szSignature, 0, CRYPT_STRING_BASE64, NULL, &cbSignatureBuf, NULL, NULL)) {
 		LOGERROR("Could not get buffer size for signature binary");
-		return HRESULT_FROM_WIN32(GetLastError());
+		return GETLASTERROR_TO_HRESULT();
 	}
-	LOGTRACE("cbSignatureBuf = %d", cbSignatureBuf);
 	BYTE *pbSignatureBuf = (BYTE *)calloc(cbSignatureBuf, sizeof(BYTE));
 	if (!pbSignatureBuf) {
 		LOGERROR("Couldn't calloc buffer for decoded signature");
@@ -76,9 +83,8 @@ HRESULT CLicenseChecker::Validate() {
 	}
 	if (!CryptStringToBinaryA(szSignature, 0, CRYPT_STRING_BASE64, pbSignatureBuf, &cbSignatureBuf, NULL, NULL)) {
 		LOGERROR("Could not convert signature to binary");
-		return HRESULT_FROM_WIN32(GetLastError());
+		return GETLASTERROR_TO_HRESULT();
 	}
-	LOGTRACE("pbSignatureBuf = %p", pbSignatureBuf);
 	
 	DWORD cbContent = strlen(szContent);
 
@@ -91,19 +97,16 @@ HRESULT CLicenseChecker::Validate() {
 	}
 	BYTE *pemPubKey = (BYTE *)LockResource(hResource);
 	DWORD pemPubKeyLen = SizeofResource(hModule, hResourceInfo);
-	LOGTRACE("pemPubKey = %p, pemPubKeyLen = %d", pemPubKey, pemPubKeyLen);
 	DWORD derPubKeyLen = 0;
 	if (!CryptStringToBinaryA((LPCSTR)pemPubKey, 0, CRYPT_STRING_BASE64HEADER, 0, &derPubKeyLen, NULL, NULL)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Error decoding base64 of cert: %s", err.ErrorMessage());
+		hr = GETLASTERROR_TO_HRESULT();
+		LOGERROR("Error decoding base64 of cert: %s", HRESULT_TO_STR(hr));
 		return hr;
 	}
 	BYTE *derPubKey = (BYTE *)calloc(derPubKeyLen, sizeof(BYTE));
 	if (!CryptStringToBinaryA((LPCSTR)pemPubKey, 0, CRYPT_STRING_BASE64HEADER, derPubKey, &derPubKeyLen, NULL, NULL)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Error decoding base64 of cert: %s", err.ErrorMessage());
+		hr = GETLASTERROR_TO_HRESULT();
+		LOGERROR("Error decoding base64 of cert: %s", HRESULT_TO_STR(hr));
 		return hr;
 	}
 	HCRYPTPROV hProv;
@@ -111,24 +114,21 @@ HRESULT CLicenseChecker::Validate() {
 		if (GetLastError() == NTE_BAD_KEYSET) {
 			LOGTRACE("CryptAcquireContext returned bad keyset, trying to create new keyset");
 			if (!CryptAcquireContext(&hProv, NULL, MS_ENH_RSA_AES_PROV, PROV_RSA_AES, CRYPT_NEWKEYSET)) {
-				hr = HRESULT_FROM_WIN32(GetLastError());
-				_com_error err(hr);
-				LOGERROR("Error acquiring context: %s", err.ErrorMessage());
+				hr = GETLASTERROR_TO_HRESULT();
+				LOGERROR("Error acquiring context: %s", HRESULT_TO_STR(hr));
 				return hr;
 			}
 		} else {
-			hr = HRESULT_FROM_WIN32(GetLastError());
-			_com_error err(hr);
-			LOGERROR("Error acquiring context: %s", err.ErrorMessage());
+			hr = GETLASTERROR_TO_HRESULT();
+			LOGERROR("Error acquiring context: %s", HRESULT_TO_STR(hr));
 			return hr;
 		}
 	}
 	CERT_INFO *pCertInfo;
 	DWORD certInfoLen;
 	if (!CryptDecodeObjectEx(X509_ASN_ENCODING, X509_CERT_TO_BE_SIGNED, derPubKey, derPubKeyLen, CRYPT_ENCODE_ALLOC_FLAG, NULL, &pCertInfo, &certInfoLen)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Error decoding cert: %s", err.ErrorMessage());
+		hr = GETLASTERROR_TO_HRESULT();
+		LOGERROR("Error decoding cert: %s", GETLASTERROR_TO_STR());
 		CryptReleaseContext(hProv, 0);
 		return hr;
 	} else {
@@ -138,26 +138,23 @@ HRESULT CLicenseChecker::Validate() {
 
 	HCRYPTKEY hCryptKey = NULL;
 	if (!CryptImportPublicKeyInfo(hProv, X509_ASN_ENCODING, &pCertInfo->SubjectPublicKeyInfo, &hCryptKey)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Error importing public key info: %s", err.ErrorMessage());
+		hr = GETLASTERROR_TO_HRESULT();
+		LOGERROR("Error importing public key info: %s", GETLASTERROR_TO_STR());
 		CryptReleaseContext(hProv, 0);
 		return hr;
 	}
 
 	HCRYPTHASH hHash = NULL;
 	if (!CryptCreateHash(hProv, CALG_SHA_256, 0, 0, &hHash)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Error creating hash: %s", err.ErrorMessage());
+		hr = GETLASTERROR_TO_HRESULT();
+		LOGERROR("Error creating hash: %s", GETLASTERROR_TO_STR());
 		CryptReleaseContext(hProv, 0);
 		return hr;
 	}
 	if (!CryptHashData(hHash, (BYTE *)szContent, cbContent, 0)) {
 		// couldn't hash.
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Error hashing: %s", err.ErrorMessage());
+		hr = GETLASTERROR_TO_HRESULT();
+		LOGERROR("Error hashing: %s", GETLASTERROR_TO_STR());
 		CryptReleaseContext(hProv, 0);
 		return hr;
 	}
@@ -167,25 +164,33 @@ HRESULT CLicenseChecker::Validate() {
 		pbReversedSignatureBuf[i] = pbSignatureBuf[j];
 	}
 	if (!CryptVerifySignatureA(hHash, pbReversedSignatureBuf, cbSignatureBuf, hCryptKey, NULL, 0)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
+		hr = GETLASTERROR_TO_HRESULT();
 		CryptDestroyHash(hHash);
 		CryptReleaseContext(hProv, 0);
-		LOGERROR("Error verifying signature: %s", err.ErrorMessage());
+		LOGERROR("Error verifying signature: %s", GETLASTERROR_TO_STR());
 		return hr;
 	}
 	CryptDestroyHash(hHash);
 	LOGTRACE("Verified signature");
-	LOGTRACE("CryptVerifySignature worked");
 	CryptReleaseContext(hProv, 0);
 	m_bLicenseValidated = true;
 	return S_OK;
 }
 
+/**
+ * Whether the license file has been found valid.  Returns false if Validate not.
+ */
 bool CLicenseChecker::IsLicenseValidated() {
 	return m_bLicenseValidated;
 }
 
+/**
+ * Parse the license file and return the license text and the signature as separate strings.
+ * Note these are raw strings and not Unicode.
+ * @param pszLicenseText an output pointer for a pointer to the zero-terminated license text.
+ * @param pszSignature an output pointer for a pointer to the zero-terminated signature text.
+ * @return S_OK if successful, HRESULT error code otherwise.
+ */
 HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 	wchar_t szFullFilePath[MAX_PATH + 1];
 	HRESULT hr;
@@ -197,24 +202,23 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 		FILE_ATTRIBUTE_NORMAL,
 		NULL);
 	if (INVALID_HANDLE_VALUE == hLicenseFile) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Problem opening license file (%s): %s", szFullFilePath, err.ErrorMessage());
+		LOGERROR("Problem opening license file (%s): %s", szFullFilePath, GETLASTERROR_TO_STR());
 		return hr;
 	}
 	LOGTRACE("Opened license file %s", szFullFilePath);
 	DWORD dwLicenseFileSize = GetFileSize(hLicenseFile, NULL);
 	if (dwLicenseFileSize == INVALID_FILE_SIZE) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Problem reading license file size: %s", err.ErrorMessage());
+		LOGERROR("Problem reading license file size: %s", GETLASTERROR_TO_STR());
 		return hr;
 	}
 	LPVOID pBuffer = malloc(dwLicenseFileSize);
-	if (!ReadFile(hLicenseFile, pBuffer, dwLicenseFileSize, nullptr, nullptr)) {
-		hr = HRESULT_FROM_WIN32(GetLastError());
-		_com_error err(hr);
-		LOGERROR("Problem reading license file: %s", err.ErrorMessage());
+	if (!pBuffer) {
+		LOGERROR("malloc failed");
+		return E_OUTOFMEMORY;
+	}
+	DWORD dwBytesRead;
+	if (!ReadFile(hLicenseFile, pBuffer, dwLicenseFileSize, &dwBytesRead, nullptr)) {
+		LOGERROR("Problem reading license file: %s", GETLASTERROR_TO_STR());
 		return hr;
 	}
 	CloseHandle(hLicenseFile);
@@ -227,8 +231,7 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 	char *szContent;
 	char *szSignature;
 	if (FAILED(hr = Parse((const char *)pBuffer, &szContent, &szSignature))) {
-		_com_error err(hr);
-		LOGERROR("License file parsing failed: %s", err.ErrorMessage());
+		LOGERROR("License file parsing failed: %s", HRESULT_TO_STR(hr));
 		return hr;
 	}
 	if (pszLicenseText != NULL) {
@@ -263,16 +266,16 @@ HRESULT CLicenseChecker::Parse(const char *pBuffer, char **pszFirstBlock, char *
 		return E_FAIL;
 	}
 	szEndSecondBlock += 2; // skip over ==
-	LOGTRACE("End of second block looks like this: %S", szEndSecondBlock);
+	//LOGTRACE("End of second block looks like this: %S", szEndSecondBlock);
 	size_t cchSecondBlock = szEndSecondBlock - szSecondBlock;
-	LOGTRACE("Count = %d", cchSecondBlock);
+	//LOGTRACE("Count = %d", cchSecondBlock);
 	char *szSecondBlockResult = (char *)calloc(cchSecondBlock + 1, sizeof(char)); // null terminator + 1, one ptr is exclusive, one inclusive so no extra
 	if (!szSecondBlockResult) return E_OUTOFMEMORY;
 	if (strncpy_s(szSecondBlockResult, cchSecondBlock + 1, szSecondBlock, cchSecondBlock)) {
 		LOGERROR("Could not copy second block result");
 		return E_FAIL;
 	}
-	OutputDebugStringA(szSecondBlockResult);
+	//OutputDebugStringA(szSecondBlockResult);
 	*pszFirstBlock = szFirstBlockResult;
 	*pszSecondBlock = szSecondBlockResult;
 	return S_OK;
@@ -281,22 +284,23 @@ HRESULT CLicenseChecker::Parse(const char *pBuffer, char **pszFirstBlock, char *
 HRESULT CLicenseChecker::GetLicenseText(wchar_t ** ppszLicenseText) {
 	if (m_bLicenseValidated) {
 		char *szLicenseText;
-		if (FAILED(ParseFile(&szLicenseText, NULL))) {
+		char *szSignatureText;
+		if (FAILED(ParseFile(&szLicenseText, &szSignatureText))) {
+			HRESULT hr = GETLASTERROR_TO_HRESULT();
 			LOGERROR("Error parsing license file");
+			return hr;
 		}
 		size_t chLicenseText = MultiByteToWideChar(CP_UTF8, 0, szLicenseText, -1, NULL, 0);
 		if (!chLicenseText) {
-			HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
-			_com_error err(hr);
-			LOGERROR("Couldn't get size when converting license text to Unicode: %s", err.ErrorMessage());
+			HRESULT hr = GETLASTERROR_TO_HRESULT();
+			LOGERROR("Couldn't get size when converting license text to Unicode: %s", GETLASTERROR_TO_STR());
 			return hr;
 		}
 		// NB: chLicenseText includes NULL terminator.
 		wchar_t *szUnicodeLicenseText = (wchar_t *)calloc(chLicenseText, sizeof(wchar_t));
 		if (!MultiByteToWideChar(CP_UTF8, 0, szLicenseText, -1, szUnicodeLicenseText, chLicenseText)) {
-			HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
-			_com_error err(hr);
-			LOGERROR("Couldn't convert license text to Unicode: %s", err.ErrorMessage());
+			HRESULT hr = GETLASTERROR_TO_HRESULT();
+			LOGERROR("Couldn't convert license text to Unicode: %s", GETLASTERROR_TO_STR());
 			return hr;
 		}
 		*ppszLicenseText = szUnicodeLicenseText;
