@@ -1,3 +1,8 @@
+/*
+ * Copyright 2014-present by McLeod Moores Software Limited.
+ * See distribution for license.
+ */
+
 #pragma once
 #include "afxwin.h"
 #include "afxcmn.h"

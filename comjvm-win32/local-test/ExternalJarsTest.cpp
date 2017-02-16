@@ -1,4 +1,9 @@
 /*
+ * Copyright 2014-present by McLeod Moores Software Limited.
+ * See distribution for license.
+ */
+
+/*
 * JVM as a COM object
 *
 * Copyright 2014 by Andrew Ian William Griffin <griffin@beerdragon.co.uk>
