@@ -1,4 +1,9 @@
 /*
+ * Copyright 2014-present by McLeod Moores Software Limited.
+ * See distribution for license.
+ */
+
+/*
  * Debugging API
  */
 
@@ -111,7 +116,10 @@ public:
       Debug::PrettyLogPrintf(LOGLEVEL_FATAL, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT(x), __VA_ARGS__);\
     }\
   } while (0)
-
+#define HRESULT_TO_STR(x) _com_error(x).ErrorMessage()
+#define WIN32_TO_STR(x) _com_error(HRESULT_FROM_WIN32(x)).ErrorMessage()
+#define GETLASTERROR_TO_STR() _com_error(HRESULT_FROM_WIN32(GetLastError())).ErrorMessage()
+#define GETLASTERROR_TO_HRESULT() HRESULT_FROM_WIN32(GetLastError())
 #ifdef __cplusplus
 }
 #endif /* ifdef __cplusplus */

@@ -1,3 +1,8 @@
+/*
+ * Copyright 2014-present by McLeod Moores Software Limited.
+ * See distribution for license.
+ */
+
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by core.rc

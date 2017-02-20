@@ -1,8 +1,6 @@
 /*
- * JVM as a COM object
- *
- * Copyright 2014 by Andrew Ian William Griffin <griffin@beerdragon.co.uk>
- * Released under the GNU General Public License.
+ * Copyright 2014-present by Andrew Ian William Griffin <griffin@beerdragon.co.uk> and McLeod Moores Software Limited.
+ * See distribution for license.
  */
 #include "stdafx.h"
 #include "Settings.h"

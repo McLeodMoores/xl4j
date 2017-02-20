@@ -1,3 +1,8 @@
+/*
+ * Copyright 2014-present by McLeod Moores Software Limited.
+ * See distribution for license.
+ */
+
 #pragma once
 
 // Including SDKDDKVer.h defines the highest available Windows platform.
