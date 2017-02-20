@@ -14,6 +14,7 @@ import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.xl4j.javacode.FieldInvoker;
 import com.mcleodmoores.xl4j.javacode.MethodInvoker;
 import com.mcleodmoores.xl4j.lowlevel.LowLevelExcelCallback;
+import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLInteger;
 import com.mcleodmoores.xl4j.values.XLLocalReference;
@@ -33,7 +34,7 @@ public class DefaultExcelCallback implements ExcelCallback {
    *          the raw callback interface to call through to
    */
   public DefaultExcelCallback(final LowLevelExcelCallback rawCallback) {
-    _rawCallback = rawCallback;
+    _rawCallback = ArgumentChecker.notNull(rawCallback, "rawCallback");
   }
 
   @Override
@@ -226,7 +227,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
       // Return type character
       if (functionType == FunctionType.COMMAND) {
-        if (!excelReturnType.isAssignableFrom(XLInteger.class)) {
+        if (!XLInteger.class.isAssignableFrom(excelReturnType)) {
           throw new Excel4JRuntimeException("Commands must have a return type XLInteger (gets converted to type J (int))");
         }
         signature.append("J"); // means int, but we'll convert from XLInteger to make the class hierarchy cleaner.
@@ -234,7 +235,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         if (isAutoAsynchronous) {
           signature.append(">"); // means void function is asynchronous callback handle, which we don't expose to the user.
         } else {
-          if (excelReturnType.isAssignableFrom(XLLocalReference.class) || excelReturnType.isAssignableFrom(XLMultiReference.class)) {
+          if (XLLocalReference.class.isAssignableFrom(excelReturnType) || XLMultiReference.class.isAssignableFrom(excelReturnType)) {
             // REVIEW: Not sure if this is a valid thing to do.
             signature.append("U"); // XLOPER12 range/ref/array. I've no idea if this is even valid. Not clear in docs.
           } else {
@@ -293,7 +294,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final Class<?> excelReturnType = fieldInvoker.getExcelReturnType();
     // TODO check the whether or not volatile should be used in some cases
     // Return type character
-    if (excelReturnType.isAssignableFrom(XLLocalReference.class) || excelReturnType.isAssignableFrom(XLMultiReference.class)) {
+    if (XLLocalReference.class.isAssignableFrom(excelReturnType) || XLMultiReference.class.isAssignableFrom(excelReturnType)) {
       // REVIEW: Not sure if this is a valid thing to do.
       signature.append("U"); // XLOPER12 range/ref/array. I've no idea if this is even valid. Not clear in docs.
     } else {
