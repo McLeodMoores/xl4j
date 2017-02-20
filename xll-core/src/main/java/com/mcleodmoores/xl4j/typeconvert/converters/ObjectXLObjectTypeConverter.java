@@ -29,7 +29,7 @@ public class ObjectXLObjectTypeConverter extends AbstractTypeConverter {
    */
   public ObjectXLObjectTypeConverter(final Excel excel) {
     super(Object.class, XLObject.class, OBJECT_CONVERTER_PRIORITY);
-    _heap = excel.getHeap();
+    _heap = ArgumentChecker.notNull(excel, "excel").getHeap();
   }
 
   @Override

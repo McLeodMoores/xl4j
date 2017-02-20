@@ -37,10 +37,8 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
    *          the heap, not null
    */
   public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final Heap heap) {
-    ArgumentChecker.notNull(functionRegistry, "functionRegistry");
-    ArgumentChecker.notNull(heap, "heap");
-    _functionRegistry = functionRegistry;
-    _heap = heap;
+    _functionRegistry = ArgumentChecker.notNull(functionRegistry, "functionRegistry");
+    _heap = ArgumentChecker.notNull(heap, "heap");
   }
 
   @Override
