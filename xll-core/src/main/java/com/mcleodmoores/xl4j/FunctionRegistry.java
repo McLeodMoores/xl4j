@@ -243,10 +243,7 @@ public class FunctionRegistry {
 
   private void addField(final Field field, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
       final XLConstant constantAnnotation, final XLNamespace namespaceAnnotation, final String functionName) {
-    // scan the result type if there is one to determine whether function should return simplest type or always
-    // an object type
-    final TypeConversionMode resultType =
-        constantAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : constantAnnotation.typeConversionMode();
+    final TypeConversionMode resultType = constantAnnotation.typeConversionMode();
     try {
       final FieldInvoker fieldInvoker = invokerFactory.getFieldTypeConverter(field, resultType);
       final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, constantAnnotation, functionName);
@@ -264,10 +261,7 @@ public class FunctionRegistry {
 
   private void addMethod(final Method method, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
       final XLFunction functionAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
-    // scan the result type if there is one to determine whether function should return simplest type or always
-    // an object type
-    final TypeConversionMode resultType =
-        functionAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : functionAnnotation.typeConversionMode();
+    final TypeConversionMode resultType = functionAnnotation.typeConversionMode();
     // build a method invoker
     try {
       final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
@@ -287,10 +281,7 @@ public class FunctionRegistry {
 
   private void addMethod(final Method method, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
       final XLFunctions functionsAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
-    // scan the result type if there is one to determine whether function should return simplest type or always
-    // an object type
-    final TypeConversionMode resultType =
-        functionsAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : functionsAnnotation.typeConversionMode();
+    final TypeConversionMode resultType = functionsAnnotation.typeConversionMode();
     // build a method invoker
     try {
       final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);

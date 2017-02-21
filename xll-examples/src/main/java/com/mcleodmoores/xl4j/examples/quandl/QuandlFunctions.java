@@ -19,7 +19,6 @@ import com.jimmoores.quandl.Frequency;
 import com.jimmoores.quandl.HeaderDefinition;
 import com.jimmoores.quandl.QuandlSession;
 import com.jimmoores.quandl.Row;
-import com.jimmoores.quandl.SessionOptions;
 import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
@@ -86,7 +85,7 @@ public final class QuandlFunctions {
       description = "Get a data set from Quandl",
       isAutoAsynchronous = true,
       isLongRunning = true)
-  public synchronized static TabularResult dataSet(
+  public static synchronized TabularResult dataSet(
       @XLParameter(description = "Quandl Code", name = "quandlCode") final String quandlCode,
       @XLParameter(optional = true, description = "Start Date", name = "StartDate") final LocalDate startDate,
       @XLParameter(optional = true, description = "End Date", name = "EndDate") final LocalDate endDate,

@@ -80,7 +80,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         isManualAsynchronous = functionAnnotation.isManualAsynchronous();
         isCallerRequired = functionAnnotation.isCallerRequired();
         argumentNames = buildArgNames(argumentAnnotations);
-        functionTypeInt = getFunctionType(functionAnnotation);
+        functionTypeInt = functionAnnotation.functionType().getExcelValue();
         helpTopic = buildHelpTopic(functionAnnotation);
         description = buildDescription(functionAnnotation);
         argsHelp = buildArgsHelp(argumentAnnotations);
@@ -92,7 +92,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         isManualAsynchronous = functionsAnnotation.isManualAsynchronous();
         isCallerRequired = functionsAnnotation.isCallerRequired();
         argumentNames = buildArgNames(argumentAnnotations);
-        functionTypeInt = getFunctionsType(functionsAnnotation);
+        functionTypeInt = functionsAnnotation.functionType().getExcelValue();
         helpTopic = buildHelpTopic(functionsAnnotation);
         description = buildDescription(functionsAnnotation);
         argsHelp = buildArgsHelp(argumentAnnotations);
@@ -118,42 +118,42 @@ public class DefaultExcelCallback implements ExcelCallback {
   }
 
   private static String buildDescription(final XLFunction functionAnnotation) {
-    if (functionAnnotation != null && !functionAnnotation.description().isEmpty()) {
+    if (!functionAnnotation.description().isEmpty()) {
       return functionAnnotation.description();
     }
     return null;
   }
 
   private static String buildDescription(final XLFunctions functionsAnnotation) {
-    if (functionsAnnotation != null && !functionsAnnotation.description().isEmpty()) {
+    if (!functionsAnnotation.description().isEmpty()) {
       return functionsAnnotation.description();
     }
     return null;
   }
 
   private static String buildDescription(final XLConstant constantAnnotation) {
-    if (constantAnnotation != null && !constantAnnotation.description().isEmpty()) {
+    if (!constantAnnotation.description().isEmpty()) {
       return constantAnnotation.description();
     }
     return null;
   }
 
   private static String buildHelpTopic(final XLFunction functionAnnotation) {
-    if (functionAnnotation != null && !functionAnnotation.helpTopic().isEmpty()) {
+    if (!functionAnnotation.helpTopic().isEmpty()) {
       return functionAnnotation.helpTopic();
     }
     return null;
   }
 
   private static String buildHelpTopic(final XLFunctions functionsAnnotation) {
-    if (functionsAnnotation != null && !functionsAnnotation.helpTopic().isEmpty()) {
+    if (!functionsAnnotation.helpTopic().isEmpty()) {
       return functionsAnnotation.helpTopic();
     }
     return null;
   }
 
   private static String buildHelpTopic(final XLConstant constantAnnotation) {
-    if (constantAnnotation != null && !constantAnnotation.helpTopic().isEmpty()) {
+    if (!constantAnnotation.helpTopic().isEmpty()) {
       return constantAnnotation.helpTopic();
     }
     return null;
@@ -163,7 +163,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final FunctionMetadata functionMetadata = functionDefinition.getFunctionMetadata();
     if (functionMetadata.isConstantSpec()) {
       final XLConstant constantAnnotation = functionMetadata.getConstantSpec();
-      if (constantAnnotation != null && !constantAnnotation.category().isEmpty()) {
+      if (!constantAnnotation.category().isEmpty()) {
         return constantAnnotation.category();
       }
       return functionMetadata.getName();
@@ -206,18 +206,18 @@ public class DefaultExcelCallback implements ExcelCallback {
       final FunctionType functionType;
       if (functionMetadata.getFunctionSpec() != null) {
         final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
-        isVolatile = functionAnnotation != null ? functionAnnotation.isVolatile() : false; // default
-        isMTSafe = functionAnnotation != null ? functionAnnotation.isMultiThreadSafe() : true; // default, this is the 2010s, yo.
-        isMacroEquivalent = functionAnnotation != null ? functionAnnotation.isMacroEquivalent() : false; // default
-        isAutoAsynchronous = functionAnnotation != null ? functionAnnotation.isAutoAsynchronous() : false; // default
-        functionType = functionAnnotation != null ? functionAnnotation.functionType() : FunctionType.FUNCTION; // default;
+        isVolatile = functionAnnotation.isVolatile();
+        isMTSafe = functionAnnotation.isMultiThreadSafe();
+        isMacroEquivalent = functionAnnotation.isMacroEquivalent();
+        isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
+        functionType = functionAnnotation.functionType();
       } else if (functionMetadata.getFunctionsSpec() != null) {
         final XLFunctions functionAnnotations = functionMetadata.getFunctionsSpec();
-        isVolatile = functionAnnotations != null ? functionAnnotations.isVolatile() : false; // default
-        isMTSafe = functionAnnotations != null ? functionAnnotations.isMultiThreadSafe() : true; // default
-        isMacroEquivalent = functionAnnotations != null ? functionAnnotations.isMacroEquivalent() : false; // default
-        isAutoAsynchronous = functionAnnotations != null ? functionAnnotations.isAutoAsynchronous() : false; // default
-        functionType = functionAnnotations != null ? functionAnnotations.functionType() : FunctionType.FUNCTION; // default;
+        isVolatile = functionAnnotations.isVolatile();
+        isMTSafe = functionAnnotations.isMultiThreadSafe();
+        isMacroEquivalent = functionAnnotations.isMacroEquivalent();
+        isAutoAsynchronous = functionAnnotations.isAutoAsynchronous();
+        functionType = functionAnnotations.functionType();
       } else {
         throw new Excel4JRuntimeException("Could not get XLFunction or XLFunctions information");
       }
@@ -245,8 +245,11 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
       // Parameters
       final XLParameter[] parameterAnnotations = functionMetadata.getParameters();
+      if (parameterAnnotations.length != parameterTypes.length && parameterAnnotations.length != 0) {
+        throw new Excel4JRuntimeException("Function called " + functionMetadata.getName() + " must have an XLParameter annotation for each parameter");
+      }
       for (int i = 0; i < parameterTypes.length; i++) {
-        if (parameterAnnotations.length == 0) { // true if someone has used a class-level @XLFunction annotation, see FunctionRegistry
+        if (parameterAnnotations.length == 0) { // true if someone has used a class-level @XLFunctions annotation, see FunctionRegistry
           // if they wanted anything other than the default, they wouldn't have used a class-level annotation
           signature.append("Q");
         } else {
@@ -266,7 +269,8 @@ public class DefaultExcelCallback implements ExcelCallback {
         if (parameterTypes.length == 0) {
           throw new IllegalStateException("Internal Error: Variable argument list function should have at least one parameter type");
         }
-        final boolean isLastTypeReferenceType = parameterAnnotations[parameterTypes.length - 1].referenceType();
+        // assume the default value is required for XLFunctions annotation where the parameters aren't annotated
+        final boolean isLastTypeReferenceType = parameterAnnotations.length == 0 ? false : parameterAnnotations[parameterTypes.length - 1].referenceType();
         for (int i = 0; i < VARARGS_MAX_PARAMS - parameterTypes.length; i++) {
           if (isLastTypeReferenceType) {
             signature.append("U"); // XLOPER12 byref
@@ -336,31 +340,4 @@ public class DefaultExcelCallback implements ExcelCallback {
     return parameterNames.toString();
   }
 
-  /**
-   * Get the type of the function.
-   *
-   * @param functionAnnotation
-   *          the function annotation if there is one, null otherwise
-   * @return the type, defaults to 1 (FUNCTION)
-   */
-  private static int getFunctionType(final XLFunction functionAnnotation) {
-    if (functionAnnotation != null) {
-      return functionAnnotation.functionType().getExcelValue();
-    }
-    return FunctionType.FUNCTION.getExcelValue();
-  }
-
-  /**
-   * Get the type of the functions.
-   *
-   * @param functionsAnnotation
-   *          the function annotation if there is one, null otherwise
-   * @return the type, defaults to 1 (FUNCTION)
-   */
-  private static int getFunctionsType(final XLFunctions functionsAnnotation) {
-    if (functionsAnnotation != null) {
-      return functionsAnnotation.functionType().getExcelValue();
-    }
-    return FunctionType.FUNCTION.getExcelValue();
-  }
 }

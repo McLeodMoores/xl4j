@@ -7,7 +7,7 @@ package com.mcleodmoores.xl4j.lowlevel;
  * The Excel low-level callback interface. This may or may not be necessary.
  */
 public interface LowLevelExcelCallback {
-  //TODO javadoc
+
   /**
    * Excel callback interface to register a function.
    *
@@ -23,9 +23,9 @@ public interface LowLevelExcelCallback {
    *          true if the function should be made called in a thread drawn from a pool and excel notified
    *          asynchronously on completion.  Allows long running functions not to block Excel
    * @param isManualAsynchronous
-   *          true if the function should handle asynchronous execution itself.  Currently this is a 
+   *          true if the function should handle asynchronous execution itself.  Currently this is a
    *          synonym for isAutoAsynchronou, although it's really just a placeholder until the functionality
-   *          is implemented.  Do not use. 
+   *          is implemented.  Do not use.
    * @param isCallerRequired
    *          true if the function should be provided with an extra argument detailing the calling context,
    *          i.e. which cell or cells are being calculated.  This is not currently supported and is just
@@ -39,7 +39,7 @@ public interface LowLevelExcelCallback {
    * @param functionType
    *          an integer representing the function type (1=Function, 2=Command)
    * @param functionCategory
-   *          the paste function category (see StandardFunctionCategories)
+   *          the paste function category
    * @param acceleratorKey
    *          for commands, represents a CTRL-SHIFT-&lt;acceleratorKey&gt; shortcut. If not used, pass XLNil or XLMissing
    * @param helpTopic
