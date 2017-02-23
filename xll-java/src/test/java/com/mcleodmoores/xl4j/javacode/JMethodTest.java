@@ -20,7 +20,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
  *
  */
 public class JMethodTest {
-  private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.testutil.TestObject");
+  private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.javacode.testutils.TestObject");
   private TestObject _testObject;
   private XLObject _testObjectReference;
 

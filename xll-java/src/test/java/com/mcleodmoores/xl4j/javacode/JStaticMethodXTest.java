@@ -21,7 +21,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
  *
  */
 public class JStaticMethodXTest {
-  private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.testutil.TestObject");
+  private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.javacode.testutils.TestObject");
 
   @Test
   public void testReturnType() {

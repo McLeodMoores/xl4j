@@ -18,7 +18,7 @@ import com.mcleodmoores.xl4j.values.XLString;
  *
  */
 public class JFieldTest {
-  private static final XLString CLASS_NAME = XLString.of("com.mcleodmoores.xl4j.testutil.TestObject");
+  private static final XLString CLASS_NAME = XLString.of("com.mcleodmoores.xl4j.javacode.testutils.TestObject");
 
   @Test
   public void testField() {

@@ -86,7 +86,7 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
           definitions.add(generateDefinition(field, invokerFactory, constantAnnotation, namespaceAnnotation, functionName));
         }
       } catch (final Exception e) {
-        LOGGER.error("Exception while creating function definition for field in clazz " + clazz, e);
+        LOGGER.error("Exception while creating function definition for field in class " + clazz, e);
         continue;
       }
     }
