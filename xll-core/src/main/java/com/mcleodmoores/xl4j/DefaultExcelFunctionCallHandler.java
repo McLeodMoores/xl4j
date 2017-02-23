@@ -24,7 +24,7 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
   /** The logger */
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultExcelFunctionCallHandler.class);
   /** The registry */
-  private final FunctionRegistry _functionRegistry;
+  private final IFunctionRegistry _functionRegistry;
   /** The heap */
   private final Heap _heap;
 
@@ -36,13 +36,14 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
    * @param heap
    *          the heap, not null
    */
-  public DefaultExcelFunctionCallHandler(final FunctionRegistry functionRegistry, final Heap heap) {
+  public DefaultExcelFunctionCallHandler(final IFunctionRegistry functionRegistry, final Heap heap) {
     _functionRegistry = ArgumentChecker.notNull(functionRegistry, "functionRegistry");
     _heap = ArgumentChecker.notNull(heap, "heap");
   }
 
   @Override
   public XLValue invoke(final int exportNumber, final XLValue... args) {
+    ArgumentChecker.notNull(args, "args");
     LOGGER.info("invoke called with {}", exportNumber);
     for (int i = 0; i < args.length; i++) {
       LOGGER.info("arg = {}", args[i]);
@@ -56,6 +57,10 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
     }
     try {
       final FunctionDefinition functionDefinition = _functionRegistry.getFunctionDefinition(exportNumber);
+      if (functionDefinition == null) {
+        LOGGER.error("Could not get function definition with export number {}", exportNumber);
+        return XLError.Null;
+      }
       LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getName());
       switch (functionDefinition.getJavaTypeForFunction()) {
         case METHOD: {
