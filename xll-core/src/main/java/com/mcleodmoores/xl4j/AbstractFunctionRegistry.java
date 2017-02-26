@@ -151,7 +151,7 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
         final XLFunction functionAnnotation = method.getAnnotation(XLFunction.class);
         final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(method.getParameterAnnotations());
         final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation.name(),
-            method.getDeclaringClass().getSimpleName(), method.getName(), functionAnnotation.name().isEmpty(), 1);
+            method.getDeclaringClass().getSimpleName(), method.getName(), false, functionAnnotation.name().isEmpty(), 1);
         definitions.add(generateDefinition(method, invokerFactory, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName));
       } catch (final Exception e) {
         LOGGER.error("Exception while creating function definition for method " + method, e);
@@ -185,7 +185,7 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
         final XLFunction functionAnnotation = constructor.getAnnotation(XLFunction.class);
         final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(constructor.getParameterAnnotations());
         final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, functionAnnotation.name(),
-            constructor.getDeclaringClass().getSimpleName(), 1);
+            constructor.getDeclaringClass().getSimpleName(), false, 1);
         definitions.add(generateDefinition(constructor, invokerFactory, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName));
       } catch (final Exception e) {
         LOGGER.error("Exception while creating function definition for constructor " + constructor, e);
@@ -214,7 +214,7 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
         final Constructor<?>[] constructors = clazz.getConstructors();
         int count = 1;
         for (final Constructor<?> constructor : constructors) {
-          final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, count);
+          final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, true, count);
           definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
           count++;
         }
@@ -233,7 +233,7 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
           final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
           methodNames.put(methodName, methodNameCount);
           final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
-              true, methodNameCount);
+              true, true, methodNameCount);
           definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
         }
       } catch (final Exception e) {
@@ -323,13 +323,16 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
   }
 
   private static String generateFunctionNameForMethod(final XLNamespace namespace, final String nameOrPrefix, final String className,
-      final String methodName, final boolean appendMethodName, final int methodNumber) {
+      final String methodName, final boolean appendClassName, final boolean appendMethodName, final int methodNumber) {
     final StringBuilder functionName = new StringBuilder();
     if (namespace != null) {
       functionName.append(namespace.value());
     }
     if (!nameOrPrefix.isEmpty()) {
       functionName.append(nameOrPrefix);
+      if (appendClassName) {
+        functionName.append(className);
+      }
     } else {
       functionName.append(className);
     }
@@ -345,13 +348,16 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
   }
 
   private static String generateFunctionNameForConstructor(final XLNamespace namespace, final String nameOrPrefix, final String className,
-      final int constructorNumber) {
+      final boolean appendClassName, final int constructorNumber) {
     final StringBuilder functionName = new StringBuilder();
     if (namespace != null) {
       functionName.append(namespace.value());
     }
     if (!nameOrPrefix.isEmpty()) {
       functionName.append(nameOrPrefix);
+      if (appendClassName) {
+        functionName.append(className);
+      }
     } else {
       functionName.append(className);
     }

@@ -266,8 +266,8 @@ public class XLFunctionRegisteringTest {
   }
 
   /**
-   * Tests that the same constructor names are used when the names aren't set in the function annotations.
-   * This means that only of of these methods will eventually be available.
+   * Tests that overloaded method names. Only of of these methods will eventually be available because
+   * the generated names will be the same.
    * @throws NoSuchMethodException  if the method cannot be found
    * @throws SecurityException  if the method cannot be found
    */
