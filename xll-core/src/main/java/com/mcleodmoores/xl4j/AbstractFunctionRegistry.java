@@ -60,8 +60,9 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
   protected abstract void createAndRegisterFunctions(InvokerFactory invokerFactory);
 
   /**
-   * For a type (class or enum) annotated with {@link XLConstant}, retrieve each public field and create a {@link FunctionDefinition}.
-   * The name of the function is created as ([Optional namespace value])([Name] OR [Simple class name]).([Field name]).
+   * For all types (class or enum) annotated with {@link XLConstant}, retrieve each public field and create a {@link FunctionDefinition}.
+   * The name of the function is generated using the rule <br>
+   * <code>[Optional namespace value]([Name] OR [Simple class name]).[Field name]</code>.
    *
    * @param invokerFactory
    *          the invoker factory, not null
@@ -93,6 +94,18 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
     return definitions;
   }
 
+  /**
+   * For all fields annotated with {@link XLConstant}, create a {@link FunctionDefinition}. The name of the function is generated
+   * using the rule <br>
+   * <code>[Optional namespace value].([Name] OR ([Class name].[Field name]))</code>
+   *
+   * @param invokerFactory
+   *          the invoker factory, not null
+   * @param fieldsAnnotatedWith
+   *          the fields annotated with {@link XLConstant}, not null
+   * @return
+   *          a list of function definitions
+   */
   protected List<FunctionDefinition> getConstantsForFields(final InvokerFactory invokerFactory,
       final Collection<Field> fieldsAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
@@ -114,6 +127,18 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
     return definitions;
   }
 
+  /**
+   * For all methods annotated with {@link XLFunction}, create a {@link FunctionDefinition}. The name of the function is generated
+   * using the rule <br>
+   * <code>[Optional namespace value].([Name] OR ([Class name].[Method name]))</code>
+   *
+   * @param invokerFactory
+   *          the invoker factory, not null
+   * @param methodsAnnotatedWith
+   *          the methods annotated with {@link XLFunction}, not null
+   * @return
+   *          a list of function definitions
+   */
   protected List<FunctionDefinition> getFunctionsForMethods(final InvokerFactory invokerFactory,
       final Collection<Method> methodsAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
@@ -136,6 +161,18 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
     return definitions;
   }
 
+  /**
+   * For all constructors annotated with {@link XLFunction}, create a {@link FunctionDefinition}. The name of the function is generated
+   * using the rule <br>
+   * <code>[Optional namespace value].([Name] OR [Class name])</code>
+   *
+   * @param invokerFactory
+   *          the invoker factory, not null
+   * @param constructorsAnnotatedWith
+   *          the constructors annotated with {@link XLFunction}, not null
+   * @return
+   *          a list of function definitions
+   */
   protected List<FunctionDefinition> getFunctionsForConstructors(final InvokerFactory invokerFactory,
       final Collection<Constructor<?>> constructorsAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
