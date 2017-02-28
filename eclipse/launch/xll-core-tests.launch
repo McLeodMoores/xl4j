@@ -24,9 +24,10 @@
 <listEntry value="com.mcleodmoores.xl4j.callback"/>
 <listEntry value="com.mcleodmoores.xl4j.javacode"/>
 <listEntry value="com.mcleodmoores.xl4j.profiling"/>
-<listEntry value="com.mcleodmoores.xl4j.simulator"/>
 <listEntry value="com.mcleodmoores.xl4j.typeconvert"/>
 <listEntry value="com.mcleodmoores.xl4j.typeconvert.converters"/>
+<listEntry value="com.mcleodmoores.xl4j.lowlevel"/>
+<listEntry value="com.mcleodmoores.xl4j.simulator"/>
 </listAttribute>
 <stringAttribute key="org.testng.eclipse.PROTOCOL" value="json"/>
 <intAttribute key="org.testng.eclipse.TYPE" value="5"/>

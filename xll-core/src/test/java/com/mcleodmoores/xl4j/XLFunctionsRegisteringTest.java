@@ -10,12 +10,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.javacode.InvokerFactory;
 import com.mcleodmoores.xl4j.javacode.ReflectiveInvokerFactory;
 import com.mcleodmoores.xl4j.typeconvert.TypeConverterRegistry;
+import com.mcleodmoores.xl4j.typeconvert.converters.DoubleXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.ObjectArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveDoubleArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveIntegerArrayXLArrayTypeConverter;
@@ -28,6 +30,7 @@ import com.mcleodmoores.xl4j.typeconvert.converters.StringXLStringTypeConverter;
 public class XLFunctionsRegisteringTest {
   private static final Excel EXCEL = ExcelFactory.getInstance();
   private static final TypeConverterRegistry TYPE_CONVERTERS = MockTypeConverterRegistry.builder()
+      .with(new DoubleXLNumberTypeConverter())
       .with(new StringXLStringTypeConverter())
       .with(new PrimitiveIntegerXLNumberTypeConverter())
       .with(new ObjectArrayXLArrayTypeConverter(EXCEL))
@@ -35,18 +38,49 @@ public class XLFunctionsRegisteringTest {
       .with(new PrimitiveDoubleArrayXLArrayTypeConverter())
       .build();
 
+  /**
+   * Tests that abstract classes are not added to the registry.
+   */
   @Test
   public void testAbstractClassNotAdded() {
-
+    final MockFunctionRegistry registry = MockFunctionRegistry.builder()
+        .xlFunctions(TestClass5.class)
+        .build();
+    final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
+    registry.createAndRegisterFunctions(invokerFactory);
+    final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
+    assertEquals(definitions.size(), 0);
   }
 
+  /**
+   * Tests that static methods in abstract classes are added to the registry, but that abstract or instance methods are not.
+   */
   @Test
-  public void testAbstractMethodNotAdded() {
+  public void testMethodsInAbstractClass() {
+    assertEquals(TestClass6.class.getMethods().length, 12);
+    final MockFunctionRegistry registry = MockFunctionRegistry.builder()
+        .xlFunctions(TestClass6.class)
+        .build();
+    final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
+    registry.createAndRegisterFunctions(invokerFactory);
+    final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
+    assertEquals(definitions.size(), 1);
+    assertEquals(definitions.iterator().next().getFunctionMetadata().getName(), "TestClass6.method1");
   }
 
+  /**
+   * Tests that bridge methods are not added. For example, TestClass7 implements Function<Double, Double>, and there is
+   * a bridge method (Object apply(Object)) that should not be added to the registry.
+   */
   @Test
   public void testBridgeMethodNotAdded() {
-
+    final MockFunctionRegistry registry = MockFunctionRegistry.builder()
+        .xlFunctions(TestClass7.class)
+        .build();
+    final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
+    registry.createAndRegisterFunctions(invokerFactory);
+    final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
+    assertEquals(definitions.size(), 2);
   }
 
   /**
@@ -185,5 +219,23 @@ public class XLFunctionsRegisteringTest {
     public TestClass4(final int[] is) {}
     public static int method() { return 0; }
     public static int method(final int i) { return 1; }
+  }
+
+  @XLFunctions
+  public abstract static class TestClass5 {
+    public TestClass5(final int i) {}
+  }
+
+  @XLFunctions
+  public abstract static class TestClass6 {
+    public TestClass6(final int i) {}
+    public static int method1(final int i) { return 1; }
+    public int method2(final int i) { return 2; }
+    public abstract int method3(int i);
+  }
+
+  @XLFunctions
+  public static class TestClass7 implements Function<Double, Double> {
+    @Override public Double apply(final Double arg0) { return arg0; }
   }
 }

@@ -200,23 +200,22 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
     final List<FunctionDefinition> definitions = new ArrayList<>();
     for (final Class<?> clazz : classesAnnotatedWith) {
       try {
-        if (Modifier.isAbstract(clazz.getModifiers())) {
-          LOGGER.warn("{} is abstract, not registering functions", clazz.getSimpleName());
-          continue;
-        }
-        final String className = clazz.getSimpleName();
+        final boolean isAbstract = Modifier.isAbstract(clazz.getModifiers());
         XLNamespace namespaceAnnotation = null;
+        final String className = clazz.getSimpleName();
         if (clazz.isAnnotationPresent(XLNamespace.class)) {
           namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
         }
         final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
-        // build the constructor invokers
-        final Constructor<?>[] constructors = clazz.getConstructors();
-        int count = 1;
-        for (final Constructor<?> constructor : constructors) {
-          final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, true, count);
-          definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
-          count++;
+        if (!isAbstract) {
+          // build the constructor invokers
+          final Constructor<?>[] constructors = clazz.getConstructors();
+          int count = 1;
+          for (final Constructor<?> constructor : constructors) {
+            final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, true, count);
+            definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+            count++;
+          }
         }
         // build the method invokers
         final Method[] methods = clazz.getMethods();
@@ -230,11 +229,14 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
           if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
             continue;
           }
-          final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
-          methodNames.put(methodName, methodNameCount);
-          final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
-              true, true, methodNameCount);
-          definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+          final boolean isStatic = Modifier.isStatic(method.getModifiers());
+          if (!isAbstract || isStatic) {
+            final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
+            methodNames.put(methodName, methodNameCount);
+            final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
+                true, true, methodNameCount);
+            definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+          }
         }
       } catch (final Exception e) {
         LOGGER.error("Exception while creating function definition for class " + clazz, e);
