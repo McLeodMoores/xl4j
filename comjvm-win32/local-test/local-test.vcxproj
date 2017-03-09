@@ -234,6 +234,7 @@
     <ClCompile Include="Connect.cpp" />
     <ClCompile Include="ContextSwitchTest.cpp" />
     <ClCompile Include="CScanTest.cpp" />
+    <ClCompile Include="DateUtilsTest.cpp" />
     <ClCompile Include="Delete.cpp" />
     <ClCompile Include="ExternalJarsTest.cpp" />
     <ClCompile Include="filesystem.cpp" />
@@ -248,6 +249,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="String.cpp" />
+    <ClCompile Include="UpdateCheckerTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\core\core.vcxproj">

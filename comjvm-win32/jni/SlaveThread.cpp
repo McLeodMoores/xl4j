@@ -13,23 +13,28 @@
 
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM);
 DWORD APIENTRY JNISlaveAsyncThreadProc(LPVOID lpJVM);
-extern class CCallbackRequests g_oRequests;
-extern class CCallbackRequests g_oAsyncRequests;
+extern class CCallbackRequests *g_pRequests;
+extern class CCallbackRequests *g_pAsyncRequests;
+int g_asyncThreads = 0;
+int g_syncThreads = 0;
 
 class CCallbackRequests {
 private:
 	CRITICAL_SECTION m_cs;
 	HANDLE m_hNotify;
-	volatile DWORD m_dwThreads;
+	volatile DWORD m_dwThreads; // threads available
 	std::deque<JNICallbackProc> m_apfnCallback;
 	std::deque<PVOID> m_apData;
 	volatile int m_iSize;
+	volatile DWORD m_dwTotalThreads; // total threads
+	const DWORD MAX_THREADS = 16;
 public:
 	CCallbackRequests () {
 		LOGTRACE ("(%p) constructor", GetCurrentThreadId ()); 
 		InitializeCriticalSection (&m_cs);
 		m_hNotify = NULL;
 		m_dwThreads = 0;
+		m_dwTotalThreads = 0;
 		m_iSize = 0;
 	}
 	~CCallbackRequests () {
@@ -72,14 +77,18 @@ public:
 		m_apData.pop_front ();
 		m_iSize--;
 		if (*ppfnCallback) {
-			LOGTRACE ("(%p) (this = %p) returning callback %p, with data %p", GetCurrentThreadId (), this, *ppfnCallback, *ppData);
+			//LOGTRACE ("(%p) (this = %p) returning callback %p, with data %p", GetCurrentThreadId (), this, *ppfnCallback, *ppData);
 			LeaveCriticalSection (&m_cs);
 			return TRUE;
 		} else {
-			LOGTRACE ("(%p) (this = %p) got null callback, pushing back.", GetCurrentThreadId (), this);
+			LOGINFO ("(%p) (this = %p) SHUTTING DOWN THREAD got null callback, pushing back.", GetCurrentThreadId (), this);
 			m_apfnCallback.push_back (NULL);
 			m_apData.push_back (NULL);
 			m_iSize++;
+			if (m_dwThreads) { // wake up any sleepers
+				m_dwThreads--;
+				ReleaseSemaphore(m_hNotify, 1, NULL);
+			}
 			LeaveCriticalSection (&m_cs);
 			return FALSE;
 		}
@@ -106,13 +115,26 @@ public:
 				hr = S_OK;
 			} else {
 				// TODO: No spare threads; spawn one and attach to the JVM
-				LOGERROR ("(%p) (this = %p) pushed the callback and data onto queue, creating new thread and releasing semaphore", GetCurrentThreadId (), this, m_dwThreads);
-				if (this == &g_oRequests) {
-					CreateThread(NULL, 4096 * 1024, JNISlaveThreadProc, pJVM, 0, NULL);
-				} else if (this == &g_oAsyncRequests) {
-					CreateThread(NULL, 4096 * 1024, JNISlaveAsyncThreadProc, pJVM, 0, NULL);
+				//LOGERROR ("(%p) (this = %p) pushed the callback and data onto queue, creating new thread and releasing semaphore", GetCurrentThreadId (), this, m_dwThreads);
+				//LOGINFO("There are %d total threads", m_dwTotalThreads);
+				if (m_dwTotalThreads <= MAX_THREADS) {
+					if (this == g_pRequests) {
+						m_dwTotalThreads++;
+						LOGINFO("Creating new sync thread (now %d)", m_dwTotalThreads);
+						HANDLE hThread = CreateThread(NULL, 4096 * 1024, JNISlaveThreadProc, pJVM, 0, NULL);
+						CloseHandle(hThread); // doesn't close the thread!
+						g_syncThreads++;
+					} else if (this == g_pAsyncRequests) {
+						m_dwTotalThreads++;
+						LOGINFO("Creating new async thread (now %d)", m_dwTotalThreads);
+						HANDLE hThread = CreateThread(NULL, 4096 * 1024, JNISlaveAsyncThreadProc, pJVM, 0, NULL);
+						CloseHandle(hThread);
+						g_asyncThreads++;
+					} else {
+						LOGERROR("(this = %p) Couldn't figure out which instance this is so not spawning new thread", this);
+					}
 				} else {
-					LOGERROR("(this = %p) Couldn't figure out which instance this is so not spawning new thread", this);
+					//LOGINFO("Not creating any more threads");
 				}
 				//m_dwThreads++; // trying this one out.
 				ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
@@ -134,16 +156,18 @@ public:
 		HRESULT hr;
 		EnterCriticalSection (&m_cs);
 		try {
-			LOGTRACE ("(%p) poisoning queues with NULLs", GetCurrentThreadId ());
+			LOGINFO ("(%p) poisoning queues with NULLs", GetCurrentThreadId ());
+			m_apfnCallback.clear(); // remove excess work.
 			m_apfnCallback.push_back (NULL);
+			m_apData.clear();
 			m_apData.push_back (NULL);
-			m_iSize++;
+			m_iSize = 1;
 			hr = S_OK;
 		} catch (std::bad_alloc) {
-			LOGTRACE ("(%p) memory allocation exception", GetCurrentThreadId ());
+			LOGINFO ("(%p) memory allocation exception", GetCurrentThreadId ());
 			hr = E_OUTOFMEMORY;
 		}
-		LOGTRACE ("(%p) about to release semaphore", GetCurrentThreadId ());
+		LOGINFO ("(%p) about to release semaphore", GetCurrentThreadId ());
 		if (m_hNotify) ReleaseSemaphore (m_hNotify, 1, NULL);
 		LOGTRACE ("(%p) semaphore released", GetCurrentThreadId ());
 		LeaveCriticalSection (&m_cs);
@@ -151,8 +175,8 @@ public:
 	}
 };
 
-static CCallbackRequests g_oRequests;
-static CCallbackRequests g_oAsyncRequests;
+static CCallbackRequests *g_pRequests = new CCallbackRequests();
+static CCallbackRequests *g_pAsyncRequests = new CCallbackRequests();
 
 /// My go at a slave thread proc.  Takes pointer to a JVM, attaches current thread and calls the main SlaveThread loop.
 /// doesn't do any of the clearing up the main thread does.
@@ -173,10 +197,12 @@ DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM) {
 	//	return E_FAIL;
 	//}
 	LOGTRACE("Attached.");
-	LOGTRACE ("(%p) JNISlaveThreadProc (%p) attached to current thread.", GetCurrentThreadId (), lpJVM);
+	LOGTRACE ("(%p) attached to current thread.", GetCurrentThreadId ());
 	JNISlaveThread ((JNIEnv *) pJNIEnv, INFINITE);
-	LOGTRACE ("(%p) JNISlaveThreadProc (%p) terminating with S_OK.", GetCurrentThreadId (), lpJVM);
+	LOGTRACE ("(%p) detaching thread from JVM.", GetCurrentThreadId ());
 	pJVM->DetachCurrentThread();
+	LOGTRACE ("(%p) terminating thread with S_OK.", GetCurrentThreadId());
+	g_syncThreads--;
 	return S_OK;
 }
 /// My go at a slave thread proc.  Takes pointer to a JVM, attaches current thread and calls the main SlaveThread loop.
@@ -189,10 +215,10 @@ DWORD APIENTRY JNISlaveAsyncThreadProc(LPVOID lpJVM) {
 	//if (getEnvStat == JNI_EDETACHED) {
 	//	LOGTRACE("GetEnv: not attached");
 	LOGTRACE("pJVM = %p", pJVM);
-		if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
-			LOGERROR("Failed to attach");
-			return E_FAIL;
-		}
+	if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
+		LOGERROR("Failed to attach");
+		return E_FAIL;
+	}
 	//} else if (getEnvStat == JNI_OK) {
 	//	LOGTRACE("Already attached");
 	//} else if (getEnvStat == JNI_EVERSION) {
@@ -200,18 +226,22 @@ DWORD APIENTRY JNISlaveAsyncThreadProc(LPVOID lpJVM) {
 	//	return E_FAIL;
 	//}    
 	LOGTRACE("Attached.");
-	LOGTRACE("(%p) JNISlaveThreadProc (%p) attached to current thread.", GetCurrentThreadId(), lpJVM);
+	LOGTRACE("(%p) attached to current async thread.", GetCurrentThreadId());
 	JNISlaveAsyncThread((JNIEnv *)pJNIEnv, INFINITE);
-	LOGTRACE("(%p) JNISlaveThreadProc (%p) terminating with S_OK.", GetCurrentThreadId(), lpJVM);
+	LOGINFO("(%p) Detaching async thread from JVM.", GetCurrentThreadId());
 	pJVM->DetachCurrentThread();
+	LOGINFO("(%p) Terminating async thread with S_OK.", GetCurrentThreadId());
+	g_asyncThreads--;
+	ExitThread(S_OK);
 	return S_OK;
 }
 
 void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	JNICallbackProc pfnCallback;
 	PVOID pData;
+	CCallbackRequests *pRequests = g_pRequests; // take copy so we stick with originating queue
 	LOGTRACE ("(%p) About to enter wait loop", GetCurrentThreadId ()); 
-	while (g_oRequests.WaitForRequest (dwIdleTimeout, &pfnCallback, &pData)) {
+	while (pRequests->WaitForRequest (dwIdleTimeout, &pfnCallback, &pData)) {
 		LOGTRACE ("(%p) got request for callback on %p with data %p", GetCurrentThreadId (), pfnCallback, pData);
 		if (pfnCallback) {
 			pfnCallback(pData, pEnv);
@@ -222,8 +252,9 @@ void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 void JNISlaveAsyncThread(JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	JNICallbackProc pfnCallback;
 	PVOID pData;
+	CCallbackRequests *pAsyncRequests = g_pAsyncRequests; // take copy so we stick with originating queue
 	LOGTRACE("(%p) About to enter wait loop", GetCurrentThreadId());
-	while (g_oAsyncRequests.WaitForRequest(dwIdleTimeout, &pfnCallback, &pData)) {
+	while (pAsyncRequests->WaitForRequest(dwIdleTimeout, &pfnCallback, &pData)) {
 		LOGTRACE("(%p) got request for callback on %p with data %p", GetCurrentThreadId(), pfnCallback, pData);
 		if (pfnCallback) {
 			pfnCallback(pData, pEnv);
@@ -240,22 +271,32 @@ void JNISlaveAsyncMainThreadStart(JavaVM *pJVM) {
 HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
 	// TODO: If this is already a slave thread, don't post to the queue, callback directory (JIM: should this read 'directly'?)
 	LOGTRACE ("(%p) pJVM=%p, pfnCallback=%p, pData=%p", GetCurrentThreadId (), pJVM, pfnCallback, pData);
-	return g_oRequests.Add (pJVM, pfnCallback, pData);
+	return g_pRequests->Add (pJVM, pfnCallback, pData);
 }
 
 HRESULT ScheduleSlaveAsync(JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData) {
 	// TODO: If this is already a slave thread, don't post to the queue, callback directory (JIM: should this read 'directly'?)
 	LOGTRACE("(%p) pJVM=%p, pfnCallback=%p, pData=%p", GetCurrentThreadId(), pJVM, pfnCallback, pData);
-	return g_oAsyncRequests.Add(pJVM, pfnCallback, pData);
+	return g_pAsyncRequests->Add(pJVM, pfnCallback, pData);
 }
 
 HRESULT PoisonJNISlaveThreads () {
 	LOGTRACE ("(%p) called", GetCurrentThreadId ());
-	return g_oRequests.Poison ();
+	return g_pRequests->Poison ();
 }
 
 HRESULT PoisonJNIAsyncSlaveThreads() {
+
 	LOGTRACE("(%p) called", GetCurrentThreadId());
-	return g_oAsyncRequests.Poison();
+	return g_pAsyncRequests->Poison();
+}
+
+HRESULT PoisonAndRenewJNIAsyncSlaveThreads() {
+	LOGERROR("sync threads = %d, async threads = %d", g_syncThreads, g_asyncThreads);
+	LOGINFO("(%p) poisoning and renewing requests", GetCurrentThreadId());
+	HRESULT result = g_pAsyncRequests->Poison();
+	// TODO: memory leak here.
+	g_pAsyncRequests = new CCallbackRequests();
+	return result;
 }
 //#include "utils/TraceOn.h"

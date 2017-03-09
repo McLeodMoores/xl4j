@@ -142,6 +142,19 @@ public:
 		LeaveCriticalSection(&m_cs);
 		return hr;
 	}
+	HRESULT KillAllAsyncRequests(DWORD dwJvmRef) {
+		HRESULT hr;
+		EnterCriticalSection(&m_cs);
+		if ((m_eState == STARTED) && (dwJvmRef == m_dwJvmRef)) {
+			LOGINFO("State valid, calling through");
+			hr = PoisonAndRenewJNIAsyncSlaveThreads();
+		} else {
+			LOGINFO("Invalid state");
+			hr = E_NOT_VALID_STATE;
+		}
+		LeaveCriticalSection(&m_cs);
+		return hr;
+	}
 };
 
 static CVMHolder g_oVM;
@@ -247,7 +260,6 @@ static BOOL StartJVMImpl (struct _CreateJVM *pCreateJVM, JNIEnv **ppEnv) {
 /// is complete</param>
 /// <returns>Thread exit code</returns>
 DWORD APIENTRY JNIMainThreadProc (LPVOID lpCreateJVM) {
-	Debug::SetLogTarget(LOGTARGET_FILE);
 	LOGTRACE ("(%p) JNIMainThreadProc called", GetCurrentThreadId ());
 	JNIEnv *pEnv;
 	if (!StartJVMImpl (((struct _CreateJVM*)lpCreateJVM), &pEnv)) return ERROR_INVALID_ENVIRONMENT;
@@ -354,6 +366,8 @@ HRESULT COMJVM_JNI_API JNICallbackAsync(DWORD dwJvmRef, JNICallbackProc pfnCallb
 	return g_oVM.ScheduleAsync(dwJvmRef, pfnCallback, pData);
 }
 
+
+
 /// <summary>Destroys a running VM instance.</summary>
 ///
 /// <para>The original Java "main" thread will be used to implement the shutdown.
@@ -369,4 +383,9 @@ HRESULT COMJVM_JNI_API JNIDestroyJavaVM (DWORD dwJvmRef) {
 	} else {
 		return E_NOT_VALID_STATE;
 	}
+}
+
+HRESULT COMJVM_JNI_API JNIFlushAsyncThreads(DWORD dwJvmRef) {
+	LOGINFO("JNIFlushAsyncThreads");
+	return g_oVM.KillAllAsyncRequests(dwJvmRef);
 }

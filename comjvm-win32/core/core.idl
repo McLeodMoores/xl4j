@@ -528,7 +528,7 @@ struct XL4JMULTIREFERENCE {
 	///
 	/// <returns>S_OK if the JVM is available, an error code otherwise</returns>
 	HRESULT Heartbeat ();
-
+	HRESULT FlushAsyncThreads ();
 	HRESULT CreateScan ([out, retval] IScan **ppScan);
 	HRESULT CreateCall ([out, retval] ICall **ppCall);
 	HRESULT CreateCollect ([out, retval] ICollect **ppCollect);

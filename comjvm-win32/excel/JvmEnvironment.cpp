@@ -482,6 +482,20 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 	}
 }
 
+HRESULT CJvmEnvironment::_CancelCalculations () {
+	AcquireSRWLockShared(&m_rwlock);
+	if (m_pJvm) {
+		LOGINFO("About to call into JVM");
+		HRESULT hr = m_pJvm->getJvm()->FlushAsyncThreads();
+		ReleaseSRWLockShared(&m_rwlock);
+		return hr;
+	} else {
+		LOGINFO("Invalid state");
+		ReleaseSRWLockShared(&m_rwlock);
+		return ERROR_INVALID_STATE;
+	}
+}
+
 HRESULT CJvmEnvironment::Unregister () {
 	// Due to a bug in Excel the following code to delete the defined names
 	// does not work.  There is no way to delete these

@@ -23,8 +23,16 @@ HRESULT CAsyncCallResult::Complete(VARIANT vAsyncHandle, VARIANT *pvResult) {
 	LOGTRACE("Callback happened result is %p", pvResult);
 	Converter *pConverter;
 	HRESULT hr;
-	LPXLOPER12 result = TempMissing12();
-	LPXLOPER12 handle = TempMissing12();
+	LPXLOPER12 result = (LPXLOPER12) calloc (1, sizeof(XLOPER12));
+	if (!result) {
+		hr = E_OUTOFMEMORY;
+		goto error;
+	}
+	LPXLOPER12 handle = (LPXLOPER12) calloc (1, sizeof(XLOPER12));
+	if (!handle) {
+		hr = E_OUTOFMEMORY;
+		goto error;
+	}
 	if (SUCCEEDED(hr = m_pAddinEnvironment->GetConverter(&pConverter))) {
 		hr = pConverter->convert(pvResult, result);
 		if (FAILED(hr)) {
@@ -42,17 +50,24 @@ HRESULT CAsyncCallResult::Complete(VARIANT vAsyncHandle, VARIANT *pvResult) {
 	}
 	VariantClear(pvResult); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
 	LOGTRACE("Async result handler: conversion complete, returning value (type=%d) to Excel", result->xltype);
-	XLOPER12 returnResult;
-	LOGTRACE("Handle = %p", handle->val.bigdata.h.hdata);
+	XLOPER12 returnResult; // this return value isn't actually used.
+	LOGTRACE("Handle = %p, size = %d", handle->val.bigdata.h.hdata, sizeof(handle->val.bigdata.h.hdata));
 	LOGTRACE("BigData.cbData = %d", handle->val.bigdata.cbData);
-	Excel12f(xlAsyncReturn, &returnResult, 2, handle, result);
-	if (returnResult.val.xbool) {
-		return S_OK;
+	int retVal = Excel12(xlAsyncReturn, &returnResult, 2, handle, result);
+	LOGTRACE("retVal from xlAsyncReturn was %d", retVal);
+	if (retVal == xlretSuccess) {
+		LOGTRACE("xlAsyncReturn was good");
+		hr = S_OK;
+	} else if (retVal == xlretInvAsynchronousContext) {
+		LOGTRACE("xlAsyncReturn returned xlretInvAsynchronousContext, indicating an invalid handle was passed.");
+		hr = E_FAIL;
 	} else {
-		LOGERROR("xlAsyncReturn returned FALSE, indicating an error occurred.");
-		return E_FAIL;
+		LOGTRACE("xlAsyncReturn returned unexpected errpr code %d.", retVal);
+		hr = E_FAIL;
 	}
 error:
+	if (result) free(result);
+	if (handle) free(handle);
 	return hr;
 }
 

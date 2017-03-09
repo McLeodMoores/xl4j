@@ -104,7 +104,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;COMJVM_UPGRADEDIALOG_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <BrowseInformation>false</BrowseInformation>
@@ -150,7 +150,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;COMJVM_UPGRADEDIALOG_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BrowseInformation>false</BrowseInformation>
@@ -201,7 +201,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;COMJVM_UPGRADEDIALOG_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -245,7 +245,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_AFXEXT;COMJVM_SPLASHSCREEN_EXPORT;COMJVM_SETTINGSDIALOG_EXPORT;COMJVM_LICENSEINFO_EXPORT;COMJVM_UPGRADEDIALOG_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -307,6 +307,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="TransparentStatic.cpp" />
+    <ClCompile Include="UpdateDialog.cpp" />
+    <ClCompile Include="UpdateDialogFactory.cpp" />
     <ClCompile Include="VmOptionsPropertyPage.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -326,6 +328,8 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="TransparentStatic.h" />
+    <ClInclude Include="UpdateDialog.h" />
+    <ClInclude Include="UpdateDialogInterface.h" />
     <ClInclude Include="VmOptionsPropertyPage.h" />
   </ItemGroup>
   <ItemGroup>

@@ -6,11 +6,13 @@
 #include "stdafx.h"
 #include "Excel.h"
 #include "AddinEnvironment.h"
-#include "../helper/TypeLib.h"
+#include "helper/TypeLib.h"
 #include "resource.h"
 #include <shellapi.h>
 #include "helper/LicenseChecker.h"
-#include "../settings/LicenseInfoInterface.h"
+#include "settings/LicenseInfoInterface.h"
+#include "helper/UpdateChecker.h"
+#include "settings/UpdateDialogInterface.h"
 
 CAddinEnvironment::CAddinEnvironment () {
 	InitializeCriticalSection(&m_csState);
@@ -86,12 +88,21 @@ HRESULT CAddinEnvironment::Start() {
 		LOGFATAL("Could not initialise add-in from settings");
 		return hr;
 	}
+	// register calculation event handlers
+	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationEndedEvent"), TempInt12(xleventCalculationEnded));
+	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationCancelledEvent"), TempInt12(xleventCalculationCanceled));
+
 	m_pConverter = new Converter(m_pTypeLib);
 	// Register polling command that registers chunks of functions
 	m_idRegisterSomeFunctions = ExcelUtils::RegisterCommand(TEXT("RegisterSomeFunctions"));
 	// Schedule polling command to start in 0.1 secs.  This will reschedule itself until all functions registered.
 	LOGTRACE("Schedulding RegisterSomeFunctions to run in 0.1 seconds");
 	ExcelUtils::ScheduleCommand(TEXT("RegisterSomeFunctions"), 0.1);
+	// Since we've got 100ms...
+	LOGTRACE("Checking for update (including if we should check)");
+	if (FAILED(CheckForUpdate())) {
+		LOGERROR("Update check failed.");
+	}
 	// Register command to display MFC settings dialog
 	m_idSettings = ExcelUtils::RegisterCommand(TEXT("Settings"));
 	m_idGarbageCollect = ExcelUtils::RegisterCommand(TEXT("GarbageCollect"));
@@ -99,6 +110,68 @@ HRESULT CAddinEnvironment::Start() {
 	m_idViewCppLogs = ExcelUtils::RegisterCommand(TEXT("ViewCppLogs"));
 	m_idLicenseInfo = ExcelUtils::RegisterCommand(TEXT("LicenseInfo"));
 	EnterStartedState();
+	return S_OK;
+}
+
+HRESULT CAddinEnvironment::CheckForUpdate() {
+	CUpdateChecker checker;
+	bool result;
+	HRESULT hr;
+	// check if we should even check yet, we don't want to pester...
+	if (FAILED(hr = checker.ShouldWeCheck(m_pSettings, &result))) {
+		LOGERROR("Error while checking if we should poll server for update site: %s", HRESULT_TO_STR(hr));
+	}
+	if (result) {
+		// check with server if new version available.
+		hr = checker.Check();
+		if (hr == S_OK) {
+			// There is an upgrade site present, so pop up dialog.
+			HWND hWnd;
+			ExcelUtils::GetHWND(&hWnd);
+			size_t cchUrlLen;
+			wchar_t *szUrl;
+			if (FAILED(hr = checker.GetURL(nullptr, &cchUrlLen))) {
+				LOGERROR("Couldn't get URL string buffer size from update checker: %s", HRESULT_TO_STR(hr));
+				return hr;
+			}
+			szUrl = (wchar_t *)calloc(cchUrlLen + 1, sizeof(wchar_t)); // +1 is defensive
+			if (!szUrl) {
+				LOGERROR("calloc failed allocating buffer for update URL");
+				return E_OUTOFMEMORY;
+			}
+			if (FAILED(hr = checker.GetURL(szUrl, &cchUrlLen))) {
+				LOGERROR("Couldn't get URL string from update checker (size = %d): %s", cchUrlLen, HRESULT_TO_STR(hr));
+				return hr;
+			}
+			size_t cchUpdateTextLen;
+			wchar_t *szUpdateText;
+			if (FAILED(hr = checker.GetUpgradeText(nullptr, &cchUpdateTextLen))) {
+				LOGERROR("Couldn't get Upgrade text buffer size from update checker: %s", HRESULT_TO_STR(hr));
+				return hr;
+			}
+			szUpdateText = (wchar_t *)calloc(cchUpdateTextLen + 1, sizeof(wchar_t)); // +1 is defensive
+			if (!szUpdateText) {
+				LOGERROR("calloc failed allocating buffer for update text");
+				return E_OUTOFMEMORY;
+			}
+			if (FAILED(hr = checker.GetUpgradeText(szUpdateText, &cchUpdateTextLen))) {
+				LOGERROR("Couldn't get Update text string from upgrade checker: %s", HRESULT_TO_STR(hr));
+			}
+			IUpdateDialog *pUpdateDialog;
+			if (hr = CUpdateDialogFactory::Create(hWnd, m_pSettings, szUpdateText, szUrl, &pUpdateDialog)) {
+				LOGERROR("Error creating upgrade dialog through factory: %s", HRESULT_TO_STR(hr));
+			}
+			pUpdateDialog->Open(hWnd);
+			return S_OK;
+		} else {
+			if (hr == ERROR_RESOURCE_NOT_FOUND) {
+				LOGINFO("Update not yet available, not showing dialog");
+			} else {
+				LOGERROR("Error checking for update: %s", HRESULT_TO_STR(hr));
+			}
+		}
+		return hr;
+	}
 	return S_OK;
 }
 
@@ -163,24 +236,27 @@ HRESULT CAddinEnvironment::InitFromSettings() {
 	EnterCriticalSection(&m_csState);
 	if (m_state == STARTED || m_state == STARTING) {
 		_bstr_t logLevel;
-		logLevel = m_pSettings->GetString(TEXT("Addin"), TEXT("LogLevel"));
-		if (logLevel == _bstr_t(TEXT("TRACE"))) {
-			LOGTRACE("LogLevel=TRACE");
+		logLevel = m_pSettings->GetString(_T("Addin"), _T("LogLevel"));
+		if (logLevel == _bstr_t(_T("TRACE"))) {
 			Debug::SetLogLevel(LOGLEVEL_TRACE);
-		} else if (logLevel == _bstr_t(TEXT("ERROR"))) {
-			LOGTRACE("LogLevel=ERROR");
+		} else if (logLevel == _bstr_t(_T("DEBUG"))) {
+			Debug::SetLogLevel(LOGLEVEL_DEBUG);
+		} else if (logLevel == _bstr_t(_T("INFO"))) {
+			Debug::SetLogLevel(LOGLEVEL_INFO);
+		} else if (logLevel == _bstr_t(_T("WARN"))) {
+			Debug::SetLogLevel(LOGLEVEL_WARN);
+		} else if (logLevel == _bstr_t(_T("ERROR"))) {
+			Debug::SetLogLevel(LOGLEVEL_ERROR);
+		} else if (logLevel == _bstr_t(_T("FATAL"))) {
 			Debug::SetLogLevel(LOGLEVEL_ERROR);
 		} else /* if (logLevel == TEXT("NONE"))*/ {
-			LOGTRACE("LogLevel=NONE");
 			Debug::SetLogLevel(LOGLEVEL_NONE);
 		}
 		_bstr_t logTarget;
 		logTarget = m_pSettings->GetString(TEXT("Addin"), TEXT("LogTarget"));
 		if (logTarget == _bstr_t(TEXT("File"))) {
-			LOGTRACE("LogTarget=File");
 			Debug::SetLogTarget(LOGTARGET_FILE);
 		} else /* if (logTarget == TEXT("WinDebug") */ {
-			LOGTRACE("LogTarget=WinDebug");
 			Debug::SetLogTarget(LOGTARGET_WINDEBUG);
 		}
 		_bstr_t showToolbar;
@@ -327,6 +403,9 @@ HRESULT CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
 		HRESULT hr = FileUtils::GetTemporaryFileName(szFileName, buffer, MAX_PATH);
 		if (SUCCEEDED(hr)) {
 			LOGTRACE("Full log path is %s", buffer);
+			if (Debug::GetLogTarget() == LOGTARGET_WINDEBUG) {
+				ExcelUtils::WarningMessageBox(L"Native logging is currently set to use WinDebug, use DebugView or equivalent (available from MS Technet for free).  You can change debug ouput to a file in the settings dialog.");
+			}
 			if (FileUtils::FileExists(buffer)) {
 				ShellExecute(hWnd, L"open", buffer, nullptr, nullptr, SW_SHOWNORMAL);
 			} else {

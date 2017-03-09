@@ -19,6 +19,8 @@ EXPORTS
 	ViewJavaLogs
 	ViewCppLogs
 	LicenseInfo
+	CalculationCancelledEvent
+	CalculationCompleteEvent
 	UDF
 	UDF_0
 	UDF_1

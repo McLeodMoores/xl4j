@@ -19,6 +19,8 @@ rem @echo off
 	msbuild comjvm.sln /p:Configuration=Debug /p:Platform=Win32 > target\Debug-Win32\build.log
 	if errorlevel 1 goto fail
 	
+	goto skip
+
 	echo Building Debug-x64 ...
 	if exist target\Debug-x64 goto d64
 	mkdir target\Debug-x64
@@ -39,7 +41,7 @@ rem @echo off
 :r64
 	msbuild comjvm.sln /p:Configuration=Release /p:Platform=x64 > target\Release-x64\build.log
 	if errorlevel 1 goto fail
-
+:skip
 	rem TODO: run the tests
 	rem restore the current working directory
 	cd %oldcwd%

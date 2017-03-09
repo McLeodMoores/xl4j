@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 #include "Debug.h"
+#include <io.h>
+#include <fcntl.h>
 
 Debug::Debug ()
 {
@@ -35,7 +37,7 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 
 size_t Debug::m_cMaxFileNameLength = 0;
 size_t Debug::m_cMaxFunctionNameLength = 0;
-LOGLEVEL Debug::m_logLevel = LOGLEVEL_TRACE;
+LOGLEVEL Debug::m_logLevel = LOGLEVEL_INFO;
 LOGTARGET Debug::m_logTarget = LOGTARGET_WINDEBUG;
 FILE *Debug::m_fdLogFile = nullptr;
 const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ", L"ERROR", L"FATAL", L"NONE " };
@@ -112,6 +114,9 @@ void Debug::LOGTRACE_VARIANT(VARIANT *pVariant) {
 		break;
 	case VT_UI8:
 		LOGTRACE("VT_UI8(%llu)", V_UI8(pVariant));
+		break;
+	case VT_I8:
+		LOGTRACE("VT_I8(%ll)", V_I8(pVariant));
 		break;
 	case VT_BSTR:
 		LOGTRACE("VT_BSTR(%s)", V_BSTR(pVariant));
@@ -292,14 +297,39 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 
 void Debug::SetLogTarget(LOGTARGET logTarget) {
 	if (logTarget == LOGTARGET_FILE) {
+		if (m_fdLogFile) {
+			fflush(m_fdLogFile);
+			fclose(m_fdLogFile);
+		}
 		wchar_t buffer[MAX_PATH];
 		HRESULT hr = FileUtils::GetTemporaryFileName(TEXT("xl4j-cpp.log"), buffer, MAX_PATH);
 		if (SUCCEEDED(hr)) {
 			OutputDebugStringW(TEXT("Full log path is:"));
 			OutputDebugStringW(buffer);
-			if (!_wfopen_s(&m_fdLogFile, buffer, _T("w"))) {
-				OutputDebugStringW(TEXT("Could not open log file"));
+			HANDLE hFile = CreateFileW(buffer, GENERIC_WRITE,
+				FILE_SHARE_READ,
+				NULL,
+				OPEN_ALWAYS,
+				FILE_ATTRIBUTE_NORMAL,
+				NULL);
+			if (hFile == INVALID_HANDLE_VALUE) {
+				OutputDebugString(_T("Invalid file handle from CreateFile"));
+				OutputDebugString(GETLASTERROR_TO_STR());
 				m_fdLogFile = nullptr;
+				return;
+			}
+			int fd = _open_osfhandle(reinterpret_cast<intptr_t>(hFile), _O_APPEND);
+			if (fd == -1) {
+				OutputDebugString(_T("Invalid file descriptor from _open_osfhandle"));
+				CloseHandle(hFile);
+				m_fdLogFile = nullptr;
+				return;
+			}
+			m_fdLogFile = _fdopen(fd, "a");
+			if (!m_fdLogFile) {
+				OutputDebugString(_T("Invalid FILE * from _fdopen"));
+				CloseHandle(hFile);
+				return;
 			}
 		} else {
 			OutputDebugString(TEXT("Error getting temporary filename:"));
@@ -309,11 +339,42 @@ void Debug::SetLogTarget(LOGTARGET logTarget) {
 		}
 	} else /* if (logTarget == LOGTARGET_WINDEBUG) */ {
 		if (m_fdLogFile) {
+			// TODO: clean up Win32 HANDLE above (not currently stored)
 			fclose(m_fdLogFile);
 		}
 		m_fdLogFile = nullptr;
 	}
 	m_logTarget = logTarget;
+}
+
+void Debug::SetLogLevel(LOGLEVEL logLevel) {
+	switch (logLevel) {
+	case LOGLEVEL_TRACE:
+		LOGTRACE("TRACE");
+		break;
+	case LOGLEVEL_DEBUG:
+		LOGTRACE("DEBUG");
+		break;
+	case LOGLEVEL_INFO:
+		LOGTRACE("INFO");
+		break;
+	case LOGLEVEL_WARN:
+		LOGTRACE("WARN");
+		break;
+	case LOGLEVEL_ERROR:
+		LOGTRACE("ERROR");
+		break;
+	case LOGLEVEL_FATAL:
+		LOGTRACE("FATAL");
+		break;
+	case LOGLEVEL_NONE:
+		LOGTRACE("NONE");
+		break;
+	default:
+		LOGTRACE("Unknown log level set");
+		break;
+	}
+	m_logLevel = logLevel; 
 }
 
 //

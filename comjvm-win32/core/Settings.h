@@ -40,6 +40,13 @@ public:
 	virtual BOOL DeleteKey (const _std_string_t &strKey) = 0;
 };
 
+const _std_string_t SECTION_ADDIN = _T("Addin");
+const _std_string_t KEY_UPGRADE_EARLIEST = _T("UpgradeCheckEarliest");
+const _std_string_t KEY_UPGRADE_CHECK_REQUIRED = _T("CheckForUpgrades");
+const _std_string_t VALUE_UPGRADE_CHECK_REQUIRED_YES = _T("Yes");
+const _std_string_t VALUE_UPGRADE_CHECK_REQUIRED_NO = _T("No");
+const _std_string_t VALUE_UPGRADE_CHECK_REQUIRED_DEFAULT = VALUE_UPGRADE_CHECK_REQUIRED_YES;
+
 /// <summary>Configuration settings.</summary>
 ///
 /// <para>Configuration may be defined in the registry or on disk alongside the DLL.</para>

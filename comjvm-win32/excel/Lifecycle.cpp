@@ -35,27 +35,20 @@ HRESULT LoadDLLs () {
 	return S_OK;
 }
 
-void InitAddin () {
-	if (!g_pAddinEnv) {
-		g_pAddinEnv = new CAddinEnvironment ();
-		g_pAddinEnv->Start();
-	}
-}
-
-void InitJvm () {
-	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
-	g_pJvmEnv->Start();
-}
-
-void ShutdownJvm () {
-	g_pJvmEnv->Shutdown();
-}
-
-void ShutdownAddin () {
-	g_pAddinEnv->Shutdown();
-}
-
-void RestartJvm () {
-	g_pJvmEnv->Shutdown();
-	g_pJvmEnv->Start();
-}
+//void InitAddin () {
+//	if (!g_pAddinEnv) {
+//		g_pAddinEnv = new CAddinEnvironment ();
+//		g_pAddinEnv->Start();
+//	}
+//}
+//
+//void InitJvm () {
+//	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+//	g_pJvmEnv->Start();
+//}
+//
+//
+//void RestartJvm () {
+//	g_pJvmEnv->Shutdown();
+//	g_pJvmEnv->Start();
+//}

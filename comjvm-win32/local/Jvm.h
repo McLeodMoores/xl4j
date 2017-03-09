@@ -18,6 +18,7 @@ public:
 	HRESULT Execute (JNICallbackProc pfnCallback, LPVOID lpData);
 	HRESULT ExecuteAsync(JNICallbackProc pfnCallback, LPVOID lpData);
 	// IJvm
+	HRESULT STDMETHODCALLTYPE FlushAsyncThreads();
 	HRESULT STDMETHODCALLTYPE CreateScan (
 		/* [retval][out] */ IScan **ppScan);
 	HRESULT STDMETHODCALLTYPE CreateCall (

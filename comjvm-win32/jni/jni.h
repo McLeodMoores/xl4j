@@ -49,6 +49,7 @@ typedef HRESULT (APIENTRY *JNICallbackProc) (LPVOID lpUser, JNIEnv *pEnv);
 HRESULT COMJVM_JNI_API JNICallback (DWORD dwJvmRef, JNICallbackProc pfnCallback, PVOID pData);
 HRESULT COMJVM_JNI_API JNICallbackAsync (DWORD dwJvmRef, JNICallbackProc pfnCallback, PVOID pData);
 HRESULT COMJVM_JNI_API JNIDestroyJavaVM (DWORD dwJvmRef);
+HRESULT COMJVM_JNI_API JNIFlushAsyncThreads (DWORD dwJvmRef);
 
 #ifdef __cplusplus
 }

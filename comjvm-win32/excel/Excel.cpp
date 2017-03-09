@@ -35,6 +35,8 @@ LONG g_initialized = 0;
 CAddinEnvironment *g_pAddinEnv = nullptr;
 CJvmEnvironment *g_pJvmEnv = nullptr;
 SRWLOCK g_JvmEnvLock = SRWLOCK_INIT;
+// has xlAutoRemove been called, in which case actually listen to xlAutoClose
+BOOL g_removeCalled = false;
 
 ///***************************************************************************
 // DllMain()
@@ -67,8 +69,8 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		Debug::SetLogTarget(LOGTARGET_FILE);
-		Debug::SetLogLevel(LOGLEVEL_TRACE);
+		//Debug::SetLogTarget(LOGTARGET_WINDEBUG);
+		//Debug::SetLogLevel(LOGLEVEL_INFO);
 		LOGTRACE ("DLL_PROCESS_ATTACH called");
 		// The instance handle passed into DllMain is saved
 		// in the global variable g_hInst for later use.
@@ -232,8 +234,12 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		GetCurrentDirectoryW(MAX_PATH, buf);
 		LOGTRACE("CWD = %s", buf);
 		LOGTRACE("Initializing Add-in, JVM, etc");
-		InitAddin();
-		InitJvm();
+		if (!g_pAddinEnv) {
+			g_pAddinEnv = new CAddinEnvironment ();
+			g_pAddinEnv->Start();
+		}
+		g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+		g_pJvmEnv->Start();
 		FreeAllTempMemory();
 		return 1;
 	} else {
@@ -287,8 +293,13 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 ///***************************************************************************
 
 __declspec(dllexport) int WINAPI xlAutoClose (void) {
-	ShutdownJvm ();
-	ShutdownAddin ();
+	// xlAutoClose can be called when we're not closing - for example if you click close and then press 'Cancel' when offered
+	// the chance to save the file.  This means the add-in would crash in this case.  So, suggested practice is to only
+	// actually shut down if xlAutoRemove was called first.
+	if (g_removeCalled) {
+		g_pJvmEnv->Shutdown();
+		g_pAddinEnv->Shutdown();
+	}
 	return 1;
 }
 
@@ -298,7 +309,13 @@ __declspec(dllexport) int WINAPI xlAutoAdd (void) {
 		return 0;
 	}
 	XCHAR szBuf[255];
-	InitAddin ();
+	if (!g_pAddinEnv) {
+		// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
+		if (SUCCEEDED(LoadDLLs())) {
+			g_pAddinEnv = new CAddinEnvironment();
+			g_pAddinEnv->Start();
+		}
+	}
 	_bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
 	LOGTRACE ("Add-in name is %s", static_cast<wchar_t*>(addinName));
 	wsprintfW ((LPWSTR)szBuf, L"Thank you for adding %s.XLL\n "
@@ -343,6 +360,7 @@ __declspec(dllexport) int WINAPI xlAutoRemove (void) {
 		L"built on %hs at %hs.\nYou should consider restarting Excel to free all resources.", static_cast<wchar_t*>(addinName), __DATE__, __TIME__);
 	Excel12f (xlcAlert, 0, 2, TempStr12 (szBuf),
 		TempInt12 (2));
+	g_removeCalled = TRUE; // flag to tell xlAutoClose that this is serious, actually shut down.
 	return 1;
 }
 
@@ -384,7 +402,10 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	// anything else, it returns a #VALUE! error.
 	//
 	LoadDLLs ();
-	InitAddin ();
+	if (!g_pAddinEnv) {
+		g_pAddinEnv = new CAddinEnvironment ();
+		g_pAddinEnv->Start();
+	}
 	Excel12f (xlCoerce, &xIntAction, 2, xAction, TempInt12 (xltypeInt));
 	bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
 	if (xIntAction.val.w == 1)
@@ -466,6 +487,21 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	return result;
 }
 
+__declspec(dllexport) void CalculationCancelledEvent() {
+	AcquireSRWLockExclusive(&g_JvmEnvLock);
+	LOGINFO("Calculation cancelled!");
+	HRESULT hr;
+	if (FAILED(hr = g_pJvmEnv->_CancelCalculations())) {
+		LOGERROR("Failed to cancel calculations: %s", HRESULT_TO_STR(hr));
+	} else {
+		LOGINFO("Successfully flushed async threads");
+	}
+	ReleaseSRWLockExclusive(&g_JvmEnvLock);
+}
+
+__declspec(dllexport) void CalculationCompleteEvent() {
+	LOGINFO("Calculation complete!");
+}
 
 ///***************************************************************************
 // fExit()

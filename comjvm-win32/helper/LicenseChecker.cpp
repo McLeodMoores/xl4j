@@ -208,13 +208,13 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 		NULL);
 	if (INVALID_HANDLE_VALUE == hLicenseFile) {
 		LOGERROR("Problem opening license file (%s): %s", szFullFilePath, GETLASTERROR_TO_STR());
-		return hr;
+		return GETLASTERROR_TO_HRESULT();
 	}
 	LOGTRACE("Opened license file %s", szFullFilePath);
 	DWORD dwLicenseFileSize = GetFileSize(hLicenseFile, NULL);
 	if (dwLicenseFileSize == INVALID_FILE_SIZE) {
 		LOGERROR("Problem reading license file size: %s", GETLASTERROR_TO_STR());
-		return hr;
+		return GETLASTERROR_TO_HRESULT();
 	}
 	LPVOID pBuffer = malloc(dwLicenseFileSize);
 	if (!pBuffer) {
@@ -224,7 +224,7 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 	DWORD dwBytesRead;
 	if (!ReadFile(hLicenseFile, pBuffer, dwLicenseFileSize, &dwBytesRead, nullptr)) {
 		LOGERROR("Problem reading license file: %s", GETLASTERROR_TO_STR());
-		return hr;
+		return GETLASTERROR_TO_HRESULT();
 	}
 	CloseHandle(hLicenseFile);
 	BYTE *pDecoded = (BYTE *)malloc(dwLicenseFileSize);

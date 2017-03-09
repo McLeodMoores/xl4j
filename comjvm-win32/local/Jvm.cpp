@@ -45,6 +45,11 @@ HRESULT CJvm::ExecuteAsync(JNICallbackProc pfnCallback, LPVOID lpData) {
 	return JNICallbackAsync(m_dwJvm, pfnCallback, lpData);
 }
 
+HRESULT STDMETHODCALLTYPE CJvm::FlushAsyncThreads () {
+	LOGINFO("Arrived");
+	return JNIFlushAsyncThreads(m_dwJvm);
+}
+
 HRESULT STDMETHODCALLTYPE CJvm::CreateScan (
 	/* [retval][out] */ IScan **ppScan) {
 	if (!ppScan) return E_POINTER;

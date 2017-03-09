@@ -176,11 +176,13 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		out->xltype = xltypeInt;
 		out->val.w = V_INT (in);
 	}
-	case VT_INT_PTR:
+	case VT_I8://INT_PTR:
 	{
 		out->xltype = xltypeBigData;
-		out->val.bigdata.h.hdata = (HANDLE)(V_INT_PTR (in));
-		LOGTRACE("Got VT_INT_PTR back, casting to HANDLE %p", (HANDLE)(V_INT_PTR(in)));
+		//out->val.bigdata.h.hdata = (HANDLE)(V_INT_PTR (in));
+		out->val.bigdata.h.hdata = (HANDLE)(V_I8(in));
+		//LOGTRACE("Got VT_INT_PTR back, casting to HANDLE %p", (HANDLE)(V_INT_PTR(in)));
+		LOGTRACE("Got VT_INT_PTR back, casting to HANDLE %llx", V_I8(in));
 		out->val.bigdata.cbData = 0;
 	}
 	break;
@@ -286,11 +288,15 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 	case xltypeBigData: {
 		//throw std::logic_error ("BigData not implemented");
 		VariantClear(out);
-		V_VT(out) = VT_INT_PTR;
+		//V_VT(out) = VT_INT_PTR;
+		V_VT(out) = VT_I8;
 		HANDLE hBigData = in->val.bigdata.h.hdata;
-		LOGTRACE("Handle is %p, size if %d", hBigData, in->val.bigdata.cbData);
+		//LOGTRACE("Handle is %p, size if %d", hBigData, in->val.bigdata.cbData);
+		LOGTRACE("Handle is %llx, size is %d", hBigData, in->val.bigdata.cbData);
 		//V_UI8(out) = ullHandle;
-		V_INT_PTR(out) = (intptr_t) hBigData;
+		//V_INT_PTR(out) = (intptr_t) hBigData;
+		V_I8(out) = (long long)hBigData;
+		LOGTRACE("(after) Handle is %llx, size is %d", (long long)hBigData, in->val.bigdata.cbData);
 	} break;
 	case xltypeMulti: {
 		RW cRows = in->val.array.rows;

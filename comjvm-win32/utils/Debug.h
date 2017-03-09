@@ -62,7 +62,7 @@ public:
 	static COMJVM_DEBUG_API void printException (JNIEnv *pEnv, jthrowable exception);
 	//static void printXLOPER (XLOPER12 *oper);
 	static COMJVM_DEBUG_API void SetThreadName (DWORD dwThreadID, const char* threadName);
-	static COMJVM_DEBUG_API void SetLogLevel(LOGLEVEL logLevel) { m_logLevel = logLevel; }
+	static COMJVM_DEBUG_API void SetLogLevel(LOGLEVEL logLevel);
 	static COMJVM_DEBUG_API LOGLEVEL GetLogLevel() { return m_logLevel; }
 	static COMJVM_DEBUG_API void SetLogTarget(LOGTARGET logTarget);
 	static COMJVM_DEBUG_API LOGTARGET GetLogTarget() { return m_logTarget; }

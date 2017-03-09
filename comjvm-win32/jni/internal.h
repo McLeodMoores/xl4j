@@ -21,3 +21,4 @@ HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData);
 HRESULT ScheduleSlaveAsync(JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData);
 HRESULT PoisonJNISlaveThreads ();
 HRESULT PoisonJNIAsyncSlaveThreads();
+HRESULT PoisonAndRenewJNIAsyncSlaveThreads();

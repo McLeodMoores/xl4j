@@ -189,6 +189,9 @@ public:
 		: CAbstractJvm (pTemplate) {
 	}
 	// IJvm
+	HRESULT STDMETHODCALLTYPE FlushAsyncThreads () {
+		return E_NOTIMPL;
+	}
 	HRESULT STDMETHODCALLTYPE CreateScan (
 		/* [retval][out] */ IScan **ppScan
 		) {

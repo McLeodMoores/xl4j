@@ -45,6 +45,7 @@ public:
 	CAddinEnvironment ();
 	~CAddinEnvironment ();
 	HRESULT Start();
+	HRESULT CheckForUpdate();
 	HRESULT Shutdown();
 	// TODO: add state checks for these.
 	HRESULT GetConverter(Converter **ppConverter) const { *ppConverter = m_pConverter; return S_OK; }
