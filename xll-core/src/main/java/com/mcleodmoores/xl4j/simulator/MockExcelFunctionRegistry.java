@@ -41,7 +41,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, isMacroEquivalent,
         isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
     final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType, argumentsHelp,
-        description.toString(), functionAttributes, method);
+        description == null ? "" : description.toString(), functionAttributes, method);
     final FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName, functionEntry);
     if (existing == null) {
       return functionWorksheetName.hashCode();

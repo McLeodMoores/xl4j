@@ -214,21 +214,21 @@ public final class FunctionMetadata {
   }
 
   /**
-   * @return the XLFunction annotation, can be null
+   * @return the XLFunction annotation, can be null if this class contains the metadata for {@link XLConstant} or {@link XLFunctions} annotated functions
    */
   public XLFunction getFunctionSpec() {
     return _functionSpec;
   }
 
   /**
-   * @return the XLFunctions annotation, can be null
+   * @return the XLFunctions annotation, can be null if this class contains the metadata for {@link XLConstant} or {@link XLFunction} annotated functions
    */
   public XLFunctions getFunctionsSpec() {
     return _functionsSpec;
   }
 
   /**
-   * @return the XLConstant annotation, can be null
+   * @return the XLConstant annotation, can be null if this class contains the metadata for {@link XLFunction} or {@link XLFunctions} annotated functions
    */
   public XLConstant getConstantSpec() {
     return _constantSpec;

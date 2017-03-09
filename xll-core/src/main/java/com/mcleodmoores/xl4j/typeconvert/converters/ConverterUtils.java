@@ -64,7 +64,7 @@ public final class ConverterUtils {
             throw new Excel4JRuntimeException("Could not get bounds for " + genericDeclaration);
           }
           if (bounds.length != 1) {
-            throw new Excel4JRuntimeException("Could not get handle bounds " + Arrays.toString(bounds));
+            throw new Excel4JRuntimeException("Could not get bounds " + Arrays.toString(bounds));
           }
           return getBound(bounds[0]);
         }

@@ -3,6 +3,7 @@
  */
 package com.mcleodmoores.xl4j.javacode;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLValue;
 
@@ -29,14 +31,43 @@ public class PassthroughMethodInvoker implements MethodInvoker {
    *          the method to call.
    */
   public PassthroughMethodInvoker(final Method method) {
-    _method = method;
+    _method = ArgumentChecker.notNull(method, "method");
   }
 
   @Override
   public XLValue invoke(final Object object, final XLValue[] arguments) {
+    ArgumentChecker.notNull(arguments, "arguments");
     try {
-      LOGGER.info("invoking " + object + " with " + Arrays.toString(arguments));
-      return (XLValue) _method.invoke(object, new Object[] { arguments });
+      if (_method.isVarArgs()) {
+        if (arguments.length == 0) {
+          // find the appropriate type for the empty array
+          final Class<?>[] parameterTypes = _method.getParameterTypes();
+          final Class<?> varArgType = parameterTypes[parameterTypes.length - 1].getComponentType();
+          if (varArgType == null) {
+            LOGGER.error("Last argument for varargs method was not an array: should never happen");
+            throw new Excel4JRuntimeException("Error invoking method: last argument for varargs method was not an array");
+          }
+          return (XLValue) _method.invoke(object, Array.newInstance(varArgType, 0));
+        }
+        // create an array for the varargs argument
+        final Object[] args;
+        final int nArgs = _method.getParameterCount();
+        final int nVarargInputs = arguments.length - nArgs + 1;
+        if (nVarargInputs < 0) {
+          throw new Excel4JRuntimeException("Wrong number of arguments for " + _method + ", have " + Arrays.toString(arguments));
+        }
+        args = new Object[nArgs];
+        final Class<?>[] parameterTypes = _method.getParameterTypes();
+        final Class<?> varArgType = parameterTypes[parameterTypes.length - 1].getComponentType();
+        final Object[] varargs = (Object[]) Array.newInstance(varArgType, nVarargInputs);
+        System.arraycopy(arguments, 0, args, 0, nArgs - 1);
+        System.arraycopy(arguments, nArgs - 1, varargs, 0, nVarargInputs);
+        args[args.length - 1] = varargs;
+        LOGGER.info("invoking method {} on {} with {}", _method.getName(), object, Arrays.toString(args));
+        return (XLValue) _method.invoke(object, args);
+      }
+      LOGGER.info("invoking method {} on {} with {}", _method.getName(), object, Arrays.toString(arguments));
+      return (XLValue) _method.invoke(object, (Object[]) arguments);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new Excel4JRuntimeException("Error invoking method", e);
     }

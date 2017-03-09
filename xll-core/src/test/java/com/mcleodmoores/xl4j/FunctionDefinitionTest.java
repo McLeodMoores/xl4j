@@ -44,7 +44,7 @@ public class FunctionDefinitionTest {
     try {
       method = InvokerTestHelper.class.getMethod("multiArgsMethod", new Class<?>[] {Integer.TYPE, Integer.TYPE});
       constructor = InvokerTestHelper.class.getConstructor(new Class<?>[] {Integer.TYPE, Integer.TYPE});
-      field = InvokerTestHelper.class.getField("FIELD");
+      field = InvokerTestHelper.class.getField("INT_FIELD");
     } catch (NoSuchMethodException | SecurityException | NoSuchFieldException e) {
       throw new Excel4JRuntimeException("", e);
     }

@@ -16,7 +16,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PACKAGE, ElementType.TYPE })
 public @interface XLNamespace {
-  // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
   /**
    * The name of the name space to prepend to each function name in the class or package underneath.
    *

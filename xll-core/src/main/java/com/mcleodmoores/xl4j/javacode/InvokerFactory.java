@@ -29,11 +29,9 @@ public interface InvokerFactory {
    * @param argTypes
    *          a VarArg of the classes of the XLValues to be marshaled into Java types
    * @return a ConstructorInvoker that can perform the necessary conversions each time the constructor is invoked
-   * @throws ClassNotFoundException
-   *           if the specified class cannot be found
    */
   ConstructorInvoker[] getConstructorTypeConverter(Class<?> clazz, TypeConversionMode typeConversionMode,
-      @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) throws ClassNotFoundException;
+      @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes);
 
   /**
    * Return a method type converter ready to process calls for a given method.
@@ -47,11 +45,9 @@ public interface InvokerFactory {
    * @param argTypes
    *          a VarArg of the classes of the XLValues to be marshaled into Java types
    * @return a MethodInvoder that can perform the necessary type conversions each time the method is invoked
-   * @throws ClassNotFoundException
-   *           if the specified class cannot be found throws Excel4JRuntimeException if a matching method cannot be found
    */
   MethodInvoker[] getMethodTypeConverter(Class<?> clazz, XLString methodName, TypeConversionMode typeConversionMode,
-      @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes) throws ClassNotFoundException;
+      @SuppressWarnings("unchecked") Class<? extends XLValue>... argTypes);
 
   /**
    * Return a constructor type converter ready to process calls for a given constructor. This method is used when you already know the

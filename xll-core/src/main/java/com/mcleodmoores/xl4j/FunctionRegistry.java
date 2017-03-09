@@ -3,16 +3,11 @@
  */
 package com.mcleodmoores.xl4j;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -31,18 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.xl4j.callback.ExcelCallback;
-import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
-import com.mcleodmoores.xl4j.javacode.FieldInvoker;
 import com.mcleodmoores.xl4j.javacode.InvokerFactory;
-import com.mcleodmoores.xl4j.javacode.MethodInvoker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 
 /**
- * Class to scan for @XLFunction annotations and register each function with Excel.
+ * Class to scan for {@link XLFunction}, {@link XLConstant} and {@link XLFunctions} annotations and register each function with Excel.
  */
-public class FunctionRegistry {
+public class FunctionRegistry extends AbstractFunctionRegistry {
   private static final Set<String> EXCLUDED_METHOD_NAMES = new HashSet<>();
-  private static final XLParameter[] EMPTY_PARAMETER_ARRAY = new XLParameter[0];
   static {
     EXCLUDED_METHOD_NAMES.add("clone");
     EXCLUDED_METHOD_NAMES.add("equals");
@@ -86,7 +77,7 @@ public class FunctionRegistry {
 
     @Override
     public void run() {
-      scanAndCreateFunctions(_invokerFactory);
+      createAndRegisterFunctions(_invokerFactory);
       LOGGER.info("Scan and create finished, putting to Blocking Queue");
       try {
         _finishedScan.put(_functionDefinitions);
@@ -102,6 +93,7 @@ public class FunctionRegistry {
    * @param callback
    *          the Excel callback interface
    */
+  @Override
   public void registerFunctions(final ExcelCallback callback) {
     LOGGER.info("registerFunctions called with {}", callback);
     try {
@@ -120,263 +112,44 @@ public class FunctionRegistry {
     }
   }
 
-  private void scanAndCreateFunctions(final InvokerFactory invokerFactory) {
+  @Override
+  protected void createAndRegisterFunctions(final InvokerFactory invokerFactory) {
     final Set<String> registeredFunctionNames = new HashSet<>();
-    // TODO: don't limit to our package when scanning for functions. #45
     final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
         .addScanners(new MethodAnnotationsScanner(), new MethodParameterScanner(), new TypeAnnotationsScanner(), new FieldAnnotationsScanner()));
-    final Set<Method> methodsAnnotatedWith = reflections.getMethodsAnnotatedWith(XLFunction.class);
-    addAnnotatedMethods(invokerFactory, registeredFunctionNames, methodsAnnotatedWith);
-    @SuppressWarnings("rawtypes")
-    final Set<Constructor> constructorsAnnotatedWithFunction = reflections.getConstructorsAnnotatedWith(XLFunction.class);
-    addAnnotatedConstructors(invokerFactory, registeredFunctionNames, constructorsAnnotatedWithFunction);
-    final Set<Class<?>> classesAnnotatedWithFunction = reflections.getTypesAnnotatedWith(XLFunctions.class);
-    addAnnotatedClasses(invokerFactory, registeredFunctionNames, classesAnnotatedWithFunction);
-    final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);
-    addAnnotatedFields(invokerFactory, registeredFunctionNames, classesAnnotatedWithConstant);
-    final Set<Field> fieldsAnnotatedWithConstant = reflections.getFieldsAnnotatedWith(XLConstant.class);
-    addAnnotatedFields(invokerFactory, registeredFunctionNames, fieldsAnnotatedWithConstant);
-  }
-
-  private void addAnnotatedFields(final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final Set<Class<?>> typeAnnotatedWith) {
-    for (final Class<?> clazz : typeAnnotatedWith) {
-      final XLConstant constantAnnotation = clazz.getAnnotation(XLConstant.class);
-      XLNamespace namespaceAnnotation = null;
-      if (clazz.isAnnotationPresent(XLNamespace.class)) {
-        namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
-      }
-      for (final Field field : clazz.getFields()) {
-        final String functionName = generateFunctionNameForField(namespaceAnnotation, constantAnnotation, clazz.getSimpleName(),
-            field.getName(), true);
-        addField(field, invokerFactory, registeredFunctionNames, constantAnnotation, namespaceAnnotation, functionName);
-      }
-    }
-  }
-
-  private void addAnnotatedFields(final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final Collection<Field> fieldsAnnotatedWith) {
-    for (final Field field : fieldsAnnotatedWith) {
-      XLNamespace namespaceAnnotation = null;
-      if (field.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
-        namespaceAnnotation = field.getDeclaringClass().getAnnotation(XLNamespace.class);
-      }
-      final XLConstant constantAnnotation = field.getAnnotation(XLConstant.class);
-      final String functionName = generateFunctionNameForField(namespaceAnnotation, constantAnnotation,
-          field.getDeclaringClass().getName(), field.getName(), constantAnnotation.name().isEmpty());
-      addField(field, invokerFactory, registeredFunctionNames, constantAnnotation, namespaceAnnotation, functionName);
-    }
-  }
-
-  private void addAnnotatedMethods(final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final Set<Method> methodsAnnotatedWith) {
-    for (final Method method : methodsAnnotatedWith) {
-      final XLFunction functionAnnotation = method.getAnnotation(XLFunction.class);
-      XLNamespace namespaceAnnotation = null;
-      if (method.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
-        namespaceAnnotation = method.getDeclaringClass().getAnnotation(XLNamespace.class);
-      }
-      final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(method);
-      final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation.name(),
-          method.getDeclaringClass().getSimpleName(), method.getName(), functionAnnotation.name().isEmpty(), 1);
-      addMethod(method, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName);
-
-    }
-  }
-
-  private void addAnnotatedConstructors(final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      @SuppressWarnings("rawtypes") final Set<Constructor> constructorsAnnotatedWith) {
-    for (final Constructor<?> constructor : constructorsAnnotatedWith) {
-      final XLFunction functionAnnotation = constructor.getAnnotation(XLFunction.class);
-      XLNamespace namespaceAnnotation = null;
-      if (constructor.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
-        namespaceAnnotation = constructor.getDeclaringClass().getAnnotation(XLNamespace.class);
-      }
-      final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(constructor);
-      final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, functionAnnotation.name(),
-          constructor.getDeclaringClass().getSimpleName(), 1);
-      addConstructor(constructor, invokerFactory, registeredFunctionNames, functionAnnotation, namespaceAnnotation,
-          xlParameterAnnotations, functionName);
-    }
-  }
-
-  private void addAnnotatedClasses(final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final Set<Class<?>> classesAnnotatedWith) {
-    for (final Class<?> clazz : classesAnnotatedWith) {
-      if (Modifier.isAbstract(clazz.getModifiers())) {
-        LOGGER.warn("{} is abstract, not registering functions", clazz.getSimpleName());
-        continue;
-      }
-      final String className = clazz.getSimpleName();
-      final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
-      XLNamespace namespaceAnnotation = null;
-      if (clazz.isAnnotationPresent(XLNamespace.class)) {
-        namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
-      }
-      // build the constructor invokers
-      final Constructor<?>[] constructors = clazz.getConstructors();
-      int count = 1;
-      for (final Constructor<?> constructor : constructors) {
-        final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, count);
-        addConstructor(constructor, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName);
-        count++;
-      }
-      // build the method invokers
-      final Method[] methods = clazz.getMethods();
-      final Map<String, Integer> methodNames = new HashMap<>();
-      for (final Method method : methods) {
-        final String methodName = method.getName();
-        if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
-          LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
-          continue;
-        }
-        if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
-          continue;
-        }
-        final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
-        methodNames.put(methodName, methodNameCount);
-        final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName, true, methodNameCount);
-        addMethod(method, invokerFactory, registeredFunctionNames, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName);
-      }
-    }
-  }
-
-  private void addField(final Field field, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final XLConstant constantAnnotation, final XLNamespace namespaceAnnotation, final String functionName) {
-    // scan the result type if there is one to determine whether function should return simplest type or always
-    // an object type
-    final TypeConversionMode resultType =
-        constantAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : constantAnnotation.typeConversionMode();
     try {
-      final FieldInvoker fieldInvoker = invokerFactory.getFieldTypeConverter(field, resultType);
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, constantAnnotation, functionName);
-      final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, fieldInvoker, allocatedExportNumber);
-      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
-      // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionMetadata.getName());
-      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
-      _functionDefinitions.add(functionDefinition);
+      addDefinitions(getFunctionsForMethods(invokerFactory, reflections.getMethodsAnnotatedWith(XLFunction.class)), registeredFunctionNames);
     } catch (final Exception e) {
-      LOGGER.error("Exception while scanning annotated field", e);
+      LOGGER.error("Exception while scanning XLFunction-annotated methods", e);
     }
-  }
-
-  private void addMethod(final Method method, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final XLFunction functionAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
-    // scan the result type if there is one to determine whether function should return simplest type or always
-    // an object type
-    final TypeConversionMode resultType =
-        functionAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : functionAnnotation.typeConversionMode();
-    // build a method invoker
     try {
-      final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
-      // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations, functionName);
-      final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
-      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
-      // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionMetadata.getName());
-      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
-      _functionDefinitions.add(functionDefinition);
-    } catch (final Exception e) {
-      LOGGER.error("Exception while scanning annotated method", e);
-    }
-  }
-
-  private void addMethod(final Method method, final InvokerFactory invokerFactory, final Set<String> registeredFunctionNames,
-      final XLFunctions functionsAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
-    // scan the result type if there is one to determine whether function should return simplest type or always
-    // an object type
-    final TypeConversionMode resultType =
-        functionsAnnotation.typeConversionMode() == null ? TypeConversionMode.SIMPLEST_RESULT : functionsAnnotation.typeConversionMode();
-    // build a method invoker
-    try {
-      final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
-      // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionsAnnotation, parameterAnnotations, functionName);
-      final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
-      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
-      // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to function {}", allocatedExportNumber, functionMetadata.getName());
-      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
-      _functionDefinitions.add(functionDefinition);
-    } catch (final Exception e) {
-      LOGGER.error("Exception while scanning annotated method", e);
-    }
-  }
-
-  private void addConstructor(@SuppressWarnings("rawtypes") final Constructor constructor, final InvokerFactory invokerFactory,
-      final Set<String> registeredFunctionNames, final XLFunction functionAnnotation, final XLNamespace namespaceAnnotation,
-      final XLParameter[] parameterAnnotations, final String functionName) {
-    try {
-      final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
-      // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionAnnotation, parameterAnnotations, functionName);
-      final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber);
-      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
-      // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to {}", allocatedExportNumber, functionMetadata.getName());
-      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
-      _functionDefinitions.add(functionDefinition);
-    } catch (final Exception e) {
-      LOGGER.error("Exception while scanning annotated constructor", e);
-    }
-  }
-
-  private void addConstructor(@SuppressWarnings("rawtypes") final Constructor constructor, final InvokerFactory invokerFactory,
-      final Set<String> registeredFunctionNames, final XLFunctions functionsAnnotation, final XLNamespace namespaceAnnotation,
-      final XLParameter[] parameterAnnotations, final String functionName) {
-    try {
-      final ConstructorInvoker constructorInvoker = invokerFactory.getConstructorTypeConverter(constructor);
-      // build the meta-data data structure and store it all in a FunctionDefinition
-      final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionsAnnotation, parameterAnnotations, functionName);
-      final int allocatedExportNumber = allocateExport();
-      final FunctionDefinition functionDefinition = FunctionDefinition.of(functionMetadata, constructorInvoker, allocatedExportNumber);
-      checkForDuplicateFunctionNames(registeredFunctionNames, functionDefinition);
-      // put the definition in some look-up tables.
-      LOGGER.info("Allocating export number {} to {}", allocatedExportNumber, functionMetadata.getName());
-      _functionDefinitionLookup.put(allocatedExportNumber, functionDefinition);
-      _functionDefinitions.add(functionDefinition);
-    } catch (final Exception e) {
-      LOGGER.error("Exception while scanning annotated constructor", e);
-    }
-  }
-
-  private static void checkForDuplicateFunctionNames(final Set<String> registeredFunctionNames, final FunctionDefinition functionDefinition) {
-    final String name = functionDefinition.getFunctionMetadata().getName();
-    if (registeredFunctionNames.contains(name.toUpperCase())) {
-      LOGGER.warn("Have already registered a function called {}, ignoring", name);
-    } else {
-      registeredFunctionNames.add(name.toUpperCase());
-    }
-  }
-
-  private static XLParameter[] getXLParameterAnnotations(final Method method) {
-    return getXLParameterAnnotations(method.getParameterAnnotations());
-  }
-
-  private static XLParameter[] getXLParameterAnnotations(final Constructor<?> constructor) {
-    return getXLParameterAnnotations(constructor.getParameterAnnotations());
-  }
-
-  private static XLParameter[] getXLParameterAnnotations(final Annotation[][] allParameterAnnotations) {
-    final XLParameter[] xlParameterAnnotations = new XLParameter[allParameterAnnotations.length];
-    // we rely here on the array being initialized to null
-    for (int i = 0; i < allParameterAnnotations.length; i++) {
-      if (allParameterAnnotations[i] != null) {
-        for (int j = 0; j < allParameterAnnotations[i].length; j++) {
-          if (allParameterAnnotations[i][j].annotationType().equals(XLParameter.class)) {
-            xlParameterAnnotations[i] = (XLParameter) allParameterAnnotations[i][j];
-            break;
-          }
-        }
+      @SuppressWarnings("rawtypes")
+      final Set<Constructor> constructorsAnnotatedWithFunction = reflections.getConstructorsAnnotatedWith(XLFunction.class);
+      // horrible, but don't want to put a raw type in the abstract class
+      final Set<Constructor<?>> constructors = new HashSet<>();
+      for (final Constructor<?> constructor : constructorsAnnotatedWithFunction) {
+        constructors.add(constructor);
       }
+      addDefinitions(getFunctionsForConstructors(invokerFactory, constructors), registeredFunctionNames);
+    } catch (final Exception e) {
+      LOGGER.error("Exception while scanning XLFunction-annotated constructors", e);
     }
-    return xlParameterAnnotations;
+    try {
+      addDefinitions(getFunctionsForTypes(invokerFactory, reflections.getTypesAnnotatedWith(XLFunctions.class)), registeredFunctionNames);
+    } catch (final Exception e) {
+      LOGGER.error("Exceptions while scanning XLFunctions-annotation methods", e);
+    }
+    try {
+      final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);
+      addDefinitions(getFunctionsForTypes(invokerFactory, classesAnnotatedWithConstant), registeredFunctionNames);
+    } catch (final Exception e) {
+      LOGGER.error("Exception while scanning XLConstant-annotated classes", e);
+    }
+    try {
+      addDefinitions(getConstantsForFields(invokerFactory, reflections.getFieldsAnnotatedWith(XLConstant.class)), registeredFunctionNames);
+    } catch (final Exception e) {
+      LOGGER.error("Exception while scanning XLConstant-annotated fields", e);
+    }
   }
 
   /**
@@ -384,7 +157,8 @@ public class FunctionRegistry {
    *
    * @return the allocated export number
    */
-  private int allocateExport() {
+  @Override
+  protected int allocateExport() {
     final int exportNumber = _exportCounter.getAndIncrement();
     return exportNumber;
   }
@@ -396,6 +170,7 @@ public class FunctionRegistry {
    *          the number of the export in the parameter size block
    * @return the function definition, not null throws Excel4JRuntimeException if function definition could not be found
    */
+  @Override
   public FunctionDefinition getFunctionDefinition(final int exportNumber) {
     final FunctionDefinition functionDefinition = _functionDefinitionLookup.get(exportNumber);
     if (functionDefinition != null) {
@@ -404,62 +179,23 @@ public class FunctionRegistry {
     throw new Excel4JRuntimeException("Cannot find function definition with export number " + exportNumber);
   }
 
-  private static String generateFunctionNameForField(final XLNamespace namespace, final XLConstant constant, final String className,
-      final String fieldName, final boolean appendFieldName) {
-    final StringBuilder functionName = new StringBuilder();
-    if (namespace != null) {
-      functionName.append(namespace.value());
+  private void addDefinitions(final List<FunctionDefinition> definitions, final Set<String> registeredFunctionNames) {
+    for (final FunctionDefinition definition : definitions) {
+      checkForDuplicateFunctionNames(registeredFunctionNames, definition);
+      // put the definition in some look-up tables.
+      LOGGER.info("Allocating export number {} to function {}", definition.getExportNumber(), definition.getFunctionMetadata().getName());
+      _functionDefinitionLookup.put(definition.getExportNumber(), definition);
+      _functionDefinitions.add(definition);
     }
-    if (!constant.name().isEmpty()) {
-      functionName.append(constant.name());
-    } else {
-      functionName.append(className);
-    }
-    if (appendFieldName) {
-      functionName.append(".");
-      functionName.append(fieldName);
-    }
-    return functionName.toString();
   }
 
-  private static String generateFunctionNameForMethod(final XLNamespace namespace, final String nameOrPrefix, final String className,
-      final String methodName, final boolean appendMethodName, final int methodNumber) {
-    final StringBuilder functionName = new StringBuilder();
-    if (namespace != null) {
-      functionName.append(namespace.value());
-    }
-    if (!nameOrPrefix.isEmpty()) {
-      functionName.append(nameOrPrefix);
+  private static void checkForDuplicateFunctionNames(final Set<String> registeredFunctionNames, final FunctionDefinition functionDefinition) {
+    final String name = functionDefinition.getFunctionMetadata().getName();
+    if (registeredFunctionNames.contains(name.toUpperCase())) {
+      LOGGER.warn("Have already registered a function called {}, ignoring", name);
     } else {
-      functionName.append(className);
+      registeredFunctionNames.add(name.toUpperCase());
     }
-    if (appendMethodName) {
-      functionName.append(".");
-      functionName.append(methodName);
-    }
-    if (methodNumber != 1) {
-      functionName.append("_$");
-      functionName.append(methodNumber);
-    }
-    return functionName.toString();
-  }
-
-  private static String generateFunctionNameForConstructor(final XLNamespace namespace, final String nameOrPrefix, final String className,
-      final int constructorNumber) {
-    final StringBuilder functionName = new StringBuilder();
-    if (namespace != null) {
-      functionName.append(namespace.value());
-    }
-    if (!nameOrPrefix.isEmpty()) {
-      functionName.append(nameOrPrefix);
-    } else {
-      functionName.append(className);
-    }
-    if (constructorNumber != 1) {
-      functionName.append("_$");
-      functionName.append(constructorNumber);
-    }
-    return functionName.toString();
   }
 
 }

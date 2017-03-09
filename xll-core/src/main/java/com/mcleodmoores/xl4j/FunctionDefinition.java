@@ -143,7 +143,7 @@ public final class FunctionDefinition {
   }
 
   /**
-   * @return true if the function represents a method
+   * @return the java type (field, method or constructor)
    */
   public JavaTypeForFunction getJavaTypeForFunction() {
     return _functionType;

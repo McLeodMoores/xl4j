@@ -8,6 +8,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +37,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
    * @param argumentConverters
    *          the converters required to call the method
    * @param returnConverter
-   *          the converter required to convert he result back to an Excel type
+   *          the converter required to convert the result back to an Excel type
    */
   public AbstractMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter) {
     _method = ArgumentChecker.notNull(method, "method");
@@ -46,12 +47,12 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
 
   @Override
   public XLValue invoke(final Object object, final XLValue[] arguments) {
-    Object[] args;
+    ArgumentChecker.notNull(arguments, "arguments");
+    final Object[] args;
     if (_method.isVarArgs()) {
-      args = new Object[_method.getParameterCount()];
       if (arguments.length == 0) {
         try {
-          // find the appropriate type for the empty array
+          // find the appropriate type for the empty array - needed for primitives
           final Class<?>[] parameterTypes = _method.getParameterTypes();
           final Class<?> varArgType = parameterTypes[parameterTypes.length - 1].getComponentType();
           if (varArgType == null) {
@@ -65,8 +66,12 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
           throw new Excel4JRuntimeException("Error invoking method", e);
         }
       }
+      args = new Object[_method.getParameterCount()];
       final int varArgIndex = _method.getParameterCount() - 1;
       final int nVarArgs = arguments.length - varArgIndex;
+      if (nVarArgs < 0) {
+        throw new Excel4JRuntimeException("Wrong number of arguments for " + _method + ", have " + Arrays.toString(arguments));
+      }
       for (int i = 0; i < varArgIndex; i++) {
         final Type expectedClass = _method.getGenericParameterTypes()[i];
         // handle the case where nothing is passed and this should be converted to a null

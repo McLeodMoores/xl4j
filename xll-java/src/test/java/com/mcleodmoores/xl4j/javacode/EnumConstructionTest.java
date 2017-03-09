@@ -19,7 +19,7 @@ import com.mcleodmoores.xl4j.values.XLValue;
  */
 public class EnumConstructionTest extends TypeConstructionTests {
   /** The class name */
-  private static final String CLASSNAME = "com.mcleodmoores.xl4j.testutil.TestEnum";
+  private static final String CLASSNAME = "com.mcleodmoores.xl4j.javacode.testutils.TestEnum";
 
   /**
    * Attempts to create an enum using new TestEnum().

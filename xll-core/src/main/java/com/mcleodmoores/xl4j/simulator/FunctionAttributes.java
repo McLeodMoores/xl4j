@@ -20,7 +20,7 @@ public final class FunctionAttributes {
 
   /**
    * Private constructor.
-   * 
+   *
    * @param functionType
    *          whether this function is a function or command
    * @param asynchronous
@@ -32,11 +32,10 @@ public final class FunctionAttributes {
    * @param multiThreadSafe
    *          whether this function is declared as being multi-thread safe
    * @param resultType
-   *          whether this function should simplify it's results to a base Excel type if possible
+   *          whether this function should simplify its results to a base Excel type if possible
    */
   private FunctionAttributes(final FunctionType functionType, final boolean asynchronous, final boolean volatile1,
       final boolean macroEquivalent, final boolean multiThreadSafe, final TypeConversionMode resultType) {
-    super();
     _functionType = functionType;
     _asynchronous = asynchronous;
     _volatile = volatile1;
@@ -47,7 +46,7 @@ public final class FunctionAttributes {
 
   /**
    * Public static factory method for creating an instance of FunctionAttributes.
-   * 
+   *
    * @param functionType
    *          whether this function is a function or command, not null
    * @param asynchronous
