@@ -52,14 +52,11 @@ make up the add-in.
 # Solution Structure
 | Project Name | Description |
 |--------------|-------------|
-| excel | Covers the XLL add-in interface between Excel and XL4J.  It is this project that handles incoming function calls, lifecycle
-calls and defines objects to encapsulate the state and lifecycle of the Add-in. |
+| excel | Covers the XLL add-in interface between Excel and XL4J.  It is this project that handles incoming function calls, lifecycle calls and defines objects to encapsulate the state and lifecycle of the Add-in. |
 | core | Defines all the COM interfaces used to talk to the JVM, and the common infrastructure classes for the JVM to support Classpaths, JVM discovery, JVM options, and so on. |
-| local | Defines the default implementation of the JVM, and marshalls data to and from COM to Java objects using JNI.  Calls are
-constructed and handed to the JVM via the `jni` project\`s scheduler |
+| local | Defines the default implementation of the JVM, and marshalls data to and from COM to Java objects using JNI.  Calls are constructed and handed to the JVM via the `jni` project\`s scheduler |
 | jni | Defines the low level call scheduler multiple thread-pools to handle synchronous and asynchronous function calls |
-| settings | Contains the user MFC-based user interface components needed by XL4J, including the Settings dialog, the splash screen, 
-info dialog and update prompt dialogs |
+| settings | Contains the user MFC-based user interface components needed by XL4J, including the Settings dialog, the splash screen, info dialog and update prompt dialogs |
 | helper | Various helper classes that are specific to XL4J. |
 | utils | Utility classes such as the logging system, date and file handling, etc, that are more general utilities not specific to XL4J | excel-test | Unit tests for excel |
 | core-test | Unit tests for core |
