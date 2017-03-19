@@ -35,7 +35,7 @@ static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
 		}
 		StringCchCat(szDir, MAX_PATH, L"..");
 		LOGTRACE("Adding %s to DLL search path", szDir);
-		SetDllDirectory(szDir);
+		//SetDllDirectory(szDir);
 		g_hJRE = LoadLibrary (szPath);
 		if (g_hJRE == NULL) {
 			DWORD dwErr = GetLastError();

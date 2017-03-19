@@ -403,15 +403,11 @@ HRESULT CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
 		HRESULT hr = FileUtils::GetTemporaryFileName(szFileName, buffer, MAX_PATH);
 		if (SUCCEEDED(hr)) {
 			LOGTRACE("Full log path is %s", buffer);
-			if (Debug::GetLogTarget() == LOGTARGET_WINDEBUG) {
-				ExcelUtils::WarningMessageBox(L"Native logging is currently set to use WinDebug, use DebugView or equivalent (available from MS Technet for free).  You can change debug ouput to a file in the settings dialog.");
-			}
 			if (FileUtils::FileExists(buffer)) {
 				ShellExecute(hWnd, L"open", buffer, nullptr, nullptr, SW_SHOWNORMAL);
 			} else {
 				LeaveCriticalSection(&m_csState);
 				return ERROR_FILE_NOT_FOUND;
-				//MessageBoxW(hWnd, L"No log file present.  Have you enabled logging in the Settings dialog accessed via the toolbar?", L"File not found", MB_OK);
 			}
 		} else {
 			_com_error err(hr);

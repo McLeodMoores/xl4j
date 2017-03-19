@@ -116,6 +116,9 @@ __declspec(dllexport) int ViewJavaLogs() {
 }
 
 __declspec(dllexport) int ViewCppLogs() {
+	if (Debug::GetLogTarget() == LOGTARGET_WINDEBUG) {
+		ExcelUtils::WarningMessageBox(L"Native logging is currently set to use WinDebug, use DebugView or equivalent\n(available from MS Technet for free).  You can change debug ouput to a\nfile in the settings dialog accessed from the toolbar.");
+	}
 	g_pAddinEnv->ViewLogs(TEXT("xl4j-cpp.log"));
 	return 1;
 }
@@ -227,7 +230,10 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		}
 		return 1;
 	}
-
+	HRESULT hr;
+	if (FAILED(hr = CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
+		LOGERROR("Could not initialise COM: %s", HRESULT_TO_STR(hr));
+	}
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	if (SUCCEEDED(LoadDLLs())) {
 		wchar_t buf[MAX_PATH + 1];

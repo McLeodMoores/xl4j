@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "GarbageCollector.h"
+#include "ExcelUtils.h"
 #include <wchar.h>
 
 //#include "../utils/TraceOff.h"
@@ -47,29 +48,64 @@ bool GarbageCollector::ScanCells (int cols, int rows, XLOPER12 *arr) {
 }
 
 bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
+	XLOPER12 docType;
+	Excel12f(xlfGetDocument, &docType, 2, TempInt12(3), pSheetName); // 3 == GetType
+	LOGTRACE("Worksheet detected type %f (%d)", docType.val.num, docType.val.w);
+	if (docType.val.num != 1.) { // 1 == worksheet (as opposed to e.g. a chart)
+		LOGTRACE("Non-worksheet detected type %f (%d)", docType.val.num, docType.val.w);
+		// don't need to free docType as no pointers involved.
+		return false;
+	}
 	if (m_firstRow.xltype == xltypeMissing) {
-		Excel12f (xlfGetDocument, &m_firstRow, 2, TempInt12 (9), pSheetName);
-		Excel12f (xlfGetDocument, &m_lastRow, 2, TempInt12 (10), pSheetName);
-		Excel12f (xlfGetDocument, &m_firstCol, 2, TempInt12 (11), pSheetName);
-		Excel12f (xlfGetDocument, &m_lastCol, 2, TempInt12 (12), pSheetName);
-		Excel12f (xlSheetId, &m_sheetId, 1, pSheetName);
-		if (m_firstRow.val.num == 0) {
-			Excel12f (xlFree, 0, 1, &m_firstRow);
-			Excel12f (xlFree, 0, 1, &m_lastRow);
-			Excel12f (xlFree, 0, 1, &m_firstCol);
-			Excel12f (xlFree, 0, 1, &m_lastCol);
-			// Excel12f (xlFree, 0, 1, &m_sheetId); -- don't need to free because no pointers
-			LOGTRACE ("sheet was empty");
-			return false; // sheet empty (but not partial)
+		Excel12f (xlfGetDocument, &m_firstRow, 2, TempInt12 (9), pSheetName); // 9 == Get first row
+		ExcelUtils::PrintXLOPER(&m_firstRow);
+		if (m_firstRow.val.num == 0.) {
+			Excel12f(xlFree, 0, 1, &m_firstRow);
+			LOGTRACE("Returned zero (empty sheet) on get first row");
+			m_firstRow.xltype = xltypeMissing;
+			return false;
 		}
+		Excel12f (xlfGetDocument, &m_lastRow, 2, TempInt12 (10), pSheetName); // 10 == Get last row
+		ExcelUtils::PrintXLOPER(&m_lastRow);
+		if (m_lastRow.val.num == 0.) {
+			Excel12f(xlFree, 0, 1, &m_firstRow);
+			Excel12f(xlFree, 0, 1, &m_lastRow);
+			LOGTRACE("Returned zero(empty sheet) on get last row");
+			m_firstRow.xltype = xltypeMissing;
+			return false;
+		}
+		Excel12f (xlfGetDocument, &m_firstCol, 2, TempInt12 (11), pSheetName); // 11 == Get first column
+		ExcelUtils::PrintXLOPER(&m_firstCol);
+		if (m_firstCol.val.num == 0.) {
+			Excel12f(xlFree, 0, 1, &m_firstRow);
+			Excel12f(xlFree, 0, 1, &m_lastRow);
+			Excel12f(xlFree, 0, 1, &m_firstCol);
+			LOGTRACE("Returned zero (empty sheet) on get first column");
+			m_firstRow.xltype = xltypeMissing;
+			return false;
+		}
+
+		Excel12f (xlfGetDocument, &m_lastCol, 2, TempInt12 (12), pSheetName); // 12 = Get last column
+		ExcelUtils::PrintXLOPER(&m_lastCol);
+		if (m_lastCol.val.num == 0.) {
+			Excel12f(xlFree, 0, 1, &m_firstRow);
+			Excel12f(xlFree, 0, 1, &m_lastRow);
+			Excel12f(xlFree, 0, 1, &m_firstCol);
+			Excel12f(xlFree, 0, 1, &m_lastCol);
+			LOGTRACE("Returned zero (empty sheet) on get last column");
+			m_firstRow.xltype = xltypeMissing;
+			return false;
+		}
+		Excel12f (xlSheetId, &m_sheetId, 1, pSheetName);
 		if (m_sheetId.xltype == xltypeErr) {
 			Excel12f (xlFree, 0, 1, &m_firstRow);
 			Excel12f (xlFree, 0, 1, &m_lastRow);
 			Excel12f (xlFree, 0, 1, &m_firstCol);
 			Excel12f (xlFree, 0, 1, &m_lastCol);
 			// Excel12f (xlFree, 0, 1, &m_sheetId); -- don't need to free because no pointers
-			LOGTRACE ("Could not get sheet ID");
-			throw std::invalid_argument ("Could not get sheet ID");
+			LOGERROR ("Could not get sheet ID");
+			//throw std::invalid_argument ("Could not get sheet ID");
+			m_firstRow.xltype = xltypeMissing;
 			return false;
 		}
 		m_wholeRow.xltype = xltypeRef;
@@ -115,8 +151,8 @@ bool GarbageCollector::ScanWorkbook (XLOPER12 *pWorkbookName) {
 	}
 	
 	while (m_iSheet < m_cSheets) {
-		LOGTRACE ("Sheet=");
-		//printXLOPER (pSheetName);
+		LOGTRACE ("Sheet");
+		ExcelUtils::PrintXLOPER (m_pSheetName);
 		bool partial = ScanSheet (pWorkbookName, m_pSheetName);
 		m_pSheetName++;
 		m_iSheet++;

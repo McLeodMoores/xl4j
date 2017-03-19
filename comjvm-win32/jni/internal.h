@@ -15,10 +15,10 @@ BOOL StartJVM (JavaVM **ppJVM, JNIEnv **ppEnv, PCSTR pszClasspath, DWORD cOption
 void StopJVM (JNIEnv *pEnv);
 
 void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout);
-void JNISlaveAsyncThread(JNIEnv *pEnv, DWORD dwIdleTimeout);
-void JNISlaveAsyncMainThreadStart(JavaVM *pJVM);
+void JNISlaveAsyncThread (JNIEnv *pEnv, DWORD dwIdleTimeout);
+void JNISlaveAsyncMainThreadStart (JavaVM *pJVM);
 HRESULT ScheduleSlave (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData);
-HRESULT ScheduleSlaveAsync(JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData);
+HRESULT ScheduleSlaveAsync (JavaVM *pJVM, JNICallbackProc pfnCallback, PVOID pData);
 HRESULT PoisonJNISlaveThreads ();
-HRESULT PoisonJNIAsyncSlaveThreads();
-HRESULT PoisonAndRenewJNIAsyncSlaveThreads();
+HRESULT PoisonJNIAsyncSlaveThreads ();
+HRESULT PoisonAndRenewJNIAsyncSlaveThreads ();

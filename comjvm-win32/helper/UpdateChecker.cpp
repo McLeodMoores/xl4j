@@ -56,18 +56,10 @@ HRESULT CUpdateChecker::Check() {
 		LOGERROR("Could not open HTTP connection to check for updates: %s", GETLASTERROR_TO_STR());
 		return GETLASTERROR_TO_HRESULT();
 	}
-	//HINTERNET hConnect = InternetConnectW(hSession, SERVER_NAME, SERVER_PORT, NULL, NULL, INTERNET_SERVICE_HTTP, 0, NULL);
-	//if (!hConnect) {
-	//	LOGERROR("Could not connect to URL to check for updates: %s", GETLASTERROR_TO_STR());
-	//	HRESULT hr = GETLASTERROR_TO_HRESULT();
-	//	InternetCloseHandle(hSession);
-	//	return hr;
-	//}
 	HINTERNET hRequest = InternetOpenUrl(hSession, URL, NULL, 0, 0, 0);
 	if (!hRequest) {
 		DWORD dwError = GetLastError();
 		LOGERROR("Could not request HTTP connection to check for updates error code: %d", dwError);
-		//InternetCloseHandle(hConnect);
 		InternetCloseHandle(hSession);
 		return E_FAIL;
 	}
@@ -108,7 +100,6 @@ HRESULT CUpdateChecker::Check() {
 	}
 	// clean up
 	free(szBuffer);
-	//InternetCloseHandle(hConnect);
 	InternetCloseHandle(hSession);
 	return hr;
 }

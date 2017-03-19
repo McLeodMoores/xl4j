@@ -9,6 +9,8 @@
 #include "afxcmn.h"
 #include "TransparentStatic.h"
 #include "BlueProgress.h"
+#include "CloseButton.h"
+#include "MinimiseButton.h"
 
 // CSplashScreen dialog
 
@@ -52,5 +54,9 @@ public:
 	CString m_csLicenseeText;
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor); 
 	
-
-};
+	CCloseButton m_btClose;
+	CMinimiseButton m_btMinimise;
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedClosebutton();
+	afx_msg void OnBnClickedMinimisebutton();
+ };

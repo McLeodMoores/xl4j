@@ -57,15 +57,10 @@ public:
 			LeaveCriticalSection (&m_cs);
 			LOGTRACE ("(%p) (this = %p) m_dwThreads = %d, calling WaitForSingleObject", GetCurrentThreadId(), this, m_dwThreads);
 			WaitForSingleObject (m_hNotify, dwTimeout);
-			//LARGE_INTEGER t1, freq;
-			//QueryPerformanceCounter (&t1);
-			//QueryPerformanceFrequency (&freq);
-			//Debug::odprintf (TEXT ("Woken at %lld (freq = %lld)\n"), t1, freq);
 			LOGTRACE ("(%p) (this = %p) semaphore released", GetCurrentThreadId (), this);
 			EnterCriticalSection (&m_cs);
 			if (m_iSize == 0) {
 				LOGTRACE ("(%p) (this = %p) callback list empty, decrementing thread count, returning FALSE", GetCurrentThreadId (), this);
-				//m_dwThreads--;
 				*ppfnCallback = nullptr;
 				LeaveCriticalSection (&m_cs);
 				return TRUE; // not shutdown
@@ -108,13 +103,9 @@ public:
 			if (m_dwThreads) {
 				LOGTRACE ("(%p) (this = %p) pushed the callback and data onto queue, decrementing thread count (currently %d b4) and releasing semaphore", GetCurrentThreadId (), this, m_dwThreads);
 				m_dwThreads--;
-				//LARGE_INTEGER t1;
-				//QueryPerformanceCounter (&t1);
 				ReleaseSemaphore (m_hNotify, 1, NULL);
-				//Debug::odprintf (TEXT ("Released at %lld\n"), t1);
 				hr = S_OK;
 			} else {
-				// TODO: No spare threads; spawn one and attach to the JVM
 				//LOGERROR ("(%p) (this = %p) pushed the callback and data onto queue, creating new thread and releasing semaphore", GetCurrentThreadId (), this, m_dwThreads);
 				//LOGINFO("There are %d total threads", m_dwTotalThreads);
 				if (m_dwTotalThreads <= MAX_THREADS) {
@@ -136,10 +127,8 @@ public:
 				} else {
 					//LOGINFO("Not creating any more threads");
 				}
-				//m_dwThreads++; // trying this one out.
 				ReleaseSemaphore (m_hNotify, 1, NULL); // unblock thread (either new one or old one)
 				hr = S_OK;
-				//hr = E_NOTIMPL;
 			}
 		} catch (std::bad_alloc) {
 			if (bCallback) m_apfnCallback.pop_back ();
@@ -183,19 +172,10 @@ static CCallbackRequests *g_pAsyncRequests = new CCallbackRequests();
 DWORD APIENTRY JNISlaveThreadProc (LPVOID lpJVM) {
 	JavaVM *pJVM = (JavaVM *)lpJVM;
 	JNIEnv *pJNIEnv;
-	//int getEnvStat = pJVM->GetEnv((void **)&pJNIEnv, JNI_VERSION_1_6);
-	//if (getEnvStat == JNI_EDETACHED) {
-	//	LOGTRACE("GetEnv: not attached");
-		if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
-			LOGERROR("Failed to attach");
-			return E_FAIL;
-		}
-	//} else if (getEnvStat == JNI_OK) {
-	//	LOGTRACE("Already attached");
-	//} else if (getEnvStat == JNI_EVERSION) {
-	//	LOGTRACE("GetEnv: version not supported");
-	//	return E_FAIL;
-	//}
+	if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
+		LOGERROR("Failed to attach");
+		return E_FAIL;
+	}
 	LOGTRACE("Attached.");
 	LOGTRACE ("(%p) attached to current thread.", GetCurrentThreadId ());
 	JNISlaveThread ((JNIEnv *) pJNIEnv, INFINITE);
@@ -211,20 +191,11 @@ DWORD APIENTRY JNISlaveAsyncThreadProc(LPVOID lpJVM) {
 	LOGTRACE("About to attach first async pool thread to VM %p", lpJVM);
 	JavaVM *pJVM = (JavaVM *)lpJVM;
 	JNIEnv *pJNIEnv;
-	//int getEnvStat = pJVM->GetEnv((void **)&pJNIEnv, JNI_VERSION_1_6);
-	//if (getEnvStat == JNI_EDETACHED) {
-	//	LOGTRACE("GetEnv: not attached");
 	LOGTRACE("pJVM = %p", pJVM);
 	if (pJVM->AttachCurrentThread((void **)&pJNIEnv, NULL) != 0) {
 		LOGERROR("Failed to attach");
 		return E_FAIL;
 	}
-	//} else if (getEnvStat == JNI_OK) {
-	//	LOGTRACE("Already attached");
-	//} else if (getEnvStat == JNI_EVERSION) {
-	//	LOGTRACE("GetEnv: version not supported");
-	//	return E_FAIL;
-	//}    
 	LOGTRACE("Attached.");
 	LOGTRACE("(%p) attached to current async thread.", GetCurrentThreadId());
 	JNISlaveAsyncThread((JNIEnv *)pJNIEnv, INFINITE);

@@ -11,22 +11,40 @@
 FileUtils::FileUtils () {
 }
 
+/**
+ * Get an canonical, absolute path to a file relative to the add-in location.
+ * @param szFullPath pointer to buffer to take a null terminated wide C-string of the resulting path
+ * @param cFullPath the size of the buffer, in characters (recommended to use at minimum MAX_PATH)
+ * @param szFileName point to null-terminated wide C-string of the add-in relative path
+ * @return result code
+ */
 HRESULT FileUtils::GetAddinAbsolutePath (wchar_t *szFullPath, size_t cFullPath, const wchar_t *szFileName) {
 	HRESULT hr;
 	wchar_t szRawPath[MAX_PATH]; 
 	if (FAILED (hr = GetAddinDirectory (szRawPath, MAX_PATH))) {
-		LOGERROR ("GetAddinDirectory failed");
+		LOGERROR ("GetAddinDirectory failed: %s", HRESULT_TO_STR(hr));
 		return hr;
 	}
 	hr = StringCchCatW (szRawPath, MAX_PATH, szFileName);
-	
-	if (PathCanonicalize (szFullPath, szRawPath)) {
+	wchar_t szResult[MAX_PATH];
+	// We would like to use PathCchCanonicalize here, but it's only Win8+
+	if (PathCanonicalize (szResult, szRawPath)) {
+		if (FAILED(hr = StringCchCopyW(szFullPath, cFullPath, szResult))) {
+			LOGERROR("Buffer too small for path: %s ", HRESULT_TO_STR(hr));
+			return hr;
+		}
 		return S_OK;
 	}
-	LOGERROR ("PathCanonicalize failed");
+	LOGERROR ("PathCanonicalize failed: %s", HRESULT_TO_STR(hr));
 	return HRESULT_FROM_WIN32 (GetLastError ());
 }
 
+/**
+ * Get the add-in directory path.  This is the path of the XLL file minus the actual xll filename.
+ * @param szDirectory pointer to a buffer into which the funciton will attempt to write a null-terminated wide c-string
+ * @param cDirectory size of the buffer, in characters, should be at least MAX_PATH
+ * @return result code E_FAIL indicates buffer to small
+ */
 HRESULT FileUtils::GetAddinDirectory (wchar_t *szDirectory, size_t cDirectory) {
 	wchar_t szDirPath[MAX_PATH];
 	HRESULT hr;
@@ -51,6 +69,13 @@ HRESULT FileUtils::GetAddinDirectory (wchar_t *szDirectory, size_t cDirectory) {
 	return S_OK;
 }
 
+/**
+ * Extract the directory path from a fully qualified file path.
+ * @param szDirectory pointer to a buffer to hold the resulting path as a null terminated wide C-string
+ * @param cDirectory the size of the buffer, in characters
+ * @param szFullPath pointer to a null terminated wide C-string containing the full file path
+ * @return result code E_FAIL means buffer too small
+ */
 HRESULT FileUtils::GetDirectoryFromFullPath(wchar_t *szDirectory, size_t cDirectory, const wchar_t *szFullPath) {
 	if (cDirectory < 3) { // just to protect the assumption that the buffer is at least 3 chars in the code below.
 		LOGERROR("Buffer to small");
@@ -69,22 +94,32 @@ HRESULT FileUtils::GetDirectoryFromFullPath(wchar_t *szDirectory, size_t cDirect
 	return S_OK;
 }
 
+/**
+ * Get the file path of this DLL (utils.dll).  Any buffer is zeroed.
+ * @param szFilename pointer to a buffer to hold the null-terminated wide C-string file name of the DLL
+ * @param cFilename size of the buffer, in characters
+ * @return result code
+ */
 HRESULT FileUtils::GetDllFileName (wchar_t *szFilename, size_t cFilename) {
 	HMODULE hModule;
 	if (GetModuleHandleEx (GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, (LPCTSTR)FileUtils::GetDllFileName, &hModule)) {
 		ZeroMemory (szFilename, cFilename); // to please the code analyzer gods
 		DWORD dwLength = GetModuleFileName (hModule, szFilename, cFilename);
 	} else { // there was an error
-		LPWSTR pErrorMsg;
-		FormatMessage (FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError (), 0, (LPWSTR)&pErrorMsg, 0, NULL);
-		OutputDebugStringW (pErrorMsg);
-		LocalFree (pErrorMsg);
-		return HRESULT_FROM_WIN32 (GetLastError ());
+		LOGERROR("Error getting module filename: %s", GETLASTERROR_TO_STR());
+		return GETLASTERROR_TO_HRESULT();
 	}
 	FreeLibrary (hModule);
 	return S_OK;
 }
 
+/**
+ * Append a file name to the temporary directory path.
+ * @param pszLeafFilename const pointer to a null-terminated wide C-string containing the path relative to the temporary directory
+ * @param pszBuffer pointer to a buffer to hold the resulting null-terminated wide C-string fully qualified path
+ * @param cBuffer the size of the buffer, in characters.  Recommended to be minimum of MAX_PATH.
+ * @return result code
+ */
 HRESULT FileUtils::GetTemporaryFileName(const wchar_t *pszLeafFilename, wchar_t *pszBuffer, size_t cBuffer) {
 	if (!GetTempPathW(cBuffer, pszBuffer)) {
 		OutputDebugStringW(TEXT("GetTempPathW failed"));
@@ -93,6 +128,11 @@ HRESULT FileUtils::GetTemporaryFileName(const wchar_t *pszLeafFilename, wchar_t 
 	return StringCchCatW(pszBuffer, cBuffer, pszLeafFilename);
 }
 
+/**
+ * Does the file path exist as a file (and is also NOT a directory).
+ * @param szPath pointer to a null-terminated wide C-string containing the path to check
+ * @return true, if the file exists and is not a directory, false otherwise
+ */
 bool FileUtils::FileExists(const wchar_t *szPath) {
 	DWORD dwAttrib = GetFileAttributes(szPath);
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));

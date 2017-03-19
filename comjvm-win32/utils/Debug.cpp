@@ -17,6 +17,9 @@ Debug::~Debug ()
 {
 }
 
+/**
+ * DEPRECATED: More basic log printf, only supports WinDebug
+ */
 void Debug::odprintf (LPCTSTR sFormat, ...)
 {
 	va_list argptr;
@@ -37,11 +40,22 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 
 size_t Debug::m_cMaxFileNameLength = 0;
 size_t Debug::m_cMaxFunctionNameLength = 0;
-LOGLEVEL Debug::m_logLevel = LOGLEVEL_INFO;
+LOGLEVEL Debug::m_logLevel = LOGLEVEL_TRACE;
 LOGTARGET Debug::m_logTarget = LOGTARGET_WINDEBUG;
 FILE *Debug::m_fdLogFile = nullptr;
 const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ", L"ERROR", L"FATAL", L"NONE " };
 
+/**
+ * Internal printf that displays logs in columnar format, performs filtering based on current logLevel, writes to file or 
+ * WinDebug, includes line numbers, filename, etc.  It will automatically increase the column widths to accomodate the largest 
+ * width strings it's seen, so lots may start with little alignment, but should become more readable over time.
+ * @param logLevel the level of the log message, with TRACE most detailed but disposable, and FATAL most serious
+ * @param sFileName the name of the source file where the logger is being used (note char *)
+ * @param iLineNum the line number of the source file where the logger is being used
+ * @param sFunctionName the name of the function where the logger is being used
+ * @param sFormat the printf-style format message
+ * @param ... the arguments to the printf
+ */
 void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...) {
 	va_list argptr;
 	va_start (argptr, sFormat);
@@ -76,12 +90,21 @@ void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLine
 	OutputDebugString (_T ("StringCbVPrintf error."));
 }
 
+/**
+ * Print out an HRESULT as a descriptive string.  Probably better to use HRESULT_TO_STR macro in most cases.
+ * @param hResult the result to display
+ * @returns the result passed
+ */
 HRESULT Debug::print_HRESULT (HRESULT hResult) {
 	_com_error error (hResult);
 	odprintf (TEXT ("HRESULT error was %s\n"), error.ErrorMessage ());
 	return hResult;
 }
 
+/**
+ * Print out the contents of a SAFEARRAY to the TRACE level log.  This is not generic, it assumes XL4J data structures.
+ * @param psa pointer to the SAFEARRAY to print to the log
+ */
 void Debug::LOGTRACE_SAFEARRAY(SAFEARRAY *psa) {
 	LOGTRACE("VT_ARRAY(%dD)", SafeArrayGetDim(psa));
 	long elems = 1;
@@ -107,6 +130,11 @@ void Debug::LOGTRACE_SAFEARRAY(SAFEARRAY *psa) {
 	}
 	SafeArrayUnaccessData(psa);
 }
+
+/**
+ * Print out a VARIANT for debug purposes at trace level.  Only supports type relevant to XL4J, not generic.
+ * @param pVariant a pointer to the VARIANT to display.
+ */
 void Debug::LOGTRACE_VARIANT(VARIANT *pVariant) {
 	switch (pVariant->vt) {
 	case VT_R8:
@@ -186,6 +214,16 @@ void Debug::LOGTRACE_VARIANT(VARIANT *pVariant) {
 	}
 }
 
+/**
+ * Write a string representation of a Java exception stack trace to a provided std:string.
+ * @param a_jni_env reference to the Java environment
+ * @param a_error_msg a string in which to accumulate the stacktrace
+ * @param a_exception the Java exception object (technically Throwable)
+ * @param a_mid_throwable_getCause the JNI methodID for getCause on Throwable
+ * @param a_mid_throwable_getStackTrace the JNI methodID for getStackTrace on Throwable
+ * @param a_mid_throwable_toString the JNI methodID for toString on Throwable
+ * @param a_mid_frame_toString the JNI methodID for toString on Frame (the stack frame)
+ */
 void Debug::appendExceptionTraceMessages (
 	JNIEnv&      a_jni_env,
 	std::string& a_error_msg,
@@ -264,6 +302,11 @@ void Debug::appendExceptionTraceMessages (
 	}
 }
 
+/**
+ * Prints a Java exception with a full stack-trace.
+ * @param pEnv the Java environment
+ * @param exception the exception to display
+ */
 void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 	jclass throwable_class = pEnv->FindClass ("java/lang/Throwable");
 	jmethodID mid_throwable_getCause =
@@ -295,6 +338,10 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 	OutputDebugStringA (error_msg.c_str());
 }
 
+/**
+ * Set the target of log output (File or WinDebug).
+ * @param logTarget indicates whether the logs should go to a file or the WinDebug system.
+ */
 void Debug::SetLogTarget(LOGTARGET logTarget) {
 	if (logTarget == LOGTARGET_FILE) {
 		if (m_fdLogFile) {
@@ -403,68 +450,3 @@ void Debug::SetThreadName (DWORD dwThreadID, const char* threadName) {
 	}
 #pragma warning(pop)
 }
-
-//void Debug::printXLOPER (XLOPER12 *oper) {
-//	switch (oper->xltype) {
-//	case xltypeStr: {
-//		LOGTRACE ("XLOPER12: xltypeStr: %s", oper->val.str);
-//	} break;
-//	case xltypeNum: {
-//		LOGTRACE ("XLOPER12: xltypeNum: %f", oper->val.num);
-//	} break;
-//	case xltypeNil: {
-//		LOGTRACE ("XLOPER12: xltypeNil");
-//	} break;
-//	case xltypeRef: {
-//		LOGTRACE ("XLOPER12: xltypeRef: sheetId=%d", oper->val.mref.idSheet);
-//		for (int i = 0; i < oper->val.mref.lpmref->count; i++) {
-//			LOGTRACE ("  rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
-//				oper->val.mref.lpmref->reftbl[i].rwFirst,
-//				oper->val.mref.lpmref->reftbl[i].rwLast,
-//				oper->val.mref.lpmref->reftbl[i].colFirst,
-//				oper->val.mref.lpmref->reftbl[i].colLast);
-//		}
-//	} break;
-//	case xltypeMissing: {
-//		LOGTRACE ("XLOPER12: xltypeMissing");
-//	} break;
-//	case xltypeSRef: {
-//		LOGTRACE ("XLOPER12: cltypeSRef: rwFirst=%d,rwLast=%d,colFirst=%d,colLast=%d",
-//				oper->val.sref.ref.rwFirst,
-//				oper->val.sref.ref.rwLast,
-//				oper->val.sref.ref.colFirst,
-//				oper->val.sref.ref.colLast);
-//	} break;
-//	case xltypeInt: {
-//		LOGTRACE ("XLOPER12: xltypeInt: %d", oper->val.w);
-//	} break;
-//	case xltypeErr: {
-//		LOGTRACE ("XLOPER12: xltypeErr: %d", oper->val.err);
-//	} break;
-//	case xltypeBool: {
-//		if (oper->val.xbool == FALSE) {
-//			LOGTRACE ("XLOPER12: xltypeBool: FALSE");
-//		} else {
-//			LOGTRACE ("XLOPER12: xltypeBool: TRUE");
-//		}
-//	} break;
-//	case xltypeBigData: {
-//		LOGTRACE ("XLOPER12: xltypeBigData");
-//	} break;
-//	case xltypeMulti: {
-//		RW cRows = oper->val.array.rows;
-//		COL cCols = oper->val.array.columns;
-//		LOGTRACE ("XLOPER12: xltypeMulti: cols=%d, rows=%d", cCols, cRows);
-//		XLOPER12 *pXLOPER = oper->val.array.lparray;
-//		for (RW j = 0; j < cRows; j++) {
-//			for (COL i = 0; i < cCols; i++) {
-//				printXLOPER (pXLOPER++);
-//			}
-//		}
-//	} break;
-//	default: {
-//		LOGTRACE ("XLOPER12: Unrecognised XLOPER12 type %d", oper->xltype);
-//	}
-//
-//	}
-//}

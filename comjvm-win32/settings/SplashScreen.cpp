@@ -36,9 +36,12 @@ CSplashScreen::~CSplashScreen()
 BOOL CSplashScreen::OnInitDialog() {
 	CDialog::OnInitDialog();
 	m_stLicensee.SetWindowText(m_csLicenseeText);
-	SetWindowTheme(m_prProgress.GetSafeHwnd(), L" ", NULL);
+	m_btClose.SetButtonStyle(BS_OWNERDRAW);
+	m_btMinimise.SetButtonStyle(BS_OWNERDRAW);
 	// the next two might not be necessary because of handling CtlColor in BlueProgress
 	COLORREF clrBar = RGB(43, 87, 151); // the bar color
+	// deactivate Aero, which insists on the bar being green.
+	SetWindowTheme(m_prProgress.CWnd::GetSafeHwnd(), _T(" "), 0);
 	m_prProgress.SendMessage(PBM_SETBARCOLOR, 0, (LPARAM)clrBar);
 	m_prProgress.SetBarColor(RGB(43, 87, 151));
 	return FALSE; // no focus given to control in dialog
@@ -49,26 +52,42 @@ void CSplashScreen::DoDataExchange(CDataExchange* pDX)
 	CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LICENSETEXT, m_stLicensee);
 	DDX_Control(pDX, IDC_PROGRESS1, m_prProgress);
+	DDX_Control(pDX, IDC_CLOSEBUTTON, m_btClose);
+	DDX_Control(pDX, IDC_MINIMISEBUTTON, m_btMinimise);
 }
 
 
 BEGIN_MESSAGE_MAP(CSplashScreen, CDialog)
 	ON_WM_CTLCOLOR()
+	ON_BN_CLICKED(IDC_CLOSEBUTTON, &CSplashScreen::OnBnClickedClosebutton)
+	ON_BN_CLICKED(IDC_MINIMISEBUTTON, &CSplashScreen::OnBnClickedMinimisebutton)
 END_MESSAGE_MAP()
 
 
 // CSplashScreen message handlers
 
-HBRUSH CSplashScreen::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
-{
+HBRUSH CSplashScreen::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
 	HBRUSH hbr = CDialog::OnCtlColor(pDC, pWnd, nCtlColor);
-    if (nCtlColor == CTLCOLOR_STATIC && pWnd->GetDlgCtrlID() == IDC_LICENSETEXT)
-	{
+	if (nCtlColor == CTLCOLOR_STATIC && pWnd->GetDlgCtrlID() == IDC_LICENSETEXT) {
 		COLORREF white = RGB(255, 255, 255);
 		pDC->SetTextColor(white);
 		pDC->SetBkMode(TRANSPARENT);
 		return static_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
 	}
+	if (nCtlColor == CTLCOLOR_BTN && 
+		(pWnd->GetDlgCtrlID() == IDC_CLOSEBUTTON ||
+		 pWnd->GetDlgCtrlID() == IDC_MINIMISEBUTTON)) {
+		COLORREF white = RGB(255, 255, 255);
+		pDC->SetTextColor(white);
+		pDC->SetBkMode(TRANSPARENT);
+		return static_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
+	}
+	//if (pWnd->GetDlgCtrlID() == IDC_PROGRESS1) {
+	//	COLORREF blue = RGB(43, 87, 151);
+	//	pDC->SetDCBrushColor(blue);
+	//	pDC->SetDCPenColor(blue);
+	//	return hbr;
+	//}
 	return hbr;
 }
 
@@ -83,6 +102,7 @@ INT_PTR CSplashScreen::Open(HWND hwndParent) {
 	EnterCriticalSection(&m_cs);
 	LOGTRACE("Open");
 	Create(IDD_SPLASHWINDOW, CWnd::FromHandle(hwndParent));
+	m_state = OPEN;
 	SetMarquee();
 	HideIfSplashOpen();
 	LeaveCriticalSection(&m_cs);
@@ -111,25 +131,34 @@ void CSplashScreen::CloseMT() {
 }
 
 bool CSplashScreen::IsSplashOpen() {
-	CWnd* parent = GetParent();
-	HWND hwndParent = *parent;
-	if (!::IsWindowEnabled(hwndParent)) { // check if another dialog is open too
+	HWND hwndParent = nullptr;
+	if (m_state == OPEN) {
+		CWnd* parent = GetParent();
+		hwndParent = parent->GetSafeHwnd();
+		if (!::IsWindowEnabled(hwndParent)) { // check if another dialog is open too
+			return true;
+		}
+		HWND hSplash = ::FindWindowExW(hwndParent, nullptr, L"MsoSplash", nullptr);
+		return hSplash != nullptr;
+	} else {
 		return true;
 	}
-	HWND hSplash = ::FindWindowExW(hwndParent, nullptr, L"MsoSplash", nullptr);
-	return hSplash != nullptr;
 }
 
 void CSplashScreen::Show() {
-	LOGTRACE("Show");
-	m_state = OPEN;
-	ShowWindow(SW_SHOW);
+	if (m_state != CLOSED) {
+		LOGTRACE("Show");
+		m_state = OPEN;
+		ShowWindow(SW_SHOW);
+	}
 }
 
 void CSplashScreen::Hide() {
-	m_state = HIDDEN;
-	LOGTRACE("Hide");
-	ShowWindow(SW_HIDE);
+	if (m_state != CLOSED) {
+		m_state = HIDDEN;
+		LOGTRACE("Hide");
+		ShowWindow(SW_HIDE);
+	}
 }
 
 void CSplashScreen::HideIfSplashOpen() {
@@ -172,4 +201,17 @@ ULONG CSplashScreen::Release() {
 		delete this;
 	}
 	return lResult;
+}
+
+void CSplashScreen::OnBnClickedClosebutton() {
+	Close();
+}
+
+void CSplashScreen::OnBnClickedMinimisebutton() {
+	if (m_state != CLOSED) { // shouldn't need to check, but...
+		LONG wl = GetWindowLongPtr(GetSafeHwnd(), GWL_EXSTYLE);
+		wl |= WS_EX_APPWINDOW;
+		SetWindowLongPtr(GetSafeHwnd(), GWL_EXSTYLE, wl);
+		ShowWindow(SW_MINIMIZE);
+	}
 }

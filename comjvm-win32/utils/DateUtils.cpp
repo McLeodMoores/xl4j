@@ -6,6 +6,10 @@
 DateUtils::DateUtils() {
 }
 
+/**
+ * Normalise a time to 12pm on the day.  Prevents odd behaviour at the edges like timezone changes.
+ * @param pTime pointer to SYSTEMTIME, modifies in place.
+ */
 void DateUtils::Normalise(LPSYSTEMTIME pTime) {
 	pTime->wHour = 12; // because 0 can do weird things when zones change
 	pTime->wMinute = 0;
@@ -13,6 +17,17 @@ void DateUtils::Normalise(LPSYSTEMTIME pTime) {
 	pTime->wMilliseconds = 0;
 }
 
+/**
+ * Convert SYSTEMTIME to a date string of the form yyyy-MM-dd.  If a nullptr is passed to szDate, the
+ * required buffer size is written into *cchDate.
+ * @param time the time as a SYSTEMTIME.  By-value because it's normalised internally and we don't want to affect
+               the argument.
+ * @param szDate pointer to a buffer to hold a null terminated string representation of the date, or nullptr if 
+ *               the required buffer size should be written to *cchDate
+ * @param cchDate pointer to size_t containing size of buffer passed, in characters, if szDate != nullptr, or 
+ *                pointer to size_t to be written to with the buffer size required for the provided date
+ * @return result code: E_POINTER if cchDate is nullptr, S_OK if can format date, else an error code.
+ */
 HRESULT DateUtils::DateToStr(SYSTEMTIME time, wchar_t * szDate, size_t * cchDate) {
 	const TCHAR *DATE_FORMAT = _T("yyyy-MM-dd");
 	if (cchDate == nullptr) {
@@ -33,8 +48,11 @@ HRESULT DateUtils::DateToStr(SYSTEMTIME time, wchar_t * szDate, size_t * cchDate
 }
 
 /**
- * It should be noted there is no validation in this parsing - it will also silently accept extra digits on the end
- * such as 1985-01-012345.
+ * Parse a date from a wide null terminated c-string to a SYSTEMTIME.
+ * It should be noted there is little validation in this parsing, e.g. 13 months, etc. may work.
+ * @param szDate null terminated wide C string containing date in yyyy-MM-dd format
+ * @param pTime pointer to SYSTEMTIME structure to receive parsed date info.  Time portion set to 12pm (midday)
+ * @return result code: E_POINTER if szDate or pTime == nullptr, E_FAIL if szDate is not 10 characters or if format wrong.
  */
 HRESULT DateUtils::ParseDate(wchar_t * szDate, LPSYSTEMTIME pTime) {
 	if (!szDate) {
@@ -58,6 +76,13 @@ HRESULT DateUtils::ParseDate(wchar_t * szDate, LPSYSTEMTIME pTime) {
 	}
 }
 
+/**
+ * Add a number of days to a given time.  Supports negative number of days.
+ * @param time the date/time as a value
+ * @param days the number of days to add
+ * @param result pointer to date/time SYSTEMTIME to write result into
+ * @return result code, E_POINTER if result is nullptr, S_OK if fine, error if not.
+ */
 HRESULT DateUtils::AddDays(SYSTEMTIME time, int days, LPSYSTEMTIME result) {
 	if (!result) {
 		return E_POINTER;
@@ -80,6 +105,13 @@ HRESULT DateUtils::AddDays(SYSTEMTIME time, int days, LPSYSTEMTIME result) {
 	}
 }
 
+/**
+ * Compare two times and return a numeric difference to use for comparison.
+ * @param time1 a date/time
+ * @param time2 a date/time
+ * @param comp a pointer to an int64_t to recieve the difference between time1 and time2 in ticks (time1 - time2)
+ * @return result code: E_POINTER if comp is nullptr, error if input issues, else S_OK if fine.
+ */
 HRESULT DateUtils::Compare(SYSTEMTIME time1, SYSTEMTIME time2, int64_t *comp) {
 	if (!comp) {
 		return E_POINTER;

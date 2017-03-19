@@ -67,7 +67,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 			cRanges++;
 			XL4JREFERENCE *pRef;
 			SafeArrayAccessData (psa, (PVOID*)(&pRef));
-			out->xltype = xltypeRef;
+			out->xltype = xltypeRef | xlbitDLLFree; // tell Excel to call us back to free memory
 			out->val.mref.idSheet = pMultiRef->idSheet;
 			HRESULT hr = allocMREF (cRanges, &(out->val.mref.lpmref));
 			if (FAILED (hr)) {
@@ -151,7 +151,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		}
 		
 		SafeArrayUnaccessData (psa);
-		out->xltype = xltypeMulti;
+		out->xltype = xltypeMulti | xlbitDLLFree; // tell excel to call us back to free it.
 		out->val.array.columns = cColumns;
 		out->val.array.rows = cRows;
 		QueryPerformanceCounter(&EndingTime);
@@ -335,7 +335,11 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 
 HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 	// by using sizeof XLMREF - sizeof XLREF to determine size of count, we should account for any padding/alignement.
+#if 1
 	*result = static_cast<XLMREF12 *>(malloc ((ranges * (sizeof (XLREF12))) + (sizeof XLMREF12 - sizeof XLREF12)));
+#else 
+	*result = reinterpret_cast<XLMREF12 *>(GetTempMemory((ranges * (sizeof(XLREF12))) + (sizeof XLMREF12 - sizeof XLREF12)));
+#endif
 	if (*result == NULL) {
 		return E_OUTOFMEMORY;
 	}
@@ -395,7 +399,11 @@ HRESULT Converter::allocReference (XL4JREFERENCE **result) const
 
 HRESULT Converter::allocXCHAR (BSTR in, XCHAR **out) {
 	const UINT cbLen = SysStringByteLen (in);
+#if 1
 	*out = static_cast<XCHAR *>(malloc (cbLen + 2)); // add two bytes for length prefix, remember no null terminator
+#else
+	*out = reinterpret_cast<XCHAR *>(GetTempMemory(cbLen + 2)); // add two bytes for length prefix, remember no null terminator
+#endif
 	if (*out == NULL) {
 		return E_OUTOFMEMORY;
 	}

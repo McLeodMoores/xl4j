@@ -19,22 +19,19 @@ rem @echo off
 	msbuild comjvm.sln /p:Configuration=Debug /p:Platform=Win32 > target\Debug-Win32\build.log
 	if errorlevel 1 goto fail
 	
-	goto skip
-
 	echo Building Debug-x64 ...
 	if exist target\Debug-x64 goto d64
 	mkdir target\Debug-x64
 :d64
 	msbuild comjvm.sln /p:Configuration=Debug /p:Platform=x64 > target\Debug-x64\build.log
 	if errorlevel 1 goto fail
-
+:skip1
 	echo Building Release-Win32 ...
 	if exist target\Release-Win32 goto r32
 	mkdir target\Release-Win32
 :r32
 	msbuild comjvm.sln /p:Configuration=Release /p:Platform=Win32 > target\Release-Win32\build.log
 	if errorlevel 1 goto fail
-	
 	echo Building Release-x64 ...
 	if exist target\Release-x64 goto r64
 	mkdir target\Release-x64
