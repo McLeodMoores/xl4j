@@ -61,7 +61,10 @@ files:
 ## Manually add the Add-in to Excel
  1. Start Excel.
  2. On the Backstage (the screen revealed by clicking on the `File` ribbon header or Office button), choose Options.
- 3. Next to the dropdown list towards the botton, click 'Go'.
+ 3. Go to `Add-ins`
+ 4. Next to the dropdown list towards the botton called `Manage:`, select `Excel Add-ins` and click `Go`.
+ 5. Click `Browse`, navigate to the `xl4j-template-0.0.1-SNAPSHOT-distribution` folder, open the folder containing the appropriate distribution and select the add-in.
+ 6. Click `OK`. You should see a popup and a splashscreen once you've clicked `OK`.
   
 # Using Java projects from Excel
 ## A simple wrapper
