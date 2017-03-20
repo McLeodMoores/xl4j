@@ -65,8 +65,16 @@ files:
  4. Next to the dropdown list towards the botton called `Manage:`, select `Excel Add-ins` and click `Go`.
  5. Click `Browse`, navigate to the `xl4j-template-0.0.1-SNAPSHOT-distribution` folder, open the folder containing the appropriate distribution and select the add-in.
  6. Click `OK`. You should see a popup and a splashscreen once you've clicked `OK`.
- 7. Start typing in your function name
-  
+ 7. Start typing in your function name. Excel will autocomplete the name:
+ ![First function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-1.png)
+ 
+    Or, you can use the function wizard:
+ ![Second function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-2.png)
+ 
+ ![Third function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-3.png)
+ 
+ ##TODO add an image of the argument wizard when it's fixed
+
 # Using Java projects from Excel
 ## A simple wrapper
  
@@ -150,9 +158,9 @@ The ```@XLFunction``` annotation means that this method is available from Excel.
  
 After this function is built, it can be called from Excel
  
-![First yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention1.png)
+![First yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/yield-curve-convention-1.png)
  
-![Second yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention2.png)
+![Second yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/yield-curve-convention-2.png)
 
  
 The CDS convention builder is very similar to the yield curve convention builder, but some fields are optional:
@@ -177,7 +185,7 @@ The CDS convention builder is very similar to the yield curve convention builder
  ```
 As optional values are passed in as nulls, it's necessary to test for them and handle appropriately. Optional values are dealt with in the usual Excel way by leaving the argument blank in the formula:
 
-![CDS convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/CDSConvention.png)
+![CDS convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/cds-convention.png)
 
  The next stage is to actually construct the yield and CDS curves. Again, the wrapper class has been written with various static methods that call into the starling code. For these methods, the arguments are standard Java objects (e.g. double[]) rather than ```XLValue```, which means that type conversion is performed automatically. This means that we don't have to think about how to deal with arrays (what if the data were passed in as a row? a column?), as well as cutting down on the boilerplate of unwrapping and casting these objects to the types that are needed.
  
