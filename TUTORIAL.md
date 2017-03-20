@@ -42,8 +42,9 @@ package com.mcleodmoores.xl4j.template;
 import com.mcleodmoores.xl4j.XLFunction;
 
 public final class MyFunctions {
-  @XLFunction(name = "MyAdd")
-  public static double myadd(double one, double two) {
+  @XLFunction(name = "MyAdd", description = "A simple function", category = "XL4J")
+  public static double myadd(@XLParameter(name = "One", description = "The first number") final double one,
+      @XLParameter(name = "Two", description = "The second number") final double two) {
     return one + two;
   }
 }
