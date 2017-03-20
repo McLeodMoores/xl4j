@@ -66,12 +66,12 @@ files:
  5. Click `Browse`, navigate to the `xl4j-template-0.0.1-SNAPSHOT-distribution` folder, open the folder containing the appropriate distribution and select the add-in.
  6. Click `OK`. You should see a popup and a splashscreen once you've clicked `OK`.
  7. Start typing in your function name. Excel will autocomplete the name:
- ![First function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-1.png)
+    ![First function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-1.png)
  
-    Or, you can use the function wizard:
- ![Second function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-2.png)
+    Or you can use the function wizard:
+    ![Second function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-2.png)
  
- ![Third function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-3.png)
+    ![Third function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-3.png)
  
  ##TODO add an image of the argument wizard when it's fixed
 
