@@ -65,6 +65,7 @@ files:
  4. Next to the dropdown list towards the botton called `Manage:`, select `Excel Add-ins` and click `Go`.
  5. Click `Browse`, navigate to the `xl4j-template-0.0.1-SNAPSHOT-distribution` folder, open the folder containing the appropriate distribution and select the add-in.
  6. Click `OK`. You should see a popup and a splashscreen once you've clicked `OK`.
+ 7. Start typing in your function name
   
 # Using Java projects from Excel
 ## A simple wrapper
