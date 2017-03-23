@@ -42,10 +42,14 @@ package com.mcleodmoores.xl4j.template;
 import com.mcleodmoores.xl4j.XLFunction;
 
 public final class MyFunctions {
-  @XLFunction(name = "MyAdd")
-  public static double myadd(double one, double two) {
+
+  @XLFunction(name = "MyAdd", description = "A simple function", category = "XL4J")
+  public static double myadd(
+      @XLParameter(name = "One", description = "The first number") final double one,
+      @XLParameter(name = "Two", description = "The second number") final double two) {
     return one + two;
   }
+  
 }
 ```
 ## Build the Add-in
@@ -65,7 +69,16 @@ files:
  4. Next to the dropdown list towards the botton called `Manage:`, select `Excel Add-ins` and click `Go`.
  5. Click `Browse`, navigate to the `xl4j-template-0.0.1-SNAPSHOT-distribution` folder, open the folder containing the appropriate distribution and select the add-in.
  6. Click `OK`. You should see a popup and a splashscreen once you've clicked `OK`.
-  
+ 7. Start typing in your function name. Excel will autocomplete the name:
+    ![First function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-1.png)
+ 
+    Or you can use the function wizard:
+    ![Second function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-2.png)
+ 
+    ![Third function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-3.png)
+ 
+ ##TODO add an image of the argument wizard when it's fixed
+
 # Using Java projects from Excel
 ## A simple wrapper
  
@@ -131,12 +144,12 @@ This method takes Excel types (```XLString, XLNumber```) as arguments, which mea
  ``` java
    @XLFunction(name = "ISDAYieldCurveConvention", category = "ISDA CDS model", description = "Create a yield curve convention")
   public static IsdaYieldCurveConvention buildYieldCurveConvention(
-      @XLArgument(description = "Money Market Day Count", name = "Money Market Day Count") final XLString xlMoneyMarketDayCountName,
-      @XLArgument(description = "Swap Day Count", name = "Swap Day Count") final XLString xlSwapDayCountName,
-      @XLArgument(description = "Swap Interval", name = "Swap Interval") final XLString xlSwapIntervalName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
-      @XLArgument(description = "Spot Days", name = "spotDays") final XLNumber xlSpotDays) {
+      @XLParameter(description = "Money Market Day Count", name = "Money Market Day Count") final XLString xlMoneyMarketDayCountName,
+      @XLParameter(description = "Swap Day Count", name = "Swap Day Count") final XLString xlSwapDayCountName,
+      @XLParameter(description = "Swap Interval", name = "Swap Interval") final XLString xlSwapIntervalName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
+      @XLParameter(description = "Spot Days", name = "spotDays") final XLNumber xlSpotDays) {
     final DayCount moneyMarketDayCount = DayCountFactory.INSTANCE.instance(xlMoneyMarketDayCountName.getValue());
     final DayCount swapDayCount = DayCountFactory.INSTANCE.instance(xlSwapDayCountName.getValue());
     final DayCount curveDayCount = DayCountFactory.INSTANCE.instance(xlCurveDayCountName.getValue());
@@ -145,27 +158,27 @@ This method takes Excel types (```XLString, XLNumber```) as arguments, which mea
     return new IsdaYieldCurveConvention(moneyMarketDayCount, swapDayCount, swapInterval, curveDayCount, businessDayConvention, xlSpotDays.getAsInt());
   }
 ```
-The ```@XLFunction``` annotation means that this method is available from Excel. The fields are self-explanatory: the name of the function, a more detailed description and the category that the function will appear in. None of these properties are mandatory - the default value for the name is the method name, the class name for the category and an empty description if they are not filled in. There are other properties that will be discussed in more detail later. The ```@XLArgument``` properties have the same meaning as those in the function annotation.
+The ```@XLFunction``` annotation means that this method is available from Excel. The fields are self-explanatory: the name of the function, a more detailed description and the category that the function will appear in. None of these properties are mandatory - the default value for the name is the method name, the class name for the category and an empty description if they are not filled in. There are other properties that will be discussed in more detail later. The ```@XLParameter``` properties have the same meaning as those in the function annotation.
  
 After this function is built, it can be called from Excel
  
-![First yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention1.png)
+![First yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/yield-curve-convention-1.png)
  
-![Second yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/YieldCurveConvention2.png)
+![Second yield curve convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/yield-curve-convention-2.png)
 
  
 The CDS convention builder is very similar to the yield curve convention builder, but some fields are optional:
  ``` java
    @XLFunction(name = "ISDACDSConvention", category = "ISDA CDS model", description = "Create a CDS convention")
   public static IsdaCdsConvention buildCdsConvention(
-      @XLArgument(description = "Accrual Day Count", name = "Accrual Day Count") final XLString xlAccrualDayCountName,
-      @XLArgument(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
-      @XLArgument(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
-      @XLArgument(description = "Coupon Interval", name = "Coupon Interval", optional = true) final XLString xlCouponInterval,
-      @XLArgument(description = "Stub Type", name = "Stub Type", optional = true) final XLString xlStubType,
-      @XLArgument(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final XLNumber xlCashSettlementDays,
-      @XLArgument(description = "Step In Days", name = "Step In Days", optional = true) final XLNumber xlStepInDays,
-      @XLArgument(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final XLBoolean xlPayAccrualOnDefault) {
+      @XLParameter(description = "Accrual Day Count", name = "Accrual Day Count") final XLString xlAccrualDayCountName,
+      @XLParameter(description = "Curve Day Count", name = "Curve Day Count") final XLString xlCurveDayCountName,
+      @XLParameter(description = "Business Day Convention", name = "Business Day Convention") final XLString xlBusinessDayConventionName,
+      @XLParameter(description = "Coupon Interval", name = "Coupon Interval", optional = true) final XLString xlCouponInterval,
+      @XLParameter(description = "Stub Type", name = "Stub Type", optional = true) final XLString xlStubType,
+      @XLParameter(description = "Cash Settlement Days", name = "Cash Settlement Days", optional = true) final XLNumber xlCashSettlementDays,
+      @XLParameter(description = "Step In Days", name = "Step In Days", optional = true) final XLNumber xlStepInDays,
+      @XLParameter(description = "Pay Accrual On Default", name = "Pay Accrual On Default", optional = true) final XLBoolean xlPayAccrualOnDefault) {
     final String stubType = xlStubType == null ? null : xlStubType.getValue();
     final Integer cashSettlementDays = xlCashSettlementDays == null ? null : xlCashSettlementDays.getAsInt();
     final Integer stepInDays = xlStepInDays == null ? null : xlStepInDays.getAsInt();
@@ -176,7 +189,7 @@ The CDS convention builder is very similar to the yield curve convention builder
  ```
 As optional values are passed in as nulls, it's necessary to test for them and handle appropriately. Optional values are dealt with in the usual Excel way by leaving the argument blank in the formula:
 
-![CDS convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/CDSConvention.png)
+![CDS convention image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/cds-convention.png)
 
  The next stage is to actually construct the yield and CDS curves. Again, the wrapper class has been written with various static methods that call into the starling code. For these methods, the arguments are standard Java objects (e.g. double[]) rather than ```XLValue```, which means that type conversion is performed automatically. This means that we don't have to think about how to deal with arrays (what if the data were passed in as a row? a column?), as well as cutting down on the boilerplate of unwrapping and casting these objects to the types that are needed.
  
@@ -184,13 +197,13 @@ As optional values are passed in as nulls, it's necessary to test for them and h
    @XLFunction(name = "ISDAYieldCurve.BuildCurveFromConvention", category = "ISDA CDS model",
       description = "Build a yield curve using the ISDA methodology")
   public static ISDACompliantYieldCurve buildYieldCurve(
-      @XLArgument(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
-      @XLArgument(description = "Instrument Types", name = "Instrument Types") final String[] instrumentTypeNames,
-      @XLArgument(description = "Tenors", name = "Tenors") final String[] tenors,
-      @XLArgument(description = "Quotes", name = "Quotes") final double[] quotes,
-      @XLArgument(description = "Convention", name = "Convention") final IsdaYieldCurveConvention convention,
-      @XLArgument(description = "Spot Date", name = "Spot Date", optional = true) final LocalDate spotDate,
-      @XLArgument(description = "Holidays", name = "Holidays", optional = true) final LocalDate[] holidayDates) {
+      @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
+      @XLParameter(description = "Instrument Types", name = "Instrument Types") final String[] instrumentTypeNames,
+      @XLParameter(description = "Tenors", name = "Tenors") final String[] tenors,
+      @XLParameter(description = "Quotes", name = "Quotes") final double[] quotes,
+      @XLParameter(description = "Convention", name = "Convention") final IsdaYieldCurveConvention convention,
+      @XLParameter(description = "Spot Date", name = "Spot Date", optional = true) final LocalDate spotDate,
+      @XLParameter(description = "Holidays", name = "Holidays", optional = true) final LocalDate[] holidayDates) {
  ```
  This class contains two methods that construct yield curves; one that takes a convention object and another that constructs the convention itself. Note that although the methods are overloaded in the Java code, as you'd expect, the names of the functions are different. All function names in Excel must be unique; if a function has already been registered with the name, this is logged and the function ignored.
  
