@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "FunctionRegistry.h"
+#include "ExcelUtils.h"
 
 FunctionRegistry::FunctionRegistry (IJvm *pJvm, TypeLib *pTypeLib) : m_pJvm (pJvm), m_pTypeLib (pTypeLib) {
 	pJvm->AddRef ();
@@ -89,6 +90,9 @@ HRESULT FunctionRegistry::Scan () {
 			//return E_ABORT;
 		}
 		m_pFunctions[fi.iExportNumber] = fi;
+		if (FAILED(hr = SafeArrayCopy(fi.saArgsHelp, &(m_pFunctions[fi.iExportNumber].saArgsHelp)))) {
+			LOGERROR("SafeArrayCopy failed: %s", HRESULT_TO_STR(hr));
+		}
 	}
 	::SafeArrayUnaccessData (m_pResults);
 	m_bComplete = true;
@@ -147,20 +151,28 @@ XLOPER12 FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNu
 	LOGTRACE ("description = %s", (wchar_t *)description);
 	LOGTRACE ("argsHelpSz = %d", (wchar_t *)argsHelpSz);
 	LPXLOPER12 *args = new LPXLOPER12[10 + argsHelpSz];
-	args[0] = (LPXLOPER12)&xDll;
-	args[1] = (LPXLOPER12)TempStr12 (functionExportName);
-	args[2] = (LPXLOPER12)TempStr12 (functionSignature);
-	args[3] = (LPXLOPER12)TempStr12 (worksheetName);
-	args[4] = (LPXLOPER12)TempStr12 (argumentNames);
-	args[5] = (LPXLOPER12)TempInt12 (functionType);
-	args[6] = (LPXLOPER12)TempStr12 (functionCategory);
-	args[7] = (LPXLOPER12)TempStr12 (acceleratorKey);
-	args[8] = (LPXLOPER12)TempStr12 (helpTopic);
-	args[9] = (LPXLOPER12)TempStr12 (description);
+	args[0] = &xDll;
+	args[1] = TempStr12 (functionExportName);
+	args[2] = TempStr12 (functionSignature);
+	args[3] = TempStr12 (worksheetName);
+	args[4] = TempStr12 (argumentNames);
+	args[5] = TempInt12 (functionType);
+	args[6] = TempStr12 (functionCategory);
+	args[7] = TempStr12 (acceleratorKey);
+	args[8] = TempStr12 (helpTopic);
+	args[9] = TempStr12 (description);
 	for (int i = 0; i < argsHelpSz; i++) {
-		args[10 + i] = (LPXLOPER12)TempStr12 (argsHelp[i]);
+		wchar_t *argHelp = argsHelp[i];
+		LPXLOPER12 pArgHelp = TempStr12(argHelp);
+		args[10 + i] = pArgHelp;
+		LOGTRACE("argsHelp[%d] = %s", i, argHelp);// argsHelp[i]);
+		ExcelUtils::PrintXLOPER(args[10 + i]);
 	}
 	XLOPER12 result;
+	for (int i = 0; i < (10 + argsHelpSz); i++) {
+		LOGTRACE("Arg %d = ", i);
+		ExcelUtils::PrintXLOPER(args[i]);
+	}
 	//m_numArgsForExport[functionExportNumber] = argsHelpSz; // num args
 	int err = Excel12v (xlfRegister, &result, 10 + argsHelpSz, args);
 	if (result.xltype == xltypeErr) {

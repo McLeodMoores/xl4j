@@ -12,7 +12,7 @@
 #include "afxdialogex.h"
 #include <vector>
 #include "AvailableJvms.h"
-#include "../utils/Debug.h"
+#include "utils/Debug.h"
 
 // CAddinPropertyPage dialog
 
@@ -51,7 +51,7 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 		//	m_lbJvms.SelectString (-1, bstrJvmVersion);
 		//}
 		//LOGTRACE ("Getting Addin/GC");
-		_bstr_t bstrGCEnabled = m_pSettings->GetString (TEXT ("Addin"), TEXT ("GarbageCollection"));
+		_bstr_t bstrGCEnabled = m_pSettings->GetString (SECTION_ADDIN, TEXT ("GarbageCollection"));
 		//LOGTRACE ("Got it. %p", bstrGCEnabled.GetAddress ());
 		if (bstrGCEnabled.length () > 0) {
 			LOGTRACE ("bstrGCEnabled.length() > 0");
@@ -66,7 +66,7 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 		} else {
 			LOGTRACE ("bstrGCEnabled.length() <= 0");
 		}
-		_bstr_t bstrShowToolbar = m_pSettings->GetString(TEXT("Addin"), TEXT("ShowToolbar"));
+		_bstr_t bstrShowToolbar = m_pSettings->GetString(SECTION_ADDIN, TEXT("ShowToolbar"));
 		if (bstrShowToolbar.length () > 0) {
 			LOGTRACE("bstrShowToolbar.length() > 0");
 			const _bstr_t ENABLED(TEXT("Enabled"));
@@ -79,7 +79,20 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 			LOGTRACE("bstrShowToolbar.length() <= 0, switching toolbar on");
 			m_cbShowToolbar.SetCheck(BST_CHECKED);
 		}
-		_bstr_t bstrCppLogTarget = m_pSettings->GetString(TEXT("Addin"), TEXT("LogTarget"));
+		_bstr_t bstrCheckForUpdates = m_pSettings->GetString(SECTION_ADDIN, KEY_UPGRADE_CHECK_REQUIRED);
+		if (bstrCheckForUpdates.length() > 0) {
+			LOGTRACE("bstrCheckForUpdates.length() > 0");
+			const _bstr_t ENABLED(VALUE_UPGRADE_CHECK_REQUIRED_YES.c_str());
+			if (bstrCheckForUpdates == ENABLED) {
+				m_cbUpdateEnabled.SetCheck(BST_CHECKED);
+			} else {
+				m_cbUpdateEnabled.SetCheck(BST_UNCHECKED);
+			}
+		} else {
+			// TODO: probably should take into account VALUE_UPGRADE_CHECK_REQUIRED_DEFAULT
+			m_cbShowToolbar.SetCheck(BST_CHECKED);
+		}
+		_bstr_t bstrCppLogTarget = m_pSettings->GetString(SECTION_ADDIN, TEXT("LogTarget"));
 		const _bstr_t FILE(TEXT("File"));
 		if (bstrCppLogTarget.length() > 0) {
 			if (bstrCppLogTarget == FILE) {
@@ -93,7 +106,7 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 			m_rdLogFileRadio.SetCheck(BST_UNCHECKED);
 			m_rdWinDebugRadio.SetCheck(BST_CHECKED);
 		}
-		_bstr_t bstrCppLogLevel = m_pSettings->GetString(TEXT("Addin"), TEXT("LogLevel"));
+		_bstr_t bstrCppLogLevel = m_pSettings->GetString(SECTION_ADDIN, TEXT("LogLevel"));
 		const _bstr_t _ERROR(TEXT("ERROR"));
 		const _bstr_t _TRACE(TEXT("TRACE"));
 		const _bstr_t _NONE(TEXT("NONE"));
@@ -111,22 +124,27 @@ void CAddinPropertyPage::OnOK () {
 	CPropertyPage::OnOK ();
 	if (m_pSettings->IsValid ()) {
 		if (m_bGarbageCollection.GetCheck () == BST_CHECKED) {
-			m_pSettings->PutString (TEXT ("Addin"), TEXT ("GarbageCollection"), TEXT ("Enabled"));
+			m_pSettings->PutString (SECTION_ADDIN, TEXT ("GarbageCollection"), TEXT ("Enabled"));
 		} else {
-			m_pSettings->PutString (TEXT ("Addin"), TEXT ("GarbageCollection"), TEXT ("Disabled"));
+			m_pSettings->PutString (SECTION_ADDIN, TEXT ("GarbageCollection"), TEXT ("Disabled"));
 		}
 		if (m_cbShowToolbar.GetCheck() == BST_CHECKED) {
-			m_pSettings->PutString (TEXT("Addin"), TEXT("ShowToolbar"), TEXT("Enabled"));
+			m_pSettings->PutString (SECTION_ADDIN, TEXT("ShowToolbar"), TEXT("Enabled"));
 		} else {
-			m_pSettings->PutString (TEXT("Addin"), TEXT("ShowToolbar"), TEXT("Disabled"));
+			m_pSettings->PutString (SECTION_ADDIN, TEXT("ShowToolbar"), TEXT("Disabled"));
+		}
+		if (m_cbUpdateEnabled.GetCheck() == BST_CHECKED) {
+			m_pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_CHECK_REQUIRED, VALUE_UPGRADE_CHECK_REQUIRED_YES);
+		} else {
+			m_pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_CHECK_REQUIRED, VALUE_UPGRADE_CHECK_REQUIRED_NO);
 		}
 		CString csLogLevel;
 		m_cbCppLogLevel.GetLBText(m_cbCppLogLevel.GetCurSel(), csLogLevel);
-		m_pSettings->PutString(TEXT("Addin"), TEXT("LogLevel"), csLogLevel.GetBuffer());
+		m_pSettings->PutString(SECTION_ADDIN, TEXT("LogLevel"), csLogLevel.GetBuffer());
 		if (m_rdLogFileRadio.GetCheck() == BST_CHECKED) {
-			m_pSettings->PutString(TEXT("Addin"), TEXT("LogTarget"), TEXT("File"));
+			m_pSettings->PutString(SECTION_ADDIN, TEXT("LogTarget"), TEXT("File"));
 		} else {
-			m_pSettings->PutString(TEXT("Addin"), TEXT("LogTarget"), TEXT("WinDebug"));
+			m_pSettings->PutString(SECTION_ADDIN, TEXT("LogTarget"), TEXT("WinDebug"));
 		}
 	}
 }
@@ -137,6 +155,7 @@ void CAddinPropertyPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_GARBAGE_COLLECTION, m_bGarbageCollection);
 	DDX_Control(pDX, IDC_CHECK_HEAP_IN_WORKSHEET, m_cbSaveHeap);
 	DDX_Control(pDX, IDC_SHOWTOOLBARCHECK, m_cbShowToolbar);
+	DDX_Control(pDX, IDC_CHECKFORUPGRADES_CHECK, m_cbUpdateEnabled);
 	DDX_Control(pDX, IDC_LOGLEVELCOMBO, m_cbCppLogLevel);
 	DDX_Control(pDX, IDC_LOGFILERADIO, m_rdLogFileRadio);
 	DDX_Control(pDX, IDC_WINDEBUGRADIO, m_rdWinDebugRadio);

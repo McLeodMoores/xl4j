@@ -34,8 +34,8 @@ protected:
 	CButton m_bGarbageCollection;
 	// Control to determine whether to save heap in the worksheet file
 	CButton m_cbSaveHeap;
-	// Edit box containing path to program used for editing logs
-	
+	// Control to determine if check for updates is enabled
+	CButton m_cbUpdateEnabled;
 	DECLARE_MESSAGE_MAP()
 public:
 

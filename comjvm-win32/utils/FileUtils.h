@@ -32,7 +32,8 @@ public:
 	static HRESULT GetDirectoryFromFullPath(wchar_t *szDirectory, size_t cDirectory, const wchar_t *szFullPath);
 	static HRESULT GetDllFileName (wchar_t *pszFilename, size_t cFilename);
 	static HRESULT GetTemporaryFileName(const wchar_t *pszLeafFilename, wchar_t *pszBuffer, size_t cBuffer);
-	static bool FileUtils::FileExists(const wchar_t *szPath);
+	static bool FileExists(const wchar_t *szPath);
+	static HRESULT FileSize(const wchar_t *szPath, PLARGE_INTEGER pSize);
 };
 
 //#ifdef __cplusplus

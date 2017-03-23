@@ -44,6 +44,8 @@ LOGLEVEL Debug::m_logLevel = LOGLEVEL_TRACE;
 LOGTARGET Debug::m_logTarget = LOGTARGET_WINDEBUG;
 FILE *Debug::m_fdLogFile = nullptr;
 const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ", L"ERROR", L"FATAL", L"NONE " };
+const wchar_t *Debug::LOGFILENAME = L"xl4j-cpp.log";
+const LARGE_INTEGER Debug::TOOLARGE = { 200000000, 0 }; // 200MB no support for { .QuadPart = XXXXLL } in MSC++
 
 /**
  * Internal printf that displays logs in columnar format, performs filtering based on current logLevel, writes to file or 
@@ -63,6 +65,7 @@ void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLine
 		OutputDebugString(L"PrettyLogPrintf: logLevel invalid so not printing");
 		return;
 	}
+	// increase the column widths for file and function names if we breach the limit.
 	m_cMaxFileNameLength = max (m_cMaxFileNameLength, strnlen (sFileName, FILENAME_MAX));
 	m_cMaxFunctionNameLength = max (m_cMaxFunctionNameLength, strnlen (sFunctionName, FILENAME_MAX));
 	const int LINE_MAX = 2000;
@@ -70,7 +73,7 @@ void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLine
 	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
 	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 		wchar_t formatBuffer[LINE_MAX];
-		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%s %%-%dS %%%dd %%-%dS %%s\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
+		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%s %%-%dS %%%dd %%-%dS %%s\r\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
 		if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 			wchar_t finalBuffer[LINE_MAX];
 			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, LOGLEVEL_STR[logLevel], sFileName, iLineNum, sFunctionName, buffer);
@@ -339,6 +342,28 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 }
 
 /**
+ * Check the log file (if it exists) and see if it exceeds the provided file size,
+ * defaults to false in case of error.
+ * @param tooLargeSize the maximum file size in bytes
+ * @returns true, if log file size is greater than tooLargeSize
+ */
+bool Debug::CheckLogFileSize(LARGE_INTEGER tooLargeSize) {
+	wchar_t szLogPath[MAX_PATH];
+	HRESULT hr = FileUtils::GetTemporaryFileName(Debug::LOGFILENAME, szLogPath, MAX_PATH);
+	if (FAILED(hr)) {
+		OutputDebugStringW(L"Could not create log file name");
+		return false;
+	}
+	LARGE_INTEGER fileSize;
+	hr = FileUtils::FileSize(szLogPath, &fileSize);
+	if (SUCCEEDED(hr)) {
+		return fileSize.QuadPart > tooLargeSize.QuadPart;
+	}
+	OutputDebugStringW(L"Error when getting filesize");
+	return false;
+}
+
+/**
  * Set the target of log output (File or WinDebug).
  * @param logTarget indicates whether the logs should go to a file or the WinDebug system.
  */
@@ -349,14 +374,16 @@ void Debug::SetLogTarget(LOGTARGET logTarget) {
 			fclose(m_fdLogFile);
 		}
 		wchar_t buffer[MAX_PATH];
-		HRESULT hr = FileUtils::GetTemporaryFileName(TEXT("xl4j-cpp.log"), buffer, MAX_PATH);
+		HRESULT hr = FileUtils::GetTemporaryFileName(Debug::LOGFILENAME, buffer, MAX_PATH);
 		if (SUCCEEDED(hr)) {
 			OutputDebugStringW(TEXT("Full log path is:"));
 			OutputDebugStringW(buffer);
+			// Truncate log if existing file > TOOLARGE (200MB)
+			DWORD dwCreationDisposition = Debug::CheckLogFileSize(Debug::TOOLARGE) ? CREATE_ALWAYS : OPEN_ALWAYS;
 			HANDLE hFile = CreateFileW(buffer, GENERIC_WRITE,
 				FILE_SHARE_READ,
 				NULL,
-				OPEN_ALWAYS,
+				dwCreationDisposition,
 				FILE_ATTRIBUTE_NORMAL,
 				NULL);
 			if (hFile == INVALID_HANDLE_VALUE) {

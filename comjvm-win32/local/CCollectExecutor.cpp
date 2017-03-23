@@ -8,6 +8,7 @@
 #include "Internal.h"
 #include "core/core.h"
 #include "utils/Debug.h"
+#include <jni.h>
 
 
 CCollectExecutor::CCollectExecutor (CCollect *pOwner, JniCache *pJniCache)

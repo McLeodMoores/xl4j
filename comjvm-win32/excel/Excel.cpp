@@ -181,7 +181,17 @@ __declspec(dllexport) int Settings () {
 	return 1;
 }
 
-
+/**
+ * Get Excel version as integer. XlCallVer only does API version.
+ */
+int GetExcelVersion() {
+	XLOPER12 version;
+	Excel12f(xlfGetWorkspace, &version, 1, TempInt12(2));
+	ExcelUtils::PrintXLOPER(&version);
+	XLOPER12 iVersion;
+	Excel12f(xlCoerce, &iVersion, 2, &version, TempInt12(xltypeNum));
+	return iVersion.val.num;
+}
 ///***************************************************************************
 // xlAutoOpen()
 //
@@ -217,10 +227,14 @@ __declspec(dllexport) int Settings () {
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	LOGTRACE("xlAutoOpen called");
 	if (XLCallVer () < (12 * 256)) {
-		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2007 are not supported."), TempInt12(2));
+		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2010 are not supported."), TempInt12(2));
 		return 0;
 	}
-
+	LOGTRACE("Excel version returned %d", GetExcelVersion());
+	if (GetExcelVersion() < 13) {
+		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2010 are not supported."), TempInt12(2));
+		return 0;
+	}
 	if (InterlockedCompareExchange(&g_initialized, 1, 0)) {
 		// g_initialized was already 1, so
 		LOGTRACE("Already initialised, so don't do anything");
@@ -230,6 +244,7 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 		}
 		return 1;
 	}
+
 	HRESULT hr;
 	if (FAILED(hr = CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
 		LOGERROR("Could not initialise COM: %s", HRESULT_TO_STR(hr));

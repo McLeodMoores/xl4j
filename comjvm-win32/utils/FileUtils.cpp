@@ -138,3 +138,38 @@ bool FileUtils::FileExists(const wchar_t *szPath) {
 	return (dwAttrib != INVALID_FILE_ATTRIBUTES && !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
 }
 
+/**
+ * Get the size of a file (which is also NOT a directory).
+ * The file size is not written (i.e. it's value is undefined) if the file is not accessible or some 
+ * error occurs, except if the file does not exist, in which case, zero is written.
+ * @param szPath pointer to a null-terminated wide C-string containing the path to the file
+ * @param pSize pointer to a LARGE_INTEGER to which the file size is written.   See above for caveats.
+ * @return result code, typically S_OK or ERROR_FILE_NOT_FOUND, but others are possible (e.g. permissions)
+ */
+HRESULT FileUtils::FileSize(const wchar_t *szPath, PLARGE_INTEGER pSize) {
+	if (FileUtils::FileExists(szPath)) {
+		HANDLE hFile = CreateFile(szPath, GENERIC_READ,
+			FILE_SHARE_READ,
+			NULL,
+			OPEN_ALWAYS,
+			FILE_ATTRIBUTE_NORMAL,
+			NULL);
+		if (hFile == INVALID_HANDLE_VALUE) {
+			LOGERROR("Could not open log file to find size: %s", GETLASTERROR_TO_STR());
+			return GETLASTERROR_TO_HRESULT();
+		}
+		if (!GetFileSizeEx(hFile, pSize)) {
+			LOGERROR("Could not get log file size: %s", GETLASTERROR_TO_STR());
+			HRESULT hr = GETLASTERROR_TO_HRESULT();
+			CloseHandle(hFile);
+			return hr;
+		}
+		CloseHandle(hFile);
+		return S_OK;
+	} else {
+		pSize->QuadPart = 0LL;
+		return ERROR_FILE_NOT_FOUND;
+	}
+}
+	
+

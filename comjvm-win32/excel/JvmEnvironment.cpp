@@ -6,6 +6,7 @@
 #include "stdafx.h"
 #include "JvmEnvironment.h"
 
+
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	m_rwlock = SRWLOCK_INIT;
 	m_state = NOT_RUNNING; // note we don't claim the CS or check in this one case because the memory is uninitialised.

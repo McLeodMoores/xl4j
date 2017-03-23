@@ -40,6 +40,8 @@ private:
 	// We don't export these with a COMJVM_DEBUG_API at the class level because they cause
 	// issues with delay loading due to optimizations.
 	const static wchar_t *LOGLEVEL_STR[];
+	const static wchar_t *LOGFILENAME;
+	const static LARGE_INTEGER TOOLARGE;
 	static size_t m_cMaxFileNameLength;
 	static size_t m_cMaxFunctionNameLength;
 	static LOGLEVEL m_logLevel;
@@ -64,6 +66,7 @@ public:
 	static COMJVM_DEBUG_API void SetThreadName (DWORD dwThreadID, const char* threadName);
 	static COMJVM_DEBUG_API void SetLogLevel(LOGLEVEL logLevel);
 	static COMJVM_DEBUG_API LOGLEVEL GetLogLevel() { return m_logLevel; }
+	static COMJVM_DEBUG_API bool CheckLogFileSize(LARGE_INTEGER tooLargeSize);
 	static COMJVM_DEBUG_API void SetLogTarget(LOGTARGET logTarget);
 	static COMJVM_DEBUG_API LOGTARGET GetLogTarget() { return m_logTarget; }
 };
