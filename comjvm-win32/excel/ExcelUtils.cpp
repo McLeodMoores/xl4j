@@ -7,6 +7,10 @@
 #include "Excel.h"
 #include "ExcelUtils.h"
 
+/**
+ * Print out an XLOPER12 for debugging purposes.
+ * @param pXLOper  a pointer to the XLOPER12 union to be displayed
+ */
 void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 	switch (pXLOper->xltype & 0xfff) {
 	case xltypeStr: {
@@ -82,18 +86,28 @@ void ExcelUtils::PrintXLOPER (XLOPER12 *pXLOper) {
 	}
 }
 
+/**
+ * Schedule a command for future execution by Excel.  This will take place in the main Excel thread on
+ * or after the number of seconds into the future passed as the second argument.
+ * @param wsCommandName  a pointer to a null-terminated wide C-string containing the name of the command to invoke
+ * @param dbSeconds  the number of seconds into the future after which to invoke the named command
+ */
 void ExcelUtils::ScheduleCommand (wchar_t *wsCommandName, double dbSeconds) {
 	XLOPER12 now;
-	//LOGTRACE ("xlfNow");
 	Excel12f (xlfNow, &now, 0);
 	now.val.num += 2. / (3600. * 24.);
 	XLOPER12 retVal;
-	//LOGTRACE ("xlcOnTime");
 	Excel12f (xlcOnTime, &retVal, 2, &now, TempStr12 (wsCommandName));
-	//LOGTRACE ("xlcFree");
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&now);
 }
 
+/**
+ * Register a command.  Commands have no arguments or return type so only a name is required.  The name
+ * passed is used for both the export name (the name of the C function) and the command name as used when
+ * referring to the function to Excel.
+ * @param wsCommandName  a const pointer to a null-terminated wide C-string containing the command name
+ * @returns integer return code from xlfRegister
+ */
 int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 	XLOPER12 xDLL;
 	Excel12f (xlGetName, &xDLL, 0);
@@ -137,8 +151,13 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 	}
 }
 
-
-
+/**
+ * Unregister a user-defined function or command with Excel.  This both calls xlfUnregister
+ * and also deletes the name associated with the function using xlfSetName.
+ * @param szFunctionName  const pointer to a null terminated C-string containing the name of the function to unregister
+ * @param iRegisterId  the ID of the function, as returned during registration
+ * @returns result code, E_FAIL or S_OK
+ */
 HRESULT ExcelUtils::UnregisterFunction (const TCHAR *szFunctionName, int iRegisterId) {
 	XLOPER12 result;
 	Excel12f (xlfUnregister, &result, 1, TempInt12 (iRegisterId));
@@ -167,46 +186,29 @@ HRESULT ExcelUtils::UnregisterFunction (const TCHAR *szFunctionName, int iRegist
 	return S_OK;// should really make this a bit more subtle...
 }
 
-
-///***************************************************************************
-// ExcelCursorProc()
-//
-// Purpose:
-//
-//      When a modal dialog box is displayed over Microsoft Excel's window, the
-//      cursor is a busy cursor over Microsoft Excel's window. This WndProc traps
-//      WM_SETCURSORs and changes the cursor back to a normal arrow.
-//
-// Parameters:
-//
-//      HWND hWndDlg        Contains the HWND Window
-//      UINT message        The message to respond to
-//      WPARAM wParam       Arguments passed by Windows
-//      LPARAM lParam
-//
-// Returns: 
-//
-//      LRESULT             0 if message handled, otherwise the result of the
-//                          default WndProc
-//
-// Comments:
-//
-// History:  Date       Author        Reason
-///***************************************************************************
-
-// Create a place to store Microsoft Excel's WndProc address //
+// Create a place to store Microsoft Excel's WndProc address
 WNDPROC ExcelUtils::g_lpfnExcelWndProc = NULL;
 
+/**
+ * ExcelCursorProc
+ * When a modal dialog box is displayed over Microsoft Excel's window, the
+ * cursor is a busy cursor over Microsoft Excel's window. This WndProc traps
+ * WM_SETCURSORs and changes the cursor back to a normal arrow.
+ * @param hWndDlg  the HWND Window
+ * @param message  the message to respond to
+ * @param wParam  argument passed by Windows
+ * @param lParam  argument passed by Windows
+ * @returns LRESULT, 0 if message handled, otherwise the result of the
+ *          default WndProc
+ */
 LRESULT CALLBACK ExcelUtils::ExcelCursorProc (HWND hwnd,
 	UINT wMsg,
 	WPARAM wParam,
 	LPARAM lParam) {
-	//
+
 	// This block checks to see if the message that was passed in is a
 	// WM_SETCURSOR message. If so, the cursor is set to an arrow; if not,
 	// the default WndProc is called.
-	//
-
 	if (wMsg == WM_SETCURSOR) {
 		SetCursor (LoadCursor (NULL, IDC_ARROW));
 		return 0L;
@@ -215,75 +217,47 @@ LRESULT CALLBACK ExcelUtils::ExcelCursorProc (HWND hwnd,
 	}
 }
 
-///***************************************************************************
-// HookExcelWindow()
-//
-// Purpose:
-//
-//     This is the function that installs ExcelCursorProc so that it is
-//     called before Microsoft Excel's main WndProc.
-//
-// Parameters:
-//
-//      HANDLE hWndExcel    This is a handle to Microsoft Excel's hWnd
-//
-// Returns: 
-//
-// Comments:
-//
-// History:  Date       Author        Reason
-///***************************************************************************
-
+/**
+ * HookExcelWindow installs ExcelCursorProc so that it is called before Microsoft 
+ * Excel's main WndProc.  This block obtains the address of Microsoft Excel's WndProc 
+ * through the use of GetWindowLongPtr(). It stores this value in a global that can 
+ * be used to call the default WndProc and also to restore it. Finally, it replaces 
+ * this address with the address of ExcelCursorProc using SetWindowLongPtr().
+ * @param hWndExcel handle to Microsoft Excel's hWnd
+ */
 void ExcelUtils::HookExcelWindow (HWND hWndExcel) {
-	//
-	// This block obtains the address of Microsoft Excel's WndProc through the
-	// use of GetWindowLongPtr(). It stores this value in a global that can be
-	// used to call the default WndProc and also to restore it. Finally, it
-	// replaces this address with the address of ExcelCursorProc using
-	// SetWindowLongPtr().
-	//
-
-	g_lpfnExcelWndProc = (WNDPROC)GetWindowLongPtr (hWndExcel, GWLP_WNDPROC);
+    g_lpfnExcelWndProc = (WNDPROC)GetWindowLongPtr (hWndExcel, GWLP_WNDPROC);
 	SetWindowLongPtr (hWndExcel, GWLP_WNDPROC, (LONG_PTR)(FARPROC)ExcelCursorProc);
 }
 
-///***************************************************************************
-// UnhookExcelWindow()
-//
-// Purpose:
-//
-//      This is the function that removes the ExcelCursorProc that was
-//      called before Microsoft Excel's main WndProc.
-//
-// Parameters:
-//
-//      HANDLE hWndExcel    This is a handle to Microsoft Excel's hWnd
-//
-// Returns: 
-//
-// Comments:
-//
-// History:  Date       Author        Reason
-///***************************************************************************
-
-void ExcelUtils::UnhookExcelWindow (HWND hWndExcel) {
-	//
-	// This function restores Microsoft Excel's default WndProc using
-	// SetWindowLongPtr to restore the address that was saved into
-	// g_lpfnExcelWndProc by HookExcelWindow(). It then sets g_lpfnExcelWndProc
-	// to NULL.
-	//
-
+/**
+ * UnhookExcelWindow removes the ExcelCursorProc that was called before 
+ * Microsoft Excel's main WndProc.  This function restores Microsoft Excel's default 
+ * WndProc using SetWindowLongPtr to restore the address that was saved into
+ * g_lpfnExcelWndProc by HookExcelWindow(). It then sets g_lpfnExcelWndProc to NULL.
+ * @param hWndExcel a handle to Microsoft Excel's hWnd
+ */
+void ExcelUtils::UnhookExcelWindow(HWND hWndExcel) {
 	SetWindowLongPtr (hWndExcel, GWLP_WNDPROC, (LONG_PTR)g_lpfnExcelWndProc);
 	g_lpfnExcelWndProc = NULL;
 }
 
+/**
+ * Display a message box with a warning icon with the provided message.  This will block
+ * execution until the user clicks OK.
+ * @param szWarningMessage a pointer to a null-terminated wide C-string containing 
+ *                         the message to display
+ */
 void ExcelUtils::WarningMessageBox(wchar_t *szWarningMessage) {
 	const int WARNING_OK = 3;
 	XLOPER12 retVal;
 	Excel12f(xlcAlert, &retVal, 2, TempStr12(szWarningMessage), TempInt12(WARNING_OK));
 }
 
+/**
+ * Get Excel's Window handle
+ * @param phWnd
+ */
 BOOL ExcelUtils::GetHWND (HWND *phWnd) {
 	XLOPER12 xWnd;
 	if (Excel12f (xlGetHwnd, &xWnd, 0) == xlretSuccess) {
@@ -296,7 +270,6 @@ BOOL ExcelUtils::GetHWND (HWND *phWnd) {
 
 BOOL GetHwnd (HWND * pHwnd) {
 	XLOPER12 x;
-
 	if (Excel12f (xlGetHwnd, &x, 0) == xlretSuccess) {
 		*pHwnd = (HWND)x.val.w;
 		return TRUE;

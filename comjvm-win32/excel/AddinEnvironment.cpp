@@ -279,6 +279,9 @@ HRESULT CAddinEnvironment::InitFromSettings() {
 	}
 }
 
+/**
+ * Add the XL4J toolbar to the Add-in ribbon using the old-style API.
+ */
 void CAddinEnvironment::AddToolbar() {
 	XLOPER12 xTest;
 	Excel12f(xlfGetToolbar, &xTest, 2, TempInt12(1), TempStr12(L"XL4J"));
@@ -384,6 +387,9 @@ void CAddinEnvironment::AddToolbar() {
 	Excel12f(xlFree, 0, 1, &xTest);
 }
 
+/**
+ * Remove the toolbar from the Add-in ribbon using the old C-style API.
+ */
 void CAddinEnvironment::RemoveToolbar() {
 	XLOPER12 xTest;
 	Excel12f(xlfGetToolbar, &xTest, 2, TempInt12(1), TempStr12(L"XL4J"));
@@ -394,6 +400,14 @@ void CAddinEnvironment::RemoveToolbar() {
 	Excel12f(xlFree, 0, 1, &xTest);
 }
 
+/**
+ * Open the default log viewer for the log with the specified path.  This is not a UI blocking operation, although
+ * may take some time to launch the external process so should not be called excessively.
+ * @param szFileName  const pointer to a null-terminated wide C-string containing the path to the log file to view
+ * @return a result code, S_OK if successfully launched viewer, 
+ *                        ERROR_FILE_NOT_FOUND if path didn't exist or wasn't a file,
+ *                        NOT_VALID_STATE if Add-in environment hasn't been started yet
+ */
 HRESULT CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
 	EnterCriticalSection(&m_csState);
 	if (m_state == STARTED) {
@@ -423,6 +437,9 @@ HRESULT CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
 	}
 }
 
+/**
+ * Show the license information dialog.  This blocks 
+ */
 HRESULT CAddinEnvironment::ShowLicenseInfo() {
 	EnterCriticalSection(&m_csState);
 	if (m_state == STARTED) {
