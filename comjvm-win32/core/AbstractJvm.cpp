@@ -47,10 +47,7 @@ ULONG STDMETHODCALLTYPE CAbstractJvm::AddRef () {
 ULONG STDMETHODCALLTYPE CAbstractJvm::Release () {
 	ULONG lResult = InterlockedDecrement (&m_lRefCount);
 	if (!lResult) {
-		//LOGTRACE ("refcount is zero, deleting");
 		delete this;
-	} else {
-		//LOGTRACE ("refcount not zero, %d", m_lRefCount);
 	}
 	return lResult;
 }

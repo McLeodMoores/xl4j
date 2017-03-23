@@ -7,14 +7,17 @@
 #include "ClasspathEntries.h"
 #include "internal.h"
 
-///	<summary>Creates a new instance.</summary>
-///
-///	<para>The collection is initially empty.</para>
+/**
+ * Creates a new instance.
+ * The collection is initially empty.
+ */
 CClasspathEntriesImpl::CClasspathEntriesImpl () {
 	IncrementActiveObjectCount ();
 }
 
-/// <summary>Destroys an instance.</summary>
+/**
+ * Destroys an instance.
+ */
 CClasspathEntriesImpl::~CClasspathEntriesImpl () {
 	size_t cSize = m_vpBuffer.size (), c;
 	for (c = 0; c < cSize; c++) {
@@ -23,18 +26,20 @@ CClasspathEntriesImpl::~CClasspathEntriesImpl () {
 	DecrementActiveObjectCount ();
 }
 
-/// <summary>Queries the number of entries in the collection.</summary>
-///
-/// <returns>The number of entries</returns>
+/**
+ * Queries the number of entries in the collection.
+ * @returns The number of entries
+ */
 long CClasspathEntriesImpl::get_Count () const {
 	return (long)m_vpBuffer.size ();
 }
 
-/// <summary>Queries an element from the collection.</summary>
-///
-/// <param name="lIndex">The 1-based index to query</param>
-/// <param name="ppEntry">Receives the element at the index in the collection</param>
-/// <returns>S_OK if the element was returned, an error code otherwise</returns>
+/**
+ * Queries an element from the collection.
+ * @param lIndex  The 1-based index to query
+ * @param ppEntry  Receives the element at the index in the collection
+ * @returns S_OK if the element was returned, an error code otherwise
+ */
 HRESULT CClasspathEntriesImpl::get_Item (long lIndex, IClasspathEntry **ppEntry) const {
 	if (!ppEntry) return E_POINTER;
 	if ((lIndex <= 0) || ((size_t)lIndex > m_vpBuffer.size ())) return E_INVALIDARG;
@@ -44,14 +49,14 @@ HRESULT CClasspathEntriesImpl::get_Item (long lIndex, IClasspathEntry **ppEntry)
 	return S_OK;
 }
 
-/// <summary>Updates an element in the collection.</summary>
-///
-/// <para>If the element index is at the end of the collection then the new entry is
-/// appended to the collection.</para>
-///
-/// <param name="lIndex">The 1-based index to update</param>
-/// <param name="pEntry">Element to store</param>
-/// <returns>S_OK if the element was stored, an error code otherwise</returns>
+/**
+ * Updates an element in the collection.
+ * If the element index is at the end of the collection then the new entry is
+ * appended to the collection.
+ * @param lIndex  The 1-based index to update
+ * @param pEntry  Element to store
+ * @returns S_OK if the element was stored, an error code otherwise
+ */
 HRESULT CClasspathEntriesImpl::put_Item (long lIndex, IClasspathEntry *pEntry) {
 	if (!pEntry) return E_POINTER;
 	if ((lIndex <= 0) || ((size_t)lIndex > m_vpBuffer.size () + 1)) return E_INVALIDARG;
@@ -65,10 +70,11 @@ HRESULT CClasspathEntriesImpl::put_Item (long lIndex, IClasspathEntry *pEntry) {
 	}
 }
 
-/// <summary>Appends an element to the collection.</summary>
-///
-/// <param name="pEntry">Element to add</param>
-/// <returns>S_OK if the element was appended, an error code otherwise</returns>
+/**
+ * Appends an element to the collection.
+ * @param pEntry  Element to add
+ * @returns S_OK if the element was appended, an error code otherwise
+ */
 HRESULT CClasspathEntriesImpl::Add (IClasspathEntry *pEntry) {
 	if (!pEntry) return E_POINTER;
 	pEntry->AddRef ();
@@ -80,7 +86,9 @@ HRESULT CClasspathEntriesImpl::Add (IClasspathEntry *pEntry) {
 	}
 }
 
-/// <summary>Removes all elements from the collection.</summary>
+/**
+ * Removes all elements from the collection.
+ */
 void CClasspathEntriesImpl::Clear () {
 	size_t cSize = m_vpBuffer.size (), c;
 	for (c = 0; c < cSize; c++) {
@@ -89,13 +97,12 @@ void CClasspathEntriesImpl::Clear () {
 	m_vpBuffer.clear ();
 }
 
-/// <summary>Removes an element from the collection.</summary>
-///
-/// <para>Any elements with an index greater than the one removed are shifted
-/// left.</para>
-///
-/// <param name="lIndex">The 1-based index of the element to remove</param>
-/// <returns>S_OK if the element was removed, an error code otherwise</returns>
+/**
+ * Removes an element from the collection.
+ * Any elements with an index greater than the one removed are shifted left.
+ * @param lIndex  The 1-based index of the element to remove
+ * @returns S_OK if the element was removed, an error code otherwise
+ */
 HRESULT CClasspathEntriesImpl::Remove (long lIndex) {
 	if ((lIndex <= 0) || ((size_t)lIndex > m_vpBuffer.size ())) return E_INVALIDARG;
 	m_vpBuffer[lIndex - 1]->Release ();
@@ -106,27 +113,30 @@ HRESULT CClasspathEntriesImpl::Remove (long lIndex) {
 	return S_OK;
 }
 
-/// <summary>Creates a new instance.</summary>
+/**
+ * Creates a new instance.
+ */
 CClasspathEntries::CClasspathEntries ()
 : m_lRefCount (1) {
 	InitializeCriticalSection (&m_cs);
 }
 
-/// <summary>Destroys an instance.</summary>
-///
-/// <para>This should not be called directly but as a result of calling IUnknown#Release on the instance.</para>
+/**
+ * Destroys an instance.
+ * This should not be called directly but as a result of calling IUnknown#Release on the instance.
+ */
 CClasspathEntries::~CClasspathEntries () {
 	assert (m_lRefCount == 0);
 	DeleteCriticalSection (&m_cs);
 }
 
-/// <summary>Applies the content of one IClasspathEntries instance to another.</summary>
-///
-/// <para>All of the components from the source instance are added to the destination.</para>
-///
-/// <param name="pSource">Source instance to copy values from</param>
-/// <param name="pDest">Destination instance to copy values to</param>
-/// <returns>S_OK if successful, an error code otherwise</returns>
+/**
+ * Applies the content of one IClasspathEntries instance to another.
+ * All of the components from the source instance are added to the destination.
+ * @param pSource  Source instance to copy values from
+ * @param pDest  Destination instance to copy values to
+ * @returns S_OK if successful, an error code otherwise
+ */
 HRESULT CClasspathEntries::Append (IClasspathEntries *pSource, IClasspathEntries *pDest) {
 	if (!pSource) return E_POINTER;
 	if (!pDest) return E_POINTER;
@@ -151,14 +161,14 @@ HRESULT CClasspathEntries::Append (IClasspathEntries *pSource, IClasspathEntries
 	return hr;
 }
 
-/// <summary>Tests if one classpath is compatible with another.</summary>
-///
-/// <para>An existing classpath is compatible with another if it contains all of the
-/// elements of the other classpath.</para>
-///
-/// <param name="pLeft">Existing classpath to test</param>
-/// <param name="pRight">New classpath to check whether the existing one can support it</param>
-/// <returns>S_OK if the classpaths are compatible, S_FALSE if incompatible, an error code otherwise</returns>
+/**
+ * Tests if one classpath is compatible with another.
+ * An existing classpath is compatible with another if it contains all of the
+ * elements of the other classpath.
+ * @param pLeft  Existing classpath to test
+ * @param pRight  New classpath to check whether the existing one can support it
+ * @returns S_OK if the classpaths are compatible, S_FALSE if incompatible, an error code otherwise
+ */
 HRESULT CClasspathEntries::IsCompatible (IClasspathEntries *pLeft, IClasspathEntries *pRight) {
 	HRESULT hr;
 	try {

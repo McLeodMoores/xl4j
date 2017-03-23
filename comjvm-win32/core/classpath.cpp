@@ -32,13 +32,13 @@ static HRESULT CreateClassFolder (const _bstr_t &bstrName, IClasspathEntry **ppF
 	}
 }
 
-/// <summary>Creates an IClasspathEntry instance.</summary>
-///
-/// <para>This is the ANSI implementation of IJvmSupport#CreateClasspathEntry.</para>
-///
-/// <param name="pszLocalPath">Path to create the instance for, local to the host where this IJvmSupport instance resides</param>
-/// <param name="ppEntry">Receives the new IClasspathEntry instance</param>
-/// <returns>S_OK if the entry was created, an error code otherwise</returns>
+/**
+ * Creates an IClasspathEntry instance.
+ * This is the ANSI implementation of IJvmSupport#CreateClasspathEntry.
+ * @param pszLocalPath  Path to create the instance for, local to the host where this IJvmSupport instance resides
+ * @param ppEntry  Receives the new IClasspathEntry instance
+ * @returns S_OK if the entry was created, an error code otherwise
+ */
 HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryA (/* [in] */ PCSTR pszLocalPath, /* [out][retval] */ IClasspathEntry **ppEntry) {
 	if (!pszLocalPath) return E_POINTER;
 	if (!ppEntry) return E_POINTER;
@@ -113,13 +113,13 @@ HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryA (/* [in] */ PCSTR pszLocalPa
 	return hr;
 }
 
-/// <summary>Creates an IClasspathEntry instance.</summary>
-///
-/// <para>This is the wide-character implementation of IJvmSupport#CreateClasspathEntry.</para>
-///
-/// <param name="pszLocalPath">Path to create the instance for, local to the host where this IJvmSupport instance resides</param>
-/// <param name="ppEntry">Receives the new IClasspathEntry instance</param>
-/// <returns>S_OK if the entry was created, an error code otherwise</returns>
+/**
+ * Creates an IClasspathEntry instance.
+ * This is the wide-character implementation of IJvmSupport#CreateClasspathEntry.
+ * @param pszLocalPath  Path to create the instance for, local to the host where this IJvmSupport instance resides
+ * @param ppEntry  Receives the new IClasspathEntry instance
+ * @returns S_OK if the entry was created, an error code otherwise
+ */
 HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryW (/* [in] */ PCWSTR pszLocalPath, /* [out][retval] */ IClasspathEntry **ppEntry) {
 	if (!pszLocalPath) return E_POINTER;
 	if (!ppEntry) return E_POINTER;

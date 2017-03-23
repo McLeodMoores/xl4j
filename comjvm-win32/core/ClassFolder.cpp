@@ -33,17 +33,19 @@ static const _bstr_t Expand (const _bstr_t &bstrRelative) {
 	return bstrResult;
 }
 
-/// <summary>Creates a new instance.</summary>
-///
-/// <param name="bstrName">Local path to the folder</param>
+/**
+ * Creates a new instance.
+ * @param bstrName  Local path to the folder
+ */
 CClassFolder::CClassFolder (const _bstr_t &bstrName)
 : m_lRefCount (1), m_bstrName (bstrName), m_bstrPath (Expand (bstrName)) {
 	IncrementActiveObjectCount ();
 }
 
-/// <summary>Destroys an instance.</summary>
-///
-/// <para>This should not be called directly but as a result of calling IUnknown#Release on the instance.</para>
+/**
+ * Destroys an instance.
+ * This should not be called directly but as a result of calling IUnknown#Release on the instance.
+ */
 CClassFolder::~CClassFolder() {
 	assert (m_lRefCount == 0);
 	DecrementActiveObjectCount ();
