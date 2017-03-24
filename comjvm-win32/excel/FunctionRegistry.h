@@ -24,7 +24,7 @@ private:
 		bstr_t functionExportName, bstr_t functionSignature, 
 		bstr_t worksheetName, bstr_t argumentNames, int functionType,
 		bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, 
-		bstr_t description, int argsHelpSz, bstr_t *argsHelp);
+		bstr_t description, int argsHelpSz, BSTR *argsHelp);
 public:
 	FunctionRegistry (IJvm *pJvm, TypeLib *pTypeLib);
 	~FunctionRegistry ();
@@ -32,6 +32,7 @@ public:
 	HRESULT Get (int functionNumber, FUNCTIONINFO *pFunctionInfo);
 	HRESULT Size (int *piSize);
 	HRESULT GetNumberRegistered (int *piRegistered);
+	
 	bool IsScanComplete ();
 	bool IsRegistrationComplete ();
 	HRESULT RegisterFunctions (XLOPER12 xDll);

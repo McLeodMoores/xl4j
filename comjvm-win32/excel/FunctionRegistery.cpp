@@ -137,7 +137,7 @@ HRESULT FunctionRegistry::GetNumberRegistered (int *piRegistered) {
 	}
 }
 XLOPER12 FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNumber, bstr_t functionExportName, bstr_t functionSignature, bstr_t worksheetName, bstr_t argumentNames, int functionType,
-	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, bstr_t *argsHelp) {
+	bstr_t functionCategory, bstr_t acceleratorKey, bstr_t helpTopic, bstr_t description, int argsHelpSz, BSTR *argsHelp) {
 	LOGTRACE ("-----------------------------------");
 	LOGTRACE ("functionExportNumber = %d", functionExportNumber);
 	LOGTRACE ("functionExportName = %s", (wchar_t *)functionExportName);
@@ -192,7 +192,7 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 	for (unsigned int i = 0; i < m_cFunctions; i++) {
 		HRESULT hr;
 		FUNCTIONINFO fi = m_pFunctions[i];
-		bstr_t *psArgsHelp;
+		BSTR *psArgsHelp;
 		long cArgsHelp;
 		if (FAILED (hr = ::SafeArrayAccessData (fi.saArgsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
 			LOGERROR ("registerFunctions::SafeArrayAccessData (argshelp %d) failed", fi.iExportNumber);
@@ -239,7 +239,7 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll, __int64 llMaxMillis)
 	for (size_t count = 0; m_iIndex < m_cFunctions; m_iIndex++, count++) {
 		HRESULT hr;
 		FUNCTIONINFO fi = m_pFunctions[m_iIndex];
-		bstr_t *psArgsHelp;
+		BSTR *psArgsHelp;
 		long cArgsHelp;
 		if (FAILED (hr = ::SafeArrayAccessData (fi.saArgsHelp, reinterpret_cast<PVOID*> (&psArgsHelp)))) {
 			LOGERROR ("registerFunctions::SafeArrayAccessData (argshelp %d) failed", fi.iExportNumber);

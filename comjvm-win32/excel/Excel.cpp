@@ -14,6 +14,7 @@
 #include "JvmEnvironment.h"
 #include "resource.h"
 #include <comdef.h>
+#include <VersionHelpers.h>
 
 const IID XL4JOPER12_IID2 = { 0x053798d7, 0xeef0, 0x4ac5, {	0x8e, 0xb8,	0x4d, 0x51, 0x5e, 0x7c, 0x5d, 0xb5 }};
 
@@ -233,6 +234,10 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	LOGTRACE("Excel version returned %d", GetExcelVersion());
 	if (GetExcelVersion() < 13) {
 		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2010 are not supported."), TempInt12(2));
+		return 0;
+	}
+	if (!IsWindowsVistaOrGreater()) {
+		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Windows prior to Vista are not supported."), TempInt12(2));
 		return 0;
 	}
 	if (InterlockedCompareExchange(&g_initialized, 1, 0)) {
