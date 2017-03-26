@@ -80,9 +80,7 @@ available annotation arguments.
 | `name` | `String` | No | param name if avail. else param*x* | The name of the parameter, as it is to appear in the Insert function dialog. | 
 | `description` | `String` | No | `""` | The description of the parameter, as it is to appear in the Insert function dialog. |
 | `optional` | `boolean` | No | `false` | Whether the argument should be considered optional.  Optional parameters will be passed as `null` if not provided otherwise an Exception will be thrown. |
-| `referenceType` | `boolean` | No | `false` | This indicates whether an argument should be registered as being a reference type (e.g.
-an `XLLocalReference` or `XLMultiReferences` or `XLArray` byref. This will probably only work with commands rather than functions and
-hasn't been tested. |
+| `referenceType` | `boolean` | No | `false` | This indicates whether an argument should be registered as being a reference type (e.g. an `XLLocalReference` or `XLMultiReferences` or `XLArray` byref. This will probably only work with commands rather than functions and hasn't been tested. |
 
 ### @XLConstant
 This annotation can be applied either to fields, or to classes.  If applied to public fields, it will register a user-defined function
