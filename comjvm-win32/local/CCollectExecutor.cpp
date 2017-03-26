@@ -37,7 +37,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		//QueryPerformanceCounter (&t1);
 		long szValidIds;
 		if (FAILED (hr = ::SafeArrayGetUBound (m_psaValidIds, 1, &szValidIds))) {
-			LOGTRACE ("SafeArrayGetUBound failed");
+			LOGERROR ("SafeArrayGetUBound failed");
 			goto error;
 		}
 		szValidIds++; // upper bound not count, returns -1 for zero length array.
@@ -46,7 +46,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		//QueryPerformanceCounter (&t2);
 		hyper *pllValidIds;
 		if (FAILED (hr = SafeArrayAccessData (m_psaValidIds, reinterpret_cast<PVOID *>(&pllValidIds)))) {
-			LOGTRACE ("SafeArrayAccessData failed");
+			LOGERROR ("SafeArrayAccessData failed");
 			goto error;
 		}
 		jlong *plRawArray = pEnv->GetLongArrayElements (jlaValidIds, false);
@@ -63,7 +63,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		//QueryPerformanceCounter (&t4);
 
 		if (pEnv->ExceptionCheck ()) {
-			LOGTRACE ("Exception occurred");
+			LOGINFO ("Exception occurred");
 			jthrowable joThrowable = pEnv->ExceptionOccurred ();
 			pEnv->ExceptionClear ();
 			Debug::printException (pEnv, joThrowable);
@@ -96,10 +96,10 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 		hr = S_OK;
 
 	} catch (std::bad_alloc) {
-		LOGTRACE ("bad_alloc exception thrown");
+		LOGERROR ("bad_alloc exception thrown");
 		hr = E_OUTOFMEMORY;
 	} catch (_com_error &e) {
-		LOGTRACE ("Com error %s", e.ErrorMessage ());
+		LOGERROR ("Com error %s", e.ErrorMessage ());
 		hr = e.Error ();
 	}
 error:

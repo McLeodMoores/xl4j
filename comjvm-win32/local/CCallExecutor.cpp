@@ -64,7 +64,7 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 			goto error;
 		}
 		//LOGTRACE ("About to convert result");
-		LOGTRACE("joResult = %p, about to convert", joResult);
+		//LOGTRACE("joResult = %p, about to convert", joResult);
 		*m_pResult = CComJavaConverter::convert (pEnv, m_pJniCache, joResult);
 		hr = S_OK;
 
@@ -110,7 +110,6 @@ HRESULT CCallExecutor::Wait(int timeoutMillis, bool *timedOut) {
 }
 
 void CCallExecutor::AddRef () {
-	
 	InterlockedIncrement (&m_lRefCount);
 	LOGTRACE("Adding reference, now %d", m_lRefCount);
 }

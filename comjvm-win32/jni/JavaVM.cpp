@@ -146,10 +146,9 @@ public:
 		HRESULT hr;
 		EnterCriticalSection(&m_cs);
 		if ((m_eState == STARTED) && (dwJvmRef == m_dwJvmRef)) {
-			LOGINFO("State valid, calling through");
 			hr = PoisonAndRenewJNIAsyncSlaveThreads();
 		} else {
-			LOGINFO("Invalid state");
+			LOGERROR("Invalid state");
 			hr = E_NOT_VALID_STATE;
 		}
 		LeaveCriticalSection(&m_cs);

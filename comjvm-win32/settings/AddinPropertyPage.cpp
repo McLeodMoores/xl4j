@@ -32,27 +32,9 @@ CAddinPropertyPage::~CAddinPropertyPage()
 
 BOOL CAddinPropertyPage::OnInitDialog () {
 	CPropertyPage::OnInitDialog ();
-	//std::vector<LPTSTR> versions;
-	//CAvailableJvms *pJvms = new CAvailableJvms ();
-	//HRESULT hr = pJvms->Search (JAVASOFT, versions);
-	//if (FAILED (hr)) {
-	//	_com_error err (hr);
-	//	LOGERROR ("Problem looking for JVMs: %s", err.ErrorMessage ());
-	//}
-	//for (std::vector<LPTSTR>::iterator it = versions.begin (); it != versions.end (); ++it) {
-	//	LOGTRACE ("Found JVM %s", *it);
-	//	m_lbJvms.AddString (*it);
-	//	free (*it);
-	//}
-	//LOGTRACE ("Finished scanning JVMs");
 	if (m_pSettings->IsValid ()) {
-		//_bstr_t bstrJvmVersion = m_pSettings->GetString (TEXT ("Jvm"), TEXT ("Version"));
-		//if (bstrJvmVersion.length () > 0) {
-		//	m_lbJvms.SelectString (-1, bstrJvmVersion);
-		//}
-		//LOGTRACE ("Getting Addin/GC");
+		// TODO: Get rid of all these stupid string constants.
 		_bstr_t bstrGCEnabled = m_pSettings->GetString (SECTION_ADDIN, TEXT ("GarbageCollection"));
-		//LOGTRACE ("Got it. %p", bstrGCEnabled.GetAddress ());
 		if (bstrGCEnabled.length () > 0) {
 			LOGTRACE ("bstrGCEnabled.length() > 0");
 			const _bstr_t ENABLED(TEXT("Enabled"));
@@ -84,9 +66,9 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 			LOGTRACE("bstrCheckForUpdates.length() > 0");
 			const _bstr_t ENABLED(VALUE_UPGRADE_CHECK_REQUIRED_YES.c_str());
 			if (bstrCheckForUpdates == ENABLED) {
-				m_cbUpdateEnabled.SetCheck(BST_CHECKED);
+				m_cbUpdateCheck.SetCheck(BST_CHECKED);
 			} else {
-				m_cbUpdateEnabled.SetCheck(BST_UNCHECKED);
+				m_cbUpdateCheck.SetCheck(BST_UNCHECKED);
 			}
 		} else {
 			// TODO: probably should take into account VALUE_UPGRADE_CHECK_REQUIRED_DEFAULT
@@ -133,7 +115,7 @@ void CAddinPropertyPage::OnOK () {
 		} else {
 			m_pSettings->PutString (SECTION_ADDIN, TEXT("ShowToolbar"), TEXT("Disabled"));
 		}
-		if (m_cbUpdateEnabled.GetCheck() == BST_CHECKED) {
+		if (m_cbUpdateCheck.GetCheck() == BST_CHECKED) {
 			m_pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_CHECK_REQUIRED, VALUE_UPGRADE_CHECK_REQUIRED_YES);
 		} else {
 			m_pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_CHECK_REQUIRED, VALUE_UPGRADE_CHECK_REQUIRED_NO);
@@ -155,10 +137,10 @@ void CAddinPropertyPage::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_CHECK_GARBAGE_COLLECTION, m_bGarbageCollection);
 	DDX_Control(pDX, IDC_CHECK_HEAP_IN_WORKSHEET, m_cbSaveHeap);
 	DDX_Control(pDX, IDC_SHOWTOOLBARCHECK, m_cbShowToolbar);
-	DDX_Control(pDX, IDC_CHECKFORUPGRADES_CHECK, m_cbUpdateEnabled);
 	DDX_Control(pDX, IDC_LOGLEVELCOMBO, m_cbCppLogLevel);
 	DDX_Control(pDX, IDC_LOGFILERADIO, m_rdLogFileRadio);
 	DDX_Control(pDX, IDC_WINDEBUGRADIO, m_rdWinDebugRadio);
+	DDX_Control(pDX, IDC_UPDATECHECK, m_cbUpdateCheck);
 }
 
 BEGIN_MESSAGE_MAP(CAddinPropertyPage, CPropertyPage)

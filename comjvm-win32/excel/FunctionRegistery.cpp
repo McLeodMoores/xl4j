@@ -50,12 +50,6 @@ HRESULT FunctionRegistry::Scan () {
 		LOGERROR ("GetFunctionInfoRecInfo failed");
 		return hr;
 	}
-	//if (FAILED (hr = ::GetRecordInfoFromGuids (ComJvmCore_LIBID, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
-	//	_com_error err (hr);
-	//	LPCTSTR errMsg = err.ErrorMessage ();
-	//	LOGTRACE ("scan::Failed to get RecordInfoFromGuids %s", errMsg);
-	//	return hr;
-	//}
 	SAFEARRAYBOUND bounds;
 	bounds.cElements = 100;
 	bounds.lLbound = 0;
@@ -142,7 +136,7 @@ XLOPER12 FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNu
 	LOGTRACE ("functionExportNumber = %d", functionExportNumber);
 	LOGTRACE ("functionExportName = %s", (wchar_t *)functionExportName);
 	LOGTRACE ("functionSignature = %s", (wchar_t *)functionSignature);
-	LOGTRACE ("worksheetName = %s", (wchar_t *)worksheetName);
+	LOGINFO ("worksheetName (UDF name) = %s", (wchar_t *)worksheetName);
 	LOGTRACE ("argumentNames = %s", (wchar_t *)argumentNames);
 	LOGTRACE ("functionType = %d", (wchar_t *)functionType);
 	LOGTRACE ("functionCategory = %s", (wchar_t *)functionCategory);
@@ -166,13 +160,8 @@ XLOPER12 FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNu
 		LPXLOPER12 pArgHelp = TempStr12(argHelp);
 		args[10 + i] = pArgHelp;
 		LOGTRACE("argsHelp[%d] = %s", i, argHelp);// argsHelp[i]);
-		ExcelUtils::PrintXLOPER(args[10 + i]);
 	}
 	XLOPER12 result;
-	for (int i = 0; i < (10 + argsHelpSz); i++) {
-		LOGTRACE("Arg %d = ", i);
-		ExcelUtils::PrintXLOPER(args[i]);
-	}
 	//m_numArgsForExport[functionExportNumber] = argsHelpSz; // num args
 	int err = Excel12v (xlfRegister, &result, 10 + argsHelpSz, args);
 	if (result.xltype == xltypeErr) {
@@ -188,7 +177,6 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 		LOGERROR ("scan not called first");
 		return E_POINTER;
 	}
-
 	for (unsigned int i = 0; i < m_cFunctions; i++) {
 		HRESULT hr;
 		FUNCTIONINFO fi = m_pFunctions[i];

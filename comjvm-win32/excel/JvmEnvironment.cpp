@@ -28,6 +28,12 @@ DWORD WINAPI CJvmEnvironment::BackgroundWatchdogThread(LPVOID pData) {
 	return 0;
 }
 
+void CJvmEnvironment::HideSplash() {
+	if ((m_state == STARTING) || (m_state == STARTED)) {
+		m_pSplashScreen->CloseMT();
+	}
+}
+
 void CJvmEnvironment::Start() {
 	EnterStartingState();
 	LOGTRACE("JVM Environment being created");

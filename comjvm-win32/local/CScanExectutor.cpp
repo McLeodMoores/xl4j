@@ -26,18 +26,18 @@ CScanExecutor::~CScanExecutor () {
 HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 	HRESULT hResult = S_OK;
 	try {
-		LOGTRACE ("In CScanExecutor::Run");
+		//LOGTRACE ("In CScanExecutor::Run");
 		jclass jcExcelFactory = pEnv->FindClass ("com/mcleodmoores/xl4j/ExcelFactory");
 		jmethodID jmExcelFactory_Instance = pEnv->GetStaticMethodID (jcExcelFactory, "getInstance", "()Lcom/mcleodmoores/xl4j/Excel;");
 		jobject joExcel = pEnv->CallStaticObjectMethod (jcExcelFactory, jmExcelFactory_Instance);
 		CHECK_EXCEPTION ();
-		LOGTRACE ("Got Excel object %p", joExcel);
+		//LOGTRACE ("Got Excel object %p", joExcel);
 		jclass jcExcel = pEnv->FindClass ("com/mcleodmoores/xl4j/Excel");
 		CHECK_EXCEPTION ();
 		jmethodID jmExcel_GetExcelCallback = pEnv->GetMethodID (jcExcel, "getExcelCallback", "()Lcom/mcleodmoores/xl4j/callback/ExcelCallback;");
 		jobject joExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetExcelCallback);
 		CHECK_EXCEPTION ();
-		LOGTRACE ("Got Excel callback object %p", joExcelCallback);
+		//LOGTRACE ("Got Excel callback object %p", joExcelCallback);
 		jclass jcFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/xl4j/FunctionRegistry");
 		jmethodID jmFunctionRegistry_RegisterFunctions = pEnv->GetMethodID (jcFunctionRegistry, "registerFunctions", "(Lcom/mcleodmoores/xl4j/callback/ExcelCallback;)V");
 		jmethodID jmExcel_GetFunctionRegistry = pEnv->GetMethodID (jcExcel, "getFunctionRegistry", "()Lcom/mcleodmoores/xl4j/FunctionRegistry;");
@@ -50,12 +50,12 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jmethodID jmExcel_GetLowLevelExcelCallback = pEnv->GetMethodID (jcExcel, "getLowLevelExcelCallback", "()Lcom/mcleodmoores/xl4j/lowlevel/LowLevelExcelCallback;");
 		jobject joLowLevelExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetLowLevelExcelCallback);
 		CHECK_EXCEPTION ();
-		LOGTRACE ("Got LowLevelExcelCallback %p", joLowLevelExcelCallback);
+		//LOGTRACE ("Got LowLevelExcelCallback %p", joLowLevelExcelCallback);
 		jclass jcXLLAccumulatingFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/xl4j/xll/XLLAccumulatingFunctionRegistry");
 		jmethodID jmXLLAccumulatingFunctionRegistry_GetEntries = pEnv->GetMethodID (jcXLLAccumulatingFunctionRegistry, "getEntries", "()[Lcom/mcleodmoores/xl4j/xll/XLLAccumulatingFunctionRegistry$LowLevelEntry;");
 		jobjectArray jaEntries = (jobjectArray) pEnv->CallObjectMethod (joLowLevelExcelCallback, jmXLLAccumulatingFunctionRegistry_GetEntries);
 		CHECK_EXCEPTION ();
-		LOGTRACE ("Got entries array %p", jaEntries);
+		//LOGTRACE ("Got entries array %p", jaEntries);
 		long cEntries = pEnv->GetArrayLength (jaEntries);
 		LOGTRACE ("Got %d entries", cEntries);
 
@@ -79,7 +79,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 
 		IRecordInfo *pFunctionInfoRecordInfo = NULL;
 		if (FAILED (hResult = ::GetRecordInfoFromGuids (LIBID_ComJvmCore, 1, 0, 0, FUNCTIONINFO_IID, &pFunctionInfoRecordInfo))) {
-			LOGTRACE ("Couldn't get IRecotrdInfo");
+			LOGERROR ("Couldn't get IRecotrdInfo");
 			goto fail;
 		}
 		
@@ -87,11 +87,11 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		bounds.cElements = cEntries;
 		bounds.lLbound = 0;
 		if (FAILED (hResult = ::SafeArraySetRecordInfo (*m_pResults, pFunctionInfoRecordInfo))) {
-			LOGTRACE ("CScanExecutor::Run: couldn't set record info");
+			LOGERROR ("CScanExecutor::Run: couldn't set record info");
 			goto fail;
 		}
 		if (FAILED (hResult = ::SafeArrayRedim (*m_pResults, &bounds))) {
-			LOGTRACE ("CScanExecutor::Run: Couldn't redim");
+			LOGERROR ("CScanExecutor::Run: Couldn't redim");
 			goto fail;
 		}
 		FUNCTIONINFO *pFunctionInfos;
@@ -142,11 +142,11 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		}
 		SafeArrayUnaccessData (*m_pResults);
 	} catch (std::bad_alloc) {
-		LOGTRACE ("CScanExecutor::Run: out of memory");
+		LOGERROR ("CScanExecutor::Run: out of memory");
 		hResult = E_OUTOFMEMORY;
 		goto fail;
 	} catch (_com_error &e) {
-		LOGTRACE ("CScanExecutor::Run: com error %s", e.ErrorMessage());
+		LOGERROR ("CScanExecutor::Run: com error %s", e.ErrorMessage());
 		hResult = e.Error ();
 		goto fail;
 	}
@@ -155,7 +155,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 	ReleaseSemaphore (m_hSemaphore, 1, NULL);
 	return S_OK;
 fail:
-	LOGTRACE ("CScanExecutor::Run: Releasing semaphore (failure mode)");
+	LOGERROR ("CScanExecutor::Run: Releasing semaphore (failure mode)");
 	m_hRunResult = hResult;
 	ReleaseSemaphore (m_hSemaphore, 1, NULL);
 	return hResult;

@@ -7,7 +7,8 @@
 
 #include "stdafx.h"
 #include "internal.h"
-#include <utils/Debug.h>
+#include "utils/Debug.h"
+#include "utils/FileUtils.h"
 
 typedef jint (JNICALL *JNICreateJavaVMProc)(JavaVM **, void **, void *);
 

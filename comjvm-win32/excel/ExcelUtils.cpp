@@ -114,12 +114,12 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 	FreeAllTempMemory ();
 	XLOPER12 retVal = {};
 	LPXLOPER12 exportName = TempStr12 (wsCommandName);
-	//((LPXLOPER12)NULL)->val;
 	LPXLOPER12 returnType = TempStr12 (TEXT ("J"));
 	LPXLOPER12 commandName = TempStr12 (wsCommandName);
 	LPXLOPER12 args = TempMissing12 ();
 	LPXLOPER12 functionType = TempInt12 (2);
-	LOGTRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", &xDLL, exportName, returnType, commandName, args, functionType);
+	LOGTRACE("Registering command: %s", wsCommandName);
+	//LOGTRACE ("xDLL = %p, exportName = %p, returnType = %p, commandName = %p, args = %p, functionType = %p", &xDLL, exportName, returnType, commandName, args, functionType);
 
 	int ret = Excel12f (
 		xlfRegister, &retVal, 6, &xDLL,
@@ -129,10 +129,9 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 		args, // args
 		functionType // function type 2 = Command
 		);
-	ExcelUtils::PrintExcel12Error (ret);
+	//ExcelUtils::PrintExcel12Error (ret);
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&xDLL);
 	if (ret == xlretSuccess) {
-		LOGTRACE ("After xlfRegister");
 		if (retVal.xltype == xltypeInt) {
 			return retVal.val.w;
 		} else if (retVal.xltype == xltypeErr) {
@@ -141,7 +140,7 @@ int ExcelUtils::RegisterCommand (const wchar_t *wsCommandName) {
 		} else if (retVal.xltype == xltypeNum) {
 			return static_cast<int>(retVal.val.num);
 		} else {
-			LOGERROR ("LOGIC ERROR: Unexpected return value registering command %s, returned value was", wsCommandName);
+			LOGERROR ("LOGIC ERROR: Unexpected return value registering command %s, returned value was:", wsCommandName);
 			PrintXLOPER (&retVal);
 			return 0;
 		}
@@ -249,9 +248,42 @@ void ExcelUtils::UnhookExcelWindow(HWND hWndExcel) {
  *                         the message to display
  */
 void ExcelUtils::WarningMessageBox(wchar_t *szWarningMessage) {
+	if (g_pJvmEnv) {
+		g_pJvmEnv->HideSplash();
+	}
 	const int WARNING_OK = 3;
 	XLOPER12 retVal;
 	Excel12f(xlcAlert, &retVal, 2, TempStr12(szWarningMessage), TempInt12(WARNING_OK));
+}
+
+/**
+* Display a message box with a warning/error icon with the provided message.  This will block
+* execution until the user clicks OK.
+* @param szWarningMessage a pointer to a null-terminated wide C-string containing
+*                         the message to display
+*/
+void ExcelUtils::ErrorMessageBox(wchar_t *szWarningMessage) {
+	if (g_pJvmEnv) {
+		g_pJvmEnv->HideSplash();
+	}
+	const int ERROR_OK = 3;
+	XLOPER12 retVal;
+	Excel12f(xlcAlert, &retVal, 2, TempStr12(szWarningMessage), TempInt12(ERROR_OK));
+}
+
+/**
+* Display a message box with a info icon with the provided message.  This will block
+* execution until the user clicks OK.
+* @param szWarningMessage a pointer to a null-terminated wide C-string containing
+*                         the message to display
+*/
+void ExcelUtils::InfoMessageBox(wchar_t *szWarningMessage) {
+	if (g_pJvmEnv) {
+		g_pJvmEnv->HideSplash();
+	}
+	const int INFO_OK = 2;
+	XLOPER12 retVal;
+	Excel12f(xlcAlert, &retVal, 2, TempStr12(szWarningMessage), TempInt12(INFO_OK));
 }
 
 /**
@@ -359,9 +391,7 @@ void ExcelUtils::PasteTool(LPCWSTR lpBitmapName, int index) {
 	if (!EmptyClipboard()) { LOGERROR("Could not empty clipboard"); CloseClipboard();  return; }
 	if (!SetClipboardData(CF_BITMAP, hBitmap)) { LOGERROR("Could not put settings icon bitmap onto clipboard"); }
 	if (!CloseClipboard()) { LOGERROR("Could not close clipboard"); return; }
-	LOGTRACE("Calling PasteTool with index %d", index);
 	Excel12f(xlcPasteTool, 0, 2, TempStr12(L"XL4J"), TempInt12(index));
-	LOGTRACE("Called xlcPasteTool");
 	if (!OpenClipboard(nullptr)) { LOGERROR("Could not open clipboard"); return; }
 	if (!EmptyClipboard()) { LOGERROR("Could not empty clipboard"); }
 	if (!CloseClipboard()) { LOGERROR("Could not close clipboard"); return; }

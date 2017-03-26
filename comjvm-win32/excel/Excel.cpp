@@ -70,8 +70,6 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 	switch (dwReason)
 	{
 	case DLL_PROCESS_ATTACH:
-		//Debug::SetLogTarget(LOGTARGET_WINDEBUG);
-		//Debug::SetLogLevel(LOGLEVEL_INFO);
 		LOGTRACE ("DLL_PROCESS_ATTACH called");
 		// The instance handle passed into DllMain is saved
 		// in the global variable g_hInst for later use.
@@ -80,34 +78,24 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 			LOGERROR ("TlsAlloc returned TLS_OUT_OF_INDEXES");
 			return FALSE;
 		}
-		LOGTRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
+		//LOGTRACE ("Process attached, allocated tls index %d", g_dwTlsIndex);
 
 		break;
 	case DLL_THREAD_ATTACH: {
-		LOGTRACE ("DLL_THREAD_ATTACH called");
+		//LOGTRACE ("DLL_THREAD_ATTACH called");
 		TlsSetValue (g_dwTlsIndex, NULL);
 	} break;
 	case DLL_THREAD_DETACH: {
-		LOGTRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
-		//ICall *pCall = (ICall *)TlsGetValue (g_dwTlsIndex);
-		//if (pCall) {
-		//	LOGTRACE ("Calling Release on pCall and setting TLS entry to NULL");
-		//	pCall->Release ();
-		//	TlsSetValue (g_dwTlsIndex, NULL);
-		//}
+		//LOGTRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
 	} break;
 	case DLL_PROCESS_DETACH: {
-		LOGTRACE ("DLL_PROCESS_DETACH");
+		//LOGTRACE ("DLL_PROCESS_DETACH");
 		TlsFree (g_dwTlsIndex);
-		//if (g_pJvm) {
-		//	LOGTRACE ("Calling Release on Jvm");
-		//	g_pJvm->Release ();
-		//}
 	}
 	default:
 		break;
 	}
-	LOGTRACE ("Existing DllMain");
+	//LOGTRACE ("Existing DllMain");
 	return TRUE;
 }
 
@@ -191,7 +179,7 @@ int GetExcelVersion() {
 	ExcelUtils::PrintXLOPER(&version);
 	XLOPER12 iVersion;
 	Excel12f(xlCoerce, &iVersion, 2, &version, TempInt12(xltypeNum));
-	return iVersion.val.num;
+	return (int) iVersion.val.num;
 }
 ///***************************************************************************
 // xlAutoOpen()
@@ -226,25 +214,32 @@ int GetExcelVersion() {
 // Returns: int  1 on success, 0 on failure
 ///***************************************************************************
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
-	LOGTRACE("xlAutoOpen called");
+	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
+	if (FAILED(LoadDLLs())) {
+		ExcelUtils::ErrorMessageBox(L"Couldn't find required DLLs in XL4J XLL directory");
+		return 0;
+	}
 	if (XLCallVer () < (12 * 256)) {
-		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2010 are not supported."), TempInt12(2));
+		ExcelUtils::ErrorMessageBox(L"Sorry, versions of Excel prior to 2010 are not supported.");
 		return 0;
 	}
 	LOGTRACE("Excel version returned %d", GetExcelVersion());
 	if (GetExcelVersion() < 13) {
-		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Excel prior to 2010 are not supported."), TempInt12(2));
+		LOGERROR("Excel version wasn't high enough");
+		ExcelUtils::ErrorMessageBox(L"Sorry, versions of Excel prior to 2010 are not supported.");
 		return 0;
 	}
 	if (!IsWindowsVistaOrGreater()) {
-		Excel12f(xlcAlert, 0, 2, TempStr12(L"Sorry, versions of Windows prior to Vista are not supported."), TempInt12(2));
+		LOGERROR("Windows version wasn't high enough");
+		ExcelUtils::ErrorMessageBox(L"Sorry, versions of Windows prior to Vista are not supported.");
 		return 0;
 	}
+	
 	if (InterlockedCompareExchange(&g_initialized, 1, 0)) {
 		// g_initialized was already 1, so
 		LOGTRACE("Already initialised, so don't do anything");
 		if (g_pAddinEnv && g_pAddinEnv->IsShutdown()) {
-			Excel12f(xlcAlert, 0, 2, TempStr12(L"You will need to exit and restart Excel to re-enable"), TempInt12(2));
+			ExcelUtils::ErrorMessageBox(L"You will need to exit and restart Excel to re-enable");
 			return 0;
 		}
 		return 1;
@@ -254,23 +249,16 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	if (FAILED(hr = CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
 		LOGERROR("Could not initialise COM: %s", HRESULT_TO_STR(hr));
 	}
-	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
-	if (SUCCEEDED(LoadDLLs())) {
-		wchar_t buf[MAX_PATH + 1];
-		GetCurrentDirectoryW(MAX_PATH, buf);
-		LOGTRACE("CWD = %s", buf);
-		LOGTRACE("Initializing Add-in, JVM, etc");
-		if (!g_pAddinEnv) {
-			g_pAddinEnv = new CAddinEnvironment ();
-			g_pAddinEnv->Start();
-		}
-		g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
-		g_pJvmEnv->Start();
-		FreeAllTempMemory();
-		return 1;
-	} else {
-		return 0;
+	
+	LOGTRACE("Initializing Add-in, JVM, etc");
+	if (!g_pAddinEnv) {
+		g_pAddinEnv = new CAddinEnvironment ();
+		g_pAddinEnv->Start();
 	}
+	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
+	g_pJvmEnv->Start();
+	FreeAllTempMemory();
+	return 1;
 }
 
 ///***************************************************************************
@@ -491,8 +479,8 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 	} else {
 		ReleaseSRWLockShared(&g_JvmEnvLock);
 		LOGFATAL("JVM environment not valid");
-		XLOPER12 retVal;
-		Excel12f(xlcAlert, &retVal, 2, TempStr12(L"JVM Enviornment not valid, please report this bug"), TempInt12(3)); // 3 = WARNING SYMBOL + OK
+		//XLOPER12 retVal;
+		//Excel12f(xlcAlert, &retVal, 2, TempStr12(L"JVM Enviornment not valid, please report this bug"), TempInt12(3)); // 3 = WARNING SYMBOL + OK
 	}
 	return 1;
 }

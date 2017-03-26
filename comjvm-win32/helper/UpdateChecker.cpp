@@ -77,12 +77,12 @@ HRESULT CUpdateChecker::Check() {
 		temp += bytesRead;
 		cBuffer -= bytesRead;
 	}
-	LOGTRACE("Read file from website: buffer left = %d, bytes read = %d", cBuffer, bytesRead);
+	//LOGTRACE("Read file from website: buffer left = %d, bytes read = %d", cBuffer, bytesRead);
 	// if we didn't exhaust the buffer and the read didn't end in an error
 	HRESULT hr;
 	if (cBuffer && GetLastError() == ERROR_SUCCESS) {
-		OutputDebugStringA(szBuffer);
-		LOGTRACE("Searching for 404");
+		//OutputDebugStringA(szBuffer);
+		//LOGTRACE("Searching for 404");
 		// search for the string 404 in the reply (note, we're not looking at the result code here)
 		const char *FOUR_OH_FOUR = "404";
 		char *p404 = strstr(szBuffer, FOUR_OH_FOUR);

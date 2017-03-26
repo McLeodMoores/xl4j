@@ -46,7 +46,6 @@ HRESULT CJvm::ExecuteAsync(JNICallbackProc pfnCallback, LPVOID lpData) {
 }
 
 HRESULT STDMETHODCALLTYPE CJvm::FlushAsyncThreads () {
-	LOGINFO("Arrived");
 	return JNIFlushAsyncThreads(m_dwJvm);
 }
 

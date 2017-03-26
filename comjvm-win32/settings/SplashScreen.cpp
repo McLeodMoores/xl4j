@@ -82,25 +82,16 @@ HBRUSH CSplashScreen::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor) {
 		pDC->SetBkMode(TRANSPARENT);
 		return static_cast<HBRUSH>(GetStockObject(NULL_BRUSH));
 	}
-	//if (pWnd->GetDlgCtrlID() == IDC_PROGRESS1) {
-	//	COLORREF blue = RGB(43, 87, 151);
-	//	pDC->SetDCBrushColor(blue);
-	//	pDC->SetDCPenColor(blue);
-	//	return hbr;
-	//}
 	return hbr;
 }
 
 
 void CSplashScreen::Update(int iRegistered) {
-	LOGTRACE("Update");
-	//m_prProgress.SetPos(iRegistered);
 	HideIfSplashOpen();
 }
 
 INT_PTR CSplashScreen::Open(HWND hwndParent) {
 	EnterCriticalSection(&m_cs);
-	LOGTRACE("Open");
 	Create(IDD_SPLASHWINDOW, CWnd::FromHandle(hwndParent));
 	m_state = OPEN;
 	SetMarquee();
@@ -112,7 +103,6 @@ INT_PTR CSplashScreen::Open(HWND hwndParent) {
 void CSplashScreen::Close() {
 	EnterCriticalSection(&m_cs);
 	if (m_state == OPEN || m_state == HIDDEN) {
-		LOGTRACE("Closed");
 		DestroyWindow();
 		m_state = CLOSED;
 	}
@@ -121,7 +111,6 @@ void CSplashScreen::Close() {
 
 void CSplashScreen::CloseMT() {
 	EnterCriticalSection(&m_cs);
-	LOGTRACE("Posting WM_CLOSE message");
 	// Only allow DestroyWindow to be called once as not sure if it's defined to be called multiple times.
 	if (m_state == OPEN) {
 		PostMessage(WM_CLOSE, 0, 0);
@@ -147,7 +136,6 @@ bool CSplashScreen::IsSplashOpen() {
 
 void CSplashScreen::Show() {
 	if (m_state != CLOSED) {
-		LOGTRACE("Show");
 		m_state = OPEN;
 		ShowWindow(SW_SHOW);
 	}
@@ -156,13 +144,11 @@ void CSplashScreen::Show() {
 void CSplashScreen::Hide() {
 	if (m_state != CLOSED) {
 		m_state = HIDDEN;
-		LOGTRACE("Hide");
 		ShowWindow(SW_HIDE);
 	}
 }
 
 void CSplashScreen::HideIfSplashOpen() {
-	LOGTRACE("HideIfSplashOpen");
 	if (IsSplashOpen()) {
 		Hide();
 	} else {

@@ -379,7 +379,7 @@ void CAddinEnvironment::AddToolbar() {
 		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_VIEWJAVALOGS), 2);
 		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_VIEWCPPLOGS), 3);
 		ExcelUtils::PasteTool(MAKEINTRESOURCE(IDB_LICENSEINFO), 4);
-		LOGTRACE("xlfAddToolbar retval = %d", retVal);
+		//LOGTRACE("xlfAddToolbar retval = %d", retVal);
 		Excel12f(xlcShowToolbar, NULL, 10, TempStr12(L"XL4J"), TempBool12(1),
 			TempInt12(2), TempMissing12(), TempMissing12(), TempMissing12()/*TempInt12 (999)*/, TempInt12(0), // no protection, 
 			TempBool12(TRUE), TempBool12(FALSE), TempBool12(FALSE));
@@ -395,7 +395,7 @@ void CAddinEnvironment::RemoveToolbar() {
 	Excel12f(xlfGetToolbar, &xTest, 2, TempInt12(1), TempStr12(L"XL4J"));
 	if (xTest.xltype != xltypeErr) {
 		int retVal = Excel12f(xlfDeleteToolbar, NULL, 1, TempStr12(TEXT("XL4J")));
-		LOGTRACE("xlfAddToolbar retval = %d", retVal);
+		//LOGTRACE("xlfAddToolbar retval = %d", retVal);
 	}
 	Excel12f(xlFree, 0, 1, &xTest);
 }

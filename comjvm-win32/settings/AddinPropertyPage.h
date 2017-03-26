@@ -34,8 +34,7 @@ protected:
 	CButton m_bGarbageCollection;
 	// Control to determine whether to save heap in the worksheet file
 	CButton m_cbSaveHeap;
-	// Control to determine if check for updates is enabled
-	CButton m_cbUpdateEnabled;
+	
 	DECLARE_MESSAGE_MAP()
 public:
 
@@ -50,4 +49,6 @@ public:
 	CButton m_rdLogFileRadio;
 	// Radio button for selecting window debugging output for C++ debugging.
 	CButton m_rdWinDebugRadio;
+	// Control to determine if check for updates is enabled
+	CButton m_cbUpdateCheck;
 };

@@ -37,6 +37,9 @@
     <ClCompile Include="AsyncCallResult.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AddinFileUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -76,6 +79,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="AsyncCallResult.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AddinFileUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

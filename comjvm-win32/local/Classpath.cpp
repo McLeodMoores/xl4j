@@ -186,7 +186,6 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddFolder (
 HRESULT STDMETHODCALLTYPE CClasspath::AddJar ( 
     /* [in] */ IJarFile *pJar
 	) {
-	LOGTRACE("Got here");
 	if (!pJar) return E_POINTER;
 	HRESULT hr;
 	try {
@@ -207,8 +206,7 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddJar (
 			LOGWARN("JAR is either from a different host, or can't be read locally by this process");
 			if (IsFile(bstrPath)) {
 				LOGWARN("Path %s points to file", (LPCTSTR)bstrPath);
-			}
-			else {
+			} else {
 				LOGWARN("Path %s is not a file", (LPCTSTR)bstrPath);
 			}
 			LOGTRACE("bstrHost is %s", (LPCTSTR)bstrHost);
@@ -238,7 +236,7 @@ HRESULT STDMETHODCALLTYPE CClasspath::AddJar (
 		}
 		hr = S_OK;
 	} catch (_com_error &e) {
-		LOGTRACE("COM Error, source is %s", e.Source());
+		LOGERROR("COM Error, source is %s", e.Source());
 		hr = e.Error ();
 	} catch (std::bad_alloc) {
 		hr = E_OUTOFMEMORY;

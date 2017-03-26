@@ -6,7 +6,8 @@
 #include "stdafx.h"
 #include "resource.h"
 #include "LicenseChecker.h"
-#include "../utils/Debug.h"
+#include "utils/Debug.h"
+#include "utils/FileUtils.h"
 #include <Shlwapi.h>
 
 const int HELPER_MODULE_ANCHOR = 1;
@@ -207,7 +208,7 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 		FILE_ATTRIBUTE_NORMAL,
 		NULL);
 	if (INVALID_HANDLE_VALUE == hLicenseFile) {
-		LOGERROR("Problem opening license file (%s): %s", szFullFilePath, GETLASTERROR_TO_STR());
+		LOGWARN("Problem opening license file (%s): %s", szFullFilePath, GETLASTERROR_TO_STR());
 		return GETLASTERROR_TO_HRESULT();
 	}
 	LOGTRACE("Opened license file %s", szFullFilePath);

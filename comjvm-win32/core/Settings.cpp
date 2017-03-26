@@ -75,7 +75,7 @@ public:
 	const _bstr_t GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const {
 		TCHAR szBuffer[MAX_PATH];
 		if (GetPrivateProfileString (strKey.data (), strIndex.data (), NULL, szBuffer, sizeof (szBuffer) / sizeof (TCHAR), m_strPath.data ()) > 0) {
-			LOGTRACE ("GetPrivateProfileString returned %s, returning _bstr_t", szBuffer);
+			//LOGTRACE ("GetPrivateProfileString returned %s, returning _bstr_t", szBuffer);
 			_bstr_t bstrResult (szBuffer);
 			return bstrResult;
 		} else {
@@ -345,7 +345,6 @@ const _bstr_t CSettings::GetString (const _std_string_t &strKey, long lIndex) co
 /// <returns>The string entry, or NULL if there is none</returns>
 const _bstr_t CSettings::GetString (const _std_string_t &strKey, const _std_string_t &strIndex) const {
 	if (m_pImpl) {
-		LOGTRACE ("Through to CIniSettings");
 		return m_pImpl->GetString (strKey, strIndex);
 	} else {
 		return _bstr_t ();

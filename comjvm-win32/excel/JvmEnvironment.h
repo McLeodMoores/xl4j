@@ -58,7 +58,7 @@ public:
 	HRESULT _RegisterSomeFunctions();
 	HRESULT _UDF(int exportNumber, LPXLOPER12 *result, LPXLOPER12 first, va_list ap);
 	HRESULT _GarbageCollect();
-
+	void HideSplash();
 	long GetNumArgs(FUNCTIONINFO * pFunctionInfo);
 	
 };

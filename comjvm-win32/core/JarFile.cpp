@@ -72,7 +72,6 @@ ULONG STDMETHODCALLTYPE CJarFile::Release () {
 HRESULT STDMETHODCALLTYPE CJarFile::AddToClasspath (
     /* [in] */ IClasspath *pClasspath
 	) {
-	LOGTRACE("GOt here");
 	if (!pClasspath) return E_POINTER;
 	return pClasspath->AddJar (this);
 }

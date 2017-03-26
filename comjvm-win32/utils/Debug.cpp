@@ -7,6 +7,7 @@
 #include "Debug.h"
 #include <io.h>
 #include <fcntl.h>
+#include "FileUtils.h"
 
 Debug::Debug ()
 {
@@ -73,7 +74,7 @@ void Debug::PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLine
 	HRESULT hr = StringCbVPrintf (buffer, sizeof (buffer), sFormat, argptr);
 	if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 		wchar_t formatBuffer[LINE_MAX];
-		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%s %%-%dS %%%dd %%-%dS %%s\r\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
+		hr = StringCbPrintf (formatBuffer, sizeof (formatBuffer), TEXT ("%%s %%-%dS %%%dd %%-%dS %%s\n"), m_cMaxFileNameLength, 5, m_cMaxFunctionNameLength);
 		if (STRSAFE_E_INSUFFICIENT_BUFFER == hr || S_OK == hr) {
 			wchar_t finalBuffer[LINE_MAX];
 			HRESULT hr = StringCbPrintf (finalBuffer, sizeof (finalBuffer), formatBuffer, LOGLEVEL_STR[logLevel], sFileName, iLineNum, sFunctionName, buffer);
@@ -392,14 +393,14 @@ void Debug::SetLogTarget(LOGTARGET logTarget) {
 				m_fdLogFile = nullptr;
 				return;
 			}
-			int fd = _open_osfhandle(reinterpret_cast<intptr_t>(hFile), _O_APPEND);
+			int fd = _open_osfhandle(reinterpret_cast<intptr_t>(hFile), _O_APPEND | _O_TEXT);
 			if (fd == -1) {
 				OutputDebugString(_T("Invalid file descriptor from _open_osfhandle"));
 				CloseHandle(hFile);
 				m_fdLogFile = nullptr;
 				return;
 			}
-			m_fdLogFile = _fdopen(fd, "a");
+			m_fdLogFile = _fdopen(fd, "at");
 			if (!m_fdLogFile) {
 				OutputDebugString(_T("Invalid FILE * from _fdopen"));
 				CloseHandle(hFile);

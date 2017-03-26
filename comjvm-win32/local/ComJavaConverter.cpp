@@ -5,6 +5,7 @@
 
 #include "stdafx.h"
 #include "ComJavaConverter.h"
+#include "utils/TraceOff.h"
 
 CComJavaConverter::CComJavaConverter() {
 }

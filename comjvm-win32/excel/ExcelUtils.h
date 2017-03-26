@@ -23,6 +23,8 @@ public:
 	static void HookExcelWindow (HWND hWndExcel);
 	static void UnhookExcelWindow (HWND hWndExcel);
 	static void WarningMessageBox(wchar_t *);
+	static void ErrorMessageBox(wchar_t * szWarningMessage);
+	static void InfoMessageBox(wchar_t * szWarningMessage);
 	static BOOL GetHWND (HWND *phWnd);
 	static void PrintExcel12Error (int err);
 	static BOOL IsAddinSettingEnabled (const wchar_t *wsSettingName, const BOOL bDefaultIfMissing);

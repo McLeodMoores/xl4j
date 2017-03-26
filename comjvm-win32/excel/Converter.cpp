@@ -24,6 +24,8 @@ Converter::~Converter () {
 	LOGTRACE("Destructor complete");
 }
 
+#include "utils/TraceOff.h"
+
 HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 	switch (V_VT(in)) {
 	case VT_R8:
@@ -332,6 +334,7 @@ HRESULT Converter::convert (XLOPER12 *in, VARIANT *out) {
 	return S_OK;
 }
 
+#include "utils/TraceOn.h"
 
 HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 	// by using sizeof XLMREF - sizeof XLREF to determine size of count, we should account for any padding/alignement.

@@ -17,14 +17,14 @@ Jvm::Jvm () : m_lRefCount (1) {
 		LOGERROR ("CreateLocalConnector failed");
 		_com_raise_error (hr);
 	} else {
-		LOGTRACE ("CreateLocalConnector succeeded");
+		//LOGTRACE ("CreateLocalConnector succeeded");
 	}
 	hr = m_pConnector->Lock ();
 	if (FAILED (hr)) {
 		LOGERROR ("connector Lock could not be aquired");
 		_com_raise_error (hr);
 	} else {
-		LOGTRACE ("Connector lock aquired");
+		//LOGTRACE ("Connector lock aquired");
 	}
 
 	IJvmTemplate *pTemplate;
@@ -35,7 +35,7 @@ Jvm::Jvm () : m_lRefCount (1) {
 		_com_raise_error (hr);
 	} else {
 		pTemplate->AddRef ();
-		LOGTRACE ("Created template");
+		//LOGTRACE ("Created template");
 	}
 	IClasspathEntries *entries;
 	hr = pTemplate->get_Classpath (&entries);
@@ -43,7 +43,7 @@ Jvm::Jvm () : m_lRefCount (1) {
 		LOGERROR ("could not get template classpath");
 		_com_raise_error (hr);
 	} else {
-		LOGTRACE ("Got classpath entries");
+		//LOGTRACE ("Got classpath entries");
 		entries->AddRef ();
 	}
 	wchar_t szLibPath[MAX_PATH];
@@ -78,27 +78,22 @@ Jvm::Jvm () : m_lRefCount (1) {
 	if (FAILED (hr)) {
 		_com_error err (hr);
 		LPCTSTR errMsg = err.ErrorMessage ();
-		LOGTRACE ("could not create JVM: %s", errMsg);
+		LOGERROR ("could not create JVM: %s", errMsg);
 		_com_raise_error (hr);
 	}
 	//m_pJvm->AddRef ();
 	LOGTRACE ("Created JVM!");
 	m_pConnector->Unlock ();
-	LOGTRACE ("Unlocked connector");
-
+	
 	hr = pTemplate->Release ();
 	if (FAILED (hr)) {
 		LOGERROR ("Could not release template");
 		_com_raise_error (hr);
-	} else {
-		LOGTRACE ("Released template");
 	}
 	hr = entries->Release ();
 	if (FAILED (hr)) {
 		LOGERROR ("Could not release classpath entries");
 		_com_raise_error (hr);
-	} else {
-		LOGTRACE ("Released classpath entries");
 	}
 }
 
