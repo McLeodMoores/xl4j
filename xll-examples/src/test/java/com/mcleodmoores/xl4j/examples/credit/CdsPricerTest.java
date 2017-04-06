@@ -12,9 +12,12 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
+import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLBoolean;
+import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLString;
+import com.mcleodmoores.xl4j.values.XLValue;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticSpreadSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
@@ -190,4 +193,37 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedCs01, EPS);
   }
 
+  @Test
+  public void testBucketedIr01() {
+    final Object xlResult = PROCESSOR.invoke("CDS.BucketedIR01", convertToXlType(CDS_TRADE, HEAP), convertToXlType(YIELD_CURVE, HEAP),
+        convertToXlType(CREDIT_CURVE, HEAP));
+    assertTrue(xlResult instanceof XLArray);
+    final XLValue[][] xlArray = ((XLArray) xlResult).getArray();
+    assertEquals(xlArray.length, 1);
+    assertEquals(xlArray[0].length, YIELD_CURVE_QUOTES.length);
+    double sum = 0;
+    for (int i = 0; i < xlArray[0].length; i++) {
+      sum += ((XLNumber) xlArray[0][i]).getAsDouble();
+    }
+    final double[] t = YIELD_CURVE.getKnotTimes();
+    final double[] r = new double[t.length];
+    for (int i = 0; i < t.length; i++) {
+      r[i] = YIELD_CURVE.getZeroRate(t[i]) + BP;
+    }
+    final ISDACompliantYieldCurve shiftedCurve = new ISDACompliantYieldCurve(t, r);
+    final double expectedIr01 = -NOTIONAL * (CALCULATOR.pv(CDS, shiftedCurve, CREDIT_CURVE, COUPON) - CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON));
+    assertEquals(sum, expectedIr01, 0.5);
+  }
+
+  @Test
+  public void testBucketedCs01() {
+    final Object xlResult = PROCESSOR.invoke("CDS.BucketedCS01", convertToXlType(TRADE_DATE), convertToXlType(CREDIT_CURVE_TENORS),
+        convertToXlType(CREDIT_QUOTE_TYPES), convertToXlType(CREDIT_CURVE_QUOTES), convertToXlType(CREDIT_CURVE_RECOVERY_RATES),
+        convertToXlType(CREDIT_CURVE_COUPONS), convertToXlType(YIELD_CURVE, HEAP), convertToXlType(CDS_CONVENTION, HEAP), convertToXlType(CDS_TRADE, HEAP),
+        XLMissing.INSTANCE);
+    assertTrue(xlResult instanceof XLArray);
+    final XLValue[][] xlArray = ((XLArray) xlResult).getArray();
+    assertEquals(xlArray.length, 1);
+    assertEquals(xlArray[0].length, CREDIT_CURVE_QUOTES.length);
+  }
 }
