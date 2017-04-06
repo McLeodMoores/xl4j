@@ -12,7 +12,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * that date in the other series is used (if it is missing in both, the value for that date is set to 0).
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Subtract", description = "Element-by-element subtraction of one time series from the other", category = "Time series")
+@XLFunctions(description = "Element-by-element subtraction of one time series from the other", category = "Time series")
 public class Subtract implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

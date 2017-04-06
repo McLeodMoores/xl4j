@@ -13,7 +13,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * set to 0).
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Add", description = "Element-by-element addition of two time series", category = "Time series")
+@XLFunctions(description = "Element-by-element addition of two time series", category = "Time series")
 public class Add implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

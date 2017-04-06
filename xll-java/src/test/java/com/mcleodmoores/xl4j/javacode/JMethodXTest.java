@@ -26,7 +26,7 @@ public class JMethodXTest {
 
   @BeforeTest
   public void init() {
-    final XLValue xlValue = JConstruct.jconstruct(CLASS, XLNumber.of(10.), XLNumber.of(20.), XLNumber.of(30.), XLNumber.of(40.), XLNumber.of(50.));
+    final XLValue xlValue = JConstruct.jconstruct(CLASS, XLNumber.of(10.));
     assertTrue(xlValue instanceof XLObject);
     _testObjectReference = (XLObject) xlValue;
     _testObject = (TestObject) ExcelFactory.getInstance().getHeap().getObject(_testObjectReference.getHandle());

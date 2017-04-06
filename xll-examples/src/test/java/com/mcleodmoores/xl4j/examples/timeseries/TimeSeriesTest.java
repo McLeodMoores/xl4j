@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
@@ -39,7 +39,7 @@ public class TimeSeriesTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testAddNullDate() {
-    TimeSeries.emptyTimeSeries().put(null, 3.);
+    TimeSeries.newTimeSeries().put(null, 3.);
   }
 
 }

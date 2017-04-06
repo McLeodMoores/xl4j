@@ -20,7 +20,7 @@ public class NegativeValuesFilterTest {
 
   @Test
   public void testNegativeValueFilter() {
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(1, 100).forEach(i -> ts.put(LocalDate.now().plusDays(i), i % 5 == 0 ? -i * 2. : i * 3.));
     final TimeSeries result = CALCULATOR.apply(ts);
     IntStream.range(1, 100).forEach(i -> {

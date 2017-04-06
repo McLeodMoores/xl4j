@@ -12,7 +12,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * as zeros.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Multiply", description = "Element-by-element multiplication of two time series", category = "Time series")
+@XLFunctions(description = "Element-by-element multiplication of two time series", category = "Time series")
 public class Multiply implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

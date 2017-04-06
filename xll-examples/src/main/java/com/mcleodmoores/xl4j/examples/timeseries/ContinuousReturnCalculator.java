@@ -17,7 +17,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the returns of a time series assuming continuous compounding.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "ContinuousReturn", description = "Calculates the continuous return of a time series", category = "Time Series")
+@XLFunctions(description = "Calculates the continuous return of a time series", category = "Time Series")
 public class ContinuousReturnCalculator implements TimeSeriesFunction<TimeSeries> {
 
   @Override

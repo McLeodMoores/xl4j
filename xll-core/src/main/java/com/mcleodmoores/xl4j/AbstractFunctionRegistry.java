@@ -207,12 +207,13 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
           namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
         }
         final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
+        final boolean useClassName = classAnnotation.prefix().isEmpty();
         if (!isAbstract) {
           // build the constructor invokers
           final Constructor<?>[] constructors = clazz.getConstructors();
           int count = 1;
           for (final Constructor<?> constructor : constructors) {
-            final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, true, count);
+            final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, useClassName, count);
             definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
             count++;
           }
@@ -234,7 +235,7 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
             final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
             methodNames.put(methodName, methodNameCount);
             final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
-                true, true, methodNameCount);
+                useClassName, true, methodNameCount);
             definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
           }
         }

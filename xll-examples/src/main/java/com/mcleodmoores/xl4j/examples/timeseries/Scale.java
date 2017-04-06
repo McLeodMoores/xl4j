@@ -13,7 +13,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Scales each element of a time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Scale", description = "Scales each element of a time series", category = "Time series")
+@XLFunctions(description = "Scales each element of a time series", category = "Time series")
 public class Scale implements TimeSeriesBiFunction<Double, TimeSeries> {
 
   @Override

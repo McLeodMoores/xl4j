@@ -12,7 +12,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * series are assumed to be zero, so the resulting series could contain infinite values.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Divide", description = "Element-by-element division of one time series by the other", category = "Time series")
+@XLFunctions(description = "Element-by-element division of one time series by the other", category = "Time series")
 public class Divide implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

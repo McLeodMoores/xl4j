@@ -20,8 +20,8 @@ public class AddTest {
   @Test
   public void noNullValues() {
     final int n = 100;
-    final TimeSeries ts1 = TimeSeries.emptyTimeSeries();
-    final TimeSeries ts2 = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts1 = TimeSeries.newTimeSeries();
+    final TimeSeries ts2 = TimeSeries.newTimeSeries();
     IntStream.range(0, n).forEach(i -> {
       final LocalDate date = LocalDate.now().plusDays(i);
       ts1.put(date, Double.valueOf(i));
@@ -36,8 +36,8 @@ public class AddTest {
   @Test
   public void testNullsInFirstSeries() {
     final int n = 100;
-    final TimeSeries ts1 = TimeSeries.emptyTimeSeries();
-    final TimeSeries ts2 = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts1 = TimeSeries.newTimeSeries();
+    final TimeSeries ts2 = TimeSeries.newTimeSeries();
     IntStream.range(0, n).forEach(i -> {
       final LocalDate date = LocalDate.now().plusDays(i);
       ts1.put(date, i % 2 == 0 ? null : Double.valueOf(i));
@@ -52,8 +52,8 @@ public class AddTest {
   @Test
   public void testNullsInSecondSeries() {
     final int n = 100;
-    final TimeSeries ts1 = TimeSeries.emptyTimeSeries();
-    final TimeSeries ts2 = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts1 = TimeSeries.newTimeSeries();
+    final TimeSeries ts2 = TimeSeries.newTimeSeries();
     IntStream.range(0, n).forEach(i -> {
       final LocalDate date = LocalDate.now().plusDays(i);
       ts1.put(date, Double.valueOf(i));
@@ -68,8 +68,8 @@ public class AddTest {
   @Test
   public void testNullsInBothSeries() {
     final int n = 100;
-    final TimeSeries ts1 = TimeSeries.emptyTimeSeries();
-    final TimeSeries ts2 = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts1 = TimeSeries.newTimeSeries();
+    final TimeSeries ts2 = TimeSeries.newTimeSeries();
     IntStream.range(0, n).forEach(i -> {
       final LocalDate date = LocalDate.now().plusDays(i);
       ts1.put(date, i % 2 == 0 ? null : Double.valueOf(i));

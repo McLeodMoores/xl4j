@@ -1,5 +1,5 @@
 /**
- *
+ * Copyright (C) 2017 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.credit;
 import static com.mcleodmoores.xl4j.examples.TestUtils.convertToXlType;
@@ -28,6 +28,7 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
 import com.opengamma.util.money.Currency;
+import com.opengamma.util.test.TestGroup;
 
 /**
  * Unit tests for {@link CdsPricer}.

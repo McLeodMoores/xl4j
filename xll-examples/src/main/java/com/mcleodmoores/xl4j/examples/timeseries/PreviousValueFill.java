@@ -12,7 +12,7 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
  * Fills any missing values in a time series with the previous value available in the time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "FillWithPreviousValue", description = "Fill missing values in a time series with the previous value", category = "Time series")
+@XLFunctions(description = "Fill missing values in a time series with the previous value", category = "Time series")
 public class PreviousValueFill implements TimeSeriesFunction<TimeSeries> {
 
   @Override

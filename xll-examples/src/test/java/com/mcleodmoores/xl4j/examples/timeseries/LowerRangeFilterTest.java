@@ -19,7 +19,7 @@ public class LowerRangeFilterTest {
 
   @Test
   public void test() {
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     final double range = 0.5;
     IntStream.range(1, 100).forEach(i -> {
       ts.put(LocalDate.now().plusDays(i), i % 5 == 0 ? i / 10. : i);

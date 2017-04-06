@@ -11,8 +11,6 @@ import java.lang.reflect.Method;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.Excel;
-import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.InvokerTestHelper;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLBoolean;
@@ -25,7 +23,6 @@ import com.mcleodmoores.xl4j.values.XLValue;
  * Unit tests for {@link PassthroughMethodInvoker}.
  */
 public class PassthroughMethodInvokerTest {
-  private static final Excel EXCEL = ExcelFactory.getInstance();
   private static final Method NO_ARGS_METHOD;
   private static final Method SINGLE_ARG_METHOD;
   private static final Method MULTI_ARGS_METHOD;
@@ -96,10 +93,9 @@ public class PassthroughMethodInvokerTest {
   /**
    * Tests that a void method returns XLMissing.
    * @throws NoSuchMethodException  if the method can't be found
-   * @throws SecurityException  if the method can't be called
    */
   @Test
-  public void testVoid() throws NoSuchMethodException, SecurityException {
+  public void testVoid() throws NoSuchMethodException {
     final Method method = InvokerTestHelper.class.getMethod("voidStaticMethod", new Class<?>[0]);
     final MethodInvoker invoker = new PassthroughMethodInvoker(method);
     final XLValue result = invoker.invoke(null, new XLValue[0]);

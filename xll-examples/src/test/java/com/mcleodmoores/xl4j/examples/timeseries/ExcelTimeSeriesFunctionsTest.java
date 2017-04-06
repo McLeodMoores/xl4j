@@ -11,6 +11,7 @@ import org.threeten.bp.temporal.ChronoUnit;
 
 import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.xl4j.typeconvert.converters.DoubleXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLValue;
@@ -31,6 +32,8 @@ public class ExcelTimeSeriesFunctionsTest {
   private static final TimeSeries TS_2;
   /** The converter */
   private static final AbstractTypeConverter CONVERTER = new TimeSeriesTypeConverter();
+  /** The double converter */
+  private static final AbstractTypeConverter DOUBLE_CONVERTER = new DoubleXLNumberTypeConverter();
   static {
     final long offset = ChronoUnit.DAYS.between(LocalDate.of(1900, 1, 1),
         LocalDate.ofEpochDay(0)) + 1;
@@ -122,29 +125,24 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals((TimeSeries) CONVERTER.toJavaObject(TimeSeries.class, xlValue), new Reciprocal().apply(TS_1));
   }
 
-  //  /**
-  //   * Tests the mean and covariance calculators.
-  //   */
-  //  @Test
-  //  public void testMeanAndCovariance() {
-  //    final XLValue calculator = PROCESSOR.newInstance("TimeSeriesMean");
-  //    final Object xlValue = JMethod.jMethod((XLObject) calculator, XLString.of("apply"), XL_TS_2);
-  //    assertTrue(xlValue instanceof XLNumber);
-  ////    assertEquals(((XLNumber) xlValue).getAsDouble(), new MeanCalculator().apply(TS_2), 1e-15);
-  ////    xlValue = PROCESSOR.invoke("CovarianceCalculator.apply", XL_TS_1, XL_TS_2);
-  ////    assertTrue(xlValue instanceof XLObject);
-  ////    assertEquals(HEAP.getObject(((XLObject) xlValue).getHandle()), new CovarianceCalculator().apply(TS_1, TS_2));
-  //  }
-  //
-  //  /**
-  //   * Tests the return function calculators.
-  //   */
-  //  @Test
-  //  public void testReturnFunction() {
-  //    final XLValue xlValue = PROCESSOR.newInstance("TimeSeriesReturn", XLBoolean.FALSE);
-  //    assertTrue(xlValue instanceof XLObject);
-  //    final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
-  //    assertTrue(object instanceof ReturnCalculator);
-  //    //xlValue = PROCESSOR.invoke(functionName, args);
-  //  }
+  /**
+   * Tests the mean calculator.
+   */
+  @Test
+  public void testMean() {
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Mean", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Mean.apply", calculator, XL_TS_1);
+    assertEquals(DOUBLE_CONVERTER.toJavaObject(Double.class, xlValue), new MeanCalculator().apply(TS_1));
+  }
+
+  /**
+   * Tests the covariance calculator.
+   */
+  @Test
+  public void testCovariance() {
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Covariance", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Covariance.apply", calculator, XL_TS_1, XL_TS_1);
+    assertEquals(DOUBLE_CONVERTER.toJavaObject(Double.class, xlValue), new CovarianceCalculator().apply(TS_1, TS_1));
+  }
+
 }

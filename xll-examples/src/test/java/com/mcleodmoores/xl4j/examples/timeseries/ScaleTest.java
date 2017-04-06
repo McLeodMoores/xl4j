@@ -22,7 +22,7 @@ public class ScaleTest {
   public void noNullValues() {
     final int n = 100;
     final Double scale = 0.4;
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(0, n).forEach(i -> {
       ts.put(LocalDate.now().plusDays(i), Double.valueOf(i));
     });
@@ -36,7 +36,7 @@ public class ScaleTest {
   public void testNullsInSeries() {
     final int n = 100;
     final Double scale = 0.4;
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(0, n).forEach(i -> {
       final LocalDate date = LocalDate.now().plusDays(i);
       ts.put(date, i % 2 == 0 ? null : Double.valueOf(i));
