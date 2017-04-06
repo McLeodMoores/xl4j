@@ -203,16 +203,6 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
     return new TimeSeries(other._data);
   }
 
-//  /**
-//   * Creates a mutable empty time series.
-//   *
-//   * @return
-//   *          an empty time series
-//   */
-//  public static TimeSeries emptyTimeSeries() {
-//    return new TimeSeries(Collections.emptySortedMap());
-//  }
-
   /**
    * Creates a mutable empty time series.
    *
