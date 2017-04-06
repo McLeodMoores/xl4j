@@ -18,7 +18,7 @@ public class TimeSeriesSamplingFunction implements TimeSeriesBiFunction<List<Loc
   public TimeSeries apply(final TimeSeries ts, final List<LocalDate> schedule) {
     ArgumentChecker.notNull(ts, "ts");
     ArgumentChecker.notNull(schedule, "schedule");
-    final TimeSeries result = TimeSeries.emptyTimeSeries();
+    final TimeSeries result = TimeSeries.newTimeSeries();
     // adds a null if there is no value in the series
     schedule.parallelStream().forEach((date) -> result.put(date, ts.get(date)));
     return result;

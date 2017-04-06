@@ -1,5 +1,5 @@
 /**
- *
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.credit;
 
@@ -11,8 +11,8 @@ import static com.opengamma.analytics.financial.credit.isdastandardmodel.IMMDate
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.XLParameter;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
