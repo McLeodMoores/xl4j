@@ -3,14 +3,15 @@
  */
 package com.mcleodmoores.xl4j.examples.quandl;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeParseException;
 
 import com.jimmoores.quandl.DataSetRequest;
@@ -23,6 +24,7 @@ import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
 import com.jimmoores.quandl.util.QuandlRuntimeException;
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunction;
 import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
@@ -30,14 +32,48 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.opengamma.util.ArgumentChecker;
 
 /**
- *
+ * User defined functions for interacting with Quandl via the Quandl4J library.
  */
 public final class QuandlFunctions {
   private static final Logger LOGGER = LoggerFactory.getLogger(QuandlFunctions.class);
 
+  /**
+   * Simple cache value containing value and last update time.
+   */
+  static class CacheValue {
+    private LocalDateTime _lastUpdate;
+    private TabularResult _value;
+    private CacheValue(LocalDateTime lastUpdate, TabularResult value) {
+      _lastUpdate = lastUpdate;
+      _value = value;
+    }
+    public static CacheValue of(TabularResult value) {
+      return new CacheValue(LocalDateTime.now(), value);
+    }
+    public TabularResult getValue() {
+      return _value;
+    }
+    public LocalDateTime getLastUpdate() {
+      return _lastUpdate;
+    }
+    public int hashCode() {
+      return _value.hashCode();
+    }
+    public boolean equals(Object other) {
+      if (!(other instanceof CacheValue)) {
+        return false;
+      }
+      CacheValue o = (CacheValue) other;
+      return _value.equals(o._value);
+    }
+  }
+  
   private static final QuandlSession SESSION;
+  /** Super simple cache implementation, grows unbounded but replaces old values at next request after CACHE_LIFETIME_HOURS */
+  private static final ConcurrentHashMap<DataSetRequest, CacheValue> CACHE;
   private static final boolean API_KEY_PRESENT = System.getProperty("quandl.auth.token") != null;
   private static final String API_KEY_MESSAGE = "No Quandl API key: set JVM property -Dquandl.auth.token=YOUR_KEY via settings on Add-in toolbar";
+  private static final long CACHE_LIFETIME_HOURS = 6;
 
   static {
     //SessionOptions.Builder builder = null;
@@ -50,6 +86,7 @@ public final class QuandlFunctions {
     //}
     //SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
     SESSION = QuandlSession.create(); //sessionOptions);
+    CACHE = new ConcurrentHashMap<>();
   }
 
   /**
@@ -118,7 +155,16 @@ public final class QuandlFunctions {
       builder = builder.withTransform(transform);
     }
     try {
-      return SESSION.getDataSet(builder.build());
+      DataSetRequest request = builder.build();
+      if (CACHE.containsKey(request)) {
+        CacheValue cacheValue = CACHE.get(request);
+        if (cacheValue.getLastUpdate().isAfter(LocalDateTime.now().minusHours(CACHE_LIFETIME_HOURS))) {
+          return cacheValue.getValue();
+        }
+      } 
+      TabularResult result = SESSION.getDataSet(builder.build());
+      CACHE.put(request, CacheValue.of(result)); // update cache or initial value.
+      return result;
     } catch (final QuandlRuntimeException qre) {
       if (!API_KEY_PRESENT) {
         final HeaderDefinition headerDefinition = HeaderDefinition.of("Date", "Error");
@@ -159,9 +205,8 @@ public final class QuandlFunctions {
    * @return the row, or null if it could not be obtained
    */
   @XLFunction(name = "GetRow", category = "Quandl", description = "Get the ith row")
-  public static Object[] getRow(
-      @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
-      @XLParameter(description = "The index", name = "index") final int index) {
+  public static Object[] getRow(@XLParameter(description = "The tabular data", name="result") final TabularResult result,
+                                @XLParameter(description = "The index", name = "index") final int index) {
     ArgumentChecker.isTrue(index > 0 && index <= result.size(), "Index {} out of range 1 to {}", index, result.size());
     final Row row = result.get(index - 1);
     if (row == null) {
@@ -183,8 +228,38 @@ public final class QuandlFunctions {
     return rowValues;
   }
 
+  
   /**
-   * Gets the named row from a Quandl tabular result.
+   * Get the ith column from a Quandl tabular result. Note that this is 0-indexed.
+   *
+   * @param result
+   *          the tabular data
+   * @param index
+   *          the index number, must be greater than zero and less than the number of rows in the result
+   * @return the row, or null if it could not be obtained
+   */
+  @XLFunction(name = "GetColumn", category = "Quandl", description = "Get the ith column")
+  public static Object[] getColumn(@XLParameter(description = "The tabular data", name="result") final TabularResult result,
+                                   @XLParameter(description = "The index", name = "index") final int index) {
+    ArgumentChecker.isTrue(index >= 0 && index < result.size(), "Index {} out of range 1 to {}", index, result.size());
+    final int n = result.size();
+    final Object[] columnValues = new Object[n];
+    for (int i = 0; i < n; i++) {
+      Row row = result.get(i);
+      try {
+        columnValues[i] = row.getDouble(index);
+      } catch (final NumberFormatException nfe) {
+        try {
+          columnValues[i] = row.getLocalDate(index);
+        } catch (final DateTimeParseException dtpe) {
+          columnValues[i] = row.getString(index);
+        }
+      }
+    }
+    return columnValues;
+  }
+  /**
+   * Gets the named column from a Quandl tabular result.
    *
    * @param result
    *          the tabular data
@@ -192,15 +267,17 @@ public final class QuandlFunctions {
    *          the row name
    * @return the row, or null if it could not be obtained
    */
-  @XLFunction(name = "GetNamedRow", category = "Quandl", description = "Get the named row")
-  public static Object[] getRow(
+  @XLFunction(name = "GetNamedColumn", category = "Quandl", description = "Get the named column")
+  public static Object[] getColumn(
       @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
       @XLParameter(description = "The row name", name = "rowName") final String header) {
-    final int index = Arrays.binarySearch(getHeaders(result), header);
-    if (index < 0) {
+    try {
+      final int index = result.getHeaderDefinition().columnIndex(header);
+      LOGGER.info("index for column " + header + " is " + index);
+      return getColumn(result, index);
+    } catch (IllegalArgumentException iae) {
       return null;
     }
-    return getRow(result, index + 1);
   }
 
   /**
@@ -212,24 +289,26 @@ public final class QuandlFunctions {
    *          the header
    * @return the data as a time series
    */
-  @XLFunction(name = "TabularResultAsTimeSeries", category = "Quandl",
+  @XLFunction(name = "TabularResultAsTimeSeries", category = "Quandl", typeConversionMode = TypeConversionMode.OBJECT_RESULT,
       description = "Convert a data from a specific field to a time series")
   public static TimeSeries getTabularResultAsTimeSeries(
       @XLParameter(description = "The TabularResult object handle", name = "TabularResult") final TabularResult result,
       @XLParameter(description = "The row name", name = "rowName") final String header) {
     ArgumentChecker.notNull(result, "result");
-    final Object[] dateArray = getRow(result, 1);
+    final Object[] dateArray = getColumn(result, 0);
     if (dateArray == null) {
       throw new Excel4JRuntimeException("No dates available for TabularResult");
     }
-    final Object[] valueArray = getRow(result, header);
+    final Object[] valueArray = getColumn(result, header);
     if (valueArray == null) {
       throw new Excel4JRuntimeException("No data available for " + header);
     }
     final int n = dateArray.length;
     final TimeSeries ts = TimeSeries.emptyTimeSeries();
     for (int i = 0; i < n; i++) {
-      ts.put((LocalDate) dateArray[i], (Double) valueArray[i]);
+      LocalDate date = (LocalDate) dateArray[i];
+      Double value = (Double) valueArray[i];
+      ts.put(date, value);
     }
     return ts;
   }

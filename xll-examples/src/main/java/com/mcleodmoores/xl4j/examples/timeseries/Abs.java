@@ -5,6 +5,7 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.stream.Collectors;
 
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -14,7 +15,10 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * series, the returned series will contain 0 on that date.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Abs", description = "Return the absolute values of a time series", category = "Time series")
+@XLFunctions(prefix = "Abs", 
+  typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
+  description = "Return the absolute values of a time series", 
+  category = "Time series")
 public class Abs implements TimeSeriesFunction<TimeSeries> {
 
   @Override

@@ -3,6 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -12,7 +13,10 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * that date in the other series is used (if it is missing in both, the value for that date is set to 0).
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Subtract", description = "Element-by-element subtraction of one time series from the other", category = "Time series")
+@XLFunctions(prefix = "Subtract", 
+  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
+  description = "Element-by-element subtraction of one time series from the other", 
+  category = "Time series")
 public class Subtract implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

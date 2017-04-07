@@ -546,7 +546,10 @@ __declspec(dllexport) int WINAPI fExit (void) {
 __declspec(dllexport) void WINAPI xlAutoFree12 (LPXLOPER12 oper) {
 	LOGTRACE ("xlAutoFree12 called");
 	if (oper->xltype & xlbitDLLFree) {
-		FreeXLOper12T (oper);
+		if (!(oper->xltype & xltypeBigData)) {
+			// xltypeBigData async handles not handled correctly by FreeXLOper12T
+			FreeXLOper12T(oper);
+		}
 		free (oper);
 	}
 	//FreeAllTempMemory ();

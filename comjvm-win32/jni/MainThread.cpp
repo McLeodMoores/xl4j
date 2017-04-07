@@ -36,7 +36,9 @@ static BOOL LoadJVMLibraryImpl (HKEY hkeyJRE, PCTSTR pszVersion) {
 		}
 		StringCchCat(szDir, MAX_PATH, L"..");
 		LOGTRACE("Adding %s to DLL search path", szDir);
-		//SetDllDirectory(szDir);
+		// this is here because sometimes we get a client or server folder that means we need to add the DLLs in the parent directory.
+		// if you disable this, it will mostly work, except on older versions of Windows 7 with 32-bit Java, for example.
+		SetDllDirectory(szDir);
 		g_hJRE = LoadLibrary (szPath);
 		if (g_hJRE == NULL) {
 			DWORD dwErr = GetLastError();

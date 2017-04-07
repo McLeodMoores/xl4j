@@ -51,6 +51,8 @@ HRESULT CAsyncCallResult::Complete(VARIANT vAsyncHandle, VARIANT *pvResult) {
 	VariantClear(pvResult); // free COM data structures recursively.  This only works because we use IRecordInfo::SetField.
 	LOGTRACE("Async result handler: conversion complete, returning value (type=%d) to Excel", result->xltype);
 	XLOPER12 returnResult; // this return value isn't actually used.
+	result->xltype |= xlbitDLLFree;
+	handle->xltype |= xlbitDLLFree;
 	LOGTRACE("Handle = %p, size = %d", handle->val.bigdata.h.hdata, sizeof(handle->val.bigdata.h.hdata));
 	LOGTRACE("BigData.cbData = %d", handle->val.bigdata.cbData);
 	int retVal = Excel12(xlAsyncReturn, &returnResult, 2, handle, result);
@@ -66,8 +68,8 @@ HRESULT CAsyncCallResult::Complete(VARIANT vAsyncHandle, VARIANT *pvResult) {
 		hr = E_FAIL;
 	}
 error:
-	if (result) free(result);
-	if (handle) free(handle);
+	//if (result) free(result);
+	//if (handle) free(handle);
 	return hr;
 }
 

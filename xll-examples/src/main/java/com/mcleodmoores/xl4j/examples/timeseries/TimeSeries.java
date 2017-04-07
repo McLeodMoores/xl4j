@@ -45,7 +45,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
   @XLFunction(name = "TimeSeries",
       description = "Create a time series",
       category = "Time series",
-      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+      typeConversionMode=TypeConversionMode.OBJECT_RESULT)
   public static TimeSeries of(@XLParameter(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
     ArgumentChecker.notNull(datesAndValues, "datesAndValues");
     if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
@@ -54,6 +54,21 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
       return of((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
     }
     throw new Excel4JRuntimeException("Cannot create time series from input");
+  }
+  
+  /**
+   * A function that just returns the time series object provided, but because we specify the
+   * type conversion mode is SIMPLEST, the result will be automatically converted to an array (in 
+   * the context of an array formula).
+   * @param timeSeries  the times series object, not null
+   * @return a time series array
+   */
+  @XLFunction(name = "ExpandTimeSeries",
+      description = "Expand a time series into an array",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  public static TimeSeries expand(@XLParameter(name = "timeSeries", description = "time series object") final TimeSeries timeSeries) {
+    return timeSeries;
   }
 
   /**

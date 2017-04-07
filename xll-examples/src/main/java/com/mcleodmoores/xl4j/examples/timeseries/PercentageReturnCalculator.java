@@ -9,6 +9,7 @@ import java.util.TreeMap;
 
 import org.threeten.bp.LocalDate;
 
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -17,7 +18,10 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the returns of a time series at the frequency of the time series data.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "PercentageReturn", description = "Calculates the percentage return of a time series", category = "Time Series")
+@XLFunctions(prefix = "PercentageReturn",
+  typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
+  description = "Calculates the percentage return of a time series", 
+  category = "Time Series")
 public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries> {
 
   @Override

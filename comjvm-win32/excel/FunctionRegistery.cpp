@@ -165,7 +165,7 @@ XLOPER12 FunctionRegistry::RegisterFunction (XLOPER12 xDll, int functionExportNu
 	//m_numArgsForExport[functionExportNumber] = argsHelpSz; // num args
 	int err = Excel12v (xlfRegister, &result, 10 + argsHelpSz, args);
 	if (result.xltype == xltypeErr) {
-		LOGERROR ("Could not register function, Excel12v error was %d, xlfRegister error was %d", err, result.val.err);
+		LOGERROR ("Could not register function %s, Excel12v error was %d, xlfRegister error was %d", functionSignature, err, result.val.err);
 	}
 	delete[] args;
 	FreeAllTempMemory ();

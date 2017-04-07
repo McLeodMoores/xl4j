@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
 
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -17,7 +18,10 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Generates a weekly schedule from the start date to end date inclusive.
  */
 @XLNamespace("Schedule.")
-@XLFunctions(prefix = "ForwardWeekly", description = "Generates a weekly schedule from the start to end date", category = "Schedule")
+@XLFunctions(prefix = "ForwardWeekly", 
+  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
+  description = "Generates a weekly schedule from the start to end date", 
+  category = "Schedule")
 public class ForwardWeeklyScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
 
   @Override

@@ -10,6 +10,7 @@ import java.util.function.BiFunction;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.TemporalAdjusters;
 
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -18,7 +19,10 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Generates an end-of-month schedule of dates from the start date to end date inclusive.
  */
 @XLNamespace("Schedule.")
-@XLFunctions(prefix = "EndOfMonth", description = "Generates an end-of-month schedule", category = "Schedule")
+@XLFunctions(prefix = "EndOfMonth", 
+  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
+  description = "Generates an end-of-month schedule", 
+  category = "Schedule")
 public class EndOfMonthScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
 
   @Override
