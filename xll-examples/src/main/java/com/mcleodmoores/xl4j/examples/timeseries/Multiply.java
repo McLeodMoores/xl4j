@@ -13,7 +13,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * as zeros.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Multiply", 
+@XLFunctions( 
   typeConversionMode=TypeConversionMode.OBJECT_RESULT,
   description = "Element-by-element multiplication of two time series", 
   category = "Time series")
@@ -23,7 +23,7 @@ public class Multiply implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
   public TimeSeries apply(final TimeSeries ts1, final TimeSeries ts2) {
     ArgumentChecker.notNull(ts1, "ts1");
     ArgumentChecker.notNull(ts2, "ts2");
-    final TimeSeries result = TimeSeries.emptyTimeSeries();
+    final TimeSeries result = TimeSeries.newTimeSeries();
     // put all values from first series
     result.putAll(ts1);
     // put missing values from second series or multiply values from ts1 and ts2

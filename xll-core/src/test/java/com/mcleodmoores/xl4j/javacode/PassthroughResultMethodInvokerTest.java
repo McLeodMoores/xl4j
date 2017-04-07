@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.javacode;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 import static org.testng.Assert.assertFalse;
 import static org.testng.Assert.assertTrue;
 
@@ -129,7 +129,7 @@ public class PassthroughResultMethodInvokerTest {
    * @throws SecurityException  if the method can't be called
    */
   @Test
-  public void testVoid() throws NoSuchMethodException, SecurityException {
+  public void testVoid() throws NoSuchMethodException {
     final Method method = InvokerTestHelper.class.getMethod("voidStaticMethod", new Class<?>[0]);
     final MethodInvoker invoker = new PassthroughResultMethodInvoker(method, new TypeConverter[0], BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     final XLValue result = invoker.invoke(null, new XLValue[0]);

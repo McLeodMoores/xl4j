@@ -19,7 +19,7 @@ public class ZeroValuesFilterTest {
 
   @Test
   public void test() {
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     final double smallNotZero = 1e-11;
     IntStream.range(1, 100).forEach(i -> {
       ts.put(LocalDate.now().plusDays(i), i % 5 == 0 ? i % 15 == 0 ? 0 : i : i % 2 == 0 ? smallNotZero : -smallNotZero);

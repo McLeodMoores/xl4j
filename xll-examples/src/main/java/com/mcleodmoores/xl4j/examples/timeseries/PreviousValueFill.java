@@ -13,7 +13,7 @@ import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
  * Fills any missing values in a time series with the previous value available in the time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "FillWithPreviousValue", 
+@XLFunctions( 
   typeConversionMode=TypeConversionMode.OBJECT_RESULT,
   description = "Fill missing values in a time series with the previous value", 
   category = "Time series")
@@ -23,12 +23,12 @@ public class PreviousValueFill implements TimeSeriesFunction<TimeSeries> {
   public TimeSeries apply(final TimeSeries ts) {
     ArgumentChecker.notNull(ts, "ts");
     if (ts.size() == 0) {
-      return TimeSeries.emptyTimeSeries();
+      return TimeSeries.newTimeSeries();
     }
     if (ts.get(ts.firstKey()) == null) {
       throw new Excel4JRuntimeException("First value of time series was null: no value with which to pad");
     }
-    final TimeSeries result = TimeSeries.emptyTimeSeries();
+    final TimeSeries result = TimeSeries.newTimeSeries();
     result.putAll(ts);
     result.forEach((date, value) -> result.computeIfAbsent(date, value1 -> result.get(result.headMap(date).lastKey())));
     return result;

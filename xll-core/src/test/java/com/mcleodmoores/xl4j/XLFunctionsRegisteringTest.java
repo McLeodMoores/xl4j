@@ -120,8 +120,8 @@ public class XLFunctionsRegisteringTest {
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
     assertEquals(definitions.size(), 8); // note methods from Object are excluded
     final List<String> expectedNames = new ArrayList<>(Arrays.asList(
-        "Prefix2-TestClass2", "Prefix2-TestClass2_$2", "Prefix2-TestClass2_$3", "Prefix2-TestClass2_$4",
-        "Prefix2-TestClass2.method1", "Prefix2-TestClass2.method2", "Prefix2-TestClass2.method2_$2", "Prefix2-TestClass2.method2_$3"));
+        "Prefix2", "Prefix2_$2", "Prefix2_$3", "Prefix2_$4",
+        "Prefix2.method1", "Prefix2.method2", "Prefix2.method2_$2", "Prefix2.method2_$3"));
     for (final FunctionDefinition definition : definitions) {
       final String name = definition.getFunctionMetadata().getName();
       assertTrue(expectedNames.contains(name));
@@ -168,8 +168,8 @@ public class XLFunctionsRegisteringTest {
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
     assertEquals(definitions.size(), 4); // note methods from Object are excluded
     final List<String> expectedNames = new ArrayList<>(Arrays.asList(
-        "Namespace4-Prefix4-TestClass4", "Namespace4-Prefix4-TestClass4_$2",
-        "Namespace4-Prefix4-TestClass4.method", "Namespace4-Prefix4-TestClass4.method_$2"));
+        "Namespace4-Prefix4", "Namespace4-Prefix4_$2",
+        "Namespace4-Prefix4.method", "Namespace4-Prefix4.method_$2"));
     for (final FunctionDefinition definition : definitions) {
       final String name = definition.getFunctionMetadata().getName();
       assertTrue(expectedNames.contains(name));
@@ -191,7 +191,7 @@ public class XLFunctionsRegisteringTest {
     public static int method2(final double[] ds, final int i, final int[] is) { return 4; }
   }
 
-  @XLFunctions(prefix = "Prefix2-")
+  @XLFunctions(prefix = "Prefix2")
   public static class TestClass2 {
     public TestClass2() {}
     public TestClass2(final int[] is) {}
@@ -213,7 +213,7 @@ public class XLFunctionsRegisteringTest {
   }
 
   @XLNamespace(value = "Namespace4-")
-  @XLFunctions(prefix = "Prefix4-")
+  @XLFunctions(prefix = "Prefix4")
   public static class TestClass4 {
     public TestClass4() {}
     public TestClass4(final int[] is) {}

@@ -23,14 +23,14 @@ public class PreviousValueFillTest {
 
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testPreviousValueFillFirstValueNull() {
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(0, 100).forEach(i -> ts.put(LocalDate.now().plusDays(i), i % 2 == 0 ? null : i * 2.));
     CALCULATOR.apply(ts);
   }
 
   @Test
   public void testPreviousValueFill() {
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(0, 100).forEach(i -> ts.put(LocalDate.now().plusDays(i), (i + 3) % 3 == 0 ? i * 3. : null));
     final TimeSeries padded = CALCULATOR.apply(ts);
     IntStream.range(0, 100).forEach(i -> {

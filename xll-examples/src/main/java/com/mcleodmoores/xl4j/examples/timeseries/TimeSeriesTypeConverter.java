@@ -59,7 +59,7 @@ public class TimeSeriesTypeConverter extends AbstractTypeConverter {
     ArgumentChecker.notNull(from, "from");
     final XLArray xlArr = (XLArray) from;
     final XLValue[][] arr = xlArr.getArray();
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     for (final XLValue[] element : arr) {
       final XLValue keyValue = element[0];
       final XLValue valueValue = element[1];

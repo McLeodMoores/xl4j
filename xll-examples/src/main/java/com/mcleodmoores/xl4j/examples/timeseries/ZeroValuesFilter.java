@@ -14,7 +14,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Filters all values between +/- 1E-12 from a time series.
  */
 @XLNamespace("TimeSeries")
-@XLFunctions(prefix = "ZeroValuesFilter", 
+@XLFunctions( 
   typeConversionMode=TypeConversionMode.OBJECT_RESULT,
   description = "Removes values between +/- 1E-12 from a time series", 
   category = "Time series")

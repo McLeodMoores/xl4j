@@ -14,7 +14,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Removes values above an amount from a time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "UpperValueFilter", 
+@XLFunctions( 
   typeConversionMode=TypeConversionMode.OBJECT_RESULT,
   description = "Removes values above an amount from a time series", 
   category = "Time series")

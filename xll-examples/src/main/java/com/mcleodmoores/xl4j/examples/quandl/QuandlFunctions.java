@@ -304,7 +304,7 @@ public final class QuandlFunctions {
       throw new Excel4JRuntimeException("No data available for " + header);
     }
     final int n = dateArray.length;
-    final TimeSeries ts = TimeSeries.emptyTimeSeries();
+    final TimeSeries ts = TimeSeries.newTimeSeries();
     for (int i = 0; i < n; i++) {
       LocalDate date = (LocalDate) dateArray[i];
       Double value = (Double) valueArray[i];

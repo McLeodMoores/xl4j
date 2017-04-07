@@ -18,7 +18,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the returns of a time series assuming continuous compounding.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "ContinuousReturn",
+@XLFunctions(
   typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
   description = "Calculates the continuous return of a time series", 
   category = "Time Series")

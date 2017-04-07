@@ -224,7 +224,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
    * @return
    *          an empty time series
    */
-  public static TimeSeries emptyTimeSeries() {
+  public static TimeSeries newTimeSeries() {
     return new TimeSeries(Collections.emptySortedMap());
   }
 

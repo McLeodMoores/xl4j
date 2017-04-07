@@ -22,7 +22,7 @@ public class JFieldTest {
 
   @Test
   public void testField() {
-    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("of"), XLNumber.of(12345));
+    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
     Object field = JField.jField(object, XLString.of("_number"));
     assertTrue(field instanceof XLNumber);
     assertEquals(((XLNumber) field).getAsDouble(), -4000.);
@@ -38,7 +38,7 @@ public class JFieldTest {
 
   @Test
   public void testFieldX() {
-    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("of"), XLNumber.of(12345));
+    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
     Object field = JField.jFieldX(object, XLString.of("_number"));
     assertEquals(getValueFromHeap(field, Number.class).doubleValue(), -4000.);
     field = JField.jFieldX(object, XLString.of("_name"));

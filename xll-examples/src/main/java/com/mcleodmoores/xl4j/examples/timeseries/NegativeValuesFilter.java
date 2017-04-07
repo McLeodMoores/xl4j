@@ -17,7 +17,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Removes negative values in a time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "NegativeValuesFilter", 
+@XLFunctions(
   typeConversionMode=TypeConversionMode.OBJECT_RESULT,
   description = "Removes negative values from a time series", 
   category = "Time series")

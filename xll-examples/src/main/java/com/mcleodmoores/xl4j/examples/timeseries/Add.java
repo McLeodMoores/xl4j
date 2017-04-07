@@ -14,7 +14,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * set to 0).
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Add", 
+@XLFunctions(
   typeConversionMode=TypeConversionMode.OBJECT_RESULT,
   description = "Element-by-element addition of two time series", 
   category = "Time series")

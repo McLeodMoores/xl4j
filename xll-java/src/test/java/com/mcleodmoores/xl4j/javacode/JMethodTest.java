@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.javacode;
 
@@ -26,7 +26,7 @@ public class JMethodTest {
 
   @BeforeTest
   public void init() {
-    final XLValue xlValue = JConstruct.jconstruct(CLASS, XLNumber.of(10.), XLNumber.of(20.), XLNumber.of(30.), XLNumber.of(40.), XLNumber.of(50.));
+    final XLValue xlValue = JConstruct.jconstruct(CLASS, XLNumber.of(10.));
     assertTrue(xlValue instanceof XLObject);
     _testObjectReference = (XLObject) xlValue;
     _testObject = (TestObject) ExcelFactory.getInstance().getHeap().getObject(_testObjectReference.getHandle());
@@ -88,7 +88,6 @@ public class JMethodTest {
   public void testIntsSumMethod() {
     final Object methodResult = JMethod.jMethod(_testObjectReference, XLString.of("getDoublesSum"), XLNumber.of(1), XLNumber.of(2));
     assertTrue(methodResult instanceof XLNumber);
-    // note that the array must be explicitly formed or there is a clash with getDoublesSum(Object...)
     assertEquals(((XLNumber) methodResult).getValue(), _testObject.getDoublesSum(new int[] {1, 2}));
   }
 

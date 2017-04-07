@@ -18,7 +18,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the returns of a time series at the frequency of the time series data.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "PercentageReturn",
+@XLFunctions(
   typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
   description = "Calculates the percentage return of a time series", 
   category = "Time Series")

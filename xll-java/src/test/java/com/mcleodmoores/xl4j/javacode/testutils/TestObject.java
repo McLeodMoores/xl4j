@@ -24,7 +24,7 @@ public class TestObject {
     return new TestObject(-1000, new Double[0], "static no args constructor");
   }
 
-  public static TestObject of(final Object doubleObject) {
+  public static TestObject ofObject(final Object doubleObject) {
     Double[] doubles = new Double[1];
     if (doubleObject instanceof Number) {
       doubles = new Double[] { ((Number) doubleObject).doubleValue() };
@@ -36,27 +36,27 @@ public class TestObject {
     return new TestObject(-2000, doubles, "static Object constructor");
   }
 
-  public static TestObject of(final String doubleString) {
+  public static TestObject ofString(final String doubleString) {
     return new TestObject(-3000, new Double[] { Double.parseDouble(doubleString) }, "static String constructor");
   }
 
-  public static TestObject of(final Double doubleValue) {
+  public static TestObject ofDouble(final Double doubleValue) {
     return new TestObject(-4000, new Double[] { doubleValue }, "static Double constructor");
   }
 
-  public static TestObject of(final int number) {
+  public static TestObject ofPrimitiveInt(final int number) {
     return new TestObject(number, new Double[0], "static int constructor");
   }
 
-  public static TestObject of(final int number, final String doubleString) {
+  public static TestObject ofPrimitiveIntString(final int number, final String doubleString) {
     return new TestObject(number, new Double[] { Double.parseDouble(doubleString) }, "static int, String constructor");
   }
 
-  public static TestObject of(final int number, final Double doubleValue) {
+  public static TestObject ofPrimitiveIntDouble(final int number, final Double doubleValue) {
     return new TestObject(number, new Double[] { doubleValue }, "static int, Double constructor");
   }
 
-  public static TestObject of(final int number, final Object doubleObject) {
+  public static TestObject ofPrimitiveIntObject(final int number, final Object doubleObject) {
     Double[] doubles = new Double[1];
     if (doubleObject instanceof Number) {
       doubles = new Double[] { ((Number) doubleObject).doubleValue() };
@@ -68,7 +68,7 @@ public class TestObject {
     return new TestObject(number, doubles, "static int, Object constructor");
   }
 
-  public static TestObject of(final String... doubleStrings) {
+  public static TestObject ofStrings(final String... doubleStrings) {
     final Double[] doubles = new Double[doubleStrings.length];
     for (int i = 0; i < doubleStrings.length; i++) {
       doubles[i] = Double.parseDouble(doubleStrings[i]);
@@ -76,7 +76,7 @@ public class TestObject {
     return new TestObject(-5000, doubles, "static String... constructor");
   }
 
-  public static TestObject of(final int number, final String... doubleStrings) {
+  public static TestObject ofPrimitiveIntStrings(final int number, final String... doubleStrings) {
     final Double[] doubles = new Double[doubleStrings.length];
     for (int i = 0; i < doubleStrings.length; i++) {
       doubles[i] = Double.parseDouble(doubleStrings[i]);
@@ -84,7 +84,7 @@ public class TestObject {
     return new TestObject(number, doubles, "static int, String... constructor");
   }
 
-  public static TestObject of(final Double... doubleValues) {
+  public static TestObject ofDoubles(final Double... doubleValues) {
     final Double[] doubles = new Double[doubleValues.length];
     for (int i = 0; i < doubleValues.length; i++) {
       doubles[i] = doubleValues[i];
@@ -92,7 +92,7 @@ public class TestObject {
     return new TestObject(-6000, doubles, "static Double... constructor");
   }
 
-  public static TestObject of(final int number, final Object... doubleObjects) {
+  public static TestObject ofPrimitiveIntObjects(final int number, final Object... doubleObjects) {
     final Double[] doubles = new Double[doubleObjects.length];
     for (int i = 0; i < doubleObjects.length; i++) {
       final Object doubleObject = doubleObjects[i];
@@ -107,7 +107,7 @@ public class TestObject {
     return new TestObject(number, doubles, "static int, Object... constructor");
   }
 
-  public static TestObject of(final int number, final Double... doubleValues) {
+  public static TestObject ofPrimitiveIntDoubles(final int number, final Double... doubleValues) {
     final Double[] doubles = new Double[doubleValues.length];
     for (int i = 0; i < doubleValues.length; i++) {
       doubles[i] = doubleValues[i];
@@ -115,7 +115,7 @@ public class TestObject {
     return new TestObject(number, doubles, "static int, Double... constructor");
   }
 
-  public static TestObject of(final Object... doubleObjects) {
+  public static TestObject ofObjects(final Object... doubleObjects) {
     final Double[] doubles = new Double[doubleObjects.length];
     for (int i = 0; i < doubleObjects.length; i++) {
       final Object doubleObject = doubleObjects[i];
@@ -130,7 +130,7 @@ public class TestObject {
     return new TestObject(-7000, doubles, "static Object... constructor");
   }
 
-  public static TestObject of(final String[] number, final String... doubleStrings) {
+  public static TestObject ofStringsStrings(final String[] number, final String... doubleStrings) {
     final Double[] doubles = new Double[doubleStrings.length];
     for (int i = 0; i < doubleStrings.length; i++) {
       doubles[i] = Double.parseDouble(doubleStrings[i]);
@@ -150,135 +150,16 @@ public class TestObject {
     _name = "no args constructor";
   }
 
-  public TestObject(final Object doubleObject) {
-    _number = -200;
-    if (doubleObject instanceof Number) {
-      _doubles = new Double[] { ((Number) doubleObject).doubleValue() };
-    } else if (doubleObject instanceof String) {
-      _doubles = new Double[] { Double.parseDouble((String) doubleObject) };
-    } else {
-      throw new IllegalArgumentException();
-    }
-    _name = "Object constructor";
-  }
-
   public TestObject(final String doubleString) {
     _number = -300;
     _doubles = new Double[] { Double.parseDouble(doubleString) };
     _name = "String constructor";
   }
 
-  public TestObject(final Double doubleValue) {
-    _number = -400;
-    _doubles = new Double[] { doubleValue };
-    _name = "Double constructor";
-  }
-
   public TestObject(final int number) {
     _number = number;
     _doubles = new Double[0];
     _name = "int constructor";
-  }
-
-  public TestObject(final int number, final String doubleString) {
-    _number = number;
-    _doubles = new Double[] { Double.parseDouble(doubleString) };
-    _name = "int, String constructor";
-  }
-
-  public TestObject(final int number, final Double doubleValue) {
-    _number = number;
-    _doubles = new Double[] { doubleValue };
-    _name = "int, Double constructor";
-  }
-
-  public TestObject(final int number, final Object doubleObject) {
-    _number = number;
-    if (doubleObject instanceof Number) {
-      _doubles = new Double[] { ((Number) doubleObject).doubleValue() };
-    } else if (doubleObject instanceof String) {
-      _doubles = new Double[] { Double.parseDouble((String) doubleObject) };
-    } else {
-      throw new IllegalArgumentException();
-    }
-    _name = "int, Object constructor";
-  }
-
-  public TestObject(final String... doubleStrings) {
-    _number = -500;
-    _doubles = new Double[doubleStrings.length];
-    for (int i = 0; i < doubleStrings.length; i++) {
-      _doubles[i] = Double.parseDouble(doubleStrings[i]);
-    }
-    _name = "String... constructor";
-  }
-
-  public TestObject(final int number, final String... doubleStrings) {
-    _number = number;
-    _doubles = new Double[doubleStrings.length];
-    for (int i = 0; i < doubleStrings.length; i++) {
-      _doubles[i] = Double.parseDouble(doubleStrings[i]);
-    }
-    _name = "int, String... constructor";
-  }
-
-  public TestObject(final Double... doubleValues) {
-    _number = -600;
-    _doubles = new Double[doubleValues.length];
-    for (int i = 0; i < doubleValues.length; i++) {
-      _doubles[i] = doubleValues[i];
-    }
-    _name = "Double... constructor";
-  }
-
-  public TestObject(final int number, final Object... doubleObjects) {
-    _number = number;
-    _doubles = new Double[doubleObjects.length];
-    for (int i = 0; i < doubleObjects.length; i++) {
-      final Object doubleObject = doubleObjects[i];
-      if (doubleObject instanceof Number) {
-        _doubles[i] = ((Number) doubleObject).doubleValue();
-      } else if (doubleObject instanceof String) {
-        _doubles[i] = Double.parseDouble((String) doubleObject);
-      } else {
-        throw new IllegalArgumentException();
-      }
-    }
-    _name = "int, Object... constructor";
-  }
-
-  public TestObject(final int number, final Double... doubleValues) {
-    _number = number;
-    _doubles = new Double[doubleValues.length];
-    for (int i = 0; i < doubleValues.length; i++) {
-      _doubles[i] = doubleValues[i];
-    }
-    _name = "int, Double... constructor";
-  }
-
-  public TestObject(final Object... doubleObjects) {
-    _number = -700;
-    _doubles = new Double[doubleObjects.length];
-    for (int i = 0; i < doubleObjects.length; i++) {
-      final Object doubleObject = doubleObjects[i];
-      if (doubleObject instanceof Number) {
-        _doubles[i] = ((Number) doubleObject).doubleValue();
-      } else if (doubleObject instanceof String) {
-        _doubles[i] = Double.parseDouble((String) doubleObject);
-      } else {
-        throw new IllegalArgumentException();
-      }
-    }
-    _name = "Object... constructor";
-  }
-
-  public TestObject(final String[] number, final String... doubleStrings) {
-    _number = Integer.parseInt(number[0]);
-    _doubles = new Double[doubleStrings.length];
-    for (int i = 0; i < doubleStrings.length; i++) {
-      _doubles[i] = Double.parseDouble(doubleStrings[i]);
-    }
-    _name = "int, String... constructor";
   }
 
   public int getNumber() {

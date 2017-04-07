@@ -1,5 +1,4 @@
-
-# An Excel Primer for Developers
+# Excel Types Primer
 This document is intended to focus on terminology and unusual behaviour of Excel itself (as opposed to XL4J) that a developer 
 new to Excel might not find obvious.
 

@@ -31,6 +31,7 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantY
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
+import com.opengamma.util.test.TestGroup;
 
 /**
  * Unit tests for {@link IsdaCreditCurveBuilder}.

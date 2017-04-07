@@ -1,12 +1,11 @@
 /**
- * Copyright (C) 2016-Present McLeod Moores Software Limited.  All rights reserved.
+ * Copyright (C) 2016 - Present McLeod Moores Software Limited.  All rights reserved.
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -26,15 +25,7 @@ public class TimeSeriesFunctionsTest {
       LocalDate.ofEpochDay(0)) + 1;
 
   /** The function processor */
-  private MockFunctionProcessor _processor;
-
-  /**
-   * Initializes the function processor before the tests run.
-   */
-  @BeforeTest
-  public void init() {
-    _processor = MockFunctionProcessor.getInstance();
-  }
+  private static final MockFunctionProcessor PROCESSOR = MockFunctionProcessor.getInstance();
 
   /**
    * Tests the result when the input from Excel is a nx2 range with missing values in the second column.
@@ -53,7 +44,7 @@ public class TimeSeriesFunctionsTest {
         xlValues[i] = new XLValue[] {xlDate, XLNumber.of(i)};
       }
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -70,7 +61,7 @@ public class TimeSeriesFunctionsTest {
       xlDates[i] = new XLValue[] {XLNumber.of(now.plusDays(i).toEpochDay() + DAYS_FROM_EXCEL_EPOCH)};
       xlValues[i] = new XLValue[] {XLNumber.of(i)};
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -87,7 +78,7 @@ public class TimeSeriesFunctionsTest {
       xlDates[0][i] = XLNumber.of(now.plusDays(i).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
       xlValues[0][i] = XLNumber.of(i);
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -105,7 +96,7 @@ public class TimeSeriesFunctionsTest {
       xlDates[i] = XLNumber.of(now.plusDays(i).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
       xlValues[i] = XLNumber.of(i);
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(new XLValue[][] {xlDates, xlValues}));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(new XLValue[][] {xlDates, xlValues}));
     assertEquals(result, XLError.Null);
   }
 
@@ -120,7 +111,7 @@ public class TimeSeriesFunctionsTest {
     for (int i = 0; i < n; i++) {
       xlValues[i] = new XLValue[] {XLNumber.of(now.plusDays(i).toEpochDay() + DAYS_FROM_EXCEL_EPOCH), XLNumber.of(i), XLNumber.of(-i)};
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -137,7 +128,7 @@ public class TimeSeriesFunctionsTest {
       xlValues[1][i] = XLNumber.of(i);
       xlValues[2][i] = XLNumber.of(-i);
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -152,7 +143,7 @@ public class TimeSeriesFunctionsTest {
     for (int i = 0; i < n; i++) {
       xlValues[i] = new XLValue[] {XLNumber.of(now.plusDays(i).toEpochDay() + DAYS_FROM_EXCEL_EPOCH)};
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -167,7 +158,7 @@ public class TimeSeriesFunctionsTest {
     for (int i = 0; i < n; i++) {
       xlValues[0][i] = XLNumber.of(now.plusDays(i).toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertEquals(result, XLError.Null);
   }
 
@@ -177,7 +168,7 @@ public class TimeSeriesFunctionsTest {
   @Test
   public void testCreateFromRows() {
     final int n = 100;
-    final TimeSeries expectedTs = TimeSeries.emptyTimeSeries();
+    final TimeSeries expectedTs = TimeSeries.newTimeSeries();
     final XLValue[][] xlDates = new XLValue[1][n];
     final XLValue[][] xlValues = new XLValue[1][n];
     final LocalDate now = LocalDate.now();
@@ -187,7 +178,7 @@ public class TimeSeriesFunctionsTest {
       xlDates[0][i] = XLNumber.of(date.toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
       xlValues[0][i] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
     final XLValue[][] xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
     assertEquals(xlTsObject[0].length, 2);
@@ -203,7 +194,7 @@ public class TimeSeriesFunctionsTest {
   @Test
   public void testCreateFromColumns() {
     final int n = 100;
-    final TimeSeries expectedTs = TimeSeries.emptyTimeSeries();
+    final TimeSeries expectedTs = TimeSeries.newTimeSeries();
     final XLValue[][] xlDates = new XLValue[n][1];
     final XLValue[][] xlValues = new XLValue[n][1];
     final LocalDate now = LocalDate.now();
@@ -213,7 +204,7 @@ public class TimeSeriesFunctionsTest {
       xlDates[i] = new XLValue[] {XLNumber.of(date.toEpochDay() + DAYS_FROM_EXCEL_EPOCH)};
       xlValues[i] = new XLValue[] {i % 2 == 0 ? null : XLNumber.of(i)}; // nulls are allowed
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
@@ -230,7 +221,7 @@ public class TimeSeriesFunctionsTest {
   @Test
   public void testCreateFromRowAndColumn() {
     final int n = 100;
-    final TimeSeries expectedTs = TimeSeries.emptyTimeSeries();
+    final TimeSeries expectedTs = TimeSeries.newTimeSeries();
     final XLValue[][] xlDates = new XLValue[n][1];
     final XLValue[][] xlValues = new XLValue[1][n];
     final LocalDate now = LocalDate.now();
@@ -240,7 +231,7 @@ public class TimeSeriesFunctionsTest {
       xlDates[i] = new XLValue[] {XLNumber.of(date.toEpochDay() + DAYS_FROM_EXCEL_EPOCH)};
       xlValues[0][i] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
-    final XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
+    final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
     assertTrue(result instanceof XLArray);
     final XLValue[][] xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
@@ -258,7 +249,7 @@ public class TimeSeriesFunctionsTest {
   public void testCreateFromHorizontalRange() {
     final LocalDate now = LocalDate.now();
     int n = 100;
-    TimeSeries expectedTs = TimeSeries.emptyTimeSeries();
+    TimeSeries expectedTs = TimeSeries.newTimeSeries();
     XLValue[][] xlValues = new XLValue[2][n];
     for (int i = 0; i < n; i++) {
       final LocalDate date = now.plusDays(i);
@@ -266,7 +257,7 @@ public class TimeSeriesFunctionsTest {
       xlValues[0][i] = XLNumber.of(date.toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
       xlValues[1][i] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
-    XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertTrue(result instanceof XLArray);
     XLValue[][] xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
@@ -277,10 +268,10 @@ public class TimeSeriesFunctionsTest {
     }
     // check that it accepts a column as well
     n = 1;
-    expectedTs = TimeSeries.emptyTimeSeries();
+    expectedTs = TimeSeries.newTimeSeries();
     expectedTs.put(now, 20.);
     xlValues = new XLValue[][] {new XLValue[] {XLNumber.of(now.toEpochDay() + DAYS_FROM_EXCEL_EPOCH)}, new XLValue[]{XLNumber.of(20)}};
-    result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     assertTrue(result instanceof XLArray);
     xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
@@ -298,7 +289,7 @@ public class TimeSeriesFunctionsTest {
   public void testCreateFromVerticalRange() {
     final LocalDate now = LocalDate.now();
     int n = 100;
-    TimeSeries expectedTs = TimeSeries.emptyTimeSeries();
+    TimeSeries expectedTs = TimeSeries.newTimeSeries();
     XLValue[][] xlValues = new XLValue[n][2];
     for (int i = 0; i < n; i++) {
       final LocalDate date = now.plusDays(i);
@@ -306,7 +297,7 @@ public class TimeSeriesFunctionsTest {
       xlValues[i][0] = XLNumber.of(date.toEpochDay() + DAYS_FROM_EXCEL_EPOCH);
       xlValues[i][1] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
-    XLValue result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     XLValue[][] xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
     assertEquals(xlTsObject[0].length, 2);
@@ -316,10 +307,10 @@ public class TimeSeriesFunctionsTest {
     }
     // check that it accepts a row as well
     n = 1;
-    expectedTs = TimeSeries.emptyTimeSeries();
+    expectedTs = TimeSeries.newTimeSeries();
     expectedTs.put(now, 20.);
     xlValues = new XLValue[][] {new XLValue[] {XLNumber.of(now.toEpochDay() + DAYS_FROM_EXCEL_EPOCH)}, new XLValue[]{XLNumber.of(20)}};
-    result = _processor.invoke("TimeSeries", XLArray.of(xlValues));
+    result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
     xlTsObject = ((XLArray) result).getArray();
     assertEquals(xlTsObject.length, n);
     assertEquals(xlTsObject[0].length, 2);
