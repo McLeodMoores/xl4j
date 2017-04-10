@@ -96,6 +96,21 @@ public final class QuandlFunctions {
   }
 
   /**
+   * Indicates if an API key is being used for accesses to the Quandl service.  This allows a sheet
+   * using the Quandl service to indicate whether an API key needs to be set up.  API keys are passed
+   * in via the quandl.auth.token property using the XL4J settings dialog (VM Options, pass 
+   * -Dquandl.auth.token=&lt;my-api-token&gt;
+   * @return true, if an API key is being used
+   */
+  @XLFunction(
+      name = "QuandlAPIKeyPresent",
+      category = "Quandl",
+      description = "Indicates if an API key is being used for accesses to the Quandl service")
+  public static boolean isQuandlAPIKeyPresent() {
+    return API_KEY_PRESENT;
+  }
+  
+  /**
    * Gets a time series of data from Quandl.
    *
    * @param quandlCode

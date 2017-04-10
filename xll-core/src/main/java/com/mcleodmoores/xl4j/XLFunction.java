@@ -75,21 +75,41 @@ public @interface XLFunction {
 
   /**
    * The type of function.
-   *
    * @return the function type, defaults to FUNCTION
    */
   FunctionType functionType() default FunctionType.FUNCTION;
 
   /**
    * Indicates whether the function is likely to be slow.
-   *
    * @return true if the function is slow, defaults to false
    */
   boolean isLongRunning() default false;
 
+  /**
+   * Indicates that a function should be run in a separate thread, sourced from a special thread-pool
+   * and that Excel should be notified asynchronously when the function has finished and returned a 
+   * result.  Start of execution may be delayed during periods of high concurrency to avoid excessive
+   * thread creation.  Result may be discarded if job is cancelled.
+   * @return true if the function should be made automatically asynchronous
+   */
   boolean isAutoAsynchronous() default false;
 
+  /**
+   * This is not currently implemented.  The intention is that it indicates a function that is able to
+   * asynchronously call back into Excel to notify it of a result.  It could therefore be from a 
+   * calculation done on a separate thread, the result of a long running I/O operation with a callback 
+   * or something similar.  Typically the function would be passed an extra argument containing a handle
+   * to include with the callback of type XLBigData.
+   * @return true if the function should be passed a handle for asynchronous callback
+   */
   boolean isManualAsynchronous() default false;
 
+  /**
+   * This is not currently implemented.  The intention is that this indicates that an extra argument
+   * should be provided to the function than includes the 'caller' information.  This is usually an
+   * XLMultiReference indicating the cell or cells that the results are to be delivered to, which allows
+   * all kinds of useful behaviours.
+   * @return true if the function should be passed caller information.
+   */
   boolean isCallerRequired() default false;
 }

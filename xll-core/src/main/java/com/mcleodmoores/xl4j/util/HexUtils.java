@@ -107,12 +107,14 @@ public final class HexUtils {
         final int remainingChars = (bytesPerLine - bytesRead) * 3;
         sb.append(new String(new char[remainingChars]).replace("\0", " ")); // repeated string of spaces
         sb.append("  ");
-        sb.append(new String(shortLine, Charset.defaultCharset()).replaceAll("\\p{C}", "."));
+        // the bytes as ASCII characters, changed to ASCII because of testing platform differences
+        sb.append(new String(shortLine, Charset.forName("US-ASCII")).replaceAll("\\p{C}", "."));
       } else {
         final String lineStr = bytesToPaddedHex(line);
         sb.append(lineStr);
         sb.append("  ");
-        sb.append(new String(line, Charset.defaultCharset()).replaceAll("\\p{C}", "."));
+        // the bytes as ASCII characters, changed to ASCII because of testing platform differences
+        sb.append(new String(line, Charset.forName("US-ASCII")).replaceAll("\\p{C}", "."));
       }
       sb.append("\n");
     }
