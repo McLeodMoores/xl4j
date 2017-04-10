@@ -287,7 +287,7 @@ public class DefaultExcelCallbackTest {
     assertEquals(entry._exportNumber, exportNumber);
     assertEquals(entry._functionCategory, functionName);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "Q$");
+    assertEquals(entry._functionSignature, "QQ$");
     assertEquals(entry._functionType, FunctionType.FUNCTION.getExcelValue());
     assertEquals(entry._functionWorksheetName, functionName);
     assertEquals(entry._helpTopic, "");
@@ -302,14 +302,14 @@ public class DefaultExcelCallbackTest {
         new ObjectFieldInvoker(field, new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "U$");
+    assertEquals(entry._functionSignature, "QU$");
     exportNumber = getExportNumber();
     field = DefaultExcelCallbackTest.class.getDeclaredField("XL_MULTI_REF");
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new ObjectFieldInvoker(field, new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "U$");
+    assertEquals(entry._functionSignature, "QU$");
   }
 
   /**
@@ -337,7 +337,7 @@ public class DefaultExcelCallbackTest {
     assertEquals(entry._exportNumber, exportNumber);
     assertEquals(entry._functionCategory, category);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "Q$");
+    assertEquals(entry._functionSignature, "QQ$");
     assertEquals(entry._functionType, FunctionType.FUNCTION.getExcelValue());
     assertEquals(entry._functionWorksheetName, functionName);
     assertEquals(entry._helpTopic, helpTopic);
@@ -352,14 +352,14 @@ public class DefaultExcelCallbackTest {
         new ObjectFieldInvoker(field, new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "U$");
+    assertEquals(entry._functionSignature, "QU$");
     exportNumber = getExportNumber();
     field = DefaultExcelCallbackTest.class.getDeclaredField("XL_MULTI_REF");
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new ObjectFieldInvoker(field, new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "U$");
+    assertEquals(entry._functionSignature, "QU$");
   }
 
   /**
@@ -622,34 +622,34 @@ public class DefaultExcelCallbackTest {
     final XLParameter[] parameters = new XLParameter[0];
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunctions(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+    //    int exportNumber = getExportNumber();
+    //    Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
+    //    CALLBACK.registerFunction(FunctionDefinition.of(annotation,
+    //        new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
+    //            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+    //    LowLevelEntry entry = getFunction(exportNumber);
+    //    assertEquals(entry._acceleratorKey, "");
+    //    assertEquals(entry._argsHelp, new String[0]);
+    //    assertEquals(entry._argumentNames, "");
+    //    assertEquals(entry._description, "");
+    //    assertEquals(entry._exportNumber, exportNumber);
+    //    assertEquals(entry._functionCategory, functionName);
+    //    assertEquals(entry._functionExportName, "UDF_" + exportNumber);
+    //    assertEquals(entry._functionSignature, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ$");
+    //    assertEquals(entry._functionType, FunctionType.FUNCTION.getExcelValue());
+    //    assertEquals(entry._functionWorksheetName, functionName);
+    //    assertEquals(entry._helpTopic, "");
+    //    assertFalse(entry._isAutoAsynchronous);
+    //    assertFalse(entry._isCallerRequired);
+    //    assertFalse(entry._isLongRunning);
+    //    assertFalse(entry._isManualAsynchronous);
+    //    assertTrue(entry._isVarArgs);
     int exportNumber = getExportNumber();
-    Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
-    CALLBACK.registerFunction(FunctionDefinition.of(annotation,
-        new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
-    LowLevelEntry entry = getFunction(exportNumber);
-    assertEquals(entry._acceleratorKey, "");
-    assertEquals(entry._argsHelp, new String[0]);
-    assertEquals(entry._argumentNames, "");
-    assertEquals(entry._description, "");
-    assertEquals(entry._exportNumber, exportNumber);
-    assertEquals(entry._functionCategory, functionName);
-    assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    assertEquals(entry._functionSignature, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ$");
-    assertEquals(entry._functionType, FunctionType.FUNCTION.getExcelValue());
-    assertEquals(entry._functionWorksheetName, functionName);
-    assertEquals(entry._helpTopic, "");
-    assertFalse(entry._isAutoAsynchronous);
-    assertFalse(entry._isCallerRequired);
-    assertFalse(entry._isLongRunning);
-    assertFalse(entry._isManualAsynchronous);
-    assertTrue(entry._isVarArgs);
-    exportNumber = getExportNumber();
-    method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
+    Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
             new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
-    entry = getFunction(exportNumber);
+    LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "QQ$");
     exportNumber = getExportNumber();

@@ -6,6 +6,7 @@ package com.mcleodmoores.xl4j.javacode;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 
 import com.mcleodmoores.xl4j.Excel;
@@ -167,8 +168,15 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (!method.getName().equals(methodName)) {
         continue; // this isn't the method that is required
       }
+      final Class<?>[] parameterTypes;
+      if (Modifier.isStatic(method.getModifiers())) {
+        parameterTypes = method.getParameterTypes();
+      } else {
+        parameterTypes = new Class<?>[method.getParameterCount() + 1];
+        parameterTypes[0] = clazz;
+        System.arraycopy(method.getParameterTypes(), 0, parameterTypes, 1, method.getParameterCount());
+      }
       final boolean isVarArgs = method.isVarArgs();
-      final Class<?>[] parameterTypes = method.getParameterTypes();
       if (!isVarArgs && argTypes.length != parameterTypes.length) {
         continue; // number of arguments don't match so skip this one.
       }

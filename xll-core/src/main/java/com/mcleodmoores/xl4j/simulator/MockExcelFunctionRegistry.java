@@ -39,7 +39,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     final boolean isVolatile = isMacroEquivalent || functionSignature.endsWith("!");
     final boolean isMultiThreadSafe = functionSignature.endsWith("$");
     final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, isMacroEquivalent,
-        isMultiThreadSafe, TypeConversionMode.SIMPLEST_RESULT);
+        isMultiThreadSafe, TypeConversionMode.OBJECT_RESULT);
     final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType, argumentsHelp,
         description == null ? "" : description.toString(), functionAttributes, method);
     final FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName, functionEntry);

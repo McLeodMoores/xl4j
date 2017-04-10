@@ -9,6 +9,7 @@ import static org.testng.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
@@ -53,7 +54,7 @@ public class XLFunctionsRegisteringTest {
   }
 
   /**
-   * Tests that static methods in abstract classes are added to the registry, but that abstract or instance methods are not.
+   * Tests that methods in abstract classes are added to the registry, but that abstract methods are not.
    */
   @Test
   public void testMethodsInAbstractClass() {
@@ -64,8 +65,17 @@ public class XLFunctionsRegisteringTest {
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     registry.createAndRegisterFunctions(invokerFactory);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
-    assertEquals(definitions.size(), 1);
-    assertEquals(definitions.iterator().next().getFunctionMetadata().getName(), "TestClass6.method1");
+    assertEquals(definitions.size(), 2);
+    final Iterator<FunctionDefinition> iterator = definitions.iterator();
+    final String name1 = iterator.next().getFunctionMetadata().getName();
+    final String name2 = iterator.next().getFunctionMetadata().getName();
+    if (!name1.equals("TestClass6.method1")) {
+      assertEquals(name1, "TestClass6.method2");
+      assertEquals(name2, "TestClass6.method1");
+    } else {
+      assertEquals(name1, "TestClass6.method1");
+      assertEquals(name2, "TestClass6.method2");
+    }
   }
 
   /**

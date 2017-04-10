@@ -12,6 +12,7 @@ import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.javacode.ConstructorInvoker;
 import com.mcleodmoores.xl4j.javacode.FieldInvoker;
+import com.mcleodmoores.xl4j.javacode.JavaTypeForFunction;
 import com.mcleodmoores.xl4j.javacode.MethodInvoker;
 import com.mcleodmoores.xl4j.lowlevel.LowLevelExcelCallback;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -74,28 +75,26 @@ public class DefaultExcelCallback implements ExcelCallback {
       isVarArgs = functionDefinition.isVarArgs();
       if (functionMetadata.getFunctionSpec() != null) {
         final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
-        final XLParameter[] argumentAnnotations = functionMetadata.getParameters();
         isLongRunning = functionAnnotation.isLongRunning();
         isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
         isManualAsynchronous = functionAnnotation.isManualAsynchronous();
         isCallerRequired = functionAnnotation.isCallerRequired();
-        argumentNames = buildArgNames(argumentAnnotations);
+        argumentNames = buildArgNames(functionDefinition);
         functionTypeInt = functionAnnotation.functionType().getExcelValue();
         helpTopic = buildHelpTopic(functionAnnotation);
         description = buildDescription(functionAnnotation);
-        argsHelp = buildArgsHelp(argumentAnnotations);
+        argsHelp = buildArgsHelp(functionDefinition);
       } else if (functionMetadata.getFunctionsSpec() != null) {
         final XLFunctions functionsAnnotation = functionMetadata.getFunctionsSpec();
-        final XLParameter[] argumentAnnotations = functionMetadata.getParameters();
         isLongRunning = functionsAnnotation.isLongRunning();
         isAutoAsynchronous = functionsAnnotation.isAutoAsynchronous();
         isManualAsynchronous = functionsAnnotation.isManualAsynchronous();
         isCallerRequired = functionsAnnotation.isCallerRequired();
-        argumentNames = buildArgNames(argumentAnnotations);
+        argumentNames = buildArgNames(functionDefinition);
         functionTypeInt = functionsAnnotation.functionType().getExcelValue();
         helpTopic = buildHelpTopic(functionsAnnotation);
         description = buildDescription(functionsAnnotation);
-        argsHelp = buildArgsHelp(argumentAnnotations);
+        argsHelp = buildArgsHelp(functionDefinition);
       } else {
         throw new Excel4JRuntimeException("Unhandled function metadata type");
       }
@@ -105,13 +104,21 @@ public class DefaultExcelCallback implements ExcelCallback {
         functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
-  private static String[] buildArgsHelp(final XLParameter[] argumentAnnotations) {
+  private static String[] buildArgsHelp(final FunctionDefinition functionDefinition) {
+    final XLParameter[] argumentAnnotations = functionDefinition.getFunctionMetadata().getParameters();
     final String[] results = new String[argumentAnnotations.length];
     for (int i = 0; i < argumentAnnotations.length; i++) {
       if (argumentAnnotations[i] != null && !argumentAnnotations[i].description().isEmpty()) {
         results[i] = argumentAnnotations[i].description();
       } else {
         results[i] = null;
+      }
+    }
+    if (functionDefinition.getJavaTypeForFunction() == JavaTypeForFunction.METHOD) {
+      if (!functionDefinition.isStatic()) {
+        final String[] resultsWithConstructorArg = new String[results.length + 1];
+        resultsWithConstructorArg[0] = "";
+        System.arraycopy(results, 0, resultsWithConstructorArg, 1, results.length);
       }
     }
     return results;
@@ -245,8 +252,12 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
       // Parameters
       final XLParameter[] parameterAnnotations = functionMetadata.getParameters();
-      if (parameterAnnotations.length != parameterTypes.length && parameterAnnotations.length != 0) {
+      if (parameterAnnotations.length != 0 && parameterAnnotations.length != parameterTypes.length) {
         throw new Excel4JRuntimeException("Function called " + functionMetadata.getName() + " must have an XLParameter annotation for each parameter");
+      }
+      if (functionDefinition.getJavaTypeForFunction() == JavaTypeForFunction.METHOD && !functionDefinition.isStatic()) {
+        // first argument for a non-static method is the object itself
+        signature.append("Q");
       }
       for (int i = 0; i < parameterTypes.length; i++) {
         if (parameterAnnotations.length == 0) { // true if someone has used a class-level @XLFunctions annotation, see FunctionRegistry
@@ -296,6 +307,10 @@ public class DefaultExcelCallback implements ExcelCallback {
     final StringBuilder signature = new StringBuilder();
     final FieldInvoker fieldInvoker = functionDefinition.getFieldInvoker();
     final Class<?> excelReturnType = fieldInvoker.getExcelReturnType();
+    if (functionDefinition.isStatic()) {
+      // first argument for a non-static field is the object itself
+      signature.append("Q");
+    }
     // TODO check the whether or not volatile should be used in some cases
     // Return type character
     if (XLLocalReference.class.isAssignableFrom(excelReturnType) || XLMultiReference.class.isAssignableFrom(excelReturnType)) {
@@ -311,14 +326,22 @@ public class DefaultExcelCallback implements ExcelCallback {
   /**
    * Build the string containing a list of argument annotations.
    *
-   * @param parameterAnnotations
-   *          array of argument annotations, can contain nulls
+   * @param definition
+   *          a function definition containing an array of argument annotations, can contain nulls
    * @return the argument annotations separated by a comma
    */
-  private static String buildArgNames(final XLParameter[] parameterAnnotations) {
+  private static String buildArgNames(final FunctionDefinition definition) {
+    final XLParameter[] parameterAnnotations = definition.getFunctionMetadata().getParameters();
     final StringBuilder parameterNames = new StringBuilder();
     int argCounter = 1;
-
+    if (definition.getJavaTypeForFunction() == JavaTypeForFunction.METHOD && !definition.isStatic()) {
+      // add class name to start of list
+      parameterNames.append(definition.getMethodInvoker().getMethodDeclaringClass().getSimpleName());
+      if (parameterAnnotations.length > 0) {
+        parameterNames.append(",");
+      }
+      argCounter++;
+    }
     for (int i = 0; i < parameterAnnotations.length; i++) {
       final XLParameter parameterAnnotation = parameterAnnotations[i];
       if (parameterAnnotation != null) {

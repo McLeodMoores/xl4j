@@ -18,6 +18,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLMissing;
+import com.mcleodmoores.xl4j.values.XLNil;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
@@ -76,7 +77,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
         final Type expectedClass = _method.getGenericParameterTypes()[i];
         // handle the case where nothing is passed and this should be converted to a null
         // which happens unless the method is expecting an XLValue.
-        if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+        if (arguments[i] instanceof XLNil || arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
           args[i] = null;
         } else {
           args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
@@ -93,7 +94,7 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
         final Type expectedClass = _method.getGenericParameterTypes()[i];
         // handle the case where nothing is passed and this should be converted to a null
         // which happens unless the method is expecting an XLValue.
-        if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+        if (arguments[i] instanceof XLNil || arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
           args[i] = null;
         } else {
           args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
@@ -103,6 +104,10 @@ public abstract class AbstractMethodInvoker implements MethodInvoker {
     try {
       LOGGER.info("invoking method {} on {}", _method, object == null ? "null" : object.getClass().getSimpleName());
       final Object result = _method.invoke(object, args);
+      if (result == null) {
+        // void method
+        return XLMissing.INSTANCE;
+      }
       return convertResult(result, _returnConverter);
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new Excel4JRuntimeException("Error invoking method", e);

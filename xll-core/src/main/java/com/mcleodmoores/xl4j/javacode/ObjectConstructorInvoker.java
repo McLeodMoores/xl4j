@@ -17,6 +17,7 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLMissing;
+import com.mcleodmoores.xl4j.values.XLNil;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
@@ -76,7 +77,7 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
         final Type expectedClass = _constructor.getParameterTypes()[i];
         // handle the case where nothing is passed and this should be converted to a null
         // which happens unless the method is expecting an XLValue.
-        if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+        if (arguments[i] instanceof XLNil || arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
           args[i] = null;
         } else {
           args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);
@@ -93,7 +94,7 @@ public class ObjectConstructorInvoker implements ConstructorInvoker {
         final Type expectedClass = _constructor.getParameterTypes()[i];
         // handle the case where nothing is passed and this should be converted to a null
         // which happens unless the method is expecting an XLValue.
-        if (arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
+        if (arguments[i] instanceof XLNil || arguments[i] instanceof XLMissing && !expectedClass.getClass().isAssignableFrom(XLValue.class)) {
           args[i] = null;
         } else {
           args[i] = _argumentConverters[i].toJavaObject(expectedClass, arguments[i]);

@@ -1,4 +1,4 @@
-<!-- If you want to make things really noisy, use this file like -Dlogback.configurationFile=com/opengamma/util/debug-logback.xml -->
+<!-- If you want to make things really noisy, use this file like -Dlogback.configurationFile=com/mcleodmoores/xl4j/debug-logback.xml -->
 <configuration>
 
   <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

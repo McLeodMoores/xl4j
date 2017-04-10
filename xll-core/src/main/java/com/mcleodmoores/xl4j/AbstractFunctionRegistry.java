@@ -195,6 +195,21 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
     return definitions;
   }
 
+  /**
+   * For all classes annotated with {@link XLFunctions}, create a {@link FunctionDefinition}. The name(s) of the functions are generated
+   * using the rule <br>
+   * <code>[Optional namespace value].([Name] OR [Class name])</code>
+   * <br>
+   * while the name(s) of the methods are generated using the rule <br>
+   * <code>[Optional namespace value].([Name] OR ([Class name].[Method name]))</code>
+   *
+   * @param invokerFactory
+   *          the invoker factory, not null
+   * @param classesAnnotatedWith
+   *          the classes annotated with {@link XLFunctions}, not null
+   * @return
+   *          a list of function definitions
+   */
   protected List<FunctionDefinition> getFunctionsForTypes(final InvokerFactory invokerFactory,
       final Collection<Class<?>> classesAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
@@ -230,14 +245,11 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
           if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
             continue;
           }
-          final boolean isStatic = Modifier.isStatic(method.getModifiers());
-          if (!isAbstract || isStatic) {
-            final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
-            methodNames.put(methodName, methodNameCount);
-            final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
-                useClassName, true, methodNameCount);
-            definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
-          }
+          final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
+          methodNames.put(methodName, methodNameCount);
+          final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
+              useClassName, true, methodNameCount);
+          definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
         }
       } catch (final Exception e) {
         LOGGER.error("Exception while creating function definition for class " + clazz, e);
@@ -265,8 +277,9 @@ public abstract class AbstractFunctionRegistry implements IFunctionRegistry {
     return FunctionDefinition.of(functionMetadata, methodInvoker, allocatedExportNumber);
   }
 
-  private FunctionDefinition generateDefinition(final Method method, final InvokerFactory invokerFactory, final XLFunctions functionsAnnotation,
-      final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations, final String functionName) {
+  private FunctionDefinition generateDefinition(final Method method, final InvokerFactory invokerFactory,
+      final XLFunctions functionsAnnotation, final XLNamespace namespaceAnnotation, final XLParameter[] parameterAnnotations,
+      final String functionName) {
     final TypeConversionMode resultType = functionsAnnotation.typeConversionMode();
     final MethodInvoker methodInvoker = invokerFactory.getMethodTypeConverter(method, resultType);
     final FunctionMetadata functionMetadata = FunctionMetadata.of(namespaceAnnotation, functionsAnnotation, parameterAnnotations, functionName);
