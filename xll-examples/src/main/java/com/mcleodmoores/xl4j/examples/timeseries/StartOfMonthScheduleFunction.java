@@ -3,8 +3,6 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
@@ -19,17 +17,18 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Generates a start-of-month schedule of dates from the start date to end date inclusive.
  */
 @XLNamespace("Schedule.")
-@XLFunctions(prefix = "StartOfMonth", 
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
-  description = "Generates a start-of-month schedule", 
-  category = "Schedule")
-public class StartOfMonthScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
+@XLFunctions(
+    prefix = "StartOfMonth",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Generates a start-of-month schedule",
+    category = "Schedule")
+public class StartOfMonthScheduleFunction implements BiFunction<LocalDate, LocalDate, Schedule> {
 
   @Override
-  public List<LocalDate> apply(final LocalDate start, final LocalDate endInclusive) {
+  public Schedule apply(final LocalDate start, final LocalDate endInclusive) {
     ArgumentChecker.notNull(start, "start");
     ArgumentChecker.notNull(endInclusive, "endInclusive");
-    final List<LocalDate> result = new ArrayList<>();
+    final Schedule result = new Schedule();
     LocalDate date = start.getDayOfMonth() == 1 ? start : start.with(TemporalAdjusters.firstDayOfNextMonth());
     while (!date.isAfter(endInclusive)) {
       result.add(date);

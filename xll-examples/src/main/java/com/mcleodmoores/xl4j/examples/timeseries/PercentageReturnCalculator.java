@@ -19,9 +19,9 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  */
 @XLNamespace("TimeSeries.")
 @XLFunctions(
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
-  description = "Calculates the percentage return of a time series", 
-  category = "Time Series")
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Calculates the percentage return of a time series",
+    category = "Time Series")
 public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries> {
 
   @Override

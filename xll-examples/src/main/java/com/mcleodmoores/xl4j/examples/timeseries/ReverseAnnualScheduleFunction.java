@@ -3,9 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
@@ -20,18 +18,19 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * with increasing dates.
  */
 @XLNamespace("Schedule.")
-@XLFunctions(prefix = "ReverseAnnual", 
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
-  description = "Generates an annual schedule from the end to start date",
-  category = "Schedule")
-public class ReverseAnnualScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
+@XLFunctions(
+    prefix = "ReverseAnnual",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Generates an annual schedule from the end to start date",
+    category = "Schedule")
+public class ReverseAnnualScheduleFunction implements BiFunction<LocalDate, LocalDate, Schedule> {
 
   @Override
-  public List<LocalDate> apply(final LocalDate start, final LocalDate endInclusive) {
+  public Schedule apply(final LocalDate start, final LocalDate endInclusive) {
     ArgumentChecker.notNull(start, "start");
     ArgumentChecker.notNull(endInclusive, "endInclusive");
     LocalDate date = endInclusive;
-    final List<LocalDate> result = new ArrayList<>();
+    final Schedule result = new Schedule();
     int i = 0;
     while (!date.isBefore(start)) {
       result.add(date);

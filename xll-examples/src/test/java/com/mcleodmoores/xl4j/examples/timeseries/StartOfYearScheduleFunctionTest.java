@@ -17,7 +17,7 @@ import org.threeten.bp.temporal.TemporalAdjusters;
  *
  */
 public class StartOfYearScheduleFunctionTest {
-  private static final BiFunction<LocalDate, LocalDate, List<LocalDate>> FUNCTION = new StartOfYearScheduleFunction();
+  private static final BiFunction<LocalDate, LocalDate, Schedule> FUNCTION = new StartOfYearScheduleFunction();
 
   @Test
   public void testSampling() {

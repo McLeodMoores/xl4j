@@ -13,10 +13,10 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * as zeros.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions( 
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
-  description = "Element-by-element multiplication of two time series", 
-  category = "Time series")
+@XLFunctions(
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Element-by-element multiplication of two time series",
+    category = "Time series")
 public class Multiply implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override
