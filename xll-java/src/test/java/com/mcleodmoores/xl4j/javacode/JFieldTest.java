@@ -44,7 +44,7 @@ public class JFieldTest {
     field = JField.jFieldX(object, XLString.of("_name"));
     assertEquals(getValueFromHeap(field, String.class), "static Double constructor");
     field = JField.jFieldX(object, XLString.of("_doubles"));
-    final Double[] array = getValueFromHeap(field, Double[].class);
+    final double[] array = getValueFromHeap(field, double[].class);
     assertEquals(array.length, 1);
     assertEquals(array[0], 12345.);
   }

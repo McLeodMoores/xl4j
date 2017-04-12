@@ -55,17 +55,6 @@ public class JConstructTest {
   }
 
   @Test
-  public void testStringConstructor() {
-    final XLValue constructed = JConstruct.jconstruct(CLASS, XLString.of("2"));
-    assertTrue(constructed instanceof XLObject);
-    final XLObject constructedXlObject = (XLObject) constructed;
-    final Object constructedObject = ExcelFactory.getInstance().getHeap().getObject(constructedXlObject.getHandle());
-    assertTrue(constructedObject instanceof TestObject);
-    final TestObject expectedObject = new TestObject("2");
-    assertEquals(constructedObject, expectedObject);
-  }
-
-  @Test
   public void testObjectConstructor() {
     final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(3));
     final XLValue constructed = JConstruct.jconstruct(CLASS, number);

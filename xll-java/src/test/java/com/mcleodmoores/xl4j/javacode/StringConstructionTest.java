@@ -41,6 +41,7 @@ public class StringConstructionTest extends TypeConstructionTests {
     final Object object = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(object instanceof String);
     final String string = (String) object;
-    assertEquals(string, String.valueOf(10.));
+    // double compare to avoid "10.0" != "10"
+    assertEquals(Double.valueOf(string), 10.);
   }
 }

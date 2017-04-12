@@ -61,7 +61,7 @@ public class ObjectConstructorInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullConstructor() {
-    new ObjectConstructorInvoker(null, new TypeConverter[] {INT_ARRAY_CONVERTER}, OBJECT_CONVERTER);
+    new ObjectConstructorInvoker(null, new TypeConverter[] {INT_ARRAY_CONVERTER}, OBJECT_CONVERTER, OBJECT_CONVERTER);
   }
 
   /**
@@ -69,7 +69,7 @@ public class ObjectConstructorInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullArgumentConverters() {
-    new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, null, OBJECT_CONVERTER);
+    new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, null, OBJECT_CONVERTER, OBJECT_CONVERTER);
   }
 
   /**
@@ -77,7 +77,15 @@ public class ObjectConstructorInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullReturnConverter() {
-    new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER}, null);
+    new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER}, null, OBJECT_CONVERTER);
+  }
+
+  /**
+   * Tests the exception when the return converter is null.
+   */
+  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  public void testNullObjectConverter() {
+    new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER}, OBJECT_CONVERTER, null);
   }
 
   /**
@@ -85,7 +93,8 @@ public class ObjectConstructorInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullArguments() {
-    final ConstructorInvoker invoker = new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER}, OBJECT_CONVERTER);
+    final ConstructorInvoker invoker = new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR,
+        new TypeConverter[] {INT_CONVERTER}, OBJECT_CONVERTER, OBJECT_CONVERTER);
     invoker.newInstance(null);
   }
 
@@ -98,7 +107,7 @@ public class ObjectConstructorInvokerTest {
   public void testWrongArguments() throws NoSuchMethodException, SecurityException {
     final Constructor<?> constructor = InvokerTestHelper.class.getConstructor(new Class<?>[] {Integer.TYPE, Integer.TYPE, int[].class});
     final ConstructorInvoker invoker = new ObjectConstructorInvoker(constructor, new TypeConverter[] {INT_CONVERTER, INT_ARRAY_CONVERTER},
-        OBJECT_CONVERTER);
+        OBJECT_CONVERTER, OBJECT_CONVERTER);
     invoker.newInstance(new XLValue[] {XLNumber.of(10)});
   }
 
@@ -108,12 +117,12 @@ public class ObjectConstructorInvokerTest {
   @Test
   public void testMetadata() {
     ConstructorInvoker invoker = new ObjectConstructorInvoker(MULTI_ARGS_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER, INT_CONVERTER},
-        OBJECT_CONVERTER);
+        OBJECT_CONVERTER, OBJECT_CONVERTER);
     assertFalse(invoker.isVarArgs());
     assertEquals(invoker.getDeclaringClass(), InvokerTestHelper.class);
     assertEquals(invoker.getExcelParameterTypes(), new Class<?>[] {XLNumber.class, XLNumber.class});
     assertEquals(invoker.getExcelReturnType(), XLObject.class);
-    invoker = new ObjectConstructorInvoker(VAR_ARGS_CONSTRUCTOR_1, new TypeConverter[] {INT_ARRAY_CONVERTER}, OBJECT_CONVERTER);
+    invoker = new ObjectConstructorInvoker(VAR_ARGS_CONSTRUCTOR_1, new TypeConverter[] {INT_ARRAY_CONVERTER}, OBJECT_CONVERTER, OBJECT_CONVERTER);
     assertTrue(invoker.isVarArgs());
     assertEquals(invoker.getDeclaringClass(), InvokerTestHelper.class);
     assertEquals(invoker.getExcelParameterTypes(), new Class<?>[] {XLArray.class});
@@ -125,7 +134,7 @@ public class ObjectConstructorInvokerTest {
    */
   @Test
   public void testNoArgs() {
-    final ConstructorInvoker invoker = new ObjectConstructorInvoker(NO_ARGS_CONSTRUCTOR, new TypeConverter[0], OBJECT_CONVERTER);
+    final ConstructorInvoker invoker = new ObjectConstructorInvoker(NO_ARGS_CONSTRUCTOR, new TypeConverter[0], OBJECT_CONVERTER, OBJECT_CONVERTER);
     final XLValue xlResult = invoker.newInstance(new XLValue[0]);
     final InvokerTestHelper result = (InvokerTestHelper) EXCEL.getHeap().getObject(((XLObject) xlResult).getHandle());
     assertEquals(result.getInputs(), new ArrayList<>());
@@ -136,7 +145,8 @@ public class ObjectConstructorInvokerTest {
    */
   @Test
   public void testSingleArg() {
-    final ConstructorInvoker invoker = new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER}, OBJECT_CONVERTER);
+    final ConstructorInvoker invoker = new ObjectConstructorInvoker(SINGLE_ARG_CONSTRUCTOR,
+        new TypeConverter[] {INT_CONVERTER}, OBJECT_CONVERTER, OBJECT_CONVERTER);
     final XLValue xlResult = invoker.newInstance(new XLValue[] {XLNumber.of(10)});
     final InvokerTestHelper result = (InvokerTestHelper) EXCEL.getHeap().getObject(((XLObject) xlResult).getHandle());
     final List<Object> expectedResult = new ArrayList<>();
@@ -150,7 +160,7 @@ public class ObjectConstructorInvokerTest {
   @Test
   public void testMultiArgs() {
     final ConstructorInvoker invoker = new ObjectConstructorInvoker(MULTI_ARGS_CONSTRUCTOR, new TypeConverter[] {INT_CONVERTER, INT_CONVERTER},
-        OBJECT_CONVERTER);
+        OBJECT_CONVERTER, OBJECT_CONVERTER);
     final XLValue xlResult = invoker.newInstance(new XLValue[] {XLNumber.of(10), XLNumber.of(20)});
     final InvokerTestHelper result = (InvokerTestHelper) EXCEL.getHeap().getObject(((XLObject) xlResult).getHandle());
     final List<Object> expectedResult = new ArrayList<>();
@@ -165,7 +175,7 @@ public class ObjectConstructorInvokerTest {
   @Test
   public void testArrayArgs() {
     final ConstructorInvoker invoker = new ObjectConstructorInvoker(ARRAY_ARGS_CONSTRUCTOR,
-        new TypeConverter[] {INT_ARRAY_CONVERTER, INT_ARRAY_CONVERTER}, OBJECT_CONVERTER);
+        new TypeConverter[] {INT_ARRAY_CONVERTER, INT_ARRAY_CONVERTER}, OBJECT_CONVERTER, OBJECT_CONVERTER);
     final XLValue xlResult = invoker.newInstance(new XLValue[] {
         XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}),
         XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(30), XLNumber.of(40)}})});
@@ -183,7 +193,7 @@ public class ObjectConstructorInvokerTest {
   public void testVarArgs() {
     final List<Object> expectedResult = new ArrayList<>();
     ConstructorInvoker invoker = new ObjectConstructorInvoker(VAR_ARGS_CONSTRUCTOR_1, new TypeConverter[] {INT_ARRAY_CONVERTER},
-        OBJECT_CONVERTER);
+        OBJECT_CONVERTER, OBJECT_CONVERTER);
     // empty array
     XLValue xlResult = invoker.newInstance(new XLValue[0]);
     InvokerTestHelper result = (InvokerTestHelper) EXCEL.getHeap().getObject(((XLObject) xlResult).getHandle());
@@ -196,7 +206,7 @@ public class ObjectConstructorInvokerTest {
     assertEquals(result.getInputs(), expectedResult);
     expectedResult.clear();
     invoker = new ObjectConstructorInvoker(VAR_ARGS_CONSTRUCTOR_2, new TypeConverter[] {INT_CONVERTER, INT_ARRAY_CONVERTER},
-        OBJECT_CONVERTER);
+        OBJECT_CONVERTER, OBJECT_CONVERTER);
     // empty array
     xlResult = invoker.newInstance(new XLValue[] {XLNumber.of(10)});
     result = (InvokerTestHelper) EXCEL.getHeap().getObject(((XLObject) xlResult).getHandle());
@@ -220,7 +230,8 @@ public class ObjectConstructorInvokerTest {
   public void testPassthroughNull() throws NoSuchMethodException, SecurityException {
     final List<Object> expectedResult = new ArrayList<>();
     final Constructor<?> constructor = InvokerTestHelper.class.getConstructor(new Class<?>[] {XLValue.class});
-    final ConstructorInvoker invoker = new ObjectConstructorInvoker(constructor, new TypeConverter[] {new XLValueXLValueTypeConverter()}, OBJECT_CONVERTER);
+    final ConstructorInvoker invoker =
+        new ObjectConstructorInvoker(constructor, new TypeConverter[] {new XLValueXLValueTypeConverter()}, OBJECT_CONVERTER, OBJECT_CONVERTER);
     XLValue xlResult = invoker.newInstance(new XLValue[] {XLMissing.INSTANCE});
     InvokerTestHelper result = (InvokerTestHelper) EXCEL.getHeap().getObject(((XLObject) xlResult).getHandle());
     expectedResult.add(null);

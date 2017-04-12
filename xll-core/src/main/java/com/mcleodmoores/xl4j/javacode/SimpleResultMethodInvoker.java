@@ -25,8 +25,9 @@ public class SimpleResultMethodInvoker extends AbstractMethodInvoker {
    * @param returnConverter
    *          the converter required to convert he result back to an Excel type
    */
-  public SimpleResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter) {
-    super(method, argumentConverters, returnConverter);
+  public SimpleResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter,
+      final TypeConverter objectXlObjectConverter) {
+    super(method, argumentConverters, returnConverter, objectXlObjectConverter);
   }
 
   @Override

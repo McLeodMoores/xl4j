@@ -46,19 +46,6 @@ public class FunctionSimulatorTests {
     Assert.assertEquals(arrayList.getClass(), ArrayList.class);
   }
 
-  @Test
-  public void testGetElem() {
-    final XLValue result = _processor.invoke("MakeList", XLArray.of(new XLValue[][] { { XLString.of("One"), XLString.of("Two") } }));
-    Assert.assertEquals(result.getClass(), XLObject.class);
-    final XLObject arrayListObj = (XLObject) result;
-    final Object arrayList = _heap.getObject(arrayListObj.getHandle());
-    Assert.assertEquals(arrayList.getClass(), ArrayList.class);
-    Assert.assertEquals(((List<?>) arrayList).size(), 2);
-    final XLValue result2 = _processor.invoke("ListElement",  result, XLNumber.of(1));
-    Assert.assertEquals(result2.getClass(), XLString.class);
-    Assert.assertEquals(((XLString) result2).getValue(), "Two");
-  }
-
   @SuppressWarnings("unchecked")
   @Test
   public void testSequence() {

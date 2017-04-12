@@ -92,7 +92,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
   }
 
   /**
@@ -115,7 +115,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
   }
 
   /**
@@ -135,7 +135,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
   }
 
   /**
@@ -155,7 +155,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
   }
 
   /**
@@ -176,7 +176,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
   }
 
   /**
@@ -194,7 +194,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     final LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[0]);
@@ -245,7 +245,7 @@ public class DefaultExcelCallbackTest {
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method5", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new XLIntegerTypeConverter()), exportNumber));
+            new XLIntegerTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     final LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[] {parameterDescription + "  "});
@@ -379,7 +379,7 @@ public class DefaultExcelCallbackTest {
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[] {"  "});
@@ -401,7 +401,7 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "QQ$");
@@ -409,14 +409,14 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method3", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new XLLocalReferenceTypeConverter()), exportNumber));
+            new XLLocalReferenceTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "UQ$");
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method4", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "UQ$");
@@ -454,7 +454,7 @@ public class DefaultExcelCallbackTest {
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[] {parameterDescription + "  "});
@@ -476,7 +476,7 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, ">UX#");
@@ -484,14 +484,14 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method3", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new XLLocalReferenceTypeConverter()), exportNumber));
+            new XLLocalReferenceTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, ">UX#");
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method4", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, ">UX#");
@@ -514,7 +514,7 @@ public class DefaultExcelCallbackTest {
     int exportNumber = getExportNumber();
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter(), new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._argumentNames, "parameter1,parameter2");
     parameters[0] = createXLParameter(null, null, null, null);
@@ -524,7 +524,7 @@ public class DefaultExcelCallbackTest {
     exportNumber = getExportNumber();
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter(), new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._argumentNames, "1,2");
   }
@@ -544,7 +544,8 @@ public class DefaultExcelCallbackTest {
     final int exportNumber = getExportNumber();
     final Constructor<?> constructor = DefaultExcelCallbackTest.class.getConstructor(new Class<?>[0]);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
-        new ObjectConstructorInvoker(constructor, new TypeConverter[0], new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+        new ObjectConstructorInvoker(constructor, new TypeConverter[0], new PrimitiveIntegerXLNumberTypeConverter(),
+            new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     final LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[0]);
@@ -590,7 +591,8 @@ public class DefaultExcelCallbackTest {
     final int exportNumber = getExportNumber();
     final Constructor<?> constructor = DefaultExcelCallbackTest.class.getConstructor(new Class<?>[0]);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
-        new ObjectConstructorInvoker(constructor, new TypeConverter[0], new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+        new ObjectConstructorInvoker(constructor, new TypeConverter[0], new PrimitiveIntegerXLNumberTypeConverter(),
+            new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     final LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[0]);
@@ -622,48 +624,48 @@ public class DefaultExcelCallbackTest {
     final XLParameter[] parameters = new XLParameter[0];
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunctions(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
-    //    int exportNumber = getExportNumber();
-    //    Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
-    //    CALLBACK.registerFunction(FunctionDefinition.of(annotation,
-    //        new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-    //            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
-    //    LowLevelEntry entry = getFunction(exportNumber);
-    //    assertEquals(entry._acceleratorKey, "");
-    //    assertEquals(entry._argsHelp, new String[0]);
-    //    assertEquals(entry._argumentNames, "");
-    //    assertEquals(entry._description, "");
-    //    assertEquals(entry._exportNumber, exportNumber);
-    //    assertEquals(entry._functionCategory, functionName);
-    //    assertEquals(entry._functionExportName, "UDF_" + exportNumber);
-    //    assertEquals(entry._functionSignature, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ$");
-    //    assertEquals(entry._functionType, FunctionType.FUNCTION.getExcelValue());
-    //    assertEquals(entry._functionWorksheetName, functionName);
-    //    assertEquals(entry._helpTopic, "");
-    //    assertFalse(entry._isAutoAsynchronous);
-    //    assertFalse(entry._isCallerRequired);
-    //    assertFalse(entry._isLongRunning);
-    //    assertFalse(entry._isManualAsynchronous);
-    //    assertTrue(entry._isVarArgs);
     int exportNumber = getExportNumber();
-    Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
+    Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
+    CALLBACK.registerFunction(FunctionDefinition.of(annotation,
+        new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
+    LowLevelEntry entry = getFunction(exportNumber);
+    assertEquals(entry._acceleratorKey, "");
+    assertEquals(entry._argsHelp, new String[0]);
+    assertEquals(entry._argumentNames, "");
+    assertEquals(entry._description, "");
+    assertEquals(entry._exportNumber, exportNumber);
+    assertEquals(entry._functionCategory, functionName);
+    assertEquals(entry._functionExportName, "UDF_" + exportNumber);
+    assertEquals(entry._functionSignature, "QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQ$");
+    assertEquals(entry._functionType, FunctionType.FUNCTION.getExcelValue());
+    assertEquals(entry._functionWorksheetName, functionName);
+    assertEquals(entry._helpTopic, "");
+    assertFalse(entry._isAutoAsynchronous);
+    assertFalse(entry._isCallerRequired);
+    assertFalse(entry._isLongRunning);
+    assertFalse(entry._isManualAsynchronous);
+    assertTrue(entry._isVarArgs);
+    exportNumber = getExportNumber();
+    method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
-    LowLevelEntry entry = getFunction(exportNumber);
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
+    entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "QQ$");
     exportNumber = getExportNumber();
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method3", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new XLLocalReferenceTypeConverter()), exportNumber));
+            new XLLocalReferenceTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "UQ$");
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method4", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, "UQ$");
@@ -701,7 +703,7 @@ public class DefaultExcelCallbackTest {
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     LowLevelEntry entry = getFunction(exportNumber);
     assertEquals(entry._acceleratorKey, "");
     assertEquals(entry._argsHelp, new String[] {parameterDescription + "  "});
@@ -723,7 +725,7 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method2", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, ">UX#");
@@ -731,14 +733,14 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method3", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new XLLocalReferenceTypeConverter()), exportNumber));
+            new XLLocalReferenceTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, ">UX#");
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method4", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionExportName, "UDF_" + exportNumber);
     assertEquals(entry._functionSignature, ">UX#");
@@ -750,7 +752,7 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionSignature, ">QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQX!");
     annotation =
@@ -760,7 +762,7 @@ public class DefaultExcelCallbackTest {
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerArrayXLArrayTypeConverter()},
-            new PrimitiveIntegerXLNumberTypeConverter()), exportNumber));
+            new PrimitiveIntegerXLNumberTypeConverter(), new ObjectXLObjectTypeConverter(ExcelFactory.getInstance())), exportNumber));
     entry = getFunction(exportNumber);
     assertEquals(entry._functionSignature, ">QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQX");
   }

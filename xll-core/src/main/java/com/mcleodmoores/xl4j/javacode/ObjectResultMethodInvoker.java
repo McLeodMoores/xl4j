@@ -30,7 +30,7 @@ public class ObjectResultMethodInvoker extends AbstractMethodInvoker {
    */
   public ObjectResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter,
       final TypeConverter objectXlObjectConverter) {
-    super(method, argumentConverters, returnConverter);
+    super(method, argumentConverters, returnConverter, objectXlObjectConverter);
     _objectXlObjectConverter = ArgumentChecker.notNull(objectXlObjectConverter, "objectXlObjectConverter");
   }
 

@@ -33,7 +33,7 @@ public class PassthroughResultMethodInvoker extends AbstractMethodInvoker {
    */
   public PassthroughResultMethodInvoker(final Method method, final TypeConverter[] argumentConverters, final TypeConverter returnConverter,
       final TypeConverter objectXlObjectConverter) {
-    super(method, argumentConverters, returnConverter);
+    super(method, argumentConverters, returnConverter, objectXlObjectConverter);
     _objectXlObjectConverter = ArgumentChecker.notNull(objectXlObjectConverter, "objectXlObjectConverter");
   }
 
