@@ -3,6 +3,8 @@ package com.mcleodmoores.xl4j.util;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.xl4j.util.ArrayUtils.FixedDimension;
+
 @Test
 public class ArrayUtilsTests {
   @Test
@@ -92,5 +94,57 @@ public class ArrayUtilsTests {
     Integer[][] arr5 = new Integer[0][10];
     Assert.assertTrue(ArrayUtils.isRectangular(arr5));
     // can't change the shape.
+  }
+  
+  @Test
+  public void testTransposeIfNeeded() {
+    // check argument checkers
+    try {
+      ArrayUtils.transposeIfNeeded(null, 1, FixedDimension.COLUMNS);
+      Assert.fail();
+    } catch (Excel4JRuntimeException xlre) {
+    } catch (ArrayWrongSizeException awse) {
+      Assert.fail();
+    }
+    try {
+      ArrayUtils.transposeIfNeeded(new Integer[10][10], 10, null);
+      Assert.fail();
+    } catch (Excel4JRuntimeException xlre) {
+    } catch (ArrayWrongSizeException awse) {
+      Assert.fail();
+    }
+    try {
+      ArrayUtils.transposeIfNeeded(new Integer[10][10], -10, FixedDimension.ROWS);
+      Assert.fail();
+    } catch (Excel4JRuntimeException xlre) {
+    } catch (ArrayWrongSizeException awse) {
+      Assert.fail();
+    }
+    
+    Integer[][] arr = new Integer [][] { { 1, 2 }, {3, 4}, {5, 6} }; // 2x3
+    try {
+      Integer[][] res = ArrayUtils.transposeIfNeeded(arr, 2, FixedDimension.COLUMNS);
+      Assert.assertEquals(res.length, 3);
+      Assert.assertEquals(res[0].length, 2);
+      res = ArrayUtils.transposeIfNeeded(arr, 2, FixedDimension.ROWS);
+      Assert.assertEquals(res.length, 2);
+      Assert.assertEquals(res[0].length, 3);
+    } catch (ArrayWrongSizeException awse) {
+      Assert.fail();
+    }
+    // try wrong size
+    try {
+      // too big
+      ArrayUtils.transposeIfNeeded(arr, 4, FixedDimension.COLUMNS);
+      Assert.fail();
+    } catch (ArrayWrongSizeException awse) {
+    }
+    try {
+      // too small
+      ArrayUtils.transposeIfNeeded(arr, 1, FixedDimension.COLUMNS);
+      Assert.fail();
+    } catch (ArrayWrongSizeException awse) {
+    }
+    
   }
 }

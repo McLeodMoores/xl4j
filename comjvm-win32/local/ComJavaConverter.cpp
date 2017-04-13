@@ -128,194 +128,199 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 
 VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject joXLValue) {
 	VARIANT result;
-	jclass jcXLValue = pEnv->GetObjectClass(joXLValue);
-
-	if (pJniCache->IsXLObject(pEnv, jcXLValue)) {
-		//LOGTRACE("XLObject");
-		jstring joStringValue = pJniCache->XLObject_getValue(pEnv, joXLValue);
-		V_VT(&result) = VT_BSTR;
-		storeBSTR(pEnv, joStringValue, &V_BSTR(&result));
-	} else if (pJniCache->IsXLString(pEnv, jcXLValue)) {
-		//LOGTRACE("XLString");
-		jstring joStringValue = pJniCache->XLString_getValue(pEnv, joXLValue);
-		V_VT(&result) = VT_BSTR;
-		storeBSTR(pEnv, joStringValue, &V_BSTR(&result));
-		//LOGTRACE("String is %s", V_BSTR(&result));
-	} else if (pJniCache->IsXLNumber(pEnv, jcXLValue)) {
-		//LOGTRACE("XLNumber");
-		jdouble value = pJniCache->XLNumber_getValue(pEnv, joXLValue);
-		V_VT(&result) = VT_R8;
-		V_R8(&result) = value;
-	} else if (pJniCache->IsXLNil(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLNil");
+	if (joXLValue == NULL) {
 		VariantClear(&result);
 		V_VT(&result) = VT_NULL;
-	} else if (pJniCache->IsXLMultiReference(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLMultiReference");
-		V_VT(&result) = VT_RECORD;
-		// look up record info for struct we're using.
-		IRecordInfo *pRecInfo;
-		HRESULT hr = GetRecordInfoFromGuids(LIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &pRecInfo);
-		if (FAILED(hr)) {
-			_com_error err(hr);
-			LOGERROR("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage());
-			throw std::logic_error("Couldn't get RecordInfo for XL4JMULTIREFERENCE");
-		}
-		V_RECORDINFO(&result) = pRecInfo;
-		// get ranges array so we can get the size and allocate the array for the UDT
-		jobjectArray joaXLRanges = pJniCache->XLMultiReference_getRangesArray(pEnv, joXLValue);
-		jsize jsXLRanges = pEnv->GetArrayLength(joaXLRanges);
-		XL4JMULTIREFERENCE *pMultiReference;
-		hr = allocMultiReference(&pMultiReference, jsXLRanges);
-		if (FAILED(hr)) {
-			_com_error err(hr);
-			LOGERROR("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage());
-			throw std::logic_error("Couldn't allocate XL4JMULTIREFERENCE");
-		}
-		V_RECORD(&result) = pMultiReference;
-
-		// get the sheet id part and copy that into the UDT
-		jint sheetId = pJniCache->XLMultiReference_getSheetId(pEnv, joXLValue);
-		pMultiReference->idSheet = sheetId;
-
-		// Access the embedded SAFEARRAY and copy values in
-		XL4JREFERENCE *pRefs;
-		hr = SafeArrayAccessData(pMultiReference->refs, (PVOID *)&pRefs);
-		if (FAILED(hr)) {
-			_com_error err(hr);
-			LOGERROR("Could not access XL4JMULTIREFERENCE array: %s", err.ErrorMessage());
-			throw std::logic_error("Couldn't access XL4JMULTIREFERENCE array");
-		}
-		pJniCache->XlMultiReference_getValues(pEnv, joaXLRanges, pRefs, jsXLRanges);
-		SafeArrayUnaccessData(pMultiReference->refs);
-	} else if (pJniCache->IsXLMissing(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLMissing");
-		VariantClear(&result);
-		V_VT(&result) = VT_EMPTY;
-	} else if (pJniCache->IsXLLocalReference(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLLocalReference");
-		V_VT(&result) = VT_RECORD;
-		// look up record info for struct we're using.
-		IRecordInfo *pRecInfo;
-		HRESULT hr = GetRecordInfoFromGuids(LIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &pRecInfo);
-		if (FAILED(hr)) {
-			_com_error err(hr);
-			LOGERROR("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage());
-			throw std::logic_error("Couldn't get RecordInfo for XL4JREFERENCE");
-		}
-		V_RECORDINFO(&result) = pRecInfo;
-		XL4JREFERENCE *pReference;
-		hr = allocReference(&pReference);
-		if (FAILED(hr)) {
-			_com_error err(hr);
-			LOGERROR("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage());
-			throw std::logic_error("Couldn't allocate XL4JREFERENCE");
-		}
-		V_RECORD(&result) = pReference;
-		pJniCache->XLLocalReference_getValue(pEnv, joXLValue, pReference);
-	} else if (pJniCache->IsXLInteger(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLInteger");
-		V_VT(&result) = VT_INT;
-		V_INT(&result) = pJniCache->XLInteger_getValue(pEnv, joXLValue);
-	} else if (pJniCache->IsXLError(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLError");
-		V_VT(&result) = VT_UI1;
-		jint jiOrdinal = pJniCache->XLError_ordinal(pEnv, joXLValue);
-		switch (jiOrdinal) { // depends on declaration order in XLError source.
-		case 0:
-			V_UI1(&result) = xl4jerrNull;
-			break;
-		case 1:
-			V_UI1(&result) = xl4jerrDiv0;
-			break;
-		case 2:
-			V_UI1(&result) = xl4jerrValue;
-			break;
-		case 3:
-			V_UI1(&result) = xl4jerrRef;
-			break;
-		case 4:
-			V_UI1(&result) = xl4jerrName;
-			break;
-		case 5:
-			V_UI1(&result) = xl4jerrNum;
-			break;
-		case 6:
-			V_UI1(&result) = xl4jerrNA;
-			break;
-		default:
-			throw std::invalid_argument("Invalid error ordinal");
-		}
-	} else if (pJniCache->IsXLBoolean(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLBoolean");
-		V_VT(&result) = VT_BOOL;
-		jint jiOrdinal = pJniCache->XLBoolean_ordinal(pEnv, joXLValue);
-		if (jiOrdinal == 0) { // depends on declaration order in XLBoolean source.
-			V_BOOL(&result) = VARIANT_TRUE;
-		} else {
-			V_BOOL(&result) = VARIANT_FALSE;
-		}
-	} else if (pJniCache->IsXLBigData(pEnv, jcXLValue)) {
-		//LOGTRACE ("XLBigData");
-		throw std::logic_error("BigData not implemented");
-	} else if (pJniCache->IsXLArray(pEnv, jcXLValue)) {
-		LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
-		LARGE_INTEGER Frequency;
-
-		QueryPerformanceFrequency(&Frequency);
-		QueryPerformanceCounter(&StartingTime);
-		//LOGTRACE ("XLArray");
-		jobjectArray joaValuesRows = pJniCache->XLArray_getArray(pEnv, joXLValue);
-		jsize jsValuesRows = pEnv->GetArrayLength(joaValuesRows);
-		SAFEARRAY *psa;
-		if (jsValuesRows == 0) {
-			SAFEARRAYBOUND bounds[2] = { { 0, 0 },{ 0, 0 } };
-			psa = SafeArrayCreateEx(VT_VARIANT, 2, bounds, NULL);
-			if (psa == NULL) {
-				LOGERROR("Out of memory when allocating SAFEARRAY for XLArray");
-				throw std::exception("Can't allocate SAFEARRAY for XLArray");
-			}
-		} else {
-			jobjectArray joaValuesRow0 = (jobjectArray)pEnv->GetObjectArrayElement(joaValuesRows, 0);
-			jsize jsValuesColumns = pEnv->GetArrayLength(joaValuesRow0);
-			SAFEARRAYBOUND bounds[2] = { { jsValuesRows, 0 },{ jsValuesColumns, 0 } };
-			psa = SafeArrayCreateEx(VT_VARIANT, 2, bounds, NULL);
-			if (psa == NULL) {
-				LOGERROR("Out of memory when allocating SAFEARRAY for XLArray");
-				throw std::exception("Can't allocate SAFEARRAY for XLArray");
-			}
-			VARIANT *pVariant;
-			HRESULT hr = SafeArrayAccessData(psa, (PVOID *)&pVariant);
-			for (jsize j = 0; j < jsValuesRows; j++) {
-				jobjectArray joaValuesRow = (jobjectArray)pEnv->GetObjectArrayElement(joaValuesRows, j);
-				for (jsize i = 0; i < jsValuesColumns; i++) {
-					jobject joValue = pEnv->GetObjectArrayElement (joaValuesRow, i);
-					/*VARIANT v; this was here to test the overhead of this loop.
-					V_VT(&v) = VT_R8;
-					V_R8(&v) = 7;*/
-					*(pVariant++) = convert(pEnv, pJniCache, joValue);
-					pEnv->DeleteLocalRef(joValue);
-				}
-				pEnv->DeleteLocalRef(joaValuesRow);
-			}
-			SafeArrayUnaccessData(psa);
-		}
-		V_VT(&result) = VT_ARRAY;
-		V_ARRAY(&result) = psa;
-		QueryPerformanceCounter(&EndingTime);
-		ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
-		LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
 	} else {
-		LOGTRACE("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass("com/mcleodmoores/xl4j/values/XLValue"));
-		jclass jcObject = pEnv->FindClass("java/lang/Object");
-		jmethodID jmObject_getClass = pEnv->GetMethodID(jcObject, "getClass", "()Ljava/lang/Class;");
-		jobject joClass = pEnv->CallObjectMethod(joXLValue, jmObject_getClass);
-		jclass jcClass = pEnv->FindClass("java/lang/Class");
-		jmethodID jmClass_getName = pEnv->GetMethodID(jcClass, "getName", "()Ljava/lang/String;");
-		jstring jsClassName = (jstring)pEnv->CallObjectMethod(joClass, jmClass_getName);
-		const jchar *pClassName = pEnv->GetStringChars(jsClassName, NULL);
-		//LOGTRACE ("Class name of xlvalue object is %s", pClassName);
-		pEnv->ReleaseStringChars(jsClassName, pClassName);
+		jclass jcXLValue = pEnv->GetObjectClass(joXLValue);
+
+		if (pJniCache->IsXLObject(pEnv, jcXLValue)) {
+			//LOGTRACE("XLObject");
+			jstring joStringValue = pJniCache->XLObject_getValue(pEnv, joXLValue);
+			V_VT(&result) = VT_BSTR;
+			storeBSTR(pEnv, joStringValue, &V_BSTR(&result));
+		} else if (pJniCache->IsXLString(pEnv, jcXLValue)) {
+			//LOGTRACE("XLString");
+			jstring joStringValue = pJniCache->XLString_getValue(pEnv, joXLValue);
+			V_VT(&result) = VT_BSTR;
+			storeBSTR(pEnv, joStringValue, &V_BSTR(&result));
+			//LOGTRACE("String is %s", V_BSTR(&result));
+		} else if (pJniCache->IsXLNumber(pEnv, jcXLValue)) {
+			//LOGTRACE("XLNumber");
+			jdouble value = pJniCache->XLNumber_getValue(pEnv, joXLValue);
+			V_VT(&result) = VT_R8;
+			V_R8(&result) = value;
+		} else if (pJniCache->IsXLNil(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLNil");
+			VariantClear(&result);
+			V_VT(&result) = VT_NULL;
+		} else if (pJniCache->IsXLMultiReference(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLMultiReference");
+			V_VT(&result) = VT_RECORD;
+			// look up record info for struct we're using.
+			IRecordInfo *pRecInfo;
+			HRESULT hr = GetRecordInfoFromGuids(LIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &pRecInfo);
+			if (FAILED(hr)) {
+				_com_error err(hr);
+				LOGERROR("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage());
+				throw std::logic_error("Couldn't get RecordInfo for XL4JMULTIREFERENCE");
+			}
+			V_RECORDINFO(&result) = pRecInfo;
+			// get ranges array so we can get the size and allocate the array for the UDT
+			jobjectArray joaXLRanges = pJniCache->XLMultiReference_getRangesArray(pEnv, joXLValue);
+			jsize jsXLRanges = pEnv->GetArrayLength(joaXLRanges);
+			XL4JMULTIREFERENCE *pMultiReference;
+			hr = allocMultiReference(&pMultiReference, jsXLRanges);
+			if (FAILED(hr)) {
+				_com_error err(hr);
+				LOGERROR("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage());
+				throw std::logic_error("Couldn't allocate XL4JMULTIREFERENCE");
+			}
+			V_RECORD(&result) = pMultiReference;
+
+			// get the sheet id part and copy that into the UDT
+			jint sheetId = pJniCache->XLMultiReference_getSheetId(pEnv, joXLValue);
+			pMultiReference->idSheet = sheetId;
+
+			// Access the embedded SAFEARRAY and copy values in
+			XL4JREFERENCE *pRefs;
+			hr = SafeArrayAccessData(pMultiReference->refs, (PVOID *)&pRefs);
+			if (FAILED(hr)) {
+				_com_error err(hr);
+				LOGERROR("Could not access XL4JMULTIREFERENCE array: %s", err.ErrorMessage());
+				throw std::logic_error("Couldn't access XL4JMULTIREFERENCE array");
+			}
+			pJniCache->XlMultiReference_getValues(pEnv, joaXLRanges, pRefs, jsXLRanges);
+			SafeArrayUnaccessData(pMultiReference->refs);
+		} else if (pJniCache->IsXLMissing(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLMissing");
+			VariantClear(&result);
+			V_VT(&result) = VT_EMPTY;
+		} else if (pJniCache->IsXLLocalReference(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLLocalReference");
+			V_VT(&result) = VT_RECORD;
+			// look up record info for struct we're using.
+			IRecordInfo *pRecInfo;
+			HRESULT hr = GetRecordInfoFromGuids(LIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &pRecInfo);
+			if (FAILED(hr)) {
+				_com_error err(hr);
+				LOGERROR("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage());
+				throw std::logic_error("Couldn't get RecordInfo for XL4JREFERENCE");
+			}
+			V_RECORDINFO(&result) = pRecInfo;
+			XL4JREFERENCE *pReference;
+			hr = allocReference(&pReference);
+			if (FAILED(hr)) {
+				_com_error err(hr);
+				LOGERROR("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage());
+				throw std::logic_error("Couldn't allocate XL4JREFERENCE");
+			}
+			V_RECORD(&result) = pReference;
+			pJniCache->XLLocalReference_getValue(pEnv, joXLValue, pReference);
+		} else if (pJniCache->IsXLInteger(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLInteger");
+			V_VT(&result) = VT_INT;
+			V_INT(&result) = pJniCache->XLInteger_getValue(pEnv, joXLValue);
+		} else if (pJniCache->IsXLError(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLError");
+			V_VT(&result) = VT_UI1;
+			jint jiOrdinal = pJniCache->XLError_ordinal(pEnv, joXLValue);
+			switch (jiOrdinal) { // depends on declaration order in XLError source.
+			case 0:
+				V_UI1(&result) = xl4jerrNull;
+				break;
+			case 1:
+				V_UI1(&result) = xl4jerrDiv0;
+				break;
+			case 2:
+				V_UI1(&result) = xl4jerrValue;
+				break;
+			case 3:
+				V_UI1(&result) = xl4jerrRef;
+				break;
+			case 4:
+				V_UI1(&result) = xl4jerrName;
+				break;
+			case 5:
+				V_UI1(&result) = xl4jerrNum;
+				break;
+			case 6:
+				V_UI1(&result) = xl4jerrNA;
+				break;
+			default:
+				throw std::invalid_argument("Invalid error ordinal");
+			}
+		} else if (pJniCache->IsXLBoolean(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLBoolean");
+			V_VT(&result) = VT_BOOL;
+			jint jiOrdinal = pJniCache->XLBoolean_ordinal(pEnv, joXLValue);
+			if (jiOrdinal == 0) { // depends on declaration order in XLBoolean source.
+				V_BOOL(&result) = VARIANT_TRUE;
+			} else {
+				V_BOOL(&result) = VARIANT_FALSE;
+			}
+		} else if (pJniCache->IsXLBigData(pEnv, jcXLValue)) {
+			//LOGTRACE ("XLBigData");
+			throw std::logic_error("BigData not implemented");
+		} else if (pJniCache->IsXLArray(pEnv, jcXLValue)) {
+			LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
+			LARGE_INTEGER Frequency;
+
+			QueryPerformanceFrequency(&Frequency);
+			QueryPerformanceCounter(&StartingTime);
+			//LOGTRACE ("XLArray");
+			jobjectArray joaValuesRows = pJniCache->XLArray_getArray(pEnv, joXLValue);
+			jsize jsValuesRows = pEnv->GetArrayLength(joaValuesRows);
+			SAFEARRAY *psa;
+			if (jsValuesRows == 0) {
+				SAFEARRAYBOUND bounds[2] = { { 0, 0 },{ 0, 0 } };
+				psa = SafeArrayCreateEx(VT_VARIANT, 2, bounds, NULL);
+				if (psa == NULL) {
+					LOGERROR("Out of memory when allocating SAFEARRAY for XLArray");
+					throw std::exception("Can't allocate SAFEARRAY for XLArray");
+				}
+			} else {
+				jobjectArray joaValuesRow0 = (jobjectArray)pEnv->GetObjectArrayElement(joaValuesRows, 0);
+				jsize jsValuesColumns = pEnv->GetArrayLength(joaValuesRow0);
+				SAFEARRAYBOUND bounds[2] = { { jsValuesRows, 0 },{ jsValuesColumns, 0 } };
+				psa = SafeArrayCreateEx(VT_VARIANT, 2, bounds, NULL);
+				if (psa == NULL) {
+					LOGERROR("Out of memory when allocating SAFEARRAY for XLArray");
+					throw std::exception("Can't allocate SAFEARRAY for XLArray");
+				}
+				VARIANT *pVariant;
+				HRESULT hr = SafeArrayAccessData(psa, (PVOID *)&pVariant);
+				for (jsize j = 0; j < jsValuesRows; j++) {
+					jobjectArray joaValuesRow = (jobjectArray)pEnv->GetObjectArrayElement(joaValuesRows, j);
+					for (jsize i = 0; i < jsValuesColumns; i++) {
+						jobject joValue = pEnv->GetObjectArrayElement(joaValuesRow, i);
+						/*VARIANT v; this was here to test the overhead of this loop.
+						V_VT(&v) = VT_R8;
+						V_R8(&v) = 7;*/
+						*(pVariant++) = convert(pEnv, pJniCache, joValue);
+						pEnv->DeleteLocalRef(joValue);
+					}
+					pEnv->DeleteLocalRef(joaValuesRow);
+				}
+				SafeArrayUnaccessData(psa);
+			}
+			V_VT(&result) = VT_ARRAY;
+			V_ARRAY(&result) = psa;
+			QueryPerformanceCounter(&EndingTime);
+			ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
+			LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
+		} else {
+			LOGTRACE("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass("com/mcleodmoores/xl4j/values/XLValue"));
+			jclass jcObject = pEnv->FindClass("java/lang/Object");
+			jmethodID jmObject_getClass = pEnv->GetMethodID(jcObject, "getClass", "()Ljava/lang/Class;");
+			jobject joClass = pEnv->CallObjectMethod(joXLValue, jmObject_getClass);
+			jclass jcClass = pEnv->FindClass("java/lang/Class");
+			jmethodID jmClass_getName = pEnv->GetMethodID(jcClass, "getName", "()Ljava/lang/String;");
+			jstring jsClassName = (jstring)pEnv->CallObjectMethod(joClass, jmClass_getName);
+			const jchar *pClassName = pEnv->GetStringChars(jsClassName, NULL);
+			//LOGTRACE ("Class name of xlvalue object is %s", pClassName);
+			pEnv->ReleaseStringChars(jsClassName, pClassName);
+		}
 	}
 	return result;
 }

@@ -151,7 +151,12 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 				}
 			}
 		}
-		
+		if ((cRows == 0) || (cColumns == 0)) {
+			// the above loop wouldn't have done anything but we clamped the array at minimum 1 x 1
+			pXLOPERArr->xltype = xltypeNil; // set the one cell as nil.
+			cColumns = 1; // this stops n x 0 or 0 x n becoming n x 1 or 1 x n as far as Excel is concerned
+			cRows = 1;
+		}
 		SafeArrayUnaccessData (psa);
 		out->xltype = xltypeMulti | xlbitDLLFree; // tell excel to call us back to free it.
 		out->val.array.columns = cColumns;
@@ -350,6 +355,13 @@ HRESULT Converter::allocMREF (size_t ranges, XLMREF12 **result) {
 }
 
 HRESULT Converter::allocARRAY (size_t cols, size_t rows, XLOPER12 **arr) {
+	// clamp array at minimum 1x1
+	if (cols == 0) { 
+		cols = 1; 
+	}
+	if (rows == 0) {
+		rows = 1;
+	}
 	*arr = static_cast<XLOPER12 *>(malloc ((cols * rows * sizeof (XLOPER12))));
 	if (*arr == NULL) {
 		return E_OUTOFMEMORY;

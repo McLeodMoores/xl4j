@@ -54,7 +54,8 @@ public final class XLObject implements XLValue {
    */
   public static XLObject of(final Class<?> clazz, final long handle) {
     ArgumentChecker.notNull(clazz, "clazz");
-    return new XLObject(clazz.getSimpleName(), handle);
+    String simpleName = clazz.getSimpleName();
+    return new XLObject(simpleName != null ? simpleName : clazz.getName(), handle);
   }
 
   /**

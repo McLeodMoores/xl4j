@@ -11,6 +11,9 @@ mkdir "%1\target\%3-%4\jars"
 if not exist %1\target\%3-%4\%2\%2.dll goto overdll
 copy /y "%1\target\%3-%4\%2\%2.dll" "%1\target\%3-%4"
 :overdll
+if not exist %1\target\%3-%4\%2\%2.pdb goto overpdb
+copy /y "%1\target\%3-%4\%2\%2.pdb" "%1\target\%3-%4"
+:overpdb
 if not exist %1\target\%3-%4\%2\%2.dll.embed.manifest goto overdllmanifest
 copy /y "%1\target\%3-%4\%2\%2.dll.embed.manifest" "%1\target\%3-%4"
 :overdllmanifest
