@@ -77,6 +77,11 @@
                   <path>${project.basedir}/target/Debug-Win32</path>
                   <pattern>*.dll</pattern>
                 </executable>
+				<executable>
+                  <arch>x86-debug</arch>
+                  <path>${project.basedir}/target/Debug-Win32</path>
+                  <pattern>*.pdb</pattern>
+                </executable>
 		        <executable>
                   <arch>x86-debug</arch>
                   <path>${project.basedir}/target/Debug-Win32</path>
@@ -91,6 +96,11 @@
                   <arch>x64-debug</arch>
                   <path>${project.basedir}/target/Debug-x64</path>
                   <pattern>*.dll</pattern>
+                </executable>
+				<executable>
+                  <arch>x64-debug</arch>
+                  <path>${project.basedir}/target/Debug-x64</path>
+                  <pattern>*.pdb</pattern>
                 </executable>
 	            <executable>
                   <arch>x64-debug</arch>
