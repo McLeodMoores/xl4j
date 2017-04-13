@@ -77,6 +77,7 @@ public final class List2XLArrayTypeConverter extends AbstractTypeConverter {
       if (!List.class.isAssignableFrom((Class<?>) expectedType)) {
         throw new Excel4JRuntimeException("expectedType is not a List");
       }
+      // TODO check the superclass for generic arguments?
       type = Object.class;
     } else if (expectedType instanceof ParameterizedType) {
       final ParameterizedType parameterizedType = (ParameterizedType) expectedType;

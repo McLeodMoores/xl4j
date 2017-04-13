@@ -3,23 +3,24 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import java.util.List;
-
-import org.threeten.bp.LocalDate;
-
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 
 /**
- *
+ * Samples a time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(description = "Sampling a time series", category = "Time series")
-public class TimeSeriesSamplingFunction implements TimeSeriesBiFunction<List<LocalDate>, TimeSeries> {
+@XLFunctions(
+    prefix = "Sample",
+    description = "Sampling a time series",
+    category = "Time series",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT)
+public class TimeSeriesSamplingFunction implements TimeSeriesBiFunction<Schedule, TimeSeries> {
 
   @Override
-  public TimeSeries apply(final TimeSeries ts, final List<LocalDate> schedule) {
+  public TimeSeries apply(final TimeSeries ts, final Schedule schedule) {
     ArgumentChecker.notNull(ts, "ts");
     ArgumentChecker.notNull(schedule, "schedule");
     final TimeSeries result = TimeSeries.newTimeSeries();
