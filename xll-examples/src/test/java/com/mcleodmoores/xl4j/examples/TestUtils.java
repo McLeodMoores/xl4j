@@ -22,10 +22,17 @@ import com.mcleodmoores.xl4j.values.XLValue;
 import com.opengamma.util.money.Currency;
 
 /**
- *
+ * Utilities for test classes.
  */
 public final class TestUtils {
 
+  /**
+   * Converts Java objects to their XLValue equivalents.
+   * @param object
+   *          the object to convert
+   * @return
+   *          the XLValue
+   */
   public static XLValue convertToXlType(final Object object) {
     if (object instanceof Number) {
       return XLNumber.of(((Number) object).doubleValue());
@@ -43,7 +50,6 @@ public final class TestUtils {
       return XLString.of(((Currency) object).getCode());
     }
     if (object.getClass().isArray()) {
-      //TODO only works for 1D arrays
       XLValue[][] values = new XLValue[0][];
       if (object.getClass().getComponentType().isPrimitive()) {
         final int n = Array.getLength(object);
@@ -64,11 +70,29 @@ public final class TestUtils {
     throw new IllegalArgumentException("Unsupported object type " + object);
   }
 
+  /**
+   * Converts Java objects to an XLObjects and puts it on the heap.
+   * @param object
+   *          the object to convert
+   * @param heap
+   *          the heap
+   * @return
+   *          the XLValue
+   */
   public static XLValue convertToXlType(final Object object, final Heap heap) {
     final long handle = heap.getHandle(object);
     return XLObject.of(object.getClass(), handle);
   }
 
+  /**
+   * Tests that a range equals the expected values.
+   * @param xlArray
+   *          the range
+   * @param firstExpectedArray
+   *          the first row or column
+   * @param secondExpectedArray
+   *          the second row or column
+   */
   public static void assert2dXlArray(final XLArray xlArray, final double[] firstExpectedArray, final double[] secondExpectedArray) {
     assertEquals(firstExpectedArray.length, secondExpectedArray.length);
     final XLValue[][] xlValues = xlArray.getArray();
@@ -105,6 +129,15 @@ public final class TestUtils {
     }
   }
 
+  /**
+   * Tests that a range equals the expected values.
+   * @param xlArray
+   *          the range
+   * @param firstExpectedArray
+   *          the first row or column
+   * @param secondExpectedArray
+   *          the second row or column
+   */
   public static void assert2dXlArray(final XLArray xlArray, final Double[] firstExpectedArray, final Double[] secondExpectedArray) {
     assertEquals(firstExpectedArray.length, secondExpectedArray.length);
     final XLValue[][] xlValues = xlArray.getArray();
@@ -139,5 +172,8 @@ public final class TestUtils {
     } else {
       fail("Rows = " + xlValues.length + ", columns = " + xlValues[0].length);
     }
+  }
+
+  private TestUtils() {
   }
 }

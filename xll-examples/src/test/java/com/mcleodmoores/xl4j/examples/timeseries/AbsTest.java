@@ -10,8 +10,6 @@ import java.util.stream.IntStream;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.opengamma.util.test.TestGroup;
-
 /**
  *
  */
