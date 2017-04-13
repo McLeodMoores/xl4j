@@ -55,7 +55,8 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
         final Constructor<?> constructor = clazz.getConstructor(new Class<?>[0]);
         switch (typeConversionMode) {
           case OBJECT_RESULT:
-            return new ConstructorInvoker[] {new ObjectConstructorInvoker(constructor, EMPTY_CONVERTER_ARRAY, _objectXlObjectConverter)};
+            return new ConstructorInvoker[] {new ObjectConstructorInvoker(constructor, EMPTY_CONVERTER_ARRAY, _objectXlObjectConverter,
+                _objectXlObjectConverter)};
           case PASSTHROUGH:
             return new ConstructorInvoker[] {new PassthroughConstructorInvoker(constructor, _objectXlObjectConverter)};
           default:
@@ -105,7 +106,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             index = frontIndex;
             frontIndex++;
           }
-          invokers[index] = new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
+          invokers[index] = new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter, _objectXlObjectConverter);
           break;
         }
         case PASSTHROUGH: {
@@ -150,7 +151,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
           case OBJECT_RESULT:
             return new MethodInvoker[] {new ObjectResultMethodInvoker(method, EMPTY_CONVERTER_ARRAY, resultConverter, _objectXlObjectConverter)};
           case SIMPLEST_RESULT:
-            return new MethodInvoker[] {new SimpleResultMethodInvoker(method, EMPTY_CONVERTER_ARRAY, resultConverter)};
+            return new MethodInvoker[] {new SimpleResultMethodInvoker(method, EMPTY_CONVERTER_ARRAY, resultConverter, _objectXlObjectConverter)};
           case PASSTHROUGH:
             return new MethodInvoker[] {new PassthroughMethodInvoker(method)};
           default:
@@ -167,16 +168,20 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (!method.getName().equals(methodName)) {
         continue; // this isn't the method that is required
       }
-      final boolean isVarArgs = method.isVarArgs();
       final Class<?>[] parameterTypes = method.getParameterTypes();
-      if (!isVarArgs && argTypes.length != parameterTypes.length) {
-        continue; // number of arguments don't match so skip this one.
+      final boolean isVarArgs = method.isVarArgs();
+      if (!isVarArgs) {
+        // if the method is static, number of arguments must match number of parameters
+        // if the method is not static, the first argument is the object containing the method
+        if (argTypes.length != parameterTypes.length) {
+          continue; // number of arguments don't match so skip this one.
+        }
       }
       final TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
       switch (typeConversionMode) {
         case OBJECT_RESULT:
         case SIMPLEST_RESULT: {
-          TypeConverter[] argumentConverters = null;
+          final TypeConverter[] argumentConverters;
           final int index;
           if (isVarArgs) {
             final int nNonVarArgParameters = parameterTypes.length - 1;
@@ -196,6 +201,9 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
               argumentConverters = new TypeConverter[nonVarArgConverters.length + 1];
               System.arraycopy(nonVarArgConverters, 0, argumentConverters, 0, nonVarArgConverters.length);
               argumentConverters[argumentConverters.length - 1] = varArgConverter;
+            } else {
+              // no converters for varargs
+              argumentConverters = nonVarArgConverters;
             }
             // put var arg methods at end of list, as matching on more specific methods is better
             index = backIndex;
@@ -205,10 +213,10 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             index = frontIndex;
             frontIndex++;
           }
-          if (typeConversionMode == TypeConversionMode.OBJECT_RESULT) {
-            invokers[index] = new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
+          if (typeConversionMode == TypeConversionMode.SIMPLEST_RESULT) {
+            invokers[index] = new SimpleResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
           } else {
-            invokers[index] = new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+            invokers[index] = new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
           }
           break;
         }
@@ -251,11 +259,11 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       }
       switch (resultType) {
         case SIMPLEST_RESULT:
-          return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter);
+          return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
         case PASSTHROUGH:
           return new PassthroughResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
         case OBJECT_RESULT:
-          return new ObjectResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);
+          return new ObjectResultMethodInvoker(method, argumentConverters, _objectXlObjectConverter, _objectXlObjectConverter);
         default:
           throw new IllegalArgumentException("Unhandled result type " + resultType);
       }
@@ -270,7 +278,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     final Class<?>[] genericParameterTypes = ArgumentChecker.notNull(constructor, "constructor").getParameterTypes();
     try {
       final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
-      return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter);
+      return new ObjectConstructorInvoker(constructor, argumentConverters, _objectXlObjectConverter, _objectXlObjectConverter);
     } catch (final Excel4JRuntimeException e) {
       throw new Excel4JRuntimeException("Could not construct invoker for " + constructor, e);
     }

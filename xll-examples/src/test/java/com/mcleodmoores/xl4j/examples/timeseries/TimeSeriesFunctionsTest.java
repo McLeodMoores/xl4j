@@ -10,10 +10,12 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
+import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
 import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLError;
 import com.mcleodmoores.xl4j.values.XLNumber;
+import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
@@ -179,13 +181,8 @@ public class TimeSeriesFunctionsTest {
       xlValues[0][i] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
     final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
-    final XLValue[][] xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    for (int i = 0; i < n; i++) {
-      assertEquals(xlTsObject[i][0], xlDates[0][i]);
-      assertEquals(xlTsObject[i][1], xlValues[0][i]);
-    }
+    final TimeSeries ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(expectedTs, ts);
   }
 
   /**
@@ -205,14 +202,9 @@ public class TimeSeriesFunctionsTest {
       xlValues[i] = new XLValue[] {i % 2 == 0 ? null : XLNumber.of(i)}; // nulls are allowed
     }
     final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
-    assertTrue(result instanceof XLArray);
-    final XLValue[][] xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    for (int i = 0; i < n; i++) {
-      assertEquals(xlTsObject[i][0], xlDates[i][0]);
-      assertEquals(xlTsObject[i][1], xlValues[i][0]);
-    }
+    assertTrue(result instanceof XLObject);
+    final TimeSeries ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(ts, expectedTs);
   }
 
   /**
@@ -232,14 +224,8 @@ public class TimeSeriesFunctionsTest {
       xlValues[0][i] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
     final XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlDates), XLArray.of(xlValues));
-    assertTrue(result instanceof XLArray);
-    final XLValue[][] xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    for (int i = 0; i < n; i++) {
-      assertEquals(xlTsObject[i][0], xlDates[i][0]);
-      assertEquals(xlTsObject[i][1], xlValues[0][i]);
-    }
+    final TimeSeries ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(expectedTs, ts);
   }
 
   /**
@@ -258,28 +244,17 @@ public class TimeSeriesFunctionsTest {
       xlValues[1][i] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
     XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
-    assertTrue(result instanceof XLArray);
-    XLValue[][] xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    for (int i = 0; i < n; i++) {
-      assertEquals(xlTsObject[i][0], xlValues[0][i]);
-      assertEquals(xlTsObject[i][1], xlValues[1][i]);
-    }
+    assertTrue(result instanceof XLObject);
+    TimeSeries ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(expectedTs, ts);
     // check that it accepts a column as well
     n = 1;
     expectedTs = TimeSeries.newTimeSeries();
     expectedTs.put(now, 20.);
     xlValues = new XLValue[][] {new XLValue[] {XLNumber.of(now.toEpochDay() + DAYS_FROM_EXCEL_EPOCH)}, new XLValue[]{XLNumber.of(20)}};
     result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
-    assertTrue(result instanceof XLArray);
-    xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    for (int i = 0; i < n; i++) {
-      assertEquals(xlTsObject[i][0], xlValues[0][i]);
-      assertEquals(xlTsObject[i][1], xlValues[1][i]);
-    }
+    ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(expectedTs, ts);
   }
 
   /**
@@ -298,23 +273,15 @@ public class TimeSeriesFunctionsTest {
       xlValues[i][1] = i % 2 == 0 ? null : XLNumber.of(i); // nulls are allowed
     }
     XLValue result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
-    XLValue[][] xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    for (int i = 0; i < n; i++) {
-      assertEquals(xlTsObject[i][0], xlValues[i][0]);
-      assertEquals(xlTsObject[i][1], xlValues[i][1]);
-    }
+    TimeSeries ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(expectedTs, ts);
     // check that it accepts a row as well
     n = 1;
     expectedTs = TimeSeries.newTimeSeries();
     expectedTs.put(now, 20.);
     xlValues = new XLValue[][] {new XLValue[] {XLNumber.of(now.toEpochDay() + DAYS_FROM_EXCEL_EPOCH)}, new XLValue[]{XLNumber.of(20)}};
     result = PROCESSOR.invoke("TimeSeries", XLArray.of(xlValues));
-    xlTsObject = ((XLArray) result).getArray();
-    assertEquals(xlTsObject.length, n);
-    assertEquals(xlTsObject[0].length, 2);
-    assertEquals(xlTsObject[0][0], xlValues[0][0]);
-    assertEquals(xlTsObject[0][1], xlValues[1][0]);
+    ts = (TimeSeries) ExcelFactory.getInstance().getHeap().getObject(((XLObject) result).getHandle());
+    assertEquals(expectedTs, ts);
   }
 }

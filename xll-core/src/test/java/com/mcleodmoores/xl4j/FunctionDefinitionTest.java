@@ -38,6 +38,7 @@ public class FunctionDefinitionTest {
   static {
     final TypeConverter intConverter = new PrimitiveIntegerXLNumberTypeConverter();
     final TypeConverter booleanConverter = new PrimitiveBooleanXLBooleanTypeConverter();
+    final TypeConverter objectConverter = new ObjectXLObjectTypeConverter(ExcelFactory.getInstance());
     final Method method;
     final Constructor<?> constructor;
     final Field field;
@@ -49,9 +50,9 @@ public class FunctionDefinitionTest {
       throw new Excel4JRuntimeException("", e);
     }
     METHOD_INVOKER = new SimpleResultMethodInvoker(method, new TypeConverter[] {intConverter, intConverter},
-        booleanConverter);
+        booleanConverter, objectConverter);
     CONSTRUCTOR_INVOKER = new ObjectConstructorInvoker(constructor,
-        new TypeConverter[] {intConverter, intConverter}, new ObjectXLObjectTypeConverter(ExcelFactory.getInstance()));
+        new TypeConverter[] {intConverter, intConverter}, objectConverter, objectConverter);
     FIELD_INVOKER = new ObjectFieldInvoker(field, intConverter);
   }
 

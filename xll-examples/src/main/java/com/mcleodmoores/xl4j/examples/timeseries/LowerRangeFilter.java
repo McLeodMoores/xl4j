@@ -15,9 +15,9 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  */
 @XLNamespace("TimeSeries.")
 @XLFunctions(
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
-  description = "Removes values below an amount from a time series", 
-  category = "Time series")
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Removes values below an amount from a time series",
+    category = "Time series")
 public class LowerRangeFilter implements TimeSeriesBiFunction<Double, TimeSeries> {
 
   @Override

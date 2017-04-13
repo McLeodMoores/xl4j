@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.threeten.bp.LocalDate;
 
+import com.mcleodmoores.xl4j.TypeConversionMode;
 import com.mcleodmoores.xl4j.XLFunctions;
 import com.mcleodmoores.xl4j.XLNamespace;
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
@@ -16,7 +17,11 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Calculates the sample covariance of two time series.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(prefix = "Covariance", description = "Sample covariance of two time series", category = "Time series")
+@XLFunctions(
+    prefix = "Covariance",
+    typeConversionMode = TypeConversionMode.SIMPLEST_RESULT,
+    description = "Sample covariance of two time series",
+    category = "Time series")
 public class CovarianceCalculator implements TimeSeriesBiFunction<TimeSeries, Double> {
 
   @Override

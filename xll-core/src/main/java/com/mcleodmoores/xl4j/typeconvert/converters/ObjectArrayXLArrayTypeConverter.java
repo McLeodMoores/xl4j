@@ -74,16 +74,23 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
     final XLArray xlArr = (XLArray) from;
+    final XLValue[][] arr = xlArr.getArray();
     final Type componentType;
     if (expectedType instanceof Class) {
       final Class<?> expectedClass = (Class<?>) expectedType;
       componentType = expectedClass.getComponentType();
     } else if (expectedType instanceof GenericArrayType) {
-      componentType = ConverterUtils.getComponentTypeForGenericArray(expectedType);
+      // XLArray is not empty by definition so no test for emptiness needed
+      final Type componentTypeForGenericArray = ConverterUtils.getComponentTypeForGenericArray(expectedType);
+      // handle generic array inputs
+      if (arr[0][0] instanceof XLArray && componentTypeForGenericArray.equals(Object.class)) {
+        componentType = Object[].class;
+      } else {
+        componentType = componentTypeForGenericArray;
+      }
     } else {
       throw new Excel4JRuntimeException("expectedType not array or GenericArrayType");
     }
-    final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();

@@ -3,8 +3,6 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
@@ -18,18 +16,19 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * Generates an annual schedule from the start date to end date inclusive.
  */
 @XLNamespace("Schedule.")
-@XLFunctions(prefix = "ForwardAnnual", 
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
-  description = "Generates an annual schedule from the start to end date", 
-  category = "Schedule")
-public class ForwardAnnualScheduleFunction implements BiFunction<LocalDate, LocalDate, List<LocalDate>> {
+@XLFunctions(
+    prefix = "ForwardAnnual",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Generates an annual schedule from the start to end date",
+    category = "Schedule")
+public class ForwardAnnualScheduleFunction implements BiFunction<LocalDate, LocalDate, Schedule> {
 
   @Override
-  public List<LocalDate> apply(final LocalDate start, final LocalDate endInclusive) {
+  public Schedule apply(final LocalDate start, final LocalDate endInclusive) {
     ArgumentChecker.notNull(start, "start");
     ArgumentChecker.notNull(endInclusive, "endInclusive");
     LocalDate date = start;
-    final List<LocalDate> result = new ArrayList<>();
+    final Schedule result = new Schedule();
     int i = 0;
     while (!date.isAfter(endInclusive)) {
       result.add(date);

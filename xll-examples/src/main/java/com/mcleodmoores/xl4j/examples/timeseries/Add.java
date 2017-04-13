@@ -15,9 +15,9 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  */
 @XLNamespace("TimeSeries.")
 @XLFunctions(
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
-  description = "Element-by-element addition of two time series", 
-  category = "Time series")
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Element-by-element addition of two time series",
+    category = "Time series")
 public class Add implements TimeSeriesBiFunction<TimeSeries, TimeSeries> {
 
   @Override

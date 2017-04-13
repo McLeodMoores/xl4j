@@ -15,9 +15,9 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  * series, the returned series will contain 0 on that date.
  */
 @XLNamespace("TimeSeries.")
-@XLFunctions(typeConversionMode=TypeConversionMode.OBJECT_RESULT, 
-  description = "Return the absolute values of a time series", 
-  category = "Time series")
+@XLFunctions(typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+description = "Return the absolute values of a time series",
+category = "Time series")
 public class Abs implements TimeSeriesFunction<TimeSeries> {
 
   @Override

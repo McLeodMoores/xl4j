@@ -1,0 +1,130 @@
+[TestNG] Running:
+  C:\Users\mcleo\AppData\Local\Temp\testng-eclipse-86233423\testng-customsuite.xml
+
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJConstructNoArgs
+PASSED: testJConstructNoVisibleConstructor
+PASSED: testJMethod
+PASSED: testJConstructFloat
+PASSED: testJConstructNoArgs
+PASSED: testJConstructString
+PASSED: testJStaticMethodXFloat
+PASSED: testJStaticMethodXString
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testExpectedFailureIntConstructor
+PASSED: testIntConstructor
+PASSED: testNoArgsConstructor
+PASSED: testObjectConstructor
+PASSED: testField
+PASSED: testFieldX
+PASSED: testStaticField
+PASSED: testStaticFieldX
+PASSED: testIsAssignableFrom
+PASSED: testJConstruct
+PASSED: testJMethod
+PASSED: testJMethodReflective1
+PASSED: testJMethodReflective1_5
+PASSED: testJMethodReflective1_75
+PASSED: testJMethodReflective2
+PASSED: testJMethodReflective3
+PASSED: testJMethodReflective4
+PASSED: testJMethodReflective5
+PASSED: testIntGetMethod
+PASSED: testIntStringIntsSumMethod
+PASSED: testIntStringObjectsSumMethod
+PASSED: testIntStringStringsSumMethod
+PASSED: testIntsSumMethod
+PASSED: testNoArgsGetMethod
+PASSED: testNonOverloadedGetters
+PASSED: testObjectGetMethod
+PASSED: testObjectsSumMethod
+PASSED: testReturnType
+PASSED: testStringGetMethod
+PASSED: testIntGetMethod
+PASSED: testIntStringIntsSumMethod
+PASSED: testIntStringObjectsSumMethod
+PASSED: testIntStringStringsSumMethod
+PASSED: testIntsSumMethod
+PASSED: testNoArgsGetMethod
+PASSED: testNonOverloadedGetters
+PASSED: testObjectGetMethod
+PASSED: testObjectsSumMethod
+PASSED: testReturnType
+PASSED: testStringGetMethod
+PASSED: testDoubleConstructor
+PASSED: testDoublesConstructor
+PASSED: testIntConstructor
+PASSED: testIntDoubleConstructor
+PASSED: testIntDoublesConstructor
+PASSED: testIntObjectConstructor
+PASSED: testIntObjectsConstructor
+PASSED: testIntStringConstructor
+PASSED: testIntStringsConstructor
+PASSED: testNoArgsConstructor
+PASSED: testObjectConstructor
+PASSED: testObjectsConstructor
+PASSED: testReturnType
+PASSED: testStringArrayStringsConstructor
+PASSED: testStringConstructor
+PASSED: testStringsConstructor
+PASSED: testDoubleConstructor
+PASSED: testDoublesConstructor
+PASSED: testIntConstructor
+PASSED: testIntDoubleConstructor
+PASSED: testIntDoublesConstructor
+PASSED: testIntObjectConstructor
+PASSED: testIntObjectsConstructor
+PASSED: testIntStringConstructor
+PASSED: testIntStringsConstructor
+PASSED: testNoArgsConstructor
+PASSED: testObjectConstructor
+PASSED: testObjectsConstructor
+PASSED: testReturnType
+PASSED: testStringArrayStringsConstructor
+PASSED: testStringConstructor
+PASSED: testStringsConstructor
+PASSED: testJConstructAndJMethod
+PASSED: testJConstructLong
+PASSED: testJConstructNoArgs
+PASSED: testJConstructString
+PASSED: testJStaticMethodXLong
+PASSED: testJStaticMethodXString
+PASSED: testJStaticMethodXStringNumber
+PASSED: testJConstructList
+PASSED: testJConstructObject
+PASSED: testJConstructRandom
+PASSED: testJMethodLists
+PASSED: testJMethodListsWithVarArgs
+PASSED: testJMethodSingletonList
+PASSED: testJConstruct
+PASSED: testJStaticMethodXShort
+PASSED: testJStaticMethodXString
+PASSED: testJStaticMethodXStringNumber
+PASSED: testJConstruct
+PASSED: testJMethod
+
+===============================================
+    com.mcleodmoores.xl4j.javacode
+    Tests run: 109, Failures: 0, Skips: 0
+===============================================
+
+
+===============================================
+xll-java by packages
+Total tests run: 109, Failures: 0, Skips: 0
+===============================================
+
+[TestNG] Time taken by org.testng.reporters.EmailableReporter2@15bb6bea: 63 ms
+[TestNG] Time taken by [FailedReporter passed=0 failed=0 skipped=0]: 0 ms
+[TestNG] Time taken by org.testng.reporters.XMLReporter@1a38c59b: 109 ms
+[TestNG] Time taken by org.testng.reporters.jq.Main@51931956: 219 ms
+[TestNG] Time taken by org.testng.reporters.JUnitReportReporter@2ea6137: 85 ms
+[TestNG] Time taken by org.testng.reporters.SuiteHTMLReporter@3b2c72c2: 734 ms

@@ -5,6 +5,7 @@ package com.mcleodmoores.xl4j.typeconvert;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,8 +23,6 @@ import org.slf4j.LoggerFactory;
 import com.mcleodmoores.xl4j.Excel;
 import com.mcleodmoores.xl4j.util.Excel4JReflectionUtils;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-
-import javassist.Modifier;
 
 /**
  * Type resolver.
@@ -138,7 +137,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
     }
     return null;
   }
-  
+
   /**
    * Print out an ordered table of the type conversion registry in Markdown format.
    */
@@ -148,23 +147,23 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
     for (final int priority : _converters.keySet()) {
       final List<TypeConverter> converters = _converters.get(priority);
       for (final TypeConverter typeConverter: converters) {
-        Class<?> e2jExcelClass = typeConverter.getExcelToJavaTypeMapping().getExcelClass();
-        Type e2jJavaType = typeConverter.getExcelToJavaTypeMapping().getJavaType();
-        Class<?> j2eExcelClass = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
-        Type j2eJavaType = typeConverter.getJavaToExcelTypeMapping().getJavaType();
+        final Class<?> e2jExcelClass = typeConverter.getExcelToJavaTypeMapping().getExcelClass();
+        final Type e2jJavaType = typeConverter.getExcelToJavaTypeMapping().getJavaType();
+        final Class<?> j2eExcelClass = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
+        final Type j2eJavaType = typeConverter.getJavaToExcelTypeMapping().getJavaType();
         if (e2jExcelClass.equals(j2eExcelClass) && e2jJavaType.equals(e2jJavaType)) {
-          System.out.println("| " + priority 
-              + " | " + typeConverter.getClass().getSimpleName() 
-              + " | " + e2jExcelClass.toGenericString() 
-              + " | " + e2jJavaType.getTypeName() 
+          System.out.println("| " + priority
+              + " | " + typeConverter.getClass().getSimpleName()
+              + " | " + e2jExcelClass.toGenericString()
+              + " | " + e2jJavaType.getTypeName()
               + "| | |");
         } else {
-          System.out.println("| " + priority 
-              + " | " + typeConverter.getClass().getSimpleName() 
-              + " | " + e2jExcelClass.toGenericString() 
+          System.out.println("| " + priority
+              + " | " + typeConverter.getClass().getSimpleName()
+              + " | " + e2jExcelClass.toGenericString()
               + " | " + e2jJavaType.getTypeName()
-              + " | " + j2eJavaType.getTypeName() 
-              + " | " + j2eExcelClass.toGenericString() 
+              + " | " + j2eJavaType.getTypeName()
+              + " | " + j2eExcelClass.toGenericString()
               + "|");
         }
       }

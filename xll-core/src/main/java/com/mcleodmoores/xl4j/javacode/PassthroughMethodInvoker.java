@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mcleodmoores.xl4j.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.values.XLMissing;
 import com.mcleodmoores.xl4j.values.XLValue;
 
 /**
@@ -64,10 +65,20 @@ public class PassthroughMethodInvoker implements MethodInvoker {
         System.arraycopy(arguments, nArgs - 1, varargs, 0, nVarargInputs);
         args[args.length - 1] = varargs;
         LOGGER.info("invoking method {} on {} with {}", _method.getName(), object, Arrays.toString(args));
-        return (XLValue) _method.invoke(object, args);
+        final XLValue result = (XLValue) _method.invoke(object, args);
+        if (result == null) {
+          // void method
+          return XLMissing.INSTANCE;
+        }
+        return result;
       }
       LOGGER.info("invoking method {} on {} with {}", _method.getName(), object, Arrays.toString(arguments));
-      return (XLValue) _method.invoke(object, (Object[]) arguments);
+      final XLValue result = (XLValue) _method.invoke(object, (Object[]) arguments);
+      if (result == null) {
+        // void method
+        return XLMissing.INSTANCE;
+      }
+      return result;
     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
       throw new Excel4JRuntimeException("Error invoking method", e);
     }

@@ -11,6 +11,7 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.javacode.testutils.TestObject;
+import com.mcleodmoores.xl4j.values.XLArray;
 import com.mcleodmoores.xl4j.values.XLNumber;
 import com.mcleodmoores.xl4j.values.XLObject;
 import com.mcleodmoores.xl4j.values.XLString;
@@ -23,10 +24,17 @@ public class JMethodTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.javacode.testutils.TestObject");
   private TestObject _testObject;
   private XLObject _testObjectReference;
+  private double[] _arrayValues;
 
   @BeforeTest
   public void init() {
-    final XLValue xlValue = JConstruct.jconstruct(CLASS, XLNumber.of(10.));
+    final XLValue[][] xlArrayValues = new XLValue[100][1];
+    _arrayValues = new double[100];
+    for (int i = 0; i < 100; i++) {
+      xlArrayValues[i][0] = XLNumber.of(-1234 * i);
+      _arrayValues[i] = -1234 * i;
+    }
+    final XLValue xlValue = JConstruct.jconstruct(CLASS, XLNumber.of(10.), XLArray.of(xlArrayValues), XLString.of("name"));
     assertTrue(xlValue instanceof XLObject);
     _testObjectReference = (XLObject) xlValue;
     _testObject = (TestObject) ExcelFactory.getInstance().getHeap().getObject(_testObjectReference.getHandle());
@@ -43,16 +51,18 @@ public class JMethodTest {
     assertEquals(methodResult2, XLNumber.of(7));
   }
 
-  // This shouldn't really work anyway.
-  @Test(enabled=false)
+  @Test
   public void testNonOverloadedGetters() {
     Object methodResult = JMethod.jMethod(_testObjectReference, XLString.of("getNumber"), new XLValue[0]);
     assertTrue(methodResult instanceof XLNumber);
     // XLNumber internally stores all numbers as doubles
     assertEquals(Double.valueOf(((XLNumber) methodResult).getValue()).intValue(), _testObject.getNumber());
-    // TODO fails because arrays can't be returned
     methodResult = JMethod.jMethod(_testObjectReference, XLString.of("getDoubles"), new XLValue[0]);
-    assertEquals(methodResult, new Double[] {10., 20., 30., 40., 50.});
+    assertTrue(methodResult instanceof XLArray);
+    final XLValue[][] xlArray = ((XLArray) methodResult).getArray();
+    for (int i = 0; i < 100; i++) {
+      assertEquals(((XLNumber) xlArray[0][i]).getAsDouble(), _arrayValues[i], 1e-15);
+    }
   }
 
   @Test
@@ -89,13 +99,6 @@ public class JMethodTest {
     final Object methodResult = JMethod.jMethod(_testObjectReference, XLString.of("getDoublesSum"), XLNumber.of(1), XLNumber.of(2));
     assertTrue(methodResult instanceof XLNumber);
     assertEquals(((XLNumber) methodResult).getValue(), _testObject.getDoublesSum(new int[] {1, 2}));
-  }
-
-  @Test
-  public void testStringsSumMethod() {
-    final Object methodResult = JMethod.jMethod(_testObjectReference, XLString.of("getDoublesSum"), XLString.of("0"), XLString.of("3"));
-    assertTrue(methodResult instanceof XLNumber);
-    assertEquals(((XLNumber) methodResult).getValue(), _testObject.getDoublesSum("0", "3"));
   }
 
   @Test

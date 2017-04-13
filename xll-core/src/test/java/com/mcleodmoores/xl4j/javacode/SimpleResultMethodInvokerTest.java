@@ -11,8 +11,10 @@ import java.lang.reflect.Method;
 
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.xl4j.ExcelFactory;
 import com.mcleodmoores.xl4j.InvokerTestHelper;
 import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
+import com.mcleodmoores.xl4j.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveBooleanXLBooleanTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveIntegerArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.typeconvert.converters.PrimitiveIntegerXLNumberTypeConverter;
@@ -31,6 +33,7 @@ public class SimpleResultMethodInvokerTest {
   private static final TypeConverter INT_CONVERTER = new PrimitiveIntegerXLNumberTypeConverter();
   private static final TypeConverter INT_ARRAY_CONVERTER = new PrimitiveIntegerArrayXLArrayTypeConverter();
   private static final TypeConverter BOOLEAN_CONVERTER = new PrimitiveBooleanXLBooleanTypeConverter();
+  private static final TypeConverter OBJECT_CONVERTER = new ObjectXLObjectTypeConverter(ExcelFactory.getInstance());
   private static final Method NO_ARGS_METHOD;
   private static final Method SINGLE_ARG_METHOD;
   private static final Method MULTI_ARGS_METHOD;
@@ -56,7 +59,7 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullMethod() {
-    new SimpleResultMethodInvoker(null, new TypeConverter[] {INT_CONVERTER}, BOOLEAN_CONVERTER);
+    new SimpleResultMethodInvoker(null, new TypeConverter[] {INT_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
   }
 
   /**
@@ -64,7 +67,7 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullArgumentConverters() {
-    new SimpleResultMethodInvoker(NO_ARGS_METHOD, null, BOOLEAN_CONVERTER);
+    new SimpleResultMethodInvoker(NO_ARGS_METHOD, null, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
   }
 
   /**
@@ -72,7 +75,7 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullReturnConverter() {
-    new SimpleResultMethodInvoker(NO_ARGS_METHOD, new TypeConverter[] {INT_ARRAY_CONVERTER}, null);
+    new SimpleResultMethodInvoker(NO_ARGS_METHOD, new TypeConverter[] {INT_ARRAY_CONVERTER}, null, OBJECT_CONVERTER);
   }
 
   /**
@@ -81,7 +84,7 @@ public class SimpleResultMethodInvokerTest {
   @Test(expectedExceptions = Excel4JRuntimeException.class)
   public void testNullArguments() {
     final MethodInvoker invoker =
-        new SimpleResultMethodInvoker(SINGLE_ARG_METHOD, new TypeConverter[] {INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER);
+        new SimpleResultMethodInvoker(SINGLE_ARG_METHOD, new TypeConverter[] {INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     invoker.invoke(null, null);
   }
 
@@ -90,7 +93,8 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test
   public void testMetadata() {
-    MethodInvoker invoker = new SimpleResultMethodInvoker(MULTI_ARGS_METHOD, new TypeConverter[] {INT_CONVERTER, INT_CONVERTER}, BOOLEAN_CONVERTER);
+    MethodInvoker invoker = new SimpleResultMethodInvoker(MULTI_ARGS_METHOD,
+        new TypeConverter[] {INT_CONVERTER, INT_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     assertTrue(invoker.isStatic());
     assertFalse(invoker.isVarArgs());
     assertEquals(invoker.getExcelParameterTypes(), new Class<?>[] {XLNumber.class, XLNumber.class});
@@ -98,7 +102,7 @@ public class SimpleResultMethodInvokerTest {
     assertEquals(invoker.getMethodDeclaringClass(), InvokerTestHelper.class);
     assertEquals(invoker.getMethodName(), "multiArgsMethod");
     assertEquals(invoker.getMethodReturnType(), Boolean.TYPE);
-    invoker = new SimpleResultMethodInvoker(VAR_ARGS_METHOD_1, new TypeConverter[] {INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER);
+    invoker = new SimpleResultMethodInvoker(VAR_ARGS_METHOD_1, new TypeConverter[] {INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     assertTrue(invoker.isStatic());
     assertTrue(invoker.isVarArgs());
     assertEquals(invoker.getExcelParameterTypes(), new Class<?>[] {XLArray.class});
@@ -116,7 +120,7 @@ public class SimpleResultMethodInvokerTest {
   @Test
   public void testVoid() throws NoSuchMethodException, SecurityException {
     final Method method = InvokerTestHelper.class.getMethod("voidStaticMethod", new Class<?>[0]);
-    final MethodInvoker invoker = new SimpleResultMethodInvoker(method, new TypeConverter[0], BOOLEAN_CONVERTER);
+    final MethodInvoker invoker = new SimpleResultMethodInvoker(method, new TypeConverter[0], BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     final XLValue result = invoker.invoke(null, new XLValue[0]);
     assertEquals(result, XLMissing.INSTANCE);
   }
@@ -126,7 +130,7 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test
   public void testNoArgs() {
-    final MethodInvoker invoker = new SimpleResultMethodInvoker(NO_ARGS_METHOD, new TypeConverter[0], BOOLEAN_CONVERTER);
+    final MethodInvoker invoker = new SimpleResultMethodInvoker(NO_ARGS_METHOD, new TypeConverter[0], BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     final XLValue result = invoker.invoke(null, new XLValue[0]);
     assertEquals(result, XLBoolean.FALSE);
   }
@@ -136,7 +140,7 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test
   public void testSingleArg() {
-    final MethodInvoker invoker = new SimpleResultMethodInvoker(SINGLE_ARG_METHOD, new TypeConverter[] {INT_CONVERTER}, BOOLEAN_CONVERTER);
+    final MethodInvoker invoker = new SimpleResultMethodInvoker(SINGLE_ARG_METHOD, new TypeConverter[] {INT_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     XLValue result = invoker.invoke(null, new XLValue[] {XLNumber.of(10)});
     assertEquals(result, XLBoolean.TRUE);
     result = invoker.invoke(null, new XLValue[] {XLNumber.of(-10)});
@@ -148,7 +152,8 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test
   public void testMultiArg() {
-    final MethodInvoker invoker = new SimpleResultMethodInvoker(MULTI_ARGS_METHOD, new TypeConverter[] {INT_CONVERTER, INT_CONVERTER}, BOOLEAN_CONVERTER);
+    final MethodInvoker invoker = new SimpleResultMethodInvoker(MULTI_ARGS_METHOD,
+        new TypeConverter[] {INT_CONVERTER, INT_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     XLValue result = invoker.invoke(null, new XLValue[] {XLNumber.of(10), XLNumber.of(20)});
     assertEquals(result, XLBoolean.TRUE);
     result = invoker.invoke(null, new XLValue[] {XLNumber.of(-10), XLNumber.of(20)});
@@ -163,7 +168,7 @@ public class SimpleResultMethodInvokerTest {
   @Test
   public void testArrayArgs() {
     final MethodInvoker invoker = new SimpleResultMethodInvoker(ARRAY_ARGS_METHOD, new TypeConverter[] {INT_ARRAY_CONVERTER, INT_ARRAY_CONVERTER},
-        BOOLEAN_CONVERTER);
+        BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     XLValue result = invoker.invoke(null, new XLValue[] {
         XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(10), XLNumber.of(20)}}),
         XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(30), XLNumber.of(40)}})});
@@ -181,7 +186,7 @@ public class SimpleResultMethodInvokerTest {
    */
   @Test
   public void testVarArgs() {
-    MethodInvoker invoker = new SimpleResultMethodInvoker(VAR_ARGS_METHOD_1, new TypeConverter[] {INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER);
+    MethodInvoker invoker = new SimpleResultMethodInvoker(VAR_ARGS_METHOD_1, new TypeConverter[] {INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     // empty array for varargs
     XLValue result = invoker.invoke(null, new XLValue[0]);
     assertEquals(result, XLBoolean.TRUE);
@@ -189,7 +194,8 @@ public class SimpleResultMethodInvokerTest {
     assertEquals(result, XLBoolean.TRUE);
     result = invoker.invoke(null, new XLValue[] {XLNumber.of(10), XLNumber.of(-10)});
     assertEquals(result, XLBoolean.FALSE);
-    invoker = new SimpleResultMethodInvoker(VAR_ARGS_METHOD_2, new TypeConverter[] {INT_CONVERTER, INT_CONVERTER, INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER);
+    invoker = new SimpleResultMethodInvoker(VAR_ARGS_METHOD_2,
+        new TypeConverter[] {INT_CONVERTER, INT_CONVERTER, INT_ARRAY_CONVERTER}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     // empty array for varargs
     result = invoker.invoke(null, new XLValue[] {XLNumber.of(10), XLNumber.of(20)});
     assertEquals(result, XLBoolean.TRUE);
@@ -209,7 +215,8 @@ public class SimpleResultMethodInvokerTest {
   @Test
   public void testPassthroughNull() throws NoSuchMethodException, SecurityException {
     final Method method = InvokerTestHelper.class.getMethod("passthroughMethod1", new Class<?>[] {XLValue.class});
-    final MethodInvoker invoker = new SimpleResultMethodInvoker(method, new TypeConverter[] {new XLValueXLValueTypeConverter()}, BOOLEAN_CONVERTER);
+    final MethodInvoker invoker = new SimpleResultMethodInvoker(method,
+        new TypeConverter[] {new XLValueXLValueTypeConverter()}, BOOLEAN_CONVERTER, OBJECT_CONVERTER);
     XLValue result = invoker.invoke(null, new XLValue[] {XLMissing.INSTANCE});
     assertEquals(result, XLBoolean.FALSE);
     result = invoker.invoke(null, new XLValue[] {XLNumber.of(10)});

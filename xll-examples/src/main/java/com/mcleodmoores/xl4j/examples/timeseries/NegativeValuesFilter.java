@@ -18,9 +18,9 @@ import com.mcleodmoores.xl4j.util.ArgumentChecker;
  */
 @XLNamespace("TimeSeries.")
 @XLFunctions(
-  typeConversionMode=TypeConversionMode.OBJECT_RESULT,
-  description = "Removes negative values from a time series", 
-  category = "Time series")
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Removes negative values from a time series",
+    category = "Time series")
 public class NegativeValuesFilter implements TimeSeriesFunction<TimeSeries> {
 
   @Override
