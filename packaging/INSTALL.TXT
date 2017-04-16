@@ -1,0 +1,48 @@
+To install this add-in, you can either run the add-in one-off, in which case
+it won't open each time you run Excel, or by using the Excel add-in manager to 
+install the add-in so it runs each time you run Excel.
+
+Firstly you need to determine if you have 32-bit or 64-bit office installed.
+If you don't know, you probably have the 32-bit version installed, but if you
+want to check, you can find out by:
+
+  1) Start Microsoft Excel
+  2) Click the File tab in the ribbon
+  3) Then click Account
+  4) On the right, you should seee an About button
+  5) Click on the About button and you should see either 32-bit or 64-bit
+     on the right of the version number.
+
+Installing a Java Runtime Environment
+=====================================
+You must have a (free) Java Runtime Environment installed.  This can be 
+downloaded from: 
+
+  https://www.java.com/en/download/manual.jsp
+
+It is important that you choose the correct version.  If you're using a 32-bit
+version of office, install the 32-bit JRE (they're often not labelled as 32-bit
+so just look for the downloads that are not labelled 64-bit).
+
+Installing in Excel
+===================
+The XLL file can be found in:
+
+  bin-x86\excel.xll       if you're using a 32-bit Excel
+  bin-x64\excel.xll       if you're using a 64-bit Excel
+
+Again, if you don't know if your version of Excel is 32-bit or 64-bit, it's 
+probably 32-bit.
+
+You can just double-click on these XLL files to run the add-in for just one
+session, but usually you'd want to make it so that the add-in would be 
+available every time you start Excel. To do that you need to open the Excel
+add-in manager:
+
+  1) Start Microsoft Excel
+  2) Click the File tab in the ribbon
+  3) Then click Options 
+  4) On the right, towards the bottom, you
+
+Install permanently
+-------------------
