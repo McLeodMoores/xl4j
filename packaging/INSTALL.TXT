@@ -2,6 +2,8 @@ To install this add-in, you can either run the add-in one-off, in which case
 it won't open each time you run Excel, or by using the Excel add-in manager to 
 install the add-in so it runs each time you run Excel.
 
+Do you have 32-bit or 64-bit Excel?
+===================================
 Firstly you need to determine if you have 32-bit or 64-bit office installed.
 If you don't know, you probably have the 32-bit version installed, but if you
 want to check, you can find out by:
@@ -42,7 +44,69 @@ add-in manager:
   1) Start Microsoft Excel
   2) Click the File tab in the ribbon
   3) Then click Options 
-  4) On the right, towards the bottom, you
+  4) Click Add-ins in the left panel
+  5) At the bottom, you will see 'Manage: [Excel Add-ins] [Go...]', click Go
+  6) The Add-ins available list will show currently installed Add-ins.  Add
+     the appropriate XLL file by clicking Browse... and navigating to the 
+     right excel.xll file (see above), and choose OK.
+  7) You should get a pop-up box saying Thanks for installing XL4J and a new
+     entry in the list labelled XL4J.  If you do not see that, or see 'excel'
+     in the list, see the troubleshooting section.
+  8) Click OK to close the Window.
 
-Install permanently
--------------------
+You should now be able to use XL4J.  To check it's loaded try using one of
+the example sheets or just test the 'MyAdd' function by putting:
+  
+  =MyAdd(1,2) 
+
+in any cell.  If you see 3, the Add-in has loaded correctly.  If you see
+#NAME, then see the troubleshooting section.
+
+See the user guide for information about how to use the add-in.
+
+Troubleshooting
+===============
+Things to check if you have problems installing:
+
+  * Have you installed an add-in that corresponds to the version of Excel
+    you haver?  32-bit excel should use the add-in in the bin-x86 directory.
+  * Check the Java Runtime you have installed corresponds to the version
+    of Excel/the add-in you have.  32-bit Excel requires a 32-bit JRE or
+    JDK, 64-bit Excel requires a 64-bit JRE or JDK.  You cannot (currently)
+    use a 64-bit JDK from a 32-bit Excel or vice-versa.
+  * Check that you have not tried to install more than one add-in based on
+    XL4J at the same time.  Currently you can't do this because of JVM 
+    limitations (one JVM per process), although we intend to support it in
+    future versions.  If you have, try uninstalling the other add-in.
+    It's actually possible to merge the functionality of two add-ins by 
+    add-in the lib directory of one to the other (assuming they're based
+    on the same underlying version of XL4J).
+  * Occasionally a bug in Excel can lead to it getting confused about old
+    add-ins.  This step should only be done after consulting with your 
+    local administrator.
+
+    First, make sure you close down Excel completely.   Then you need to 
+    open the registry editor (regedit.exe): search for it via the start
+    menu if you're not familiar.  Once it's open, find the key (which look
+    like folders) under:
+
+      HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\<your version>\Excel
+
+    where "your version" is:
+      
+      16.0 for Excel 2016
+      15.0 for Excel 2013
+      14.0 for Excel 2010
+
+    then look under the 'Add-in Manager' key and you will see the 
+    installed add-ins.  If any entries end with excel.xll (you might need 
+    to make the 'Name' column wider to see the end), you should remove 
+    them by right-clicking and choosing 'Delete'.
+
+    Also check the 'Options' key and if there's a key called 'OPEN' whose
+    value refers to excel.xll (again, you might need to make the Data 
+    column wider to be able to see) you should delete it too, again by 
+    right clicking and choosing 'Delete'. 
+
+    You should then restart Excel and try the installation procedure 
+    again.
