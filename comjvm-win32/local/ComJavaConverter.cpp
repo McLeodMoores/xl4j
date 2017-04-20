@@ -310,7 +310,7 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 			ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
 			LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
 		} else {
-			LOGTRACE("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass("com/mcleodmoores/xl4j/values/XLValue"));
+			LOGTRACE("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass("com/mcleodmoores/xl4j/v1/api/values/XLValue"));
 			jclass jcObject = pEnv->FindClass("java/lang/Object");
 			jmethodID jmObject_getClass = pEnv->GetMethodID(jcObject, "getClass", "()Ljava/lang/Class;");
 			jobject joClass = pEnv->CallObjectMethod(joXLValue, jmObject_getClass);

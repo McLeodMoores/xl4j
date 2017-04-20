@@ -9,10 +9,10 @@ import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePerio
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurveBuild;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAInstrumentTypes;
@@ -149,7 +149,7 @@ public final class IsdaYieldCurveBuilder {
     final ISDACompliantYieldCurveBuild builder;
     if (spotDate == null) {
       if (spotDays == null) {
-        throw new Excel4JRuntimeException("Did not supply either spot date or the number of spot days");
+        throw new XL4JRuntimeException("Did not supply either spot date or the number of spot days");
       }
       final LocalDate spotFromTrade = ScheduleCalculator.getAdjustedDate(tradeDate, spotDays, calendar);
       builder = new ISDACompliantYieldCurveBuild(tradeDate, spotFromTrade, instrumentTypes, periods,

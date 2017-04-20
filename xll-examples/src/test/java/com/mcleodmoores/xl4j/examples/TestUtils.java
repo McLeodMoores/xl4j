@@ -11,14 +11,14 @@ import java.lang.reflect.Array;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.heap.Heap;
-import com.mcleodmoores.xl4j.util.XlDateUtils;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLBoolean;
-import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLObject;
-import com.mcleodmoores.xl4j.values.XLString;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.core.Heap;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLObject;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.util.XlDateUtils;
 import com.opengamma.util.money.Currency;
 
 /**

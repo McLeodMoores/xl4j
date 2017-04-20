@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.yieldcurve.conventions;
 
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
 
 /**
  *

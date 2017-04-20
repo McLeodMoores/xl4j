@@ -158,7 +158,7 @@ HRESULT CJvmTemplate::LoadOptions (const CSettings &oSettings) {
 		_std_string_t strLogback (JVM_TEMPLATE_AUTO_OPTIONS_LOGBACK);
 		if (!(!(bstr = oSettings.GetString (strAutoOptions, strLogback)))) {
 			if (!m_pOptions) m_pOptions = new CJvmOptionEntries ();
-			_bstr_t logback (_T ("-Dlogback.configurationFile=com/mcleodmoores/xl4j/"));
+			_bstr_t logback (_T ("-Dlogback.configurationFile=com/mcleodmoores/xl4j/v1/"));
 			//wchar_t *start = (wchar_t *)bstr;
 			//while (*start != '\0') { 
 			//	*start = towlower(*start); 

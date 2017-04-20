@@ -8,11 +8,11 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
 
 /**
- * Tests for the example functions in {@link com.mcleodmoores.xl4j.examples.MyArithmeticFunctions}.
+ * Tests for the example functions in {@link com.mcleodmoores.xl4j.v1.core.examples.MyArithmeticFunctions}.
  */
 public class MyArithmeticFunctionsTest {
   /** The function processor */

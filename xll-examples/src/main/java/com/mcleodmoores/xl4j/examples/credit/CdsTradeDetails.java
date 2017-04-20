@@ -11,8 +11,8 @@ import static com.opengamma.analytics.financial.credit.isdastandardmodel.IMMDate
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLParameter;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
@@ -28,6 +28,7 @@ import com.opengamma.util.money.Currency;
 /**
  * Methods that create CDS trades and expose information about those trades.
  */
+@SuppressWarnings("deprecation")
 public final class CdsTradeDetails {
 
   /**
@@ -262,7 +263,6 @@ public final class CdsTradeDetails {
    * @param holidayDates  the holiday dates
    * @return  the schedule
    */
-  @SuppressWarnings("deprecation")
   private static ISDAPremiumLegSchedule getPremiumSchedule(final LocalDate tradeDate, final String tenor, final String businessDayConventionName,
       final String couponIntervalName, final String stubTypeName, final LocalDate[] holidayDates) {
     final BusinessDayConvention businessDayConvention = BusinessDayConventionFactory.INSTANCE.instance(businessDayConventionName);

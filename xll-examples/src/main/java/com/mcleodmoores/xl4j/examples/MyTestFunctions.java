@@ -6,18 +6,18 @@ package com.mcleodmoores.xl4j.examples;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLBoolean;
-import com.mcleodmoores.xl4j.values.XLError;
-import com.mcleodmoores.xl4j.values.XLLocalReference;
-import com.mcleodmoores.xl4j.values.XLMultiReference;
-import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLString;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
+import com.mcleodmoores.xl4j.v1.api.values.XLLocalReference;
+import com.mcleodmoores.xl4j.v1.api.values.XLMultiReference;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Functions used in testing.
@@ -175,6 +175,7 @@ public final class MyTestFunctions {
       typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public static XLValue listElem(final Object object, final int index) {
     ArgumentChecker.notNull(object, "object");
+    @SuppressWarnings("unchecked")
     final List<XLValue> list = (List<XLValue>) object;
     if (index >= list.size() || index < 0) {
       return XLError.NA;

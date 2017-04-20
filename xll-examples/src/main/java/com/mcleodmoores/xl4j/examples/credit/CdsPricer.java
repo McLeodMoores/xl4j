@@ -9,8 +9,8 @@ import static com.mcleodmoores.xl4j.examples.credit.IsdaFunctionUtils.parsePerio
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticSpreadSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;

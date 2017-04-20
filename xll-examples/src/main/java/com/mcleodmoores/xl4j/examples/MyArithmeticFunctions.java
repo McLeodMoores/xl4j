@@ -3,11 +3,11 @@
  */
 package com.mcleodmoores.xl4j.examples;
 
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Simple example functions.

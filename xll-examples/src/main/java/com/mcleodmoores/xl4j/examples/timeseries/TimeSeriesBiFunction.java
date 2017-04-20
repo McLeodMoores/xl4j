@@ -5,7 +5,7 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.function.BiFunction;
 
-import com.mcleodmoores.xl4j.XLNamespace;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
 
 /**
  * Marker interface for binary time series functions.

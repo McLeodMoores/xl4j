@@ -8,14 +8,14 @@ import java.util.Map;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.converters.DoubleXLNumberTypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.converters.InfNaNXLErrorTypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.converters.LocalDateXLNumberTypeConverter;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLError;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.typeconvert.converters.DoubleXLNumberTypeConverter;
+import com.mcleodmoores.xl4j.v1.typeconvert.converters.InfNaNXLErrorTypeConverter;
+import com.mcleodmoores.xl4j.v1.typeconvert.converters.LocalDateXLNumberTypeConverter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Type converter for {@link TimeSeries}.

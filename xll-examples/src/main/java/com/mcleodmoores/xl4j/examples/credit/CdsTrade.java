@@ -5,7 +5,7 @@ package com.mcleodmoores.xl4j.examples.credit;
 
 import java.util.Objects;
 
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSQuoteConvention;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.PointsUpFront;

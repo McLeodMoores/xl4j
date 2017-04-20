@@ -15,17 +15,17 @@ import java.util.TreeMap;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.typeconvert.ExcelToJavaTypeMapping;
-import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
+import com.mcleodmoores.xl4j.v1.api.typeconvert.ExcelToJavaTypeMapping;
+import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverter;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * A simple implementation of a time series, defined as a list of LocalDate, double pairs that is increasing in time. This class is
@@ -53,7 +53,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
     } else if (datesAndValues.length == 2 && datesAndValues[0] instanceof XLArray && datesAndValues[1] instanceof XLArray) {
       return of((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
     }
-    throw new Excel4JRuntimeException("Cannot create time series from input");
+    throw new XL4JRuntimeException("Cannot create time series from input");
   }
 
   /**
@@ -93,7 +93,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
         final XLValue xlValue = xlDatesAndValues[1][i];
         final Double value = xlValue == null ? null : (Double) doubleConverter.toJavaObject(Double.class, xlValue);
         if (data.put(date, value) != null) {
-          throw new Excel4JRuntimeException("Value already set for " + date);
+          throw new XL4JRuntimeException("Value already set for " + date);
         }
       }
     } else if (xlDatesAndValues[0].length == 2) { // have a vertical range
@@ -103,11 +103,11 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
         final XLValue xlValue = xlDatesAndValues[i][1];
         final Double value = xlValue == null ? null : (Double) doubleConverter.toJavaObject(Double.class, xlValue);
         if (data.put(date, value) != null) {
-          throw new Excel4JRuntimeException("Value already set for " + date);
+          throw new XL4JRuntimeException("Value already set for " + date);
         }
       }
     } else {
-      throw new Excel4JRuntimeException("Could not create time series");
+      throw new XL4JRuntimeException("Could not create time series");
     }
     return new TimeSeries(data);
   }
@@ -135,7 +135,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
     if (datesArray.isRow()) {
       final int n = xlDates[0].length;
       if (valuesArray.isRow() && valuesArray.getArray()[0].length != n || valuesArray.isColumn() && valuesArray.getArray().length != n) {
-        throw new Excel4JRuntimeException("Values not the same length as dates");
+        throw new XL4JRuntimeException("Values not the same length as dates");
       }
       for (int i = 0; i < n; i++) {
         final LocalDate date = (LocalDate) dateConverter.toJavaObject(LocalDate.class, xlDates[0][i]);
@@ -147,13 +147,13 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
         }
         final Double value = xlValue == null ? null : (Double) doubleConverter.toJavaObject(Double.class, xlValue);
         if (data.put(date, value) != null) {
-          throw new Excel4JRuntimeException("Value already set for " + date);
+          throw new XL4JRuntimeException("Value already set for " + date);
         }
       }
     } else {
       final int n = xlDates.length;
       if (valuesArray.isRow() && valuesArray.getArray()[0].length != n || valuesArray.isColumn() && valuesArray.getArray().length != n) {
-        throw new Excel4JRuntimeException("Values not the same length as dates");
+        throw new XL4JRuntimeException("Values not the same length as dates");
       }
       for (int i = 0; i < n; i++) {
         final LocalDate date = (LocalDate) dateConverter.toJavaObject(LocalDate.class, xlDates[i][0]);
@@ -165,7 +165,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
         }
         final Double value = xlValue == null ? null : (Double) doubleConverter.toJavaObject(Double.class, xlValue);
         if (data.put(date, value) != null) {
-          throw new Excel4JRuntimeException("Value already set for " + date);
+          throw new XL4JRuntimeException("Value already set for " + date);
         }
       }
     }
@@ -187,7 +187,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
     final SortedMap<LocalDate, Double> data = new TreeMap<>();
     for (int i = 0; i < dates.size(); i++) {
       if (data.put(ArgumentChecker.notNull(dates.get(i), "date"), values.get(i)) != null) {
-        throw new Excel4JRuntimeException("Value already set for " + dates.get(i));
+        throw new XL4JRuntimeException("Value already set for " + dates.get(i));
       }
     }
     return new TimeSeries(data);

@@ -3,9 +3,9 @@
  */
 package com.mcleodmoores.xl4j.examples.credit;
 
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSQuoteConvention;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantYieldCurve;
@@ -55,7 +55,7 @@ public final class CdsQuoteConverter {
           case QUOTED_SPREAD:
             return QUOTE_CONVERTER.pufToQuotedSpread(cds, coupon, yieldCurve, quote);
           default:
-            throw new Excel4JRuntimeException("Unhandled type " + convertToType);
+            throw new XL4JRuntimeException("Unhandled type " + convertToType);
         }
       case PAR_SPREAD:
         switch (convertToType.toUpperCase()) {
@@ -67,7 +67,7 @@ public final class CdsQuoteConverter {
           case QUOTED_SPREAD:
             return QUOTE_CONVERTER.quotedSpreadToParSpreads(new CDSAnalytic[] {cds}, coupon, yieldCurve, new double[] {quote})[0];
           default:
-            throw new Excel4JRuntimeException("Unhandled type " + convertToType);
+            throw new XL4JRuntimeException("Unhandled type " + convertToType);
         }
       case QUOTED_SPREAD:
         switch (convertToType.toUpperCase()) {
@@ -77,10 +77,10 @@ public final class CdsQuoteConverter {
           case PAR_SPREAD:
             return QUOTE_CONVERTER.quotedSpreadToParSpreads(new CDSAnalytic[] {cds}, coupon, yieldCurve, new double[] {quote})[0];
           default:
-            throw new Excel4JRuntimeException("Unhandled type " + convertToType);
+            throw new XL4JRuntimeException("Unhandled type " + convertToType);
         }
       default:
-        throw new Excel4JRuntimeException("Unhandled type " + quoteType);
+        throw new XL4JRuntimeException("Unhandled type " + quoteType);
     }
   }
 

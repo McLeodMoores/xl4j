@@ -24,11 +24,11 @@ import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
 import com.jimmoores.quandl.util.QuandlRuntimeException;
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLParameter;
 import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.opengamma.util.ArgumentChecker;
 
 /**
@@ -312,11 +312,11 @@ public final class QuandlFunctions {
     ArgumentChecker.notNull(result, "result");
     final Object[] dateArray = getColumn(result, 0);
     if (dateArray == null) {
-      throw new Excel4JRuntimeException("No dates available for TabularResult");
+      throw new XL4JRuntimeException("No dates available for TabularResult");
     }
     final Object[] valueArray = getColumn(result, header);
     if (valueArray == null) {
-      throw new Excel4JRuntimeException("No data available for " + header);
+      throw new XL4JRuntimeException("No data available for " + header);
     }
     final int n = dateArray.length;
     final TimeSeries ts = TimeSeries.newTimeSeries();

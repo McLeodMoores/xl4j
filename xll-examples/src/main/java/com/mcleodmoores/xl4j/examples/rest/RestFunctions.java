@@ -23,14 +23,14 @@ import org.json.JSONTokener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLNamespace;
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.util.ArrayUtils;
-import com.mcleodmoores.xl4j.util.ArrayUtils.FixedDimension;
-import com.mcleodmoores.xl4j.util.ArrayWrongSizeException;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.ArrayUtils;
+import com.mcleodmoores.xl4j.v1.util.ArrayWrongSizeException;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.util.ArrayUtils.FixedDimension;
 
 @XLNamespace("Rest")
 public class RestFunctions {
@@ -57,7 +57,7 @@ public class RestFunctions {
           return target;
         } catch (ArrayWrongSizeException e) {
           LOGGER.error("Params need to be passed as a (2 x n) or (n x 2) array.", e);
-          throw new Excel4JRuntimeException("Params must be 2 x n or n x 2", e);
+          throw new XL4JRuntimeException("Params must be 2 x n or n x 2", e);
         }
     }
     return target;
@@ -158,15 +158,15 @@ public class RestFunctions {
            inputStream.close();
         } catch (IOException ioe) {
         }
-        throw new Excel4JRuntimeException("Problem parsing JSON reply", jsone);
+        throw new XL4JRuntimeException("Problem parsing JSON reply", jsone);
       } catch (IOException ex) {
         response.close();
-        throw new Excel4JRuntimeException("Problem closing input stream");
+        throw new XL4JRuntimeException("Problem closing input stream");
       }
     } else {
       String msg = "Response code to " + response.getLocation() + " was " + response.getStatusInfo();
       response.close();
-      throw new Excel4JRuntimeException(msg);
+      throw new XL4JRuntimeException(msg);
     }
   }
 }

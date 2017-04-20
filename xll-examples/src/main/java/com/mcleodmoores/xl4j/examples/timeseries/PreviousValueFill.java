@@ -3,11 +3,11 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLFunctions;
-import com.mcleodmoores.xl4j.XLNamespace;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Fills any missing values in a time series with the previous value available in the time series.
@@ -26,7 +26,7 @@ public class PreviousValueFill implements TimeSeriesFunction<TimeSeries> {
       return TimeSeries.newTimeSeries();
     }
     if (ts.get(ts.firstKey()) == null) {
-      throw new Excel4JRuntimeException("First value of time series was null: no value with which to pad");
+      throw new XL4JRuntimeException("First value of time series was null: no value with which to pad");
     }
     final TimeSeries result = TimeSeries.newTimeSeries();
     result.putAll(ts);

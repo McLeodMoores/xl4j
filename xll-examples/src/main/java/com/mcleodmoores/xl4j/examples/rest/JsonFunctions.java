@@ -5,8 +5,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLParameter;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
 
 public class JsonFunctions {
   private static final Logger LOGGER = LoggerFactory.getLogger(JsonFunctions.class);

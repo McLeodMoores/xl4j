@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.yieldcurve.conventions;
 
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.opengamma.analytics.financial.instrument.index.OvernightIndex;
 import com.opengamma.financial.convention.daycount.DayCount;
 import com.opengamma.util.money.Currency;

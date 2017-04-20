@@ -13,19 +13,19 @@ import java.util.List;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLBoolean;
-import com.mcleodmoores.xl4j.values.XLError;
-import com.mcleodmoores.xl4j.values.XLLocalReference;
-import com.mcleodmoores.xl4j.values.XLMultiReference;
-import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLObject;
-import com.mcleodmoores.xl4j.values.XLRange;
-import com.mcleodmoores.xl4j.values.XLSheetId;
-import com.mcleodmoores.xl4j.values.XLString;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
+import com.mcleodmoores.xl4j.v1.api.values.XLLocalReference;
+import com.mcleodmoores.xl4j.v1.api.values.XLMultiReference;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLObject;
+import com.mcleodmoores.xl4j.v1.api.values.XLRange;
+import com.mcleodmoores.xl4j.v1.api.values.XLSheetId;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
 
 /**
  * Unit tests for {@link MyTestFunctions}.

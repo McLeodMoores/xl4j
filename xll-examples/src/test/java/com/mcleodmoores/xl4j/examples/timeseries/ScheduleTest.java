@@ -8,13 +8,13 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.Excel;
-import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.util.XlDateUtils;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.core.Excel;
+import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
+import com.mcleodmoores.xl4j.v1.util.XlDateUtils;
 
 /**
  * Unit tests for {@link Schedule}.

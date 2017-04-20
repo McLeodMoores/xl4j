@@ -6,8 +6,8 @@ package com.mcleodmoores.xl4j.examples.yieldcurve.converters;
 import java.lang.reflect.Type;
 
 import com.jimmoores.quandl.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
-import com.mcleodmoores.xl4j.values.XLString;
+import com.mcleodmoores.xl4j.v1.api.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 

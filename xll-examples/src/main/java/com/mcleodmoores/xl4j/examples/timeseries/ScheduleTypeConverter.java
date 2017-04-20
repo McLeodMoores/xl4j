@@ -7,13 +7,13 @@ import java.lang.reflect.Type;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.typeconvert.AbstractTypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.TypeConverter;
-import com.mcleodmoores.xl4j.typeconvert.converters.LocalDateXLNumberTypeConverter;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLValue;
+import com.mcleodmoores.xl4j.v1.api.typeconvert.AbstractTypeConverter;
+import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverter;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
+import com.mcleodmoores.xl4j.v1.typeconvert.converters.LocalDateXLNumberTypeConverter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Converts a {@link Schedule} to an {@link XLArray} and vice versa.
@@ -35,7 +35,7 @@ public class ScheduleTypeConverter extends AbstractTypeConverter {
   public Object toXLValue(final Object from) {
     ArgumentChecker.notNull(from, "from");
     if (!(from instanceof Schedule)) {
-      throw new Excel4JRuntimeException("\"from\" parameter must be a schedule");
+      throw new XL4JRuntimeException("\"from\" parameter must be a schedule");
     }
     final Schedule schedule = (Schedule) from;
     if (schedule.size() == 0) {

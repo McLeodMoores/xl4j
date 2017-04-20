@@ -7,8 +7,8 @@ import java.util.Random;
 
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
 
 /**
  *

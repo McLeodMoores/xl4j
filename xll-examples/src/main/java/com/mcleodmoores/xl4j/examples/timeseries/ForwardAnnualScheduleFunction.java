@@ -7,10 +7,10 @@ import java.util.function.BiFunction;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.TypeConversionMode;
-import com.mcleodmoores.xl4j.XLFunctions;
-import com.mcleodmoores.xl4j.XLNamespace;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Generates an annual schedule from the start date to end date inclusive.

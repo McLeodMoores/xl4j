@@ -3,7 +3,7 @@
  */
 package com.mcleodmoores.xl4j.examples.yieldcurve.conventions;
 
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.opengamma.analytics.financial.instrument.index.IborTypeIndex;
 import com.opengamma.financial.convention.businessday.BusinessDayConvention;
 import com.opengamma.financial.convention.daycount.DayCount;

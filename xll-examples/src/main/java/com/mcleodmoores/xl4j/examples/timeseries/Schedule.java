@@ -8,9 +8,9 @@ import java.util.Collection;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.XLFunction;
-import com.mcleodmoores.xl4j.XLParameter;
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Class representing a schedule.

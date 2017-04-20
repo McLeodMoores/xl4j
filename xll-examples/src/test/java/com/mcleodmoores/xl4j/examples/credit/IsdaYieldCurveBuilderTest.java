@@ -16,11 +16,11 @@ import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
-import com.mcleodmoores.xl4j.values.XLArray;
-import com.mcleodmoores.xl4j.values.XLMissing;
-import com.mcleodmoores.xl4j.values.XLNumber;
-import com.mcleodmoores.xl4j.values.XLObject;
-import com.mcleodmoores.xl4j.values.XLString;
+import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLMissing;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLObject;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.SimpleWorkingDayCalendar;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;

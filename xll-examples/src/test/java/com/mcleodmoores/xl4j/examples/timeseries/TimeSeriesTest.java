@@ -10,7 +10,7 @@ import java.util.stream.IntStream;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Unit tests for {@link TimeSeries}.
@@ -20,7 +20,7 @@ public class TimeSeriesTest {
   /**
    * Tests that an exception is thrown if there are duplicate dates in the series.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testDuplicates() {
     final int n = 101;
     final List<LocalDate> dates = new ArrayList<>();
@@ -37,7 +37,7 @@ public class TimeSeriesTest {
   /**
    * Tests that a null date cannot be added.
    */
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testAddNullDate() {
     TimeSeries.newTimeSeries().put(null, 3.);
   }

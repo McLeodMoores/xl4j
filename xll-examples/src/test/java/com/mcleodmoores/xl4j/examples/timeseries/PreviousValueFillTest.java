@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.util.Excel4JRuntimeException;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  *
@@ -21,7 +21,7 @@ public class PreviousValueFillTest {
   private static final Function<TimeSeries, TimeSeries> CALCULATOR = new PreviousValueFill();
   private static final double EPS = 1e-15;
 
-  @Test(expectedExceptions = Excel4JRuntimeException.class)
+  @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testPreviousValueFillFirstValueNull() {
     final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(0, 100).forEach(i -> ts.put(LocalDate.now().plusDays(i), i % 2 == 0 ? null : i * 2.));

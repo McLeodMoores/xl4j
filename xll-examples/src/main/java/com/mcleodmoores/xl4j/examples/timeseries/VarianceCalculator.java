@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  *

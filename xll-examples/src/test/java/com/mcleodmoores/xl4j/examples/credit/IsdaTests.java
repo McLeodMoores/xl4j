@@ -3,9 +3,9 @@
  */
 package com.mcleodmoores.xl4j.examples.credit;
 
-import com.mcleodmoores.xl4j.ExcelFactory;
-import com.mcleodmoores.xl4j.heap.Heap;
-import com.mcleodmoores.xl4j.simulator.MockFunctionProcessor;
+import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
+import com.mcleodmoores.xl4j.v1.api.core.Heap;
+import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
 
 /**
  *
