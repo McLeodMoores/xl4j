@@ -230,7 +230,7 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
           namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
         }
         final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
-        final boolean useClassName = classAnnotation.prefix().isEmpty();
+        final boolean useClassName = classAnnotation.prefix() == null || classAnnotation.prefix().isEmpty();
         if (!isAbstract) {
           // build the constructor invokers
           final Constructor<?>[] constructors = clazz.getConstructors();

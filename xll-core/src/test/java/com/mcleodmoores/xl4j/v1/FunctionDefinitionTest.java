@@ -178,7 +178,7 @@ public class FunctionDefinitionTest {
     final FunctionDefinition definition = FunctionDefinition.of(FUNCTION_METADATA, METHOD_INVOKER, 1);
     assertTrue(definition.isStatic());
     assertFalse(definition.isVarArgs());
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.METHOD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.METHOD);
     assertEquals(definition.getExportName(), "UDF_1");
     assertEquals(definition.getExportNumber(), 1);
   }
@@ -190,7 +190,7 @@ public class FunctionDefinitionTest {
   public void testConstructorDefinition() {
     final FunctionDefinition definition = FunctionDefinition.of(FUNCTION_METADATA, CONSTRUCTOR_INVOKER, 1);
     assertFalse(definition.isVarArgs());
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.CONSTRUCTOR);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.CONSTRUCTOR);
     assertEquals(definition.getExportName(), "UDF_1");
     assertEquals(definition.getExportNumber(), 1);
   }
@@ -202,7 +202,7 @@ public class FunctionDefinitionTest {
   public void testFieldDefinition() {
     final FunctionDefinition definition = FunctionDefinition.of(FUNCTION_METADATA, FIELD_INVOKER, 1);
     assertTrue(definition.isStatic());
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
     assertEquals(definition.getExportName(), "UDF_1");
     assertEquals(definition.getExportNumber(), 1);
   }

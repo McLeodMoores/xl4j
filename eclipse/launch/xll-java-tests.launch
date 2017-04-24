@@ -4,7 +4,6 @@
 <listEntry value="=xll-core/src\/main\/java"/>
 <listEntry value="=xll-java/src\/main\/java"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.debug.ui.ATTR_CAPTURE_IN_FILE" value="C:\Users\mcleo\McLeodMoores\xl4j\eclipse\xll-java-tests"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="com.mountainminds.eclemma.ui.launchGroup.coverage"/>
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>

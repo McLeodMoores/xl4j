@@ -114,7 +114,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         results[i] = null;
       }
     }
-    if (functionDefinition.getJavaTypeForFunction() == CallTarget.METHOD) {
+    if (functionDefinition.getCallTargetForFunction() == CallTarget.METHOD) {
       if (!functionDefinition.isStatic()) {
         final String[] resultsWithConstructorArg = new String[results.length + 1];
         resultsWithConstructorArg[0] = "";
@@ -193,7 +193,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       final Class<?> excelReturnType;
       final Class<?>[] parameterTypes;
       final boolean isVarArgs;
-      switch (functionDefinition.getJavaTypeForFunction()) {
+      switch (functionDefinition.getCallTargetForFunction()) {
         case METHOD:
           final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
           excelReturnType = methodInvoker.getExcelReturnType();
@@ -207,7 +207,7 @@ public class DefaultExcelCallback implements ExcelCallback {
           isVarArgs = constructorInvoker.isVarArgs();
           break;
         default:
-          throw new XL4JRuntimeException("Unhandled type " + functionDefinition.getJavaTypeForFunction());
+          throw new XL4JRuntimeException("Unhandled type " + functionDefinition.getCallTargetForFunction());
       }
       final boolean isVolatile, isMTSafe, isMacroEquivalent, isAutoAsynchronous;
       final FunctionType functionType;
@@ -255,7 +255,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       if (parameterAnnotations.length != 0 && parameterAnnotations.length != parameterTypes.length) {
         throw new XL4JRuntimeException("Function called " + functionMetadata.getName() + " must have an XLParameter annotation for each parameter");
       }
-      if (functionDefinition.getJavaTypeForFunction() == CallTarget.METHOD && !functionDefinition.isStatic()) {
+      if (functionDefinition.getCallTargetForFunction() == CallTarget.METHOD && !functionDefinition.isStatic()) {
         // first argument for a non-static method is the object itself
         signature.append("Q");
       }
@@ -334,7 +334,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final XLParameter[] parameterAnnotations = definition.getFunctionMetadata().getParameters();
     final StringBuilder parameterNames = new StringBuilder();
     int argCounter = 1;
-    if (definition.getJavaTypeForFunction() == CallTarget.METHOD && !definition.isStatic()) {
+    if (definition.getCallTargetForFunction() == CallTarget.METHOD && !definition.isStatic()) {
       // add class name to start of list
       parameterNames.append(definition.getMethodInvoker().getMethodDeclaringClass().getSimpleName());
       if (parameterAnnotations.length > 0) {
