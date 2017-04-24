@@ -236,6 +236,10 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
           final Constructor<?>[] constructors = clazz.getConstructors();
           int count = 1;
           for (final Constructor<?> constructor : constructors) {
+            if (constructor.getAnnotation(XLFunction.class) != null) {
+              // this will already have been registered, so skip
+              continue;
+            }
             final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, useClassName, count);
             definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
             count++;
@@ -245,6 +249,10 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
         final Method[] methods = clazz.getMethods();
         final Map<String, Integer> methodNames = new HashMap<>();
         for (final Method method : methods) {
+          if (method.getAnnotation(XLFunction.class) != null) {
+            // this will already have been registered, so skip
+            continue;
+          }
           final String methodName = method.getName();
           if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
             LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
