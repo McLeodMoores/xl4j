@@ -316,7 +316,7 @@ public final class CdsPricer {
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  the bucketed CS01
    */
-  @XLFunction(name = "ISDACreditCurve.BuildIMMCurve", category = "ISDA CDS model",
+  @XLFunction(name = "ISDACreditCurve.BucketedCS01FromNewCurve", category = "ISDA CDS model",
       description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
   public static double[] bucketedCs01(
       @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,

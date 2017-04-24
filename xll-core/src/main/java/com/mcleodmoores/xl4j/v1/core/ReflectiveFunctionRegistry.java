@@ -54,7 +54,14 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReflectiveFunctionRegistry.class);
   // REVIEW: is this the best structure to use?
-  private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
+  private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new TreeSet<FunctionDefinition>(new Comparator<FunctionDefinition>() {
+
+    @Override
+    public int compare(final FunctionDefinition arg0, final FunctionDefinition arg1) {
+      return arg1.getFunctionMetadata().getName().compareTo(arg0.getFunctionMetadata().getName());
+    }
+
+  }));
   private final AtomicInteger _exportCounter = new AtomicInteger();
   private final ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
   private final BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
@@ -103,17 +110,9 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
   public void registerFunctions(final ExcelCallback callback) {
     LOGGER.info("registerFunctions called with {}", callback);
     try {
-      final Collection<FunctionDefinition> reverseLexicallySorted = new TreeSet<>(new Comparator<FunctionDefinition>() {
-
-        @Override
-        public int compare(final FunctionDefinition arg0, final FunctionDefinition arg1) {
-          return arg1.getFunctionMetadata().getName().compareTo(arg0.getFunctionMetadata().getName());
-        }
-
-      });
-      reverseLexicallySorted.addAll(_finishedScan.take());
+      final Collection<FunctionDefinition> functionDefinitions = _finishedScan.take();
       LOGGER.info("got collection from finishedFunctionScan queue, iterating over them...");
-      for (final FunctionDefinition functionDefinition : reverseLexicallySorted) {
+      for (final FunctionDefinition functionDefinition : functionDefinitions) {
         try {
           callback.registerFunction(functionDefinition);
         } catch (final XL4JRuntimeException xl4jre) {

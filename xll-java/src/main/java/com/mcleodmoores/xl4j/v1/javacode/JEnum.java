@@ -64,7 +64,7 @@ public final class JEnum {
    *          the enum values
    */
   @XLFunction(
-      name = "Enum",
+      name = "EnumX",
       description = "Return all values of an enum as an array",
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
