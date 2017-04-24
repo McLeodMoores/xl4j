@@ -54,14 +54,15 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReflectiveFunctionRegistry.class);
   // REVIEW: is this the best structure to use?
-  private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new TreeSet<FunctionDefinition>(new Comparator<FunctionDefinition>() {
+  private final Set<FunctionDefinition> _functionDefinitions =
+      Collections.synchronizedSet(new TreeSet<>(new Comparator<FunctionDefinition>() {
 
-    @Override
-    public int compare(final FunctionDefinition arg0, final FunctionDefinition arg1) {
-      return arg1.getFunctionMetadata().getName().compareTo(arg0.getFunctionMetadata().getName());
-    }
+        @Override
+        public int compare(final FunctionDefinition arg0, final FunctionDefinition arg1) {
+          return arg1.getFunctionMetadata().getName().compareTo(arg0.getFunctionMetadata().getName());
+        }
 
-  }));
+      }));
   private final AtomicInteger _exportCounter = new AtomicInteger();
   private final ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
   private final BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);

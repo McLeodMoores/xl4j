@@ -206,7 +206,7 @@ public class List2XLArrayTypeConverterTest {
    */
   @Test
   public void testNoConverter() {
-    assertEquals(PROCESSOR.invoke("NoConverter", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
+    assertEquals(PROCESSOR.invoke("NoConverterList", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
   }
 
   /**
@@ -491,7 +491,7 @@ public class List2XLArrayTypeConverterTest {
    * @param list  the List
    * @return  0
    */
-  @XLFunction(name = "NoConverter")
+  @XLFunction(name = "NoConverterList")
   public static int testNoKeyConverter(@XLParameter final List<Dimension> list) {
     return 0;
   }

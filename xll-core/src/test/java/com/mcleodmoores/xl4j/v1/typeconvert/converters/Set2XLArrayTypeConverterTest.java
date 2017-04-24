@@ -206,7 +206,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testNoConverter() {
-    assertEquals(PROCESSOR.invoke("NoConverter", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
+    assertEquals(PROCESSOR.invoke("NoConverterSet", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
   }
 
   /**
@@ -490,7 +490,7 @@ public class Set2XLArrayTypeConverterTest {
    * @param set  the set
    * @return  0
    */
-  @XLFunction(name = "NoConverter")
+  @XLFunction(name = "NoConverterSet")
   public static int testNoKeyConverter(@XLParameter final Set<Dimension> set) {
     return 0;
   }

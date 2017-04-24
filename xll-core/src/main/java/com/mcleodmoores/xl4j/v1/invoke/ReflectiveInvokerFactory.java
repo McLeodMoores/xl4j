@@ -257,9 +257,17 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     final Class<?>[] genericParameterTypes = method.getParameterTypes();
     try {
       final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
-      final TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      final Class<?> returnType = method.getReturnType();
+      final TypeConverter resultConverter;
+      if (returnType.equals(Void.TYPE)) {
+        // no converter available for void return type
+        // method invocation returns XLMissing
+        resultConverter = _objectXlObjectConverter;
+      } else {
+        resultConverter = _typeConverterRegistry.findConverter(returnType);
+      }
       if (resultConverter == null) {
-        throw new XL4JRuntimeException("Could not find type converter for " + method.getReturnType() + " (return type)");
+        throw new XL4JRuntimeException("Could not find type converter for " + returnType + " (return type)");
       }
       switch (resultType) {
         case SIMPLEST_RESULT:
