@@ -14,6 +14,23 @@ import org.testng.annotations.Test;
 public class ScratchTests {
 
   /**
+   * Test method.
+   * @param oneD
+   *          the input
+   */
+  public void test1D(final Collection<Integer>[] oneD) {
+    return;
+  }
+
+  /**
+   * Test method.
+   * @param twoD
+   *          the input
+   */
+  public void test2D(final Collection<Integer>[][] twoD) {
+    return;
+  }
+  /**
    * Tests array reflection.
    * @throws NoSuchMethodException
    *          if a method cannot be found
