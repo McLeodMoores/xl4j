@@ -14,7 +14,6 @@ import com.mcleodmoores.xl4j.v1.api.core.FieldGetter;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.invoke.ObjectFieldGetter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.IntegerXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 

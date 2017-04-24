@@ -13,11 +13,14 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.TemporalAdjusters;
 
 /**
- *
+ * Unit tests for {@link EndOfMonthScheduleFunction}.
  */
 public class EndOfMonthScheduleFunctionTest {
   private static final BiFunction<LocalDate, LocalDate, Schedule> FUNCTION = new EndOfMonthScheduleFunction();
 
+  /**
+   * Tests the function.
+   */
   @Test
   public void testSampling() {
     final LocalDate startDate = LocalDate.of(2015, 1, 1);

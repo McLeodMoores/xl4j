@@ -15,16 +15,17 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.javacode.JConstruct;
-import com.mcleodmoores.xl4j.v1.javacode.JMethod;
 import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 
 /**
- *
+ * Unit tests for {@link JMethod#jStaticMethodX(XLString, XLString, XLValue...)}.
  */
 public class JStaticMethodXTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
 
+  /**
+   * Tests that this method returns references.
+   */
   @Test
   public void testReturnType() {
     final Object methodResult1 = JMethod.jStaticMethodX(XLString.of("java.lang.String"), XLString.of("valueOf"), XLBoolean.FALSE);
@@ -36,8 +37,11 @@ public class JStaticMethodXTest {
     assertEquals(ExcelFactory.getInstance().getHeap().getObject(((XLObject) methodResult2).getHandle()), 3.);
   }
 
+  /**
+   * Tests the no-args factory method.
+   */
   @Test
-  public void testNoArgsConstructor() {
+  public void testNoArgsFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("of"), new XLValue[0]);
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -47,8 +51,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int factory method.
+   */
   @Test
-  public void testIntConstructor() {
+  public void testIntFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofPrimitiveInt"), XLNumber.of(1));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -58,8 +65,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the String factory method.
+   */
   @Test
-  public void testStringConstructor() {
+  public void testStringFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofString"), XLString.of("2"));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -69,8 +79,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the object factory method.
+   */
   @Test
-  public void testObjectConstructor() {
+  public void testObjectFactoryMethod() {
     final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(3));
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofObject"), number);
     assertTrue(constructed instanceof XLObject);
@@ -81,8 +94,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int, String factory method.
+   */
   @Test
-  public void testIntStringConstructor() {
+  public void testIntStringFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofPrimitiveIntString"), XLNumber.of(4), XLString.of("40"));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -93,8 +109,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int, Double factory method.
+   */
   @Test
-  public void testIntDoubleConstructor() {
+  public void testIntDoubleFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofPrimitiveIntDouble"), XLNumber.of(5), XLNumber.of(50));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -104,8 +123,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the Double factory method.
+   */
   @Test
-  public void testDoubleConstructor() {
+  public void testDoubleFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofDouble"), XLNumber.of(6.));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -115,8 +137,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int, Object factory method.
+   */
   @Test
-  public void testIntObjectConstructor() {
+  public void testIntObjectFactoryMethod() {
     final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(70));
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofPrimitiveIntObject"), XLNumber.of(7), number);
     assertTrue(constructed instanceof XLObject);
@@ -127,8 +152,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the String... factory method.
+   */
   @Test
-  public void testStringsConstructor() {
+  public void testStringsFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofStrings"), XLString.of("80"), XLString.of("81"), XLString.of("82"));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -138,8 +166,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int, String... factory method.
+   */
   @Test
-  public void testIntStringsConstructor() {
+  public void testIntStringsFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofPrimitiveIntStrings"),
         XLNumber.of(9), XLString.of("90"), XLString.of("91"), XLString.of("92"));
     assertTrue(constructed instanceof XLObject);
@@ -150,8 +181,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the Doubles... factory method.
+   */
   @Test
-  public void testDoublesConstructor() {
+  public void testDoublesFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofDoubles"), XLNumber.of(100.), XLNumber.of(101.), XLNumber.of(102.));
     assertTrue(constructed instanceof XLObject);
     final XLObject constructedXlObject = (XLObject) constructed;
@@ -161,8 +195,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int, Objects... factory method.
+   */
   @Test
-  public void testIntObjectsConstructor() {
+  public void testIntObjectsFactoryMethod() {
     final XLValue number1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(110));
     final XLValue number2 = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(111));
     final XLValue number3 = JConstruct.jconstruct(XLString.of("java.lang.Float"), XLNumber.of(112));
@@ -175,8 +212,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the int, Double... factory method.
+   */
   @Test
-  public void testIntDoublesConstructor() {
+  public void testIntDoublesFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofPrimitiveIntDoubles"),
         XLNumber.of(12), XLNumber.of(120.), XLNumber.of(121.), XLNumber.of(122.));
     assertTrue(constructed instanceof XLObject);
@@ -187,8 +227,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the Object... factory method.
+   */
   @Test
-  public void testObjectsConstructor() {
+  public void testObjectsFactoryMethod() {
     final XLValue number1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(130));
     final XLValue number2 = JConstruct.jconstruct(XLString.of("java.lang.Long"), XLNumber.of(131));
     final XLValue number3 = JConstruct.jconstruct(XLString.of("java.lang.Float"), XLNumber.of(132));
@@ -201,8 +244,11 @@ public class JStaticMethodXTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   * Tests the String[], String factory method.
+   */
   @Test
-  public void testStringArrayStringsConstructor() {
+  public void testStringArrayStringsFactoryMethod() {
     final Object constructed = JMethod.jStaticMethodX(CLASS, XLString.of("ofStringsStrings"),
         XLArray.of(new XLValue[][] {new XLValue[] {XLString.of("14")}}), XLString.of("140"), XLString.of("141"));
     assertTrue(constructed instanceof XLObject);

@@ -29,15 +29,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.invoke.ObjectConstructorInvoker;
-import com.mcleodmoores.xl4j.v1.invoke.ObjectFieldGetter;
-import com.mcleodmoores.xl4j.v1.invoke.ObjectResultMethodInvoker;
-import com.mcleodmoores.xl4j.v1.invoke.PassthroughConstructorInvoker;
-import com.mcleodmoores.xl4j.v1.invoke.PassthroughFieldGetter;
-import com.mcleodmoores.xl4j.v1.invoke.PassthroughMethodInvoker;
-import com.mcleodmoores.xl4j.v1.invoke.PassthroughResultMethodInvoker;
-import com.mcleodmoores.xl4j.v1.invoke.ReflectiveInvokerFactory;
-import com.mcleodmoores.xl4j.v1.invoke.SimpleResultMethodInvoker;
 import com.mcleodmoores.xl4j.v1.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.typeconvert.ScanningTypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
@@ -117,7 +108,7 @@ public class ReflectiveInvokerFactoryTest {
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullArgumentArray1() {
-    FACTORY.getConstructorTypeConverter(InvokerTestHelper.class, TypeConversionMode.OBJECT_RESULT, null);
+    FACTORY.getConstructorTypeConverter(InvokerTestHelper.class, TypeConversionMode.OBJECT_RESULT, (Class<? extends XLValue>[]) null);
   }
 
   /**
@@ -157,7 +148,7 @@ public class ReflectiveInvokerFactoryTest {
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullArgumentArray2() {
-    FACTORY.getMethodTypeConverter(InvokerTestHelper.class, XLString.of("method"), TypeConversionMode.OBJECT_RESULT, null);
+    FACTORY.getMethodTypeConverter(InvokerTestHelper.class, XLString.of("method"), TypeConversionMode.OBJECT_RESULT, (Class<? extends XLValue>[]) null);
   }
 
   /**
@@ -227,7 +218,6 @@ public class ReflectiveInvokerFactoryTest {
   /**
    * Tests a no-arg constructor.
    */
-  @SuppressWarnings("unchecked")
   @Test
   public void testNoArgConstructor() {
     ConstructorInvoker[] invokers = FACTORY.getConstructorTypeConverter(InvokerTestHelper.class, TypeConversionMode.OBJECT_RESULT, new Class[0]);
@@ -243,7 +233,6 @@ public class ReflectiveInvokerFactoryTest {
   /**
    * Tests the types of constructor invoker returned and that they can be successfully invoked.
    */
-  @SuppressWarnings("unchecked")
   @Test
   public void testObjectConstructorInvokers() {
     ConstructorInvoker[] invokers = FACTORY.getConstructorTypeConverter(InvokerTestHelper.class, TypeConversionMode.OBJECT_RESULT, XLNumber.class);
@@ -282,7 +271,6 @@ public class ReflectiveInvokerFactoryTest {
   /**
    * Tests the types of constructor invoker returned and that they can be successfully invoked.
    */
-  @SuppressWarnings("unchecked")
   @Test
   public void testPassthroughConstructorInvokers() {
     ConstructorInvoker[] invokers = FACTORY.getConstructorTypeConverter(InvokerTestHelper.class, TypeConversionMode.PASSTHROUGH,
@@ -356,7 +344,6 @@ public class ReflectiveInvokerFactoryTest {
   /**
    * Tests a no-arg method.
    */
-  @SuppressWarnings("unchecked")
   @Test
   public void testNoArgMethod() {
     MethodInvoker[] invokers = FACTORY.getMethodTypeConverter(InvokerTestHelper.class, XLString.of("noArgsMethod"),

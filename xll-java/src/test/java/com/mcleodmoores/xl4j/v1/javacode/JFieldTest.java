@@ -13,8 +13,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLArray;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
-import com.mcleodmoores.xl4j.v1.javacode.JField;
-import com.mcleodmoores.xl4j.v1.javacode.JMethod;
 
 /**
  *
@@ -22,6 +20,9 @@ import com.mcleodmoores.xl4j.v1.javacode.JMethod;
 public class JFieldTest {
   private static final XLString CLASS_NAME = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
 
+  /**
+   *
+   */
   @Test
   public void testField() {
     final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
@@ -38,6 +39,9 @@ public class JFieldTest {
     assertEquals(((XLNumber) ((XLArray) field).getArray()[0][0]).getAsDouble(), 12345.);
   }
 
+  /**
+   *
+   */
   @Test
   public void testFieldX() {
     final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
@@ -51,6 +55,9 @@ public class JFieldTest {
     assertEquals(array[0], 12345.);
   }
 
+  /**
+   *
+   */
   @Test
   public void testStaticField() {
     final Object field = JField.jStaticField(CLASS_NAME, XLString.of("MAGIC_NUMBER"));
@@ -58,6 +65,9 @@ public class JFieldTest {
     assertEquals(((XLNumber) field).getAsDouble(), 1.234567);
   }
 
+  /**
+   *
+   */
   @Test
   public void testStaticFieldX() {
     final Object field = JField.jStaticFieldX(CLASS_NAME, XLString.of("MAGIC_NUMBER"));

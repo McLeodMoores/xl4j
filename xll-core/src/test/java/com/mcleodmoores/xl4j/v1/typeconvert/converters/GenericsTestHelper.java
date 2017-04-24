@@ -13,7 +13,7 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 
 /**
- *
+ * Methods that are used to test generic methods.
  */
 public final class GenericsTestHelper {
 
@@ -111,6 +111,23 @@ public final class GenericsTestHelper {
     return result;
   }
 
+  /**
+   * Test function.
+   * @param <T>
+   *          the type of the value
+   * @param <U>
+   *          a Number
+   * @param <V>
+   *          the result of the operation
+   * @param combiningOperations
+   *          the combining operations
+   * @param operation
+   *          the operation
+   * @param value
+   *          the value
+   * @return
+   *          the result
+   */
   @XLFunction(name = "GenericsTestHelper.f4")
   public static <T, U extends Number, V extends Operation<T, U> & ToString> String f4(
       @XLParameter final CombinedToString<T, U, V>[] combiningOperations, final V operation, final T value) {
@@ -334,6 +351,9 @@ public final class GenericsTestHelper {
     }
   }
 
+  /**
+   * Test class that negates an integer.
+   */
   public static class NegativeIntegerOperation implements Operation<Integer, Integer>, ToString {
 
     @Override
@@ -346,8 +366,14 @@ public final class GenericsTestHelper {
       return "Negative Integer";
     }
 
+    /**
+     * Converter for NegativeIntegerOperation.
+     */
     public static class Converter extends AbstractTypeConverter {
 
+      /**
+       * Default constructor.
+       */
       public Converter() {
         super(NegativeIntegerOperation.class, XLNumber.class, 9999);
       }
@@ -364,6 +390,9 @@ public final class GenericsTestHelper {
     }
   }
 
+  /**
+   * A test operation.
+   */
   public static class OperationDescription1 implements CombinedToString<Integer, Integer, NegativeIntegerOperation> {
 
     @Override
@@ -373,6 +402,11 @@ public final class GenericsTestHelper {
 
   }
 
+  /**
+   * A parameterized test operation.
+   * @param <U>
+   *        the type of the input
+   */
   public static class OperationDescription2<U extends Number> implements CombinedToString<U[], Float, SumAndScaleAsFloatOperation<U>> {
 
     @Override

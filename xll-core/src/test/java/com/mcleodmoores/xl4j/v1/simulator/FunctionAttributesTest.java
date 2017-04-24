@@ -9,7 +9,6 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.v1.api.annotations.FunctionType;
 import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
-import com.mcleodmoores.xl4j.v1.simulator.FunctionAttributes;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**

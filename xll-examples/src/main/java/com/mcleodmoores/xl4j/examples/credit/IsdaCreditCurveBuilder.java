@@ -11,6 +11,7 @@ import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSQuoteConvention;
@@ -22,7 +23,6 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCount;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
-import com.opengamma.util.ArgumentChecker;
 
 /**
  * Methods that construct an ISDA CDS model credit curve and extract information from the curve once constructed.

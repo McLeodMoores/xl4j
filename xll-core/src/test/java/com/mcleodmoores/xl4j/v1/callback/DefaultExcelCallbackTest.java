@@ -1034,6 +1034,9 @@ public class DefaultExcelCallbackTest {
     return INT;
   }
 
+  /**
+   * Type converter for XLLocalReference.
+   */
   private static class XLLocalReferenceTypeConverter extends AbstractTypeConverter {
 
     protected XLLocalReferenceTypeConverter() {
@@ -1052,7 +1055,9 @@ public class DefaultExcelCallbackTest {
 
   }
 
-  @SuppressWarnings("unused")
+  /**
+   * Type converter for XLMultiReference.
+   */
   private static class XLMultiReferenceTypeConverter extends AbstractTypeConverter {
 
     protected XLMultiReferenceTypeConverter() {
@@ -1071,6 +1076,9 @@ public class DefaultExcelCallbackTest {
 
   }
 
+  /**
+   * Type converter for XLInteger.
+   */
   private static class XLIntegerTypeConverter extends AbstractTypeConverter {
 
     protected XLIntegerTypeConverter() {

@@ -15,8 +15,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.javacode.JConstruct;
-import com.mcleodmoores.xl4j.v1.javacode.JMethod;
 import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 
 /**
@@ -25,6 +23,9 @@ import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 public class JStaticMethodTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
 
+  /**
+   *
+   */
   @Test
   public void testReturnType() {
     final Object methodResult1 = JMethod.jStaticMethod(XLString.of("java.lang.String"), XLString.of("valueOf"), XLBoolean.FALSE);
@@ -34,6 +35,9 @@ public class JStaticMethodTest {
     assertEquals(methodResult2, XLNumber.of(3));
   }
 
+  /**
+   *
+   */
   @Test
   public void testNoArgsConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("of"), new XLValue[0]);
@@ -45,6 +49,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofDouble"), XLNumber.of(1));
@@ -56,6 +63,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testStringConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofString"), XLString.of("2"));
@@ -68,6 +78,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testObjectConstructor() {
     final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(3));
@@ -80,6 +93,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntStringConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofPrimitiveIntString"), XLNumber.of(4), XLString.of("40"));
@@ -92,6 +108,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntDoubleConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofPrimitiveIntDouble"), XLNumber.of(5), XLNumber.of(50));
@@ -103,6 +122,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testDoubleConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofDouble"), XLNumber.of(6.));
@@ -114,6 +136,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntObjectConstructor() {
     final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(70));
@@ -126,6 +151,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testStringsConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofStrings"), XLString.of("80"), XLString.of("81"), XLString.of("82"));
@@ -137,6 +165,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntStringsConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofPrimitiveIntStrings"),
@@ -149,6 +180,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testDoublesConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofDoubles"), XLNumber.of(100.), XLNumber.of(101.), XLNumber.of(102.));
@@ -160,6 +194,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntObjectsConstructor() {
     final XLValue number1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(110));
@@ -174,6 +211,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntDoublesConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofPrimitiveIntDoubles"),
@@ -186,6 +226,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testObjectsConstructor() {
     final XLValue number1 = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(130));
@@ -200,6 +243,9 @@ public class JStaticMethodTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testStringArrayStringsConstructor() {
     final Object constructed = JMethod.jStaticMethod(CLASS, XLString.of("ofStringsStrings"),

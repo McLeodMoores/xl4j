@@ -19,10 +19,13 @@ import org.slf4j.LoggerFactory;
  */
 public final class ConverterUtils {
   private static final Logger LOGGER = LoggerFactory.getLogger(ConverterUtils.class);
+
   /**
    * Gets the most specific bound for a wildcard type, or returns the type of the input.
-   * @param type  the type
-   * @return the bound
+   * @param type
+   *          the type
+   * @return
+   *          the bound
    */
   public static Type getBound(final Type type) {
     if (type instanceof WildcardType) {
@@ -49,8 +52,17 @@ public final class ConverterUtils {
     return type;
   }
 
-  public static Type getComponentTypeForGenericArray(final Type expectedType) {
-    final GenericArrayType genericArrayType = (GenericArrayType) expectedType;
+  /**
+   * Gets the component type of a generic array. If the array is a parameterized type (e.g. <code>public &lt;T&gt; void method(T[] array</code>)
+   * then the <code>TypeVariable</code> name is matched to the component type of the array. Otherwise, the generic component type of the
+   * array is returned.
+   * @param genericArrayType
+   *          the type, not null
+   * @return
+   *          the component type
+   */
+  public static Type getComponentTypeForGenericArray(final GenericArrayType genericArrayType) {
+    ArgumentChecker.notNull(genericArrayType, "genericArrayType");
     final Type genericComponentType = genericArrayType.getGenericComponentType();
     if (genericComponentType instanceof TypeVariable) {
       final GenericDeclaration genericDeclaration = ((TypeVariable<?>) genericComponentType).getGenericDeclaration();
@@ -70,7 +82,7 @@ public final class ConverterUtils {
     } else if (genericComponentType instanceof ParameterizedType) {
       return genericComponentType;
     }
-    throw new XL4JRuntimeException("GenericComponentType of " + expectedType + " was not a TypeVariable: have " + genericComponentType);
+    throw new XL4JRuntimeException("GenericComponentType of " + genericArrayType + " was not a TypeVariable: have " + genericComponentType);
   }
 
   /**

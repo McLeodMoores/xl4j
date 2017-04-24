@@ -12,11 +12,14 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link ReverseAnnualScheduleFunction}.
  */
 public class ReverseAnnualScheduleFunctionTest {
   private static final BiFunction<LocalDate, LocalDate, Schedule> FUNCTION = new ReverseAnnualScheduleFunction();
 
+  /**
+   * Tests the function.
+   */
   @Test
   public void testSampling() {
     LocalDate startDate = LocalDate.of(2000, 1, 1);

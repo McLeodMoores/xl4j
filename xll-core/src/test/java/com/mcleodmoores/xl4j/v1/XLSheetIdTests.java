@@ -11,10 +11,13 @@ import com.mcleodmoores.xl4j.v1.api.values.XLSheetId;
 /**
  * Unit tests for XLSheetId.
  */
-public final class XLSheetIdTests {
+public class XLSheetIdTests {
   private static final String EXPECTED_65536 = "XLSheetId[sheetId=65536]";
   private static final String EXPECTED_0 = "XLSheetId[sheetId=0]";
 
+  /**
+   *
+   */
   @Test
   public void testXLSheetIdEqualsAndHashCode() {
     final XLSheetId sheetId65536 = XLSheetId.of(65536);
@@ -41,6 +44,9 @@ public final class XLSheetIdTests {
     Assert.assertNotEquals("Hello", sheetId0);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLSheetIdToString() {
     final XLSheetId sheetId65536 = XLSheetId.of(65536);

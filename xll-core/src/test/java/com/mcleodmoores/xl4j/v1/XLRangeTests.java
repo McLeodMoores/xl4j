@@ -12,49 +12,77 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 /**
  * Unit tests for XLRange.
  */
-public final class XLRangeTests {
+public class XLRangeTests {
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testFirstArgNegative() {
     XLRange.of(-1, 100, 2, 3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testSecondArgNegative() {
     XLRange.of(1, -100, 2, 3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testThirdArgNegative() {
     XLRange.of(1, 100, -2, 3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testForthArgNegative() {
     XLRange.of(1, 100, 2, -3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testOfCellFirstNegative() {
     XLRange.ofCell(-100, 3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testOfCellSecondNegative() {
     XLRange.ofCell(100, -3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testFirstGtSecond() {
     XLRange.of(101, 100, 2, 3);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testThirdGtForth() {
     XLRange.of(100, 101, 5, 3);
   }
 
-  @Test void testGetters() {
+  /**
+   *
+   */
+  @Test
+  public void testGetters() {
     final XLRange range = XLRange.of(1, 2, 3, 4);
     Assert.assertEquals(range.getRowFirst(), 1);
     Assert.assertEquals(range.getRowLast(), 2);
@@ -62,6 +90,9 @@ public final class XLRangeTests {
     Assert.assertEquals(range.getColumnLast(), 4);
   }
 
+  /**
+   *
+   */
   @Test
   public void testSingleCol() {
     final XLRange range = XLRange.of(100, 100, 3, 5);
@@ -70,6 +101,9 @@ public final class XLRangeTests {
     Assert.assertFalse(range.isSingleCell());
   }
 
+  /**
+   *
+   */
   @Test
   public void testSingleRow() {
     final XLRange range = XLRange.of(100, 104, 3, 3);
@@ -78,6 +112,9 @@ public final class XLRangeTests {
     Assert.assertFalse(range.isSingleCell());
   }
 
+  /**
+   *
+   */
   @Test
   public void testSingleCell() {
     final XLRange range = XLRange.of(100, 100, 3, 3);
@@ -86,6 +123,9 @@ public final class XLRangeTests {
     Assert.assertTrue(range.isSingleCell());
   }
 
+  /**
+   *
+   */
   @Test
   public void testSingleCellOfCell() {
     final XLRange range = XLRange.ofCell(100, 3);
@@ -94,6 +134,9 @@ public final class XLRangeTests {
     Assert.assertTrue(range.isSingleCell());
   }
 
+  /**
+   *
+   */
   @Test
   public void testEqualsAndHashCode() {
     final XLRange range = XLRange.of(0, 15, 0, 15);
@@ -120,6 +163,9 @@ public final class XLRangeTests {
     Assert.assertNotEquals("Hello World", range);
   }
 
+  /**
+   *
+   */
   @Test
   public void testOfCellEquivalent() {
     final XLRange range = XLRange.of(15, 15, 20, 20);
@@ -132,6 +178,9 @@ public final class XLRangeTests {
   private static final String SINGLE_CELL = "XLRange[Single Cell row=100, column=3]";
   private static final String FULL_RANGE = "XLRange[Range rows=10 to 45, columns=0 to 30]";
 
+  /**
+   *
+   */
   @Test
   public void testXLRangeToString() {
     final XLRange singleRow = XLRange.of(100, 100, 3, 5);

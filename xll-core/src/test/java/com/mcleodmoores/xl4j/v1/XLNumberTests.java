@@ -13,10 +13,13 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 /**
  * Unit tests for XLNumber.
  */
-public final class XLNumberTests {
+public class XLNumberTests {
   private static final String EXPECTED_987_654321 = "XLNumber[value=987.654321]";
   private static final String EXPECTED_0_0 = "XLNumber[value=0.0]";
 
+  /**
+   *
+   */
   @Test
   public void testXLNumberEqualsAndHashCode() {
     final XLNumber longNum = XLNumber.of(48039284324380L);
@@ -43,6 +46,9 @@ public final class XLNumberTests {
     Assert.assertNotEquals(number987_654321.hashCode(), number0.hashCode());
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLNumberToString() {
     final XLNumber number987_654321 = XLNumber.of(987.654321);
@@ -51,6 +57,9 @@ public final class XLNumberTests {
     Assert.assertEquals(number0.toString(), EXPECTED_0_0);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLNumberAsType() {
     XLNumber number = XLNumber.of(100);

@@ -67,7 +67,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
       final Class<?> expectedClass = (Class<?>) expectedType;
       componentType = expectedClass.getComponentType();
     } else if (expectedType instanceof GenericArrayType) {
-      componentType = ConverterUtils.getComponentTypeForGenericArray(expectedType);
+      componentType = ConverterUtils.getComponentTypeForGenericArray((GenericArrayType) expectedType);
     } else {
       throw new XL4JRuntimeException("expectedType not array or GenericArrayType");
     }

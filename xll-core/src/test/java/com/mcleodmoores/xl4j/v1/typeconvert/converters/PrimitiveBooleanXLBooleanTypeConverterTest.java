@@ -15,7 +15,6 @@ import com.mcleodmoores.xl4j.v1.api.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.typeconvert.converters.PrimitiveBooleanXLBooleanTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**

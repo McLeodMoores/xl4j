@@ -11,13 +11,17 @@ import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
+
 /**
  * Unit tests for XLBoolean.
  */
-public final class XLBooleanTests {
+public class XLBooleanTests {
   private static final String EXPECTED_TRUE = "XLBoolean[TRUE]";
   private static final String EXPECTED_FALSE = "XLBoolean[FALSE]";
 
+  /**
+   *
+   */
   @Test
   public void testXLBooleanEqualsAndHashCode() {
     final XLBoolean boolT = XLBoolean.from(true);
@@ -42,6 +46,9 @@ public final class XLBooleanTests {
     assertNotEquals(boolT.hashCode(), boolF.hashCode());
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBooleanToString() {
     final XLBoolean boolT = XLBoolean.from(true);

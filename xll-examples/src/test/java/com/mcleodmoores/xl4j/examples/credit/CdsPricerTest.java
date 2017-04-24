@@ -28,7 +28,6 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
 import com.opengamma.util.money.Currency;
-import com.opengamma.util.test.TestGroup;
 
 /**
  * Unit tests for {@link CdsPricer}.
@@ -113,6 +112,9 @@ public class CdsPricerTest extends IsdaTests {
     CDS_TRADE = CdsTrade.of(CDS, CURRENCY, NOTIONAL, COUPON, BUY_PROTECTION, MARKET_QUOTE, QUOTE_TYPE);
   }
 
+  /**
+   * Tests the price method.
+   */
   @Test
   public void testPrice() {
     final double expectedCleanPrice = -NOTIONAL * CALCULATOR.pv(CDS, YIELD_CURVE, CREDIT_CURVE, COUPON);
@@ -130,6 +132,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlAccrued).getAsDouble(), expectedDirtyPrice - expectedCleanPrice, EPS);
   }
 
+  /**
+   * Tests the par spread method.
+   */
   @Test
   public void testParSpread() {
     final double expectedParSpread = CALCULATOR.parSpread(CDS, YIELD_CURVE, CREDIT_CURVE);
@@ -139,6 +144,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedParSpread, EPS);
   }
 
+  /**
+   * Tests the protection and premium leg PV method.
+   */
   @Test
   public void testLegPvs() {
     final double expectedProtectionLegPv = -NOTIONAL * CALCULATOR.protectionLeg(CDS, YIELD_CURVE, CREDIT_CURVE);
@@ -154,6 +162,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlProtectionLegPv).getAsDouble() + ((XLNumber) xlPremiumLegPv).getAsDouble(), ((XLNumber) xlPv).getAsDouble(), EPS);
   }
 
+  /**
+   * Tests the RR01 method.
+   */
   @Test
   public void testRr01() {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory();
@@ -171,6 +182,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedRr01, 1e-8);
   }
 
+  /**
+   * Tests the parallel IR01 method.
+   */
   @Test
   public void testParallelIr01() {
     final double[] t = YIELD_CURVE.getKnotTimes();
@@ -186,6 +200,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedIr01, 1e-8);
   }
 
+  /**
+   * Tests the parallel CS01 method.
+   */
   @Test
   public void testParallelCs01() {
     final double expectedCs01 = -NOTIONAL * CS01_CALCULATOR.parallelCS01(CDS, createQuote(COUPON, MARKET_QUOTE, QUOTE_TYPE), YIELD_CURVE) / 10000;
@@ -194,6 +211,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), expectedCs01, EPS);
   }
 
+  /**
+   * Tests the bucketed IR01 method.
+   */
   @Test
   public void testBucketedIr01() {
     final Object xlResult = PROCESSOR.invoke("CDS.BucketedIR01", convertToXlType(CDS_TRADE, HEAP), convertToXlType(YIELD_CURVE, HEAP),
@@ -216,6 +236,9 @@ public class CdsPricerTest extends IsdaTests {
     assertEquals(sum, expectedIr01, 0.5);
   }
 
+  /**
+   * Tests the bucketed CS01 method.
+   */
   @Test
   public void testBucketedCs01() {
     final Object xlResult = PROCESSOR.invoke("CDS.BucketedCS01", convertToXlType(TRADE_DATE), convertToXlType(CREDIT_CURVE_TENORS),

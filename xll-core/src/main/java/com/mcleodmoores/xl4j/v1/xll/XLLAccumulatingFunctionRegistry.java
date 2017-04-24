@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Originally the implementation of LowLevelExcelCallback would actually call back into Excel.  Until we
- * have actual callbacks (and maybe not even then for efficiency reasons), we use this to accumulate 
+ * have actual callbacks (and maybe not even then for efficiency reasons), we use this to accumulate
  * function definitions and convert them into a form that's easy and fast to read using JNI.
  */
 public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
@@ -44,7 +44,6 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   private final List<LowLevelEntry> _entries = new ArrayList<>();
 
   @Override
-  // CHECKSTYLE:OFF can't control signature.
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
       final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired, final String functionSignature,
       final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,

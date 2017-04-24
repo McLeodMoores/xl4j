@@ -15,8 +15,8 @@ public interface FunctionRegistry {
   void registerFunctions(ExcelCallback callback);
 
   /**
-   * Get a function definition for a particular export number
-   * @param exportNumber  the ordinal export number assigned to the function we're interested in. 
+   * Get a function definition for a particular export number.
+   * @param exportNumber  the ordinal export number assigned to the function we're interested in.
    * @return the function definition for the provided export number
    */
   FunctionDefinition getFunctionDefinition(int exportNumber);

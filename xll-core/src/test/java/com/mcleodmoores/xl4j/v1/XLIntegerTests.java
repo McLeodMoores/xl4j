@@ -11,10 +11,13 @@ import com.mcleodmoores.xl4j.v1.api.values.XLInteger;
 /**
  * Unit tests for XLInteger.
  */
-public final class XLIntegerTests {
+public class XLIntegerTests {
   private static final String EXPECTED_65536 = "XLInteger[value=65536]";
   private static final String EXPECTED_0 = "XLInteger[value=0]";
 
+  /**
+   *
+   */
   @Test
   public void testXLIntegerEqualsAndHashCode() {
     final XLInteger integer65536 = XLInteger.of(65536);
@@ -39,6 +42,9 @@ public final class XLIntegerTests {
     Assert.assertNotEquals(integer65536.hashCode(), integer0.hashCode());
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLIntegerToString() {
     final XLInteger integer65536 = XLInteger.of(65536);

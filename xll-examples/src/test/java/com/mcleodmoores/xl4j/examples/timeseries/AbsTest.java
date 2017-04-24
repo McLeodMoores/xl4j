@@ -11,12 +11,15 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link Abs}.
  */
 public class AbsTest {
   private static final TimeSeriesFunction<TimeSeries> CALCULATOR = new Abs();
   private static final double EPS = 1e-15;
 
+  /**
+   * Tests that this function when the time series has no null values.
+   */
   @Test
   public void noNullValues() {
     final int n = 100;
@@ -30,6 +33,9 @@ public class AbsTest {
     IntStream.range(0, n).forEach(i -> assertEquals(result.get(LocalDate.now().plusDays(i)), i, EPS));
   }
 
+  /**
+   * Tests this function when there are nulls in the series.
+   */
   @Test
   public void testNullsInSeries() {
     final int n = 100;

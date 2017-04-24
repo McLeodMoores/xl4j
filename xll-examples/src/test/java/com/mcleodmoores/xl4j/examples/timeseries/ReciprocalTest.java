@@ -12,12 +12,15 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link Reciprocal}.
  */
 public class ReciprocalTest {
   private static final Function<TimeSeries, TimeSeries> CALCULATOR = new Reciprocal();
   private static final double EPS = 1e-15;
 
+  /**
+   * Tests the function when there are no values in the series.
+   */
   @Test
   public void noNullValues() {
     final int n = 100;
@@ -31,6 +34,9 @@ public class ReciprocalTest {
     IntStream.range(0, n).forEach(i -> assertEquals(result.get(LocalDate.now().plusDays(i)), 1. / i, EPS));
   }
 
+  /**
+   * Tests the function when there are nulls in the series.
+   */
   @Test
   public void testNullsInSeries() {
     final int n = 100;

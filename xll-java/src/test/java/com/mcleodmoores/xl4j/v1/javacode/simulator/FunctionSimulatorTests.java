@@ -32,11 +32,17 @@ public class FunctionSimulatorTests {
   private MockFunctionProcessor _processor;
   private Heap _heap;
 
+  /**
+   *
+   */
   @BeforeTest
   public void initFunctionProcessor() {
     _processor = MockFunctionProcessor.getInstance();
     _heap = ExcelFactory.getInstance().getHeap();
   }
+  /**
+   *
+   */
   @Test
   public void testJConstruct() {
     final XLValue result = _processor.invoke("JConstruct", XLString.of(CLASSNAME_LIST));
@@ -46,6 +52,9 @@ public class FunctionSimulatorTests {
     Assert.assertEquals(arrayList.getClass(), ArrayList.class);
   }
 
+  /**
+   *
+   */
   @SuppressWarnings("unchecked")
   @Test
   public void testSequence() {
@@ -56,6 +65,9 @@ public class FunctionSimulatorTests {
     Assert.assertEquals(listObj, Arrays.asList(6));
   }
 
+  /**
+   *
+   */
   @SuppressWarnings("unchecked")
   @Test
   public void testMap() {
@@ -75,8 +87,11 @@ public class FunctionSimulatorTests {
     Assert.assertEquals(mapObj, expectedMap);
   }
 
+  /**
+   *
+   */
   @Test
-  public void testArraysAsList() throws Exception {
+  public void testArraysAsList() {
     // empty list
     XLValue list = _processor.invoke("JStaticMethodX", XLString.of("java.util.Arrays"), XLString.of("asList"));
     assertTrue(list instanceof XLObject);

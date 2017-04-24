@@ -21,7 +21,6 @@ import com.mcleodmoores.xl4j.v1.xll.LowLevelExcelCallback;
 public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   private final ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>();
 
-  // CHECKSTYLE:OFF -- can't help long signature, mirrors MS API.
   @Override
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
       final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired,
@@ -48,7 +47,6 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     }
     return -1;
   }
-  // CHECKSTYLE:ON
 
   /**
    * Get the function entry for the named function.

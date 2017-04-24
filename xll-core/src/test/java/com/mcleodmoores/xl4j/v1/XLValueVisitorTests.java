@@ -44,6 +44,9 @@ public class XLValueVisitorTests {
       "XLMultiReference", "XLNil", "XLNumber", "XLString", "XLArray", "XLObject"
       );
 
+  /**
+   * Tests the XLValue visitor.
+   */
   @Test
   public void testVisitor() {
     final XLValueVisitor<String> visitor = new XLValueVisitor<String>() {
@@ -116,9 +119,12 @@ public class XLValueVisitorTests {
     }
   }
 
+  /**
+   * Tests the visitor adapter.
+   */
   @Test
   public void testAdapter() {
-    final XLValueVisitorAdapter<Void> adapter = new XLValueVisitorAdapter<Void>();
+    final XLValueVisitorAdapter<Void> adapter = new XLValueVisitorAdapter<>();
     final Iterator<String> iter = EXPECTED.iterator();
     for (final XLValue value : VALUES) {
       final String expected = iter.next();
