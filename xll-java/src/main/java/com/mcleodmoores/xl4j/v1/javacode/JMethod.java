@@ -56,47 +56,45 @@ public final class JMethod {
     final Heap heap = excel.getHeap();
     final Object object = heap.getObject(objectReference.getHandle());
     final Class<?> clazz = object.getClass();
-    final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(clazz, methodName,
-        TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
-
-    int i = 0;
-    // TODO remove any method with Object or Object[] types and try them last?
-    for (; i < methodTypeConverters.length; i++) {
-      final MethodInvoker methodTypeConverter = methodTypeConverters[i];
-      if (methodTypeConverter == null) {
-        if (i == methodTypeConverters.length - 1) {
-          // have reached the end of the available methods without finding a match
-          // (can have nulls in the middle of the method invoker array)
-          LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
-              Arrays.toString(args));
-          return XLError.Null;
+    try {
+      final MethodInvoker[] methodInvokers = invokerFactory.getMethodTypeConverter(clazz, methodName,
+          TypeConversionMode.SIMPLEST_RESULT, getArgTypes(args));
+      int i = 0;
+      // TODO remove any method with Object or Object[] types and try them last?
+      for (; i < methodInvokers.length; i++) {
+        final MethodInvoker methodInvoker = methodInvokers[i];
+        if (methodInvoker == null) {
+          // go to where it will try any methods that are at the end of the array i.e. varargs methods
+          break;
         }
-        // go to where it will try any methods that are at the end of the array i.e. varargs methods
-        break;
+        try {
+          return methodInvoker.invoke(object, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          LOGGER.trace("trying to invoke method, but exception thrown", e);
+          // keep trying until something works
+        }
       }
-      try {
-        return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
-      } catch (final Exception e) {
-        LOGGER.trace("trying to invoke method, but exception thrown", e);
-        // keep trying until something works
+      for (int j = methodInvokers.length - 1; j >= i; j--) {
+        final MethodInvoker methodTypeConverter = methodInvokers[j];
+        if (methodTypeConverter == null) {
+          // haven't found anything at the end either
+          break;
+        }
+        try {
+          return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          LOGGER.trace("trying to invoke method, but exception thrown", e);
+          // keep trying until something works
+        }
       }
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
+          Arrays.toString(args));
+      return XLError.Null;
+    } catch (Exception e) {
+      LOGGER.error("Could not call method {} on {} with arguments {}, {}", methodName.getValue(), objectReference.getClazz(),
+          Arrays.toString(args), e);
+      return XLError.Null;
     }
-    for (int j = methodTypeConverters.length - 1; j >= i; j--) {
-      final MethodInvoker methodTypeConverter = methodTypeConverters[j];
-      if (methodTypeConverter == null) {
-        // haven't found anything at the end either
-        break;
-      }
-      try {
-        return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
-      } catch (final Exception e) {
-        LOGGER.trace("trying to invoke method, but exception thrown", e);
-        // keep trying until something works
-      }
-    }
-    LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
-        Arrays.toString(args));
-    return XLError.Null;
   }
 
   /**
@@ -122,44 +120,43 @@ public final class JMethod {
     final Heap heap = excel.getHeap();
     final Object object = heap.getObject(objectReference.getHandle());
     final Class<?> clazz = object.getClass();
-    final MethodInvoker[] methodTypeConverters = invokerFactory.getMethodTypeConverter(clazz, methodName,
-        TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
-    int i = 0;
-    // TODO remove any method with Object or Object[] types and try them last?
-    for (; i < methodTypeConverters.length; i++) {
-      final MethodInvoker methodTypeConverter = methodTypeConverters[i];
-      if (methodTypeConverter == null) {
-        if (i == methodTypeConverters.length - 1) {
-          // have reached the end of the available methods without finding a match
-          // (can have nulls in the middle of the method invoker array)
-          LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
-              Arrays.toString(args));
-          return XLError.Null;
+    try {
+      final MethodInvoker[] methodInvokers = invokerFactory.getMethodTypeConverter(clazz, methodName,
+          TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
+      int i = 0;
+      // TODO remove any method with Object or Object[] types and try them last?
+      for (; i < methodInvokers.length; i++) {
+        final MethodInvoker methodInvoker = methodInvokers[i];
+        if (methodInvoker == null) {
+          // go to where it will try any methods that are at the end of the array i.e. varargs methods
+          break;
         }
-        // go to where it will try any methods that are at the end of the array i.e. varargs methods
-        break;
+        try {
+          return methodInvoker.invoke(object, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          // keep trying until something works
+        }
       }
-      try {
-        return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
-      } catch (final Exception e) {
-        // keep trying until something works
+      for (int j = methodInvokers.length - 1; j >= i; j--) {
+        final MethodInvoker methodTypeConverter = methodInvokers[j];
+        if (methodTypeConverter == null) {
+          // haven't found anything at the end either
+          break;
+        }
+        try {
+          return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
+        } catch (final Exception e) {
+          // keep trying until something works
+        }
       }
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), 
+          Arrays.toString(args));
+      return XLError.Null;
+    } catch (Exception e) {
+      LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), objectReference.getClazz(),
+          Arrays.toString(args), e);
+      return XLError.Null;
     }
-    for (int j = methodTypeConverters.length - 1; j >= i; j--) {
-      final MethodInvoker methodTypeConverter = methodTypeConverters[j];
-      if (methodTypeConverter == null) {
-        // haven't found anything at the end either
-        break;
-      }
-      try {
-        return methodTypeConverter.invoke(object, args); // reduce return type to excel friendly type if possible.
-      } catch (final Exception e) {
-        // keep trying until something works
-      }
-    }
-    LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
-        Arrays.toString(args));
-    return XLError.Null;
   }
 
   /**
@@ -191,13 +188,6 @@ public final class JMethod {
       for (; i < methodTypeConverters.length; i++) {
         final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
-          if (i == methodTypeConverters.length - 1) {
-            // have reached the end of the available methods without finding a match
-            // (can have nulls in the middle of the method invoker array)
-            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(),
-                Arrays.toString(args));
-            return XLError.Null;
-          }
           // go to where it will try any methods that are at the end of the array
           break;
         }
@@ -223,6 +213,9 @@ public final class JMethod {
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", className.getValue());
+      return XLError.Null;
+    } catch (Exception e) {
+      LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), className.getValue(), Arrays.toString(args), e);
       return XLError.Null;
     }
   }
@@ -256,13 +249,6 @@ public final class JMethod {
       for (; i < methodTypeConverters.length; i++) {
         final MethodInvoker methodTypeConverter = methodTypeConverters[i];
         if (methodTypeConverter == null) {
-          if (i == methodTypeConverters.length - 1) {
-            // have reached the end of the available methods without finding a match
-            // (can have nulls in the middle of the method invoker array)
-            LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), className.getValue(),
-                Arrays.toString(args));
-            return XLError.Null;
-          }
           // go to where it will try any methods that are at the end of the array
           break;
         }
@@ -288,6 +274,9 @@ public final class JMethod {
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", className.getValue());
+      return XLError.Null;
+    } catch (Exception e) {
+      LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), className.getValue(), Arrays.toString(args), e);
       return XLError.Null;
     }
   }

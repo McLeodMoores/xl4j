@@ -7,16 +7,17 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- *
+ * Test object.
  */
 // CHECKSTYLE:OFF
 public class TestObject {
-  /** Magic number */
   public static final double MAGIC_NUMBER = 1.234567;
+  private static final double PRIVATE_FIELD = 3.21;
 
   public final int _number;
   public final double[] _doubles;
   public final String _name;
+  private final String _privateName;
 
   // TODO add a builder
 
@@ -142,24 +143,28 @@ public class TestObject {
     _number = number;
     _doubles = doubles;
     _name = name;
+    _privateName = name;
   }
 
   public TestObject() {
     _number = -100;
     _doubles = new double[0];
     _name = "no args constructor";
+    _privateName = _name;
   }
 
   public TestObject(final String doubleString) {
     _number = -300;
     _doubles = new double[] { Double.parseDouble(doubleString) };
     _name = "String constructor";
+    _privateName = _name;
   }
 
   public TestObject(final int number) {
     _number = number;
     _doubles = new double[0];
     _name = "int constructor";
+    _privateName = _name;
   }
 
   public int getNumber() {

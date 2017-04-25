@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.PARAMETER })
 public @interface XLParameter {
-  // CHECKSTYLE:OFF - this is because of a bug in Checkstyle regarding annotation @return JavaDocs.
+
   /**
    * The name of the parameter, as it is to appear in the function wizard. If not supplied, the library will attempt to: 1. Use the debug
    * symbol if available (the class must have been compiled with debugging info) 2. Use the JavaDoc name if available. 3. Use 'arg&lt;n&gt;'

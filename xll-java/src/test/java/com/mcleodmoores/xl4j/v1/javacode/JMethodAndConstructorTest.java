@@ -102,7 +102,7 @@ public class JMethodAndConstructorTest {
    * @throws Exception  if there is a problem calling the method
    */
   @Test
-  public void testJMethodReflective1_5() throws Exception {
+  public void testJMethodReflective15() throws Exception {
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayListXlObject = (XLObject) method.invoke(null, XLString.of(CLASSNAME_ARRAYLIST), new XLValue[] { XLNumber.of(6d) });
     final List<?> arrayList = (List<?>) ExcelFactory.getInstance().getHeap().getObject(arrayListXlObject.getHandle());
@@ -114,7 +114,7 @@ public class JMethodAndConstructorTest {
    * @throws Exception  if there is a problem calling the method
    */
   @Test
-  public void testJMethodReflective1_75() throws Exception {
+  public void testJMethodReflective175() throws Exception {
     final Method method = JConstruct.class.getMethod("jconstruct", XLString.class, XLValue[].class);
     final XLObject arrayListXlObject = (XLObject) method.invoke(null, XLString.of(CLASSNAME_ARRAYLIST), new XLValue[] { });
     final List<?> arrayList = (List<?>) ExcelFactory.getInstance().getHeap().getObject(arrayListXlObject.getHandle());

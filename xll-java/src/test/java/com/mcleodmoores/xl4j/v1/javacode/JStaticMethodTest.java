@@ -4,6 +4,7 @@
 package com.mcleodmoores.xl4j.v1.javacode;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
@@ -11,6 +12,7 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
 import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
@@ -18,10 +20,46 @@ import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 
 /**
- *
+ * Unit tests for {@link JMethod#jStaticMethod(XLString, XLString, XLValue...)}.
  */
 public class JStaticMethodTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
+
+  /**
+   * Tests the result when the method cannot be found.
+   */
+  @Test
+  public void testNoMethod() {
+    final Object methodResult = JMethod.jStaticMethod(XLString.of("java.lang.StringBuilder"), XLString.of("noMethodCalledThis"), new XLValue[0]);
+    assertSame(methodResult, XLError.Null);
+  }
+
+  /**
+   * Tests wrong number of arguments.
+   */
+  @Test
+  public void testWrongNumberOfArguments() {
+    final Object methodResult = JMethod.jStaticMethod(XLString.of("java.lang.Math"), XLString.of("cos"), XLNumber.of(10), XLNumber.of(20));
+    assertSame(methodResult, XLError.Null);
+  }
+
+  /**
+   * Tests wrong number of arguments.
+   */
+  @Test
+  public void testWrongTypeOfArguments() {
+    final Object methodResult = JMethod.jStaticMethod(XLString.of("java.lang.Math"), XLString.of("cos"), XLString.of("A"));
+    assertSame(methodResult, XLError.Null);
+  }
+
+  /**
+   * Tests bad class name.
+   */
+  @Test
+  public void testWrongClassName() {
+    final Object methodResult = JMethod.jStaticMethod(XLString.of("java.util.Math"), XLString.of("cos"), XLNumber.of(10));
+    assertSame(methodResult, XLError.Null);
+  }
 
   /**
    *

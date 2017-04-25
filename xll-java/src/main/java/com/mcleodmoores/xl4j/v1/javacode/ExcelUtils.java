@@ -85,8 +85,8 @@ public final class ExcelUtils {
             final XLValue entry = xlArray[i][j];
             resultArray[i][j] = entry instanceof XLString ? XLString.of(prefix + ((XLString) entry).getValue()) : entry;
           }
-          arrayList.add(resultArray);
         }
+        arrayList.add(XLArray.of(resultArray));
       } else {
         arrayList.add(value instanceof XLString ? XLString.of(prefix + ((XLString) value).getValue()) : value);
       }
@@ -115,10 +115,10 @@ public final class ExcelUtils {
         for (int i = 0; i < xlArray.length; i++) {
           for (int j = 0; j < xlArray[i].length; j++) {
             final XLValue entry = xlArray[i][j];
-            resultArray[i][j] = entry instanceof XLString ? XLString.of(((XLString) value).getValue().replaceAll("\\s", "")) : entry;
+            resultArray[i][j] = entry instanceof XLString ? XLString.of(((XLString) entry).getValue().replaceAll("\\s", "")) : entry;
           }
-          arrayList.add(resultArray);
         }
+        arrayList.add(XLArray.of(resultArray));
       } else {
         arrayList.add(value instanceof XLString ? XLString.of(((XLString) value).getValue().replaceAll("\\s", "")) : value);
       }

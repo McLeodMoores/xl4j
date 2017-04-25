@@ -154,7 +154,7 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
         final Type e2jJavaType = typeConverter.getExcelToJavaTypeMapping().getJavaType();
         final Class<?> j2eExcelClass = typeConverter.getJavaToExcelTypeMapping().getExcelClass();
         final Type j2eJavaType = typeConverter.getJavaToExcelTypeMapping().getJavaType();
-        if (e2jExcelClass.equals(j2eExcelClass) && e2jJavaType.equals(e2jJavaType)) {
+        if (e2jExcelClass.equals(j2eExcelClass) && e2jJavaType.equals(j2eJavaType)) {
           System.out.println("| " + priority
               + " | " + typeConverter.getClass().getSimpleName()
               + " | " + e2jExcelClass.toGenericString()

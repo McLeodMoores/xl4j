@@ -37,7 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.ReentrantLock;
 
-
+// CHECKSTYLE:OFF
 /**
  * An alternative identity-comparing {@link ConcurrentMap} which is similar to
  * {@link ConcurrentHashMap}.
