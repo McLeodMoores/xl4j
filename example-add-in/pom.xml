@@ -6,11 +6,10 @@
     <artifactId>xl4j-parent</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>packaging</artifactId>
+  <artifactId>example-add-in</artifactId>
   <packaging>pom</packaging>
 
-  <name>Packaging</name>
-  <description>The Complete package</description>
+  <name>Example Add-in</name>
   <url>http://mcleodmoores.com/xl4j</url>
   
   <inceptionYear>1 Jul 2014</inceptionYear>
@@ -85,7 +84,8 @@
             </goals>
 		    <configuration>
               <descriptors>
-                <descriptor>src/assembly/xl4j-assembly.xml</descriptor>
+                <descriptor>src/assembly/release.xml</descriptor>
+                <descriptor>src/assembly/debug.xml</descriptor>
               </descriptors>
             </configuration>
           </execution>
@@ -134,4 +134,5 @@
 
   </dependencies>
 
+  <description>Packages the libraries with the xll-examples project to produce a resulting full add-in</description>
 </project>

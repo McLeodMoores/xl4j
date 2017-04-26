@@ -77,7 +77,7 @@ packages/
 /xll-core/test-output/
 /xll-java/test-output/
 /xll-examples/test-output/
-/packaging/test-output/
+/example-add-in/test-output/
 
 # Java
 *.class
@@ -94,7 +94,7 @@ packages/
 /xll-core/target/
 /xll-java/target/
 /xll-examples/target/
-/packaging/target/
+/example-add-in/target/
 
 # Eclipse
 .settings

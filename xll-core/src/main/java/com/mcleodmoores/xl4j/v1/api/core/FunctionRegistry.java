@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.xl4j.v1.api.core;
 
+import java.util.Set;
+
 /**
  * Common interface for function registries.
  */
@@ -20,4 +22,9 @@ public interface FunctionRegistry {
    * @return the function definition for the provided export number
    */
   FunctionDefinition getFunctionDefinition(int exportNumber);
+  
+  /**
+   * @return a set of the function definitions in the registry.
+   */
+  Set<FunctionDefinition> getFunctionDefinitions();
 }

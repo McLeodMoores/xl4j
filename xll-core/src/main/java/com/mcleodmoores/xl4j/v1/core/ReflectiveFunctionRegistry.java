@@ -7,6 +7,7 @@ import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -202,4 +203,7 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     }
   }
 
+  public Set<FunctionDefinition> getFunctionDefinitions() {
+    return new LinkedHashSet<>(_functionDefinitionLookup.values());
+  }
 }
