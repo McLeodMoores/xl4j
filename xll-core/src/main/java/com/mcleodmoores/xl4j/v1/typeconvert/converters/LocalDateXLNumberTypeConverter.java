@@ -19,6 +19,12 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter {
   /** The epoch year used in Excel */
   private static final int EXCEL_EPOCH_YEAR = 1900;
+  /**
+   * Note this is does not work in 1904 mode (which is an odd Mac compatibility mode), but with 0-Jan-1900. + 1 below is to correct for the
+   * extra leap day added by Lotus-123/Excel.
+   */
+  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), LocalDate.ofEpochDay(0))
+      + 1;
 
   /**
    * Default constructor.
@@ -26,13 +32,6 @@ public final class LocalDateXLNumberTypeConverter extends AbstractTypeConverter 
   public LocalDateXLNumberTypeConverter() {
     super(LocalDate.class, XLNumber.class);
   }
-
-  /**
-   * Note this is does not work in 1904 mode (which is an odd Mac compatibility mode), but with 0-Jan-1900. + 1 below is to correct for the
-   * extra leap day added by Lotus-123/Excel.
-   */
-  private static final long DAYS_FROM_EXCEL_EPOCH = ChronoUnit.DAYS.between(LocalDate.of(EXCEL_EPOCH_YEAR, 1, 1), LocalDate.ofEpochDay(0))
-      + 1;
 
   @Override
   public Object toXLValue(final Object from) {

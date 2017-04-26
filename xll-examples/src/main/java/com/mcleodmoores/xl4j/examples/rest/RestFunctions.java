@@ -190,7 +190,7 @@ public final class RestFunctions {
     int maxWidth = 0;
     final Set<Entry<String, List<Object>>> entrySet = headers.entrySet();
     for (final Entry<String, List<Object>> entry : entrySet) {
-      maxWidth = Math.max(entry.getValue() != null ? entry.getValue().size() : 0, maxWidth);
+      maxWidth = Math.max(entry.getValue() == null ? 0 : entry.getValue().size(), maxWidth);
     }
     final Object[][] headersArr = new Object[headers.size()][maxWidth];
     final int i = 0;

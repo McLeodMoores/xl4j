@@ -155,7 +155,6 @@ public final class JMethod {
     } catch (final Exception e) {
       LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), objectReference.getClazz(),
           Arrays.toString(args), e);
-      e.printStackTrace();
       return XLError.Null;
     }
   }

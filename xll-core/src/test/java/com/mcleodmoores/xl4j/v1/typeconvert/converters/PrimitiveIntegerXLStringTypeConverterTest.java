@@ -104,7 +104,7 @@ public class PrimitiveIntegerXLStringTypeConverterTest {
     final XLValue converted = (XLValue) CONVERTER.toXLValue(2);
     assertTrue(converted instanceof XLString);
     final XLString xlString = (XLString) converted;
-    assertEquals(xlString.getValue(), Integer.valueOf(2).toString());
+    assertEquals(xlString.getValue(), "2");
   }
 
   /**
@@ -112,7 +112,7 @@ public class PrimitiveIntegerXLStringTypeConverterTest {
    */
   @Test
   public void testConversionFromXLString() {
-    final Object converted = CONVERTER.toJavaObject(Integer.TYPE, XLString.of(Integer.valueOf(3).toString()));
+    final Object converted = CONVERTER.toJavaObject(Integer.TYPE, XLString.of("3"));
     assertTrue(converted instanceof Integer);
     final Integer integer = (Integer) converted;
     assertEquals(integer, Integer.valueOf(3));

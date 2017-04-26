@@ -213,6 +213,7 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     }
   }
 
+  @Override
   public Set<FunctionDefinition> getFunctionDefinitions() {
     return new LinkedHashSet<>(_functionDefinitionLookup.values());
   }

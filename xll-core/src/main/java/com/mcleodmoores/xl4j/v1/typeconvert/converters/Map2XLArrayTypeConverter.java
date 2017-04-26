@@ -48,7 +48,7 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
       throw new XL4JRuntimeException("\"from\" parameter must be a Map");
     }
     final Map<?, ?> fromMap = (Map<?, ?>) from;
-    if (fromMap.size() == 0) {
+    if (fromMap.isEmpty()) {
       return XLArray.of(new XLValue[1][1]);
     }
     // we know the length is > 0
@@ -81,7 +81,6 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    final XLArray xlArr = (XLArray) from;
     final Type keyType;
     final Type valueType;
     if (expectedType instanceof Class) {
@@ -106,6 +105,7 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
     } else {
       throw new XL4JRuntimeException("expectedType not Class or ParameterizedType");
     }
+    final XLArray xlArr = (XLArray) from;
     final XLValue[][] arr = xlArr.getArray();
     final Map<Object, Object> targetMap = new LinkedHashMap<>();
     TypeConverter lastKeyConverter = null, lastValueConverter = null;

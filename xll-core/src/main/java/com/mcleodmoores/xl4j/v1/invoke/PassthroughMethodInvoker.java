@@ -52,13 +52,12 @@ public class PassthroughMethodInvoker implements MethodInvoker {
           return (XLValue) _method.invoke(object, Array.newInstance(varArgType, 0));
         }
         // create an array for the varargs argument
-        final Object[] args;
         final int nArgs = _method.getParameterCount();
         final int nVarargInputs = arguments.length - nArgs + 1;
         if (nVarargInputs < 0) {
           throw new XL4JRuntimeException("Wrong number of arguments for " + _method + ", have " + Arrays.toString(arguments));
         }
-        args = new Object[nArgs];
+        final Object[] args = new Object[nArgs];
         final Class<?>[] parameterTypes = _method.getParameterTypes();
         final Class<?> varArgType = parameterTypes[parameterTypes.length - 1].getComponentType();
         final Object[] varargs = (Object[]) Array.newInstance(varArgType, nVarargInputs);

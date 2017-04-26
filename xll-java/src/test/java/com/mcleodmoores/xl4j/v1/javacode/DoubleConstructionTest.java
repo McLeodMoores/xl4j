@@ -39,14 +39,14 @@ public class DoubleConstructionTest extends TypeConstructionTests {
     Object doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(doubleObject instanceof Double);
     Double doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
+    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue(), 1e-15);
     // String constructor
     xlValue = PROCESSOR.invoke("JConstruct", XLString.of(CLASSNAME), XLString.of("10"));
     assertTrue(xlValue instanceof XLObject);
     doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(doubleObject instanceof Double);
     doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
+    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue(), 1e-15);
   }
 
   /**
@@ -60,13 +60,13 @@ public class DoubleConstructionTest extends TypeConstructionTests {
     Object doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(doubleObject instanceof Double);
     Double doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
+    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue(), 1e-15);
     // Double.valueOf(String)
     xlValue = PROCESSOR.invoke("JStaticMethodX", XLString.of(CLASSNAME), XLString.of("valueOf"), XLString.of("10"));
     assertTrue(xlValue instanceof XLObject);
     doubleObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(doubleObject instanceof Double);
     doubleVal = (Double) doubleObject;
-    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue());
+    assertEquals(doubleVal.doubleValue(), DOUBLE.doubleValue(), 1e-15);
   }
 }

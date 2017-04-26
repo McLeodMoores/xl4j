@@ -26,7 +26,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
       final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired,
       final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
       final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
-    final Method method = getMethod(functionExportName, argumentNames);
+    final Method method = getMethod(functionExportName);
     final String[] argNames = getArgumentNames(argumentNames);
     final Class<?>[] argumentTypes = getArgumentTypes(functionSignature);
     final Class<?> returnType = getReturnType(functionSignature);
@@ -40,7 +40,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     final FunctionAttributes functionAttributes = FunctionAttributes.of(xlFunctionType, isAsynchronous, isVolatile, isMacroEquivalent,
         isMultiThreadSafe, TypeConversionMode.OBJECT_RESULT);
     final FunctionEntry functionEntry = FunctionEntry.of(functionWorksheetName, argNames, argumentTypes, returnType, argumentsHelp,
-        description == null ? "" : description.toString(), functionAttributes, method);
+        description == null ? "" : description, functionAttributes, method);
     final FunctionEntry existing = _functions.putIfAbsent(functionWorksheetName, functionEntry);
     if (existing == null) {
       return functionWorksheetName.hashCode();
@@ -78,10 +78,10 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
   private static String[] getArgumentsHelp(final String[] argsHelp) {
     final String[] results = new String[argsHelp.length];
     for (int i = 0; i < argsHelp.length; i++) {
-      if (argsHelp[i] != null) {
-        results[i] = argsHelp[i];
-      } else {
+      if (argsHelp[i] == null) {
         results[i] = ""; // REVIEW: should be null?
+      } else {
+        results[i] = argsHelp[i];
       }
     }
     return results;
@@ -136,12 +136,7 @@ public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
     return argumentNames.split(",");
   }
 
-  private static Method getMethod(final String functionExportName, final String argumentNames) {
-    final int numArgs = argumentNames.split(",").length;
-    final Class<?>[] parameterTypes = new Class[numArgs];
-    for (int i = 0; i < numArgs; i++) {
-      parameterTypes[i] = XLValue.class;
-    }
+  private static Method getMethod(final String functionExportName) {
     try {
       return MockDLLExports.class.getMethod(functionExportName, XLValue[].class);
     } catch (NoSuchMethodException | SecurityException e) {

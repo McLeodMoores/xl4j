@@ -31,7 +31,7 @@ public final class XLObject implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * 
+   *
    * @param clazz
    *          the Class that this object points to
    * @param handle
@@ -45,7 +45,7 @@ public final class XLObject implements XLValue {
 
   /**
    * Static factory method to create an instance of an XLString.
-   * 
+   *
    * @param clazz
    *          the Class that this object points to
    * @param handle
@@ -54,8 +54,8 @@ public final class XLObject implements XLValue {
    */
   public static XLObject of(final Class<?> clazz, final long handle) {
     ArgumentChecker.notNull(clazz, "clazz");
-    String simpleName = clazz.getSimpleName();
-    return new XLObject(simpleName != null ? simpleName : clazz.getName(), handle);
+    final String simpleName = clazz.getSimpleName();
+    return new XLObject(simpleName == null ? clazz.getName() : simpleName, handle);
   }
 
   /**
@@ -75,7 +75,7 @@ public final class XLObject implements XLValue {
   /**
    * Convert this XLObject into an XLString for passing back to Excel. It adds a ^Z control character to the front of the string so Excel
    * users cannot create arbitrary object references, but can read them. The string produced is in the form ClassName-000000000000000000000.
-   * 
+   *
    * @return an XLString object containing the object handle and class name.
    */
   public XLString toXLString() {

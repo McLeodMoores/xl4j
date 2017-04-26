@@ -4,6 +4,7 @@
 package com.mcleodmoores.xl4j.v1.typeconvert.converters;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertTrue;
 
 import java.awt.Dimension;
@@ -219,7 +220,7 @@ public class List2XLArrayTypeConverterTest {
     final XLArray xlArray = (XLArray) result;
     assertEquals(xlArray.getArray().length, 1);
     assertEquals(xlArray.getArray()[0].length, 1);
-    assertEquals(xlArray.getArray()[0][0], null);
+    assertNull(xlArray.getArray()[0][0]);
   }
 
   /**

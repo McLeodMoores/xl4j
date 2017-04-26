@@ -10,6 +10,7 @@ import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.opengamma.analytics.date.CalendarAdapter;
 import com.opengamma.analytics.date.SimpleWorkingDayCalendar;
 import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
@@ -26,7 +27,8 @@ public final class IsdaFunctionUtils {
    * @return  the period
    */
   public static Period parsePeriod(final String string) {
-    if (string.toUpperCase().startsWith("P")) {
+    ArgumentChecker.notNull(string, "string");
+    if (string.toUpperCase().charAt(0) == 'P') {
       return Period.parse(string);
     }
     return Period.parse("P" + string);

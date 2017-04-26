@@ -360,7 +360,7 @@ public final class QuandlFunctions {
   public static Object[][] expandTabularResult(
       @XLParameter(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
       @XLParameter(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {
-    final boolean isIncludeHeader = includeHeader == null ? true : includeHeader;
+    final boolean isIncludeHeader = includeHeader == null || includeHeader;
     final HeaderDefinition headerDefinition = result.getHeaderDefinition();
     final int cols = headerDefinition.size();
     final int rows = result.size();

@@ -48,7 +48,7 @@ public final class List2XLArrayTypeConverter extends AbstractTypeConverter {
       throw new XL4JRuntimeException("\"from\" parameter must be a List");
     }
     final List<?> fromList = (List<?>) from;
-    if (fromList.size() == 0) {
+    if (fromList.isEmpty()) {
       return XLArray.of(new XLValue[1][1]);
     }
     // we know the length is > 0
@@ -72,7 +72,6 @@ public final class List2XLArrayTypeConverter extends AbstractTypeConverter {
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    final XLArray xlArr = (XLArray) from;
     final Type type;
     if (expectedType instanceof Class) {
       if (!List.class.isAssignableFrom((Class<?>) expectedType)) {
@@ -95,6 +94,7 @@ public final class List2XLArrayTypeConverter extends AbstractTypeConverter {
     } else {
       throw new XL4JRuntimeException("expectedType not Class or ParameterizedType");
     }
+    final XLArray xlArr = (XLArray) from;
     final XLValue[][] arr = xlArr.getArray();
     final List<Object> targetList = new ArrayList<>();
     TypeConverter lastConverter = null;

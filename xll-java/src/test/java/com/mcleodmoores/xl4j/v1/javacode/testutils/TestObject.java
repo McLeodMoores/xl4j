@@ -26,7 +26,7 @@ public class TestObject {
   }
 
   public static TestObject ofObject(final Object doubleObject) {
-    double[] doubles = new double[1];
+    final double[] doubles;
     if (doubleObject instanceof Number) {
       doubles = new double[] { ((Number) doubleObject).doubleValue() };
     } else if (doubleObject instanceof String) {
@@ -58,7 +58,7 @@ public class TestObject {
   }
 
   public static TestObject ofPrimitiveIntObject(final int number, final Object doubleObject) {
-    double[] doubles = new double[1];
+    final double[] doubles;
     if (doubleObject instanceof Number) {
       doubles = new double[] { ((Number) doubleObject).doubleValue() };
     } else if (doubleObject instanceof String) {
