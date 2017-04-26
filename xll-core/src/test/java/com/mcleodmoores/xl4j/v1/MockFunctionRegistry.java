@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.mcleodmoores.xl4j.v1.api.core.ExcelCallback;
@@ -184,8 +185,8 @@ public final class MockFunctionRegistry extends AbstractFunctionRegistry {
    * @return
    *          the function definitions
    */
-  public Collection<FunctionDefinition> getFunctionDefinitions() {
-    return Collections.unmodifiableCollection(_definitions.values());
+  public Set<FunctionDefinition> getFunctionDefinitions() {
+    return Collections.unmodifiableSet(new HashSet<>(_definitions.values()));
   }
 
   private void addDefinitions(final List<FunctionDefinition> definitions) {

@@ -33,7 +33,7 @@
         <module>xll-core</module>
         <module>xll-java</module>
         <module>xll-examples</module>
-        <module>packaging</module>
+        <module>example-add-in</module>
       </modules>
     </profile>
     <profile>
@@ -48,7 +48,7 @@
         <module>xll-core</module>
         <module>xll-java</module>
         <module>xll-examples</module>
-        <module>packaging</module>
+        <module>example-add-in</module>
       </modules>
     </profile>
   </profiles>
