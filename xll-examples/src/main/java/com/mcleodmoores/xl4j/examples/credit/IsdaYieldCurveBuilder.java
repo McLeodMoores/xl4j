@@ -41,8 +41,9 @@ public final class IsdaYieldCurveBuilder {
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  a yield curve constructed using the ISDA model
    */
+  @SuppressWarnings("deprecation")
   @XLFunction(name = "ISDAYieldCurve.BuildCurveFromConvention", category = "ISDA CDS model",
-      description = "Build a yield curve using the ISDA methodology")
+  description = "Build a yield curve using the ISDA methodology")
   public static ISDACompliantYieldCurve buildYieldCurve(
       @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
       @XLParameter(description = "Instrument Types", name = "Instrument Types") final String[] instrumentTypeNames,
@@ -104,8 +105,9 @@ public final class IsdaYieldCurveBuilder {
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  a yield curve constructed using the ISDA model
    */
+  @SuppressWarnings("deprecation")
   @XLFunction(name = "ISDAYieldCurve.BuildCurve", category = "ISDA CDS model",
-      description = "Build a yield curve using the ISDA methodology")
+  description = "Build a yield curve using the ISDA methodology")
   public static ISDACompliantYieldCurve buildYieldCurve(
       @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,
       @XLParameter(description = "Instrument Types", name = "Instrument Types") final String[] instrumentTypeNames,
