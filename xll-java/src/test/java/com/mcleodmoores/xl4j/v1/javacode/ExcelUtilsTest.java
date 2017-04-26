@@ -38,6 +38,29 @@ public class ExcelUtilsTest {
   }
 
   /**
+   * Tests the "Array" function.
+   */
+  @Test
+  public void testArrayFunctionWithArrayInput() {
+    final XLArray array = XLArray.of(new XLValue[][] {
+      new XLValue[] {XLNumber.of(20), XLNumber.of(30), XLNumber.of(40)},
+      new XLValue[] {XLNumber.of(100), XLNumber.of(200), XLNumber.of(700)}
+    });
+    final XLValue[] inputs = new XLValue[] { XLString.of("LABEL"), array};
+    final XLValue result = PROCESSOR.invoke("Array", inputs);
+    assertTrue(result instanceof XLArray);
+    final XLValue[][] values = ((XLArray) result).getArray();
+    // array input is flattened
+    assertEquals(values.length, 1);
+    assertEquals(values[0][0], inputs[0]);
+    for (int i = 1; i < values[0].length; i++) {
+      final int row = (i - 1) / 3;
+      final int column = (i - 1) % 3;
+      assertEquals(values[0][i], array.getArray()[row][column]);
+    }
+  }
+
+  /**
    * Tests the "Null" function.
    */
   @Test

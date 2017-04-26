@@ -90,7 +90,7 @@ public final class JMethod {
       LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
           Arrays.toString(args));
       return XLError.Null;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.error("Could not call method {} on {} with arguments {}, {}", methodName.getValue(), objectReference.getClazz(),
           Arrays.toString(args), e);
       return XLError.Null;
@@ -149,12 +149,13 @@ public final class JMethod {
           // keep trying until something works
         }
       }
-      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(), 
+      LOGGER.error("Could not call method {} on {} with arguments {}", methodName.getValue(), objectReference.getClazz(),
           Arrays.toString(args));
       return XLError.Null;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), objectReference.getClazz(),
           Arrays.toString(args), e);
+      e.printStackTrace();
       return XLError.Null;
     }
   }
@@ -214,7 +215,7 @@ public final class JMethod {
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", className.getValue());
       return XLError.Null;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), className.getValue(), Arrays.toString(args), e);
       return XLError.Null;
     }
@@ -275,7 +276,7 @@ public final class JMethod {
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", className.getValue());
       return XLError.Null;
-    } catch (Exception e) {
+    } catch (final Exception e) {
       LOGGER.error("Could not call method {} on {} with arguments {}: {}", methodName.getValue(), className.getValue(), Arrays.toString(args), e);
       return XLError.Null;
     }

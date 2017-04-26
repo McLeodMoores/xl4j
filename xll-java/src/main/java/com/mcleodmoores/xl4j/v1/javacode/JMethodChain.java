@@ -49,25 +49,22 @@ public final class JMethodChain {
       @XLParameter(name = "Constructor arguments", description = "The constructor arguments") final XLArray objectArguments,
       @XLParameter(name = "The method names", description = "The method names") final XLArray methodNames,
       @XLParameter(name = "The method arguments", description = "The method arguments") final XLArray methodArguments) {
-    ArgumentChecker.isFalse(objectArguments.isArea(), "The arguments must be either a row or column");
+    ArgumentChecker.isFalse(objectArguments.isArea(), "The constructor arguments must be either a row or column");
     // collapse arguments to 1D array
     final List<XLValue> args = new ArrayList<>();
     final XLValue[][] objectArgumentsValues = objectArguments.getArray();
     if (objectArguments.isColumn()) {
       for (final XLValue[] argArray : objectArgumentsValues) {
-        // assume empty cells or values mean null
-        if (argArray[0] == XLNil.INSTANCE && argArray[0] != XLMissing.INSTANCE) {
-          args.add(null);
-        } else {
-          args.add(argArray[0]);
+        final XLValue arg = argArray[0];
+        // assume empty cells mean no args for a method
+        if (arg != XLNil.INSTANCE && arg != XLMissing.INSTANCE) {
+          args.add(arg);
         }
       }
     } else {
       for (final XLValue arg : objectArgumentsValues[0]) {
         // assume empty cells mean null
-        if (arg == XLNil.INSTANCE && arg != XLMissing.INSTANCE) {
-          args.add(null);
-        } else {
+        if (arg != XLNil.INSTANCE && arg != XLMissing.INSTANCE) {
           args.add(arg);
         }
       }
@@ -105,7 +102,7 @@ public final class JMethodChain {
     final boolean isMethodNameColumn = methodNames.isColumn();
     final int nMethods = isMethodNameColumn ? methodNamesArray.length : methodNamesArray[0].length;
     final XLValue[][] methodArgumentsValues = methodArguments.getArray();
-    XLObject result = objectReference;
+    Object result = objectReference;
     for (int i = 0; i < nMethods; i++) {
       final Object methodNameObject;
       final List<XLValue> args = new ArrayList<>();
@@ -133,7 +130,7 @@ public final class JMethodChain {
           }
         }
       }
-      result = (XLObject) JMethod.jMethod(result, (XLString) methodNameObject, args.toArray(new XLValue[args.size()]));
+      result = JMethod.jMethodX((XLObject) result, (XLString) methodNameObject, args.toArray(new XLValue[args.size()]));
     }
     return result;
   }
