@@ -6,8 +6,8 @@ package com.mcleodmoores.xl4j.v1;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.mcleodmoores.xl4j.v1.util.HexUtils;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Unit Tests for HexUtils.
@@ -26,42 +26,66 @@ public class HexUtilsTests {
   private static final String EXPECTED_PADDED_ONE_1 = "FF";
   private static final String EXPECTED_PADDED_ZERO_1 = "";
 
+  /**
+   * Tests that the input cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testBytesToHexNull() {
     HexUtils.bytesToHex(null);
   }
 
+  /**
+   * Tests that the input cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testBytesToPaddedHexNull() {
     HexUtils.bytesToPaddedHex(null);
   }
 
+  /**
+   * Tests that the input cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testBytesToTruncatedPaddedHexNull() {
     HexUtils.bytesToTruncatedPaddedHex(null, 20);
   }
 
+  /**
+   * Tests that the max bytes field cannot be negative.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testBytesToTruncatedPaddedHexNegativeMaxBytes() {
     HexUtils.bytesToTruncatedPaddedHex(new byte[30], -20);
   }
 
+  /**
+   * Tests the result when the input is empty.
+   */
   @Test
   public void testBytesToHexEmpty() {
     Assert.assertEquals(HexUtils.bytesToHex(new byte[0]), "");
   }
 
+  /**
+   * Tests the result when the input is empty.
+   */
   @Test
   public void testBytesToPaddedHexEmpty() {
     Assert.assertEquals(HexUtils.bytesToPaddedHex(new byte[0]), "");
   }
 
+  /**
+   * Tests the result when the input is empty.
+   */
   @Test
   public void testBytesToTruncatedPaddedHexEmpty() {
     Assert.assertEquals(HexUtils.bytesToTruncatedPaddedHex(new byte[0], 16), "");
     Assert.assertEquals(HexUtils.bytesToTruncatedPaddedHex(new byte[0], 0), "");
   }
 
+  /**
+   * Tests the conversion to hex.
+   */
   @Test
   public void testBytesToHexExpected() {
     Assert.assertEquals(HexUtils.bytesToHex(BYTES), EXPECTED);
@@ -71,6 +95,9 @@ public class HexUtilsTests {
     Assert.assertEquals(HexUtils.bytesToTruncatedPaddedHex(BYTES, 0), EXPECTED_PADDED_ZERO);
   }
 
+  /**
+   * Tests the conversion to hex.
+   */
   @Test
   public void testBytesToHexExpectedSingle() {
     Assert.assertEquals(HexUtils.bytesToHex(BYTES_1), EXPECTED_1);
@@ -90,6 +117,9 @@ public class HexUtilsTests {
       "FF           �\n";
   private static final String EXPECTED_MULTI_LINE_FOUR_2 = "";
 
+  /**
+   * Tests the conversion to hex.
+   */
   @Test
   public void testBytesToMultiLineDump() {
     Assert.assertEquals(HexUtils.bytesToMultiLineDump(BYTES, 6), EXPECTED_MULTI_LINE_SIX);

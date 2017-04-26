@@ -34,13 +34,13 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.api.values.XLValueVisitor;
 import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.v1.typeconvert.converters.Set2XLArrayTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.mcleodmoores.xl4j.v1.util.XlDateUtils;
 
 /**
  * Unit tests for {@link Set2XLArrayTypeConverter}.
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Set2XLArrayTypeConverterTest {
   private static final int N = 50;
   private static final XLValue[][] ROW1 = new XLValue[1][N];
@@ -206,7 +206,7 @@ public class Set2XLArrayTypeConverterTest {
    */
   @Test
   public void testNoConverter() {
-    assertEquals(PROCESSOR.invoke("NoConverter", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
+    assertEquals(PROCESSOR.invoke("NoConverterSet", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
   }
 
   /**
@@ -381,7 +381,6 @@ public class Set2XLArrayTypeConverterTest {
    * @param s  the set
    * @return -2
    */
-  @SuppressWarnings("rawtypes")
   @XLFunction(name = "SetTest2")
   public static int testMethod2(@XLParameter final Set s) {
     assertEquals(s.size(), S2.size());
@@ -399,7 +398,6 @@ public class Set2XLArrayTypeConverterTest {
    * @param sets  the sets
    * @return -22
    */
-  @SuppressWarnings("rawtypes")
   @XLFunction(name = "SetTest2_varargs")
   public static int testMethod2Varargs(@XLParameter final Set... sets) {
     assertEquals(sets.length, 1);
@@ -492,7 +490,7 @@ public class Set2XLArrayTypeConverterTest {
    * @param set  the set
    * @return  0
    */
-  @XLFunction(name = "NoConverter")
+  @XLFunction(name = "NoConverterSet")
   public static int testNoKeyConverter(@XLParameter final Set<Dimension> set) {
     return 0;
   }
@@ -529,7 +527,11 @@ public class Set2XLArrayTypeConverterTest {
     }
     return -55;
   }
-  private static class TestXlValue implements XLValue {
+
+  /**
+   * Test XLValue.
+   */
+  private static final class TestXlValue implements XLValue {
 
     public static TestXlValue of(final double height, final double width) {
       return new TestXlValue(height, width);
@@ -546,6 +548,39 @@ public class Set2XLArrayTypeConverterTest {
     @Override
     public <E> E accept(final XLValueVisitor<E> visitor) {
       throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int hashCode() {
+      final int prime = 31;
+      int result = 1;
+      long temp;
+      temp = Double.doubleToLongBits(_height);
+      result = prime * result + (int) (temp ^ temp >>> 32);
+      temp = Double.doubleToLongBits(_width);
+      result = prime * result + (int) (temp ^ temp >>> 32);
+      return result;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (this == obj) {
+        return true;
+      }
+      if (obj == null) {
+        return false;
+      }
+      if (getClass() != obj.getClass()) {
+        return false;
+      }
+      final TestXlValue other = (TestXlValue) obj;
+      if (Double.doubleToLongBits(_height) != Double.doubleToLongBits(other._height)) {
+        return false;
+      }
+      if (Double.doubleToLongBits(_width) != Double.doubleToLongBits(other._width)) {
+        return false;
+      }
+      return true;
     }
 
   }

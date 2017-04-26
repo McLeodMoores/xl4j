@@ -18,33 +18,51 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 /**
  * Unit tests for XLMultiReference.
  */
-public final class XLMultiReferenceTests {
+public class XLMultiReferenceTests {
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testOneNull() {
     XLMultiReference.of(null);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullArray() {
     XLMultiReference.of(null, (XLRange[]) null);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testEmptyArray() {
     XLMultiReference.of(XLSheetId.of(0), new XLRange[] {});
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullList() {
     XLMultiReference.of(null, (List<XLRange>) null);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testEmptyList() {
     XLMultiReference.of(XLSheetId.of(0), new ArrayList<XLRange>());
   }
 
+  /**
+   *
+   */
   @Test
   public void testSingleConstructionAndGetters() {
     final XLRange xlRange = XLRange.of(1, 100, 2, 3);
@@ -55,6 +73,9 @@ public final class XLMultiReferenceTests {
     Assert.assertEquals(multiRef.getRanges().size(), 1);
   }
 
+  /**
+   *
+   */
   @Test
   public void testSingleListConstructionAndGetters() {
     final XLRange xlRange = XLRange.of(1, 100, 2, 3);
@@ -65,6 +86,9 @@ public final class XLMultiReferenceTests {
     Assert.assertEquals(multiRef.getRanges().size(), 1);
   }
 
+  /**
+   *
+   */
   @Test
   public void testMultiListConstructionAndGetters() {
     final XLRange xlRange1 = XLRange.of(1, 100, 2, 3);
@@ -80,6 +104,9 @@ public final class XLMultiReferenceTests {
     Assert.assertEquals(multiRef.getSheetId(), sheetId);
   }
 
+  /**
+   *
+   */
   @Test
   public void testEqualsAndHashCode() {
     final XLRange range = XLRange.of(0, 15, 0, 15);
@@ -87,7 +114,7 @@ public final class XLMultiReferenceTests {
 
     final XLSheetId sheetId = XLSheetId.of(5678);
     final XLSheetId sheetId_1 = XLSheetId.of(123);
-    final List<XLRange> ranges1 = new ArrayList<XLRange>();
+    final List<XLRange> ranges1 = new ArrayList<>();
     ranges1.add(range);
     ranges1.add(range_1);
     final XLMultiReference multiRef = XLMultiReference.of(sheetId, range);
@@ -130,6 +157,9 @@ public final class XLMultiReferenceTests {
   private static final String SINGLE_CELL = "XLMultiReference[sheetId=9999, range=XLRange[Single Cell row=100, column=3]]";
   private static final String FULL_RANGE = "XLMultiReference[sheetId=9999, range=XLRange[Range rows=10 to 45, columns=0 to 30]]";
 
+  /**
+   *
+   */
   @Test
   public void testToString() {
     final XLSheetId sheetId = XLSheetId.of(9999);

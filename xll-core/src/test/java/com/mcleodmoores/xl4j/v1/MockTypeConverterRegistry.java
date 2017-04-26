@@ -18,20 +18,38 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.v1.util.XL4JReflectionUtils;
 
 /**
- *
+ * Creates a mock {@link TypeConverterRegistry} for use in tests.
  */
 public final class MockTypeConverterRegistry implements TypeConverterRegistry {
 
+  /**
+   * Gets a builder.
+   * @return
+   *          the builder
+   */
   public static Builder builder() {
     return new Builder();
   }
 
+  /**
+   * A type converter registry builder.
+   */
   public static final class Builder {
     private final SortedMap<Integer, List<TypeConverter>> _converters = new TreeMap<>();
 
+    /**
+     * Default constructor.
+     */
     Builder() {
     }
 
+    /**
+     * Adds a type converter.
+     * @param converter
+     *          the type converter
+     * @return
+     *          the builder
+     */
     public Builder with(final TypeConverter converter) {
       ArgumentChecker.notNull(converter, "converter");
       final int priority = -converter.getPriority(); // higher priorities should be searched first
@@ -45,6 +63,11 @@ public final class MockTypeConverterRegistry implements TypeConverterRegistry {
       return this;
     }
 
+    /**
+     * Builds the registry.
+     * @return
+     *          the registry
+     */
     public MockTypeConverterRegistry build() {
       return new MockTypeConverterRegistry(_converters);
     }
@@ -52,6 +75,10 @@ public final class MockTypeConverterRegistry implements TypeConverterRegistry {
 
   private final Map<Integer, List<TypeConverter>> _converters;
 
+  /**
+   * @param converters
+   *          the converters
+   */
   MockTypeConverterRegistry(final SortedMap<Integer, List<TypeConverter>> converters) {
     _converters = Collections.unmodifiableSortedMap(converters);
   }

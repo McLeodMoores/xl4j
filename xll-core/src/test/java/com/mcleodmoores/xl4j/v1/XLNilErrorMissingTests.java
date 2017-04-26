@@ -12,6 +12,9 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNil;
  */
 public class XLNilErrorMissingTests {
 
+  /**
+   *
+   */
   @Test
   public void testNil() {
     final XLNil nil = XLNil.INSTANCE;
@@ -25,11 +28,17 @@ public class XLNilErrorMissingTests {
     Assert.assertNotEquals(XLError.Div0, nil);
   }
 
+  /**
+   *
+   */
   @Test
   public void testNilToString() {
     Assert.assertEquals(XLNil.INSTANCE.toString(), "XLNil");
   }
 
+  /**
+   *
+   */
   @Test
   public void testMissing() {
     final XLMissing missing = XLMissing.INSTANCE;
@@ -43,6 +52,9 @@ public class XLNilErrorMissingTests {
     Assert.assertNotEquals(missing, XLError.NA);
   }
 
+  /**
+   *
+   */
   @Test
   public void testMissingToString() {
     Assert.assertEquals(XLMissing.INSTANCE.toString(), "XLMissing");

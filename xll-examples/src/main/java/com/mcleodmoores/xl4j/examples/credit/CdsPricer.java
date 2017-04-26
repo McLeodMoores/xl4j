@@ -11,6 +11,7 @@ import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticCDSPricer;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.AnalyticSpreadSensitivityCalculator;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalytic;
@@ -26,7 +27,6 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.PriceType;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
-import com.opengamma.util.ArgumentChecker;
 
 /**
  * Methods that calculate price and risk values for CDS using the ISDA model.
@@ -316,7 +316,7 @@ public final class CdsPricer {
    * @param holidayDates  the holiday dates, is optional. If not supplied, weekend-only holidays are used
    * @return  the bucketed CS01
    */
-  @XLFunction(name = "ISDACreditCurve.BuildIMMCurve", category = "ISDA CDS model",
+  @XLFunction(name = "ISDACreditCurve.BucketedCS01FromNewCurve", category = "ISDA CDS model",
       description = "Build a hazard rate curve for IMM CDS using the ISDA methodology")
   public static double[] bucketedCs01(
       @XLParameter(description = "Trade Date", name = "Trade Date") final LocalDate tradeDate,

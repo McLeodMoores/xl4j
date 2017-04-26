@@ -90,6 +90,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     EXPECTED_CURVE = builder.build(QUOTES);
   }
 
+  /**
+   * Tests a function that constructs the yield curve.
+   */
   @Test
   public void testConstructionOfCurve() {
     assertTrue(XL_RESULT instanceof XLObject);
@@ -101,6 +104,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
   }
 
+  /**
+   * Tests a function that constructs a yield curve.
+   */
   @Test
   public void testConstructionOfCurveWithConvention() {
     final IsdaYieldCurveConvention convention = ConventionFunctions.buildYieldCurveConvention(XLString.of(MONEY_MARKET_DAY_COUNT), XLString.of(SWAP_DAY_COUNT),
@@ -117,6 +123,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
   }
 
+  /**
+   * Tests a function that constructs a yield curve.
+   */
   @Test
   public void testConstructionOfCurveWithoutOptional() {
     final ISDAInstrumentTypes[] instrumentTypes = new ISDAInstrumentTypes[] {
@@ -144,6 +153,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assertArrayEquals(curve.getKnotZeroRates(), expectedCurve.getKnotZeroRates(), 1e-15);
   }
 
+  /**
+   * Tests the function that expands a yield curve.
+   */
   @Test
   public void testExpandCurve() {
     final Object xlResult = PROCESSOR.invoke("ISDAYieldCurve.Expand", (XLObject) XL_RESULT);
@@ -151,6 +163,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, EXPECTED_CURVE.getXData(), EXPECTED_CURVE.getYData());
   }
 
+  /**
+   * Tests the function that expands a yield curve to discount factors.
+   */
   @Test
   public void testExpandDiscountFactors() {
     final Object xlResult = PROCESSOR.invoke("ISDAYieldCurve.ExpandDiscountFactors", (XLObject) XL_RESULT);
@@ -162,6 +177,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, EXPECTED_CURVE.getXData(), discountFactors);
   }
 
+  /**
+   * Tests the function that expands the curve for a list of dates.
+   */
   @Test
   public void testExpandCurveForDates() {
     final LocalDate[] dates = new LocalDate[] {LocalDate.of(2017, 3, 19), LocalDate.of(2018, 3, 19), LocalDate.of(2019, 3, 19)};
@@ -179,6 +197,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, t, zeroRates);
   }
 
+  /**
+   * Tests the function that expands the curve to discount factors for a list of dates.
+   */
   @Test
   public void testDiscountFactorsForDates() {
     final LocalDate[] dates = new LocalDate[] {LocalDate.of(2017, 3, 19), LocalDate.of(2018, 3, 19), LocalDate.of(2019, 3, 19)};
@@ -196,6 +217,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, t, discountFactors);
   }
 
+  /**
+   * Tests the function that gets the zero rate for a date.
+   */
   @Test
   public void testZeroRateForDate() {
     final LocalDate date = LocalDate.of(2016, 12, 20);
@@ -206,6 +230,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), EXPECTED_CURVE.getZeroRate(t), 1e-15);
   }
 
+  /**
+   * Tests the function that gets the discount factor for a date.
+   */
   @Test
   public void testDiscountFactorForDate() {
     final LocalDate date = LocalDate.of(2016, 12, 20);
@@ -216,6 +243,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), EXPECTED_CURVE.getDiscountFactor(t), 1e-15);
   }
 
+  /**
+   * Tests the function that gets the zero rate for a time.
+   */
   @Test
   public void testZeroRate() {
     final double t = 6.4;
@@ -224,6 +254,9 @@ public class IsdaYieldCurveBuilderTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), EXPECTED_CURVE.getZeroRate(t), 1e-15);
   }
 
+  /**
+   * Tests the function that gets the discount factor.
+   */
   @Test
   public void testDiscountFactor() {
     final double t = 2.76;

@@ -30,6 +30,13 @@ public final class MyTestFunctions {
   private MyTestFunctions() {
   }
 
+  /**
+   * Tests asynchronous functions by sleeping for a given amount of time.
+   * @param delay
+   *          the delay in seconds
+   * @return
+   *          the delay or -1 if there is an interrupt
+   */
   @XLFunction(name = "AsyncWait",
       description = "Wait for n seconds",
       category = "Mine",

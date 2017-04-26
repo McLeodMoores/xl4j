@@ -12,12 +12,15 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link Scale}.
  */
 public class ScaleTest {
   private static final BiFunction<TimeSeries, Double, TimeSeries> CALCULATOR = new Scale();
   private static final double EPS = 1e-15;
 
+  /**
+   * Tests the function when there are no nulls in the series.
+   */
   @Test
   public void noNullValues() {
     final int n = 100;
@@ -32,6 +35,9 @@ public class ScaleTest {
     IntStream.range(0, n).forEach(i -> assertEquals(result.get(LocalDate.now().plusDays(i)), i * scale, EPS));
   }
 
+  /**
+   * Tests the function when there are nulls in the series.
+   */
   @Test
   public void testNullsInSeries() {
     final int n = 100;

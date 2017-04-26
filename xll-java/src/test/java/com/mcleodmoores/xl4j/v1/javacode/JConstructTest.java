@@ -15,7 +15,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.javacode.JConstruct;
 import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 
 /**
@@ -24,6 +23,9 @@ import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 public class JConstructTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
 
+  /**
+   *
+   */
   @Test
   public void testNoArgsConstructor() {
     final XLValue constructed = JConstruct.jconstruct(CLASS, new XLValue[0]);
@@ -44,6 +46,9 @@ public class JConstructTest {
     assertTrue(constructed instanceof XLError);
   }
 
+  /**
+   *
+   */
   @Test
   public void testIntConstructor() {
     final XLValue constructed = JConstruct.jconstruct(CLASS, XLNumber.of(1));
@@ -55,6 +60,9 @@ public class JConstructTest {
     assertEquals(constructedObject, expectedObject);
   }
 
+  /**
+   *
+   */
   @Test
   public void testObjectConstructor() {
     final XLValue number = JConstruct.jconstruct(XLString.of("java.lang.Short"), XLNumber.of(3));

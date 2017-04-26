@@ -1,4 +1,3 @@
-// CHECKSTYLE:OFF -- we can't help it's a long file checkstyle.
 /**
  * Copyright (C) 2014-Present McLeod Moores Software Limited.  All rights reserved.
  */
@@ -11,8 +10,8 @@ import com.mcleodmoores.xl4j.v1.api.values.XLValue;
  * Class to mock the DLL exports table.
  */
 public class MockDLLExports {
-  
-  private ExcelFunctionCallHandler _callHandler;
+
+  private final ExcelFunctionCallHandler _callHandler;
   /**
    * Constructor.
    * @param callHandler  the call handler for invoking methods
@@ -148,7 +147,7 @@ public class MockDLLExports {
   public XLValue UDF_31(final XLValue... args) {
     return UDF(31, args);
   }
-  
+
   public XLValue UDF_32(final XLValue... args) {
     return UDF(32, args);
   }
@@ -272,7 +271,7 @@ public class MockDLLExports {
   public XLValue UDF_62(final XLValue... args) {
     return UDF(62, args);
   }
-  
+
   public XLValue UDF_63(final XLValue... args) {
     return UDF(63, args);
   }

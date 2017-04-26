@@ -50,12 +50,10 @@ public interface LowLevelExcelCallback {
    *          a varargs/array of help strings for each parameter
    * @return the function registration number
    */
-  // CHECKSTYLE:OFF -- says we shouldn't have this many parameters. Take it up with Microsoft.
   int xlfRegister(int exportNumber, String functionExportName, boolean isVarArgs, boolean isLongRunning,
       boolean isAutoAsynchronous, boolean isManualAsynchronous, boolean isCallerRequired,
       String functionSignature, String functionWorksheetName, String parameterNames, int functionType,
       String functionCategory, String acceleratorKey, String helpTopic, String description, String... argsHelp);
-  // CHECKSTYLE:ON
   /*
    * This block is to be ignored: return code, see below
    * 0 = success

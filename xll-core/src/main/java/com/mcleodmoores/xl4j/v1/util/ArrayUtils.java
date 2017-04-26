@@ -1,3 +1,6 @@
+/**
+ * Copyright (C) 2017 - Present McLeod Moores Software Limited.  All rights reserved.
+ */
 package com.mcleodmoores.xl4j.v1.util;
 
 import java.lang.reflect.Array;
@@ -60,7 +63,12 @@ public final class ArrayUtils {
    * Specify the expected orientation of a transposed array.
    * @see #transposeIfNeeded
    */
-  public enum FixedDimension { COLUMNS, ROWS };
+  public enum FixedDimension {
+    /** Column. */
+    COLUMNS,
+    /** Row. */
+    ROWS
+  };
 
   /**
    * Provide a normalised array orientation.  You tell the method what fixed dimension you want and which dimension it is and

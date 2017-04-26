@@ -286,6 +286,9 @@ public class DefaultExcelFunctionCallHandlerTest {
     assertEquals(HEAP.getObject(xlObject.getHandle()), new TestClass(23));
   }
 
+  /**
+   * A test class.
+   */
   // CHECKSTYLE:OFF
   public static class TestClass {
 

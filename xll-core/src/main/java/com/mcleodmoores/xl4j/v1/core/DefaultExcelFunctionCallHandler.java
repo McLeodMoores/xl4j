@@ -65,7 +65,7 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
         return XLError.Null;
       }
       LOGGER.info("functionDefinition = {}", functionDefinition.getFunctionMetadata().getName());
-      switch (functionDefinition.getJavaTypeForFunction()) {
+      switch (functionDefinition.getCallTargetForFunction()) {
         case METHOD: {
           final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
           LOGGER.info("method invoker = {}", methodInvoker.getMethodName());
@@ -105,7 +105,7 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
           return fieldInvoker.get(obj);
         }
         default:
-          throw new XL4JRuntimeException("Unhandled type " + functionDefinition.getJavaTypeForFunction());
+          throw new XL4JRuntimeException("Unhandled type " + functionDefinition.getCallTargetForFunction());
       }
     } catch (final Exception e) {
       LOGGER.info("Exception occurred while invoking method, returning XLError", e);

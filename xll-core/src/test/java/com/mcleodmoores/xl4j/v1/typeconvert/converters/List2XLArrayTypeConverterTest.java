@@ -34,13 +34,13 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.api.values.XLValueVisitor;
 import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.v1.typeconvert.converters.List2XLArrayTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.mcleodmoores.xl4j.v1.util.XlDateUtils;
 
 /**
  * Unit tests for {@link List2XLArrayTypeConverter}.
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class List2XLArrayTypeConverterTest {
   private static final int N = 50;
   private static final XLValue[][] ROW1 = new XLValue[1][N];
@@ -206,7 +206,7 @@ public class List2XLArrayTypeConverterTest {
    */
   @Test
   public void testNoConverter() {
-    assertEquals(PROCESSOR.invoke("NoConverter", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
+    assertEquals(PROCESSOR.invoke("NoConverterList", XLArray.of(new XLValue[][] {new XLValue[] {TestXlValue.of(120, 130)}})), XLError.Null);
   }
 
   /**
@@ -382,7 +382,6 @@ public class List2XLArrayTypeConverterTest {
    * @param l  the List
    * @return -2
    */
-  @SuppressWarnings("rawtypes")
   @XLFunction(name = "ListTest2")
   public static int testMethod2(@XLParameter final List l) {
     assertEquals(l.size(), L2.size());
@@ -400,7 +399,6 @@ public class List2XLArrayTypeConverterTest {
    * @param lists  the Lists
    * @return -22
    */
-  @SuppressWarnings("rawtypes")
   @XLFunction(name = "ListTest2_varargs")
   public static int testMethod2Varargs(@XLParameter final List... lists) {
     assertEquals(lists.length, 1);
@@ -493,7 +491,7 @@ public class List2XLArrayTypeConverterTest {
    * @param list  the List
    * @return  0
    */
-  @XLFunction(name = "NoConverter")
+  @XLFunction(name = "NoConverterList")
   public static int testNoKeyConverter(@XLParameter final List<Dimension> list) {
     return 0;
   }
@@ -531,26 +529,41 @@ public class List2XLArrayTypeConverterTest {
     return -55;
   }
 
+  /**
+   *
+   */
   @Test
   public void testConvertArray11() {
     final XLArray xlArray = XLArray.of(new XLValue[][] {
       new XLValue[] {XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4)}
     });
     final Object result = PROCESSOR.invoke("ObjectArrayTest1", xlArray);
-    int i = 0;
-    i = i + 1;
   }
 
+  /**
+   * A test function.
+   * @param <T>
+   *          the type of the objects in the input list
+   * @param <U>
+   *          the type of the objects in the result list
+   * @param list
+   *          a list
+   * @return
+   *          the result of the function
+   */
   @XLFunction(name = "ObjectArrayTest1")
-  public static <T extends Number, U extends Number> List<U> objectArrayTest1(@XLParameter final List<? extends T> array) {
+  public static <T extends Number, U extends Number> List<U> objectArrayTest1(@XLParameter final List<? extends T> list) {
     final List<U> result = new ArrayList<>();
-    for (final T t : array) {
+    for (final T t : list) {
       result.add((U) BigDecimal.valueOf(t.doubleValue() * 2));
     }
     return result;
   }
 
-  private static class TestXlValue implements XLValue {
+  /**
+   * Test XLValue.
+   */
+  private static final class TestXlValue implements XLValue {
 
     public static TestXlValue of(final double height, final double width) {
       return new TestXlValue(height, width);

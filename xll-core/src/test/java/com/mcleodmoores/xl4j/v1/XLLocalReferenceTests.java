@@ -13,13 +13,19 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 /**
  * Unit tests for XLLocalReference.
  */
-public final class XLLocalReferenceTests {
+public class XLLocalReferenceTests {
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testFirstArgNegative() {
     XLLocalReference.of(null);
   }
 
+  /**
+   *
+   */
   @Test
   public void testConstructionAndGetter() {
     final XLRange xlRange = XLRange.of(1, 100, 2, 3);
@@ -27,6 +33,9 @@ public final class XLLocalReferenceTests {
     Assert.assertEquals(localRef.getRange(), xlRange);
   }
 
+  /**
+   *
+   */
   @Test
   public void testEqualsAndHashCode() {
     final XLRange range = XLRange.of(0, 15, 0, 15);
@@ -51,6 +60,9 @@ public final class XLLocalReferenceTests {
   private static final String SINGLE_CELL = "XLLocalReference[range=XLRange[Single Cell row=100, column=3]]";
   private static final String FULL_RANGE = "XLLocalReference[range=XLRange[Range rows=10 to 45, columns=0 to 30]]";
 
+  /**
+   *
+   */
   @Test
   public void testToString() {
     final XLRange singleRow = XLRange.of(100, 100, 3, 5);

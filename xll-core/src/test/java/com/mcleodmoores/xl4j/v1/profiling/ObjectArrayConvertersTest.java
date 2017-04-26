@@ -14,6 +14,9 @@ import com.mcleodmoores.xl4j.v1.typeconvert.converters.ObjectArrayXLArrayTypeCon
  */
 public class ObjectArrayConvertersTest {
 
+  /**
+   * Tests the time taken to convert an array of Object.
+   */
   @Test
   public void testConvertToMostSpecificXlType() {
     final ObjectArrayXLArrayTypeConverter converter = new ObjectArrayXLArrayTypeConverter(ExcelFactory.getInstance());
@@ -31,6 +34,9 @@ public class ObjectArrayConvertersTest {
     System.err.println("testConvertToMostSpecificXlType: " + (endTime - startTime) / 1000000 + "ms");
   }
 
+  /**
+   * Tests the time taken to convert an array of Object.
+   */
   @Test
   public void testConvertToXlObject() {
     final ObjectArrayXLArrayTypeConverter2 converter = new ObjectArrayXLArrayTypeConverter2(ExcelFactory.getInstance());

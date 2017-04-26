@@ -28,8 +28,8 @@ import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
 import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
-import com.opengamma.util.ArgumentChecker;
 
 /**
  * User defined functions for interacting with Quandl via the Quandl4J library.
@@ -40,34 +40,61 @@ public final class QuandlFunctions {
   /**
    * Simple cache value containing value and last update time.
    */
-  static class CacheValue {
-    private LocalDateTime _lastUpdate;
-    private TabularResult _value;
-    private CacheValue(LocalDateTime lastUpdate, TabularResult value) {
+  static final class CacheValue {
+    private final LocalDateTime _lastUpdate;
+    private final TabularResult _value;
+    private CacheValue(final LocalDateTime lastUpdate, final TabularResult value) {
       _lastUpdate = lastUpdate;
       _value = value;
     }
-    public static CacheValue of(TabularResult value) {
+
+    /**
+     * Caches data using the current date/time.
+     *
+     * @param value
+     *          the data
+     * @return
+     *          the cached value
+     */
+    public static CacheValue of(final TabularResult value) {
       return new CacheValue(LocalDateTime.now(), value);
     }
+
+    /**
+     * Gets the cached data.
+     *
+     * @return
+     *          the data
+     */
     public TabularResult getValue() {
       return _value;
     }
+
+    /**
+     * Gets the last update time.
+     *
+     * @return
+     *          the last update time
+     */
     public LocalDateTime getLastUpdate() {
       return _lastUpdate;
     }
+
+    @Override
     public int hashCode() {
       return _value.hashCode();
     }
-    public boolean equals(Object other) {
+
+    @Override
+    public boolean equals(final Object other) {
       if (!(other instanceof CacheValue)) {
         return false;
       }
-      CacheValue o = (CacheValue) other;
+      final CacheValue o = (CacheValue) other;
       return _value.equals(o._value);
     }
   }
-  
+
   private static final QuandlSession SESSION;
   /** Super simple cache implementation, grows unbounded but replaces old values at next request after CACHE_LIFETIME_HOURS */
   private static final ConcurrentHashMap<DataSetRequest, CacheValue> CACHE;
@@ -76,15 +103,6 @@ public final class QuandlFunctions {
   private static final long CACHE_LIFETIME_HOURS = 6;
 
   static {
-    //SessionOptions.Builder builder = null;
-    //if (API_KEY_PRESENT) {
-    //  LOGGER.info("Using Quandl API key from properties");
-    //  builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));
-    //} else {
-    //  LOGGER.warn("No Quandl API key detected");
-    //  builder = SessionOptions.Builder.withoutAuthToken();
-    //}
-    //SessionOptions sessionOptions = builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy()).build();
     SESSION = QuandlSession.create(); //sessionOptions);
     CACHE = new ConcurrentHashMap<>();
   }
@@ -98,7 +116,7 @@ public final class QuandlFunctions {
   /**
    * Indicates if an API key is being used for accesses to the Quandl service.  This allows a sheet
    * using the Quandl service to indicate whether an API key needs to be set up.  API keys are passed
-   * in via the quandl.auth.token property using the XL4J settings dialog (VM Options, pass 
+   * in via the quandl.auth.token property using the XL4J settings dialog (VM Options, pass
    * -Dquandl.auth.token=&lt;my-api-token&gt;
    * @return true, if an API key is being used
    */
@@ -109,7 +127,7 @@ public final class QuandlFunctions {
   public static boolean isQuandlAPIKeyPresent() {
     return API_KEY_PRESENT;
   }
-  
+
   /**
    * Gets a time series of data from Quandl.
    *
@@ -170,14 +188,14 @@ public final class QuandlFunctions {
       builder = builder.withTransform(transform);
     }
     try {
-      DataSetRequest request = builder.build();
+      final DataSetRequest request = builder.build();
       if (CACHE.containsKey(request)) {
-        CacheValue cacheValue = CACHE.get(request);
+        final CacheValue cacheValue = CACHE.get(request);
         if (cacheValue.getLastUpdate().isAfter(LocalDateTime.now().minusHours(CACHE_LIFETIME_HOURS))) {
           return cacheValue.getValue();
         }
-      } 
-      TabularResult result = SESSION.getDataSet(builder.build());
+      }
+      final TabularResult result = SESSION.getDataSet(builder.build());
       CACHE.put(request, CacheValue.of(result)); // update cache or initial value.
       return result;
     } catch (final QuandlRuntimeException qre) {
@@ -220,8 +238,8 @@ public final class QuandlFunctions {
    * @return the row, or null if it could not be obtained
    */
   @XLFunction(name = "GetRow", category = "Quandl", description = "Get the ith row")
-  public static Object[] getRow(@XLParameter(description = "The tabular data", name="result") final TabularResult result,
-                                @XLParameter(description = "The index", name = "index") final int index) {
+  public static Object[] getRow(@XLParameter(description = "The tabular data", name = "result") final TabularResult result,
+      @XLParameter(description = "The index", name = "index") final int index) {
     ArgumentChecker.isTrue(index > 0 && index <= result.size(), "Index {} out of range 1 to {}", index, result.size());
     final Row row = result.get(index - 1);
     if (row == null) {
@@ -243,7 +261,7 @@ public final class QuandlFunctions {
     return rowValues;
   }
 
-  
+
   /**
    * Get the ith column from a Quandl tabular result. Note that this is 0-indexed.
    *
@@ -254,13 +272,13 @@ public final class QuandlFunctions {
    * @return the row, or null if it could not be obtained
    */
   @XLFunction(name = "GetColumn", category = "Quandl", description = "Get the ith column")
-  public static Object[] getColumn(@XLParameter(description = "The tabular data", name="result") final TabularResult result,
-                                   @XLParameter(description = "The index", name = "index") final int index) {
+  public static Object[] getColumn(@XLParameter(description = "The tabular data", name = "result") final TabularResult result,
+      @XLParameter(description = "The index", name = "index") final int index) {
     ArgumentChecker.isTrue(index >= 0 && index < result.size(), "Index {} out of range 1 to {}", index, result.size());
     final int n = result.size();
     final Object[] columnValues = new Object[n];
     for (int i = 0; i < n; i++) {
-      Row row = result.get(i);
+      final Row row = result.get(i);
       try {
         columnValues[i] = row.getDouble(index);
       } catch (final NumberFormatException nfe) {
@@ -290,7 +308,7 @@ public final class QuandlFunctions {
       final int index = result.getHeaderDefinition().columnIndex(header);
       LOGGER.info("index for column " + header + " is " + index);
       return getColumn(result, index);
-    } catch (IllegalArgumentException iae) {
+    } catch (final IllegalArgumentException iae) {
       return null;
     }
   }
@@ -321,8 +339,8 @@ public final class QuandlFunctions {
     final int n = dateArray.length;
     final TimeSeries ts = TimeSeries.newTimeSeries();
     for (int i = 0; i < n; i++) {
-      LocalDate date = (LocalDate) dateArray[i];
-      Double value = (Double) valueArray[i];
+      final LocalDate date = (LocalDate) dateArray[i];
+      final Double value = (Double) valueArray[i];
       ts.put(date, value);
     }
     return ts;

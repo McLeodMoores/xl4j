@@ -61,7 +61,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getConstructorInvoker() instanceof ObjectConstructorInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.CONSTRUCTOR);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.CONSTRUCTOR);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "TestClass1");
@@ -83,7 +83,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getConstructorInvoker() instanceof ObjectConstructorInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.CONSTRUCTOR);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.CONSTRUCTOR);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Constructor1_1");
@@ -105,7 +105,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getConstructorInvoker() instanceof ObjectConstructorInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.CONSTRUCTOR);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.CONSTRUCTOR);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Constructor1_2");
@@ -131,7 +131,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getConstructorInvoker() instanceof ObjectConstructorInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.CONSTRUCTOR);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.CONSTRUCTOR);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Constructor1_3");
@@ -158,7 +158,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getMethodInvoker() instanceof SimpleResultMethodInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.METHOD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.METHOD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "TestClass1.method1");
@@ -180,7 +180,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getMethodInvoker() instanceof SimpleResultMethodInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.METHOD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.METHOD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Method1_1");
@@ -202,7 +202,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getMethodInvoker() instanceof SimpleResultMethodInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.METHOD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.METHOD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Method1_3");
@@ -227,7 +227,7 @@ public class XLFunctionRegisteringTest {
     assertEquals(definitions.size(), 1);
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.getMethodInvoker() instanceof SimpleResultMethodInvoker);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.METHOD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.METHOD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertFalse(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Method1_4");

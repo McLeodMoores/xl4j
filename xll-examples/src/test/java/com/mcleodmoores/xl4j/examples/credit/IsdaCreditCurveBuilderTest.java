@@ -31,7 +31,6 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDACompliantY
 import com.opengamma.analytics.financial.credit.isdastandardmodel.StubType;
 import com.opengamma.financial.convention.businessday.BusinessDayConventionFactory;
 import com.opengamma.financial.convention.daycount.DayCountFactory;
-import com.opengamma.util.test.TestGroup;
 
 /**
  * Unit tests for {@link IsdaCreditCurveBuilder}.
@@ -100,6 +99,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     EXPECTED_CURVE = builder.calibrateCreditCurve(calibrationCds, marketQuotes, YIELD_CURVE);
   }
 
+  /**
+   * Tests the credit curve construction function.
+   */
   @Test
   public void testConstructionOfCurve() {
     assertTrue(XL_RESULT instanceof XLObject);
@@ -111,6 +113,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
   }
 
+  /**
+   * Tests the construction of the credit curve.
+   */
   @Test
   public void testConstructionOfCurveWithConvention() {
     final IsdaCdsConvention convention = ConventionFunctions.buildCdsConvention(XLString.of(ACCRUAL_DAY_COUNT_NAME),
@@ -128,6 +133,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertArrayEquals(curve.getKnotZeroRates(), EXPECTED_CURVE.getKnotZeroRates(), 1e-15);
   }
 
+  /**
+   * Tests the construction of the credit curve.
+   */
   @Test
   public void testConstructionOfCurveWithoutOptional() {
     CDSAnalyticFactory cdsFactory = new CDSAnalyticFactory()
@@ -157,6 +165,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertArrayEquals(curve.getKnotZeroRates(), expectedCurve.getKnotZeroRates(), 1e-15);
   }
 
+  /**
+   * Tests the function that expands the credit curve.
+   */
   @Test
   public void testExpandCurve() {
     final Object xlResult = PROCESSOR.invoke("ISDACreditCurve.Expand", (XLObject) XL_RESULT);
@@ -164,6 +175,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, EXPECTED_CURVE.getXData(), EXPECTED_CURVE.getYData());
   }
 
+  /**
+   * Tests the function that expands the credit curve to survival probabilities.
+   */
   @Test
   public void testExpandSurvivalProbabilities() {
     final Object xlResult = PROCESSOR.invoke("ISDACreditCurve.ExpandSurvivalProbabilities", (XLObject) XL_RESULT);
@@ -175,6 +189,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, EXPECTED_CURVE.getXData(), survivalProbabilities);
   }
 
+  /**
+   * Tests the function that expands the credit curve for a list of dates.
+   */
   @Test
   public void testExpandCurveForDates() {
     final LocalDate[] dates = new LocalDate[] {LocalDate.of(2017, 3, 19), LocalDate.of(2018, 3, 19), LocalDate.of(2019, 3, 19)};
@@ -192,6 +209,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, t, hazardRates);
   }
 
+  /**
+   * Tests the function that expands a credit curve to survival probabilities for a list of dates.
+   */
   @Test
   public void testSurvivalProbabilitiesForDates() {
     final LocalDate[] dates = new LocalDate[] {LocalDate.of(2017, 3, 19), LocalDate.of(2018, 3, 19), LocalDate.of(2019, 3, 19)};
@@ -209,6 +229,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assert2dXlArray((XLArray) xlResult, t, survivalProbabilities);
   }
 
+  /**
+   * Test the function that gets a hazard rate for a date.
+   */
   @Test
   public void testHazardRateForDate() {
     final LocalDate date = LocalDate.of(2016, 12, 20);
@@ -219,6 +242,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), EXPECTED_CURVE.getHazardRate(t), 1e-15);
   }
 
+  /**
+   * Tests the function that gets a survival probability for a date.
+   */
   @Test
   public void testSurvivalProbabilityForDate() {
     final LocalDate date = LocalDate.of(2016, 12, 20);
@@ -229,6 +255,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), EXPECTED_CURVE.getSurvivalProbability(t), 1e-15);
   }
 
+  /**
+   * Tests the function that gets the hazard rate for a time.
+   */
   @Test
   public void testHazardRate() {
     final double t = 6.4;
@@ -237,6 +266,9 @@ public class IsdaCreditCurveBuilderTest extends IsdaTests {
     assertEquals(((XLNumber) xlResult).getAsDouble(), EXPECTED_CURVE.getHazardRate(t), 1e-15);
   }
 
+  /**
+   * Tests the survival probability curve function.
+   */
   @Test
   public void testSurvivalProbability() {
     final double t = 2.76;

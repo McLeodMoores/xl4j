@@ -13,7 +13,6 @@ import com.mcleodmoores.xl4j.v1.api.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.JavaToExcelTypeMapping;
 import com.mcleodmoores.xl4j.v1.api.values.XLError;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
-import com.mcleodmoores.xl4j.v1.typeconvert.converters.InfNaNXLErrorTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**

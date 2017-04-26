@@ -110,7 +110,7 @@ public final class ExcelToJavaTypeMapping {
     return true;
   }
 
-  private boolean matchesGenericSignature(final Type[] genericTypes, final ParameterizedType otherParameterizedType) {
+  private static boolean matchesGenericSignature(final Type[] genericTypes, final ParameterizedType otherParameterizedType) {
     if (genericTypes.length == 0) {
       return false;
     }

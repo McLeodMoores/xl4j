@@ -82,7 +82,7 @@ public final class ObjectArrayXLArrayTypeConverter extends AbstractTypeConverter
       componentType = expectedClass.getComponentType();
     } else if (expectedType instanceof GenericArrayType) {
       // XLArray is not empty by definition so no test for emptiness needed
-      final Type componentTypeForGenericArray = ConverterUtils.getComponentTypeForGenericArray(expectedType);
+      final Type componentTypeForGenericArray = ConverterUtils.getComponentTypeForGenericArray((GenericArrayType) expectedType);
       // handle generic array inputs
       if (arr[0][0] instanceof XLArray && componentTypeForGenericArray.equals(Object.class)) {
         componentType = Object[].class;

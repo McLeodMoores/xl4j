@@ -52,57 +52,75 @@ public class XLArrayTest {
     { XLString.of("Hello World"), XLError.Null, XLError.Ref }
   };
 
+  /**
+   * Tests that the input cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNull() {
     XLArray.of(null);
   }
 
+  /**
+   *
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testEmpty() {
     XLArray.of(new XLValue[][] {});
   }
 
+  /**
+   *
+   */
   @Test // (expectedExceptions = XL4JRuntimeException.class) - this perhaps should be caught, enable this if we decide to check for it.
   public void testEmptyNested() {
     XLArray.of(new XLValue[][] {{}}); // single empty array: [1][0]
   }
 
+  /**
+   *
+   */
   @Test
   public void testConstructionAndGetterSingle() {
     final XLArray localRef = XLArray.of(SINGLE);
     Assert.assertEquals(localRef.getArray(), SINGLE);
   }
 
+  /**
+   *
+   */
   @Test
   public void testConstructionAndGetterMulti() {
     final XLArray localRef = XLArray.of(MULTI);
     Assert.assertEquals(localRef.getArray(), MULTI);
   }
 
+  /**
+   *
+   */
   @Test
   public void testEqualsAndHashCode() {
     final XLArray single = XLArray.of(SINGLE);
-    final XLArray single_1 = XLArray.of(SINGLE_1);
+    final XLArray single1 = XLArray.of(SINGLE_1);
     final XLArray multi = XLArray.of(MULTI);
-    final XLArray multi_1 = XLArray.of(MULTI_1);
-    final XLArray multi_2 = XLArray.of(MULTI_2);
+    final XLArray multi1 = XLArray.of(MULTI_1);
+    final XLArray multi2 = XLArray.of(MULTI_2);
     Assert.assertEquals(single, single);
     Assert.assertNotEquals(null, single);
     Assert.assertNotEquals("Hello", single);
-    Assert.assertEquals(single, single_1);
+    Assert.assertEquals(single, single1);
     Assert.assertNotEquals(null, multi);
     Assert.assertEquals(multi, multi);
-    Assert.assertEquals(multi, multi_1);
+    Assert.assertEquals(multi, multi1);
     Assert.assertNotEquals(single, multi);
     Assert.assertNotEquals(multi, single);
-    Assert.assertNotEquals(multi, multi_2);
+    Assert.assertNotEquals(multi, multi2);
 
     // hashCode
     Assert.assertEquals(single.hashCode(), single.hashCode());
-    Assert.assertEquals(single.hashCode(), single_1.hashCode());
+    Assert.assertEquals(single.hashCode(), single1.hashCode());
     Assert.assertNotEquals(single.hashCode(), multi.hashCode());
-    Assert.assertNotEquals(multi.hashCode(), multi_2.hashCode());
-    Assert.assertEquals(multi.hashCode(), multi_1.hashCode());
+    Assert.assertNotEquals(multi.hashCode(), multi2.hashCode());
+    Assert.assertEquals(multi.hashCode(), multi1.hashCode());
   }
 
   private static final String SINGLE_TO_STRING = "XLArray[[[XLBigData[len=18, buffer=[AC ED 00 05 74 00 0B 48 65 6C 6C 6F 20 57 6F 72 6C 64]]]]]";
@@ -111,6 +129,9 @@ public class XLArrayTest {
       + "[XLMultiReference[sheetId=1234, ranges=[XLRange[Range rows=1 to 2, columns=3 to 4], "
       + "XLRange[Single Cell row=4, column=5]]], XLNumber[value=43.234]], [XLString[value=Hello World], Null, Ref]]]";
 
+  /**
+   * Tests the toString() method.
+   */
   @Test
   public void testToString() {
     final XLArray single = XLArray.of(SINGLE);

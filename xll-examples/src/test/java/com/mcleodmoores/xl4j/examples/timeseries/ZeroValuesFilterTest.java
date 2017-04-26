@@ -12,11 +12,14 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link ZeroValuesFilter}.
  */
 public class ZeroValuesFilterTest {
   private static final TimeSeriesFunction<TimeSeries> CALCULATOR = new ZeroValuesFilter();
 
+  /**
+   * Tests this function.
+   */
   @Test
   public void test() {
     final TimeSeries ts = TimeSeries.newTimeSeries();

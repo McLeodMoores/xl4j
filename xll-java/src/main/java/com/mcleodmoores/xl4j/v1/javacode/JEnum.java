@@ -14,19 +14,27 @@ import com.mcleodmoores.xl4j.v1.api.core.Excel;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
 import com.mcleodmoores.xl4j.v1.api.values.XLError;
+import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.EnumXLStringTypeConverter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.ObjectXLObjectTypeConverter;
 
 /**
- *
+ * Class containing methods to retrieve enums from Excel.
  */
 @XLNamespace("J")
-public class JEnum {
+public final class JEnum {
   private static final Logger LOGGER = LoggerFactory.getLogger(JEnum.class);
   private static final EnumXLStringTypeConverter ENUM_CONVERTER = new EnumXLStringTypeConverter();
 
+  /**
+   * Gets the enum values with the given name. The values are converted to {@link XLString}.
+   * @param enumName
+   *          the enum name
+   * @return
+   *          the enum values
+   */
   @XLFunction(
       name = "Enum",
       description = "Return all values of an enum as an array",
@@ -48,8 +56,15 @@ public class JEnum {
     }
   }
 
+  /**
+   * Gets the enum values with the given name. The values are converted to {@link XLObject}.
+   * @param enumName
+   *          the enum name
+   * @return
+   *          the enum values
+   */
   @XLFunction(
-      name = "Enum",
+      name = "EnumX",
       description = "Return all values of an enum as an array",
       category = "Java",
       typeConversionMode = TypeConversionMode.PASSTHROUGH)
@@ -69,5 +84,8 @@ public class JEnum {
       LOGGER.error("Problem getting enum values for {}: {}", enumName, e);
       return XLError.Null;
     }
+  }
+
+  private JEnum() {
   }
 }

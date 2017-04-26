@@ -6,10 +6,12 @@ package com.mcleodmoores.xl4j.v1.core;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -53,7 +55,15 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ReflectiveFunctionRegistry.class);
   // REVIEW: is this the best structure to use?
-  private final Set<FunctionDefinition> _functionDefinitions = Collections.synchronizedSet(new HashSet<FunctionDefinition>());
+  private final Set<FunctionDefinition> _functionDefinitions =
+      Collections.synchronizedSet(new TreeSet<>(new Comparator<FunctionDefinition>() {
+
+        @Override
+        public int compare(final FunctionDefinition arg0, final FunctionDefinition arg1) {
+          return arg1.getFunctionMetadata().getName().compareTo(arg0.getFunctionMetadata().getName());
+        }
+
+      }));
   private final AtomicInteger _exportCounter = new AtomicInteger();
   private final ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
   private final BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
@@ -102,9 +112,9 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
   public void registerFunctions(final ExcelCallback callback) {
     LOGGER.info("registerFunctions called with {}", callback);
     try {
-      final Collection<FunctionDefinition> take = _finishedScan.take();
+      final Collection<FunctionDefinition> functionDefinitions = _finishedScan.take();
       LOGGER.info("got collection from finishedFunctionScan queue, iterating over them...");
-      for (final FunctionDefinition functionDefinition : take) {
+      for (final FunctionDefinition functionDefinition : functionDefinitions) {
         try {
           callback.registerFunction(functionDefinition);
         } catch (final XL4JRuntimeException xl4jre) {
@@ -146,7 +156,7 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     }
     try {
       final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);
-      addDefinitions(getFunctionsForTypes(invokerFactory, classesAnnotatedWithConstant), registeredFunctionNames);
+      addDefinitions(getConstantsForTypes(invokerFactory, classesAnnotatedWithConstant), registeredFunctionNames);
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLConstant-annotated classes", e);
     }

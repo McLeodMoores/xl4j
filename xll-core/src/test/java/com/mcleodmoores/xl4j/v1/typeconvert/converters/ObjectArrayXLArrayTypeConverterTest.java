@@ -23,7 +23,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.v1.typeconvert.converters.ObjectArrayXLArrayTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
@@ -271,6 +270,9 @@ public class ObjectArrayXLArrayTypeConverterTest {
     assertEquals(converted, results);
   }
 
+  /**
+   * Tests a parameterized function that takes a generic array of list.
+   */
   @Test
   public void testArrayOfGenericList() {
     final XLArray numberArray = XLArray.of(new XLValue[][] {new XLValue[] {
@@ -318,11 +320,13 @@ public class ObjectArrayXLArrayTypeConverterTest {
     assertEquals(((XLNumber) result).getAsFloat(), expectedResult, 1e-8);
   }
 
-  @Test
-  public void test() {
-    final XLArray operationArguments = XLArray.of(new XLValue[][] {new XLValue[] {XLNumber.of(1), XLNumber.of(-2)}});
-  }
-
+  /**
+   * Test function.
+   * @param array
+   *        an array
+   * @return
+   *        the result of the function
+   */
   @XLFunction(name = "ObjectArrayTest1")
   public static BigDecimal[] objectArrayTest1(@XLParameter final Double[] array) {
     final BigDecimal[] result = new BigDecimal[array.length];
@@ -333,8 +337,18 @@ public class ObjectArrayXLArrayTypeConverterTest {
     return result;
   }
 
-  @XLFunction(name = "ObjectArrayTest3")
-  public static <U extends Number> U[] objectArrayTest3(@XLParameter final Double[] array) {
+  /**
+   * Test function that returns a parameterized array.
+   * @param <U>
+   *          the type in the return array
+   * @param array
+   *          an array
+   * @return
+   *          the result of the function
+   */
+  @SuppressWarnings("unchecked")
+  @XLFunction(name = "ObjectArrayTest2")
+  public static <U extends Number> U[] objectArrayTest2(@XLParameter final Double[] array) {
     final BigDecimal[] result = new BigDecimal[array.length];
     int i = 0;
     for (final Double t : array) {
@@ -343,6 +357,18 @@ public class ObjectArrayXLArrayTypeConverterTest {
     return (U[]) result;
   }
 
+  /**
+   * Test function that takes and returns a parameterized array.
+   * @param <T>
+   *          the type in the input array
+   * @param <U>
+   *          the type in the return array
+   * @param array
+   *          an array
+   * @return
+   *          the result of the function
+   */
+  @SuppressWarnings("unchecked")
   @XLFunction(name = "ObjectArrayTest3")
   public static <T extends Number, U extends Number> U[] objectArrayTest3(@XLParameter final T[] array) {
     final Number[] result = new Number[array.length];

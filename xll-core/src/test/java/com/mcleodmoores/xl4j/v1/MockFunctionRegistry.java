@@ -21,49 +21,101 @@ import com.mcleodmoores.xl4j.v1.api.core.InvokerFactory;
 import com.mcleodmoores.xl4j.v1.core.AbstractFunctionRegistry;
 
 /**
- *
+ * A {@link com.mcleodmoores.xl4j.v1.api.core.FunctionRegistry} for use in tests where functions are registered
+ * by the user.
  */
 public final class MockFunctionRegistry extends AbstractFunctionRegistry {
 
+  /**
+   * Gets a builder.
+   * @return
+   *          the builder
+   */
   public static Builder builder() {
     return new Builder();
   }
 
-  public final static class Builder {
+  /**
+   * Builds a function registry.
+   */
+  public static final class Builder {
     private final Collection<Class<?>> _xlConstantClasses = new HashSet<>();
     private final Collection<Class<?>> _xlFunctionsClasses = new HashSet<>();
     private final Collection<Field> _xlConstantFields = new HashSet<>();
     private final Collection<Method> _xlFunctionMethods = new HashSet<>();
     private final Collection<Constructor<?>> _xlFunctionConstructors = new HashSet<>();
 
+    /**
+     * Default constructor.
+     */
     Builder() {
     }
 
+    /**
+     * Adds all fields from a class.
+     * @param clazz
+     *        the class
+     * @return
+     *        the builder
+     */
     public Builder xlConstant(final Class<?> clazz) {
       _xlConstantClasses.add(clazz);
       return this;
     }
 
+    /**
+     * Adds all constructors and methods from a class.
+     * @param clazz
+     *        the class
+     * @return
+     *        the builder
+     */
     public Builder xlFunctions(final Class<?> clazz) {
       _xlFunctionsClasses.add(clazz);
       return this;
     }
 
+    /**
+     * Adds a field.
+     * @param field
+     *        the field
+     * @return
+     *        the builder
+     */
     public Builder xlConstant(final Field field) {
       _xlConstantFields.add(field);
       return this;
     }
 
+    /**
+     * Adds a method.
+     * @param method
+     *        the method
+     * @return
+     *        the builder
+     */
     public Builder xlFunction(final Method method) {
       _xlFunctionMethods.add(method);
       return this;
     }
 
+    /**
+     * Adds a constructor.
+     * @param constructor
+     *        the constructor
+     * @return
+     *        the builder
+     */
     public Builder xlFunction(final Constructor<?> constructor) {
       _xlFunctionConstructors.add(constructor);
       return this;
     }
 
+    /**
+     * Builds a mock function registry.
+     * @return
+     *        the registry
+     */
     public MockFunctionRegistry build() {
       return new MockFunctionRegistry(_xlConstantClasses, _xlFunctionsClasses, _xlConstantFields, _xlFunctionMethods, _xlFunctionConstructors);
     }
@@ -77,6 +129,19 @@ public final class MockFunctionRegistry extends AbstractFunctionRegistry {
   private final Collection<Constructor<?>> _xlFunctionConstructors;
   private final Map<Integer, FunctionDefinition> _definitions;
 
+  /**
+   * Registers the classes, fields, methods and constructors as functions.
+   * @param xlConstantClasses
+   *          the classes from which to get all visible fields
+   * @param xlFunctionsClasses
+   *          the classes from which to get all visible methods and constructors
+   * @param xlConstantFields
+   *          the fields
+   * @param xlFunctionMethods
+   *          the methods
+   * @param xlFunctionConstructors
+   *          the constructors
+   */
   MockFunctionRegistry(final Collection<Class<?>> xlConstantClasses, final Collection<Class<?>> xlFunctionsClasses,
       final Collection<Field> xlConstantFields, final Collection<Method> xlFunctionMethods,
       final Collection<Constructor<?>> xlFunctionConstructors) {
@@ -115,6 +180,11 @@ public final class MockFunctionRegistry extends AbstractFunctionRegistry {
     addDefinitions(getConstantsForTypes(invokerFactory, _xlConstantClasses));
   }
 
+  /**
+   * Gets the functions definitions.
+   * @return
+   *          the function definitions
+   */
   public Set<FunctionDefinition> getFunctionDefinitions() {
     return Collections.unmodifiableSet(new HashSet<>(_definitions.values()));
   }

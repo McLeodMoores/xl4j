@@ -12,11 +12,14 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link LowerRangeFilter}.
  */
 public class LowerRangeFilterTest {
   private static final TimeSeriesBiFunction<Double, TimeSeries> CALCULATOR = new LowerRangeFilter();
 
+  /**
+   * Tests the function.
+   */
   @Test
   public void test() {
     final TimeSeries ts = TimeSeries.newTimeSeries();

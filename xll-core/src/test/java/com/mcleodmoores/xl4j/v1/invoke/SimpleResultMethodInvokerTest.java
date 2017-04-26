@@ -20,7 +20,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLBoolean;
 import com.mcleodmoores.xl4j.v1.api.values.XLMissing;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.invoke.SimpleResultMethodInvoker;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.ObjectXLObjectTypeConverter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.PrimitiveBooleanXLBooleanTypeConverter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.PrimitiveIntegerArrayXLArrayTypeConverter;

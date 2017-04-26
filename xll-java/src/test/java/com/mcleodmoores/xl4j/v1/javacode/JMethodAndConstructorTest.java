@@ -23,8 +23,6 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.javacode.JConstruct;
-import com.mcleodmoores.xl4j.v1.javacode.JMethod;
 
 /**
  * Unit tests for {@link JConstruct} and {@link JMethod} that show how these classes must be called using reflection.

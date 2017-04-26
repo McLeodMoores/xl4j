@@ -7,7 +7,7 @@ import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
 
 /**
- *
+ * Utility classes for dates.
  */
 public final class XlDateUtils {
   /** The epoch year used in Excel */

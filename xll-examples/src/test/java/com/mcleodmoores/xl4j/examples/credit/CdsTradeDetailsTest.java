@@ -23,7 +23,6 @@ import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFac
 import com.opengamma.financial.convention.businessday.BusinessDayConventions;
 import com.opengamma.financial.convention.daycount.DayCounts;
 import com.opengamma.util.money.Currency;
-import com.opengamma.util.test.TestGroup;
 
 /**
  *
@@ -67,6 +66,9 @@ public class CdsTradeDetailsTest extends IsdaTests {
     CDS = CdsTrade.of(CDS_FACTORY.makeIMMCDS(TRADE_DATE, Period.parse(TENOR)), CURRENCY, NOTIONAL, COUPON, BUY_PROTECTION, QUOTE, QUOTE_TYPE);
   }
 
+  /**
+   * Tests a function that creates a CDS trade.
+   */
   @Test
   public void testCreateCds() {
     final Object xlResult = PROCESSOR.invoke("CDS.BuildCDS", convertToXlType(TRADE_DATE), convertToXlType(CURRENCY),
@@ -78,6 +80,9 @@ public class CdsTradeDetailsTest extends IsdaTests {
     assertEquals(result, CDS);
   }
 
+  /**
+   * Tests a function that creates a CDS trade.
+   */
   @Test
   public void testCreateCdsWithOptional() {
     final Object xlResult = PROCESSOR.invoke("CDS.BuildCDS", convertToXlType(TRADE_DATE), convertToXlType(CURRENCY),
@@ -89,6 +94,9 @@ public class CdsTradeDetailsTest extends IsdaTests {
     assertEquals(result, CDS);
   }
 
+  /**
+   * Tests a function that creates a CDS.
+   */
   @Test
   public void testCreateCdsFromConvention() {
     final Object xlResult = PROCESSOR.invoke("CDS.BuildCDSFromConvention", convertToXlType(TRADE_DATE), convertToXlType(CURRENCY),
@@ -99,6 +107,9 @@ public class CdsTradeDetailsTest extends IsdaTests {
     assertEquals(result, CDS);
   }
 
+  /**
+   * Tests a function that gets the schedules for a CDS.
+   */
   @Test
   public void testDateDetails() {
     final Object xlResult1 = PROCESSOR.invoke("CDS.AccrualStartDates", convertToXlType(TRADE_DATE), convertToXlType(TENOR), convertToXlType("FOLLOWING"),

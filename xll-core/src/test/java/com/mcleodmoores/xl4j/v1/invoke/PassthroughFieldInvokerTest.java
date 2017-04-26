@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.v1.api.core.FieldGetter;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
-import com.mcleodmoores.xl4j.v1.invoke.PassthroughFieldGetter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
@@ -81,6 +80,6 @@ public class PassthroughFieldInvokerTest {
   @Test
   public void testInvoke() {
     final XLValue xlValue = INVOKER.get(OBJECT);
-    assertEquals(xlValue,_xlNumber1);
+    assertEquals(xlValue, _xlNumber1);
   }
 }

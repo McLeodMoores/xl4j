@@ -13,11 +13,14 @@ import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
 /**
- *
+ * Unit tests for {@link NegativeValuesFilter}.
  */
 public class NegativeValuesFilterTest {
   private static final Function<TimeSeries, TimeSeries> CALCULATOR = new NegativeValuesFilter();
 
+  /**
+   * Tests the function.
+   */
   @Test
   public void testNegativeValueFilter() {
     final TimeSeries ts = TimeSeries.newTimeSeries();

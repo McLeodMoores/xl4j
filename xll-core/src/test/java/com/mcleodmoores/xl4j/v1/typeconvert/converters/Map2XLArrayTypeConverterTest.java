@@ -35,13 +35,13 @@ import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.api.values.XLValueVisitor;
 import com.mcleodmoores.xl4j.v1.simulator.MockFunctionProcessor;
-import com.mcleodmoores.xl4j.v1.typeconvert.converters.Map2XLArrayTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.mcleodmoores.xl4j.v1.util.XlDateUtils;
 
 /**
  * Unit tests for {@link Map2XLArrayTypeConverter}.
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class Map2XLArrayTypeConverterTest {
   private static final int N = 50;
   private static final XLValue[][] ROW1 = new XLValue[2][N];
@@ -403,7 +403,6 @@ public class Map2XLArrayTypeConverterTest {
    * @param m  the map
    * @return -2
    */
-  @SuppressWarnings("rawtypes")
   @XLFunction(name = "MapTest2")
   public static int testMethod2(@XLParameter final Map m) {
     assertEquals(m.size(), M2.size());
@@ -422,7 +421,6 @@ public class Map2XLArrayTypeConverterTest {
    * @param maps  the maps
    * @return -22
    */
-  @SuppressWarnings("rawtypes")
   @XLFunction(name = "MapTest2_varargs")
   public static int testMethod2Varargs(@XLParameter final Map... maps) {
     assertEquals(maps.length, 1);
@@ -535,7 +533,10 @@ public class Map2XLArrayTypeConverterTest {
     return 0;
   }
 
-  private static class TestXlValue implements XLValue {
+  /**
+   * Test XLValue.
+   */
+  private static final class TestXlValue implements XLValue {
 
     public static TestXlValue of(final double height, final double width) {
       return new TestXlValue(height, width);

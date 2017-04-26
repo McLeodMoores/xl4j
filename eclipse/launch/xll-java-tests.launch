@@ -4,7 +4,6 @@
 <listEntry value="=xll-core/src\/main\/java"/>
 <listEntry value="=xll-java/src\/main\/java"/>
 </listAttribute>
-<stringAttribute key="org.eclipse.debug.ui.ATTR_CAPTURE_IN_FILE" value="C:\Users\mcleo\McLeodMoores\xl4j\eclipse\xll-java-tests"/>
 <listAttribute key="org.eclipse.debug.ui.favoriteGroups">
 <listEntry value="com.mountainminds.eclemma.ui.launchGroup.coverage"/>
 <listEntry value="org.eclipse.debug.ui.launchGroup.debug"/>
@@ -22,7 +21,8 @@
 <listAttribute key="org.testng.eclipse.GROUP_LIST_CLASS"/>
 <stringAttribute key="org.testng.eclipse.LOG_LEVEL" value="2"/>
 <listAttribute key="org.testng.eclipse.PACKAGE_TEST_LIST">
-<listEntry value="com.mcleodmoores.xl4j.javacode"/>
+<listEntry value="com.mcleodmoores.xl4j.v1.javacode"/>
+<listEntry value="com.mcleodmoores.xl4j.v1.javacode.simulator"/>
 </listAttribute>
 <stringAttribute key="org.testng.eclipse.PROTOCOL" value="json"/>
 <intAttribute key="org.testng.eclipse.TYPE" value="5"/>

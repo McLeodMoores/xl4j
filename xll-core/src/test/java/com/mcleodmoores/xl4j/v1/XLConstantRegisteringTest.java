@@ -49,7 +49,7 @@ public class XLConstantRegisteringTest {
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.isStatic());
     assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertTrue(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Field1_1");
@@ -73,7 +73,7 @@ public class XLConstantRegisteringTest {
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.isStatic());
     assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertTrue(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "TestClass1.FIELD2");
@@ -96,7 +96,7 @@ public class XLConstantRegisteringTest {
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.isStatic());
     assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertTrue(metadata.isConstantSpec());
     assertEquals(metadata.getName(), "Namespace2-Field2_1");
@@ -120,7 +120,7 @@ public class XLConstantRegisteringTest {
     final FunctionDefinition definition = definitions.iterator().next();
     assertTrue(definition.isStatic());
     assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-    assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+    assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
     final FunctionMetadata metadata = definition.getFunctionMetadata();
     assertTrue(metadata.isConstantSpec());
     // note that getSimpleName() is used but inner classes use the fully-qualified name
@@ -146,7 +146,7 @@ public class XLConstantRegisteringTest {
     for (final FunctionDefinition definition : definitions) {
       assertTrue(definition.isStatic());
       assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-      assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+      assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
       final FunctionMetadata metadata = definition.getFunctionMetadata();
       assertTrue(metadata.isConstantSpec());
       final String expected = "TestClass3.FIELD1";
@@ -174,7 +174,7 @@ public class XLConstantRegisteringTest {
     for (final FunctionDefinition definition : definitions) {
       assertTrue(definition.isStatic());
       assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-      assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+      assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
       final FunctionMetadata metadata = definition.getFunctionMetadata();
       assertTrue(metadata.isConstantSpec());
       final String expected = "Class4.FIELD1";
@@ -202,7 +202,7 @@ public class XLConstantRegisteringTest {
     for (final FunctionDefinition definition : definitions) {
       assertTrue(definition.isStatic());
       assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-      assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+      assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
       final FunctionMetadata metadata = definition.getFunctionMetadata();
       assertTrue(metadata.isConstantSpec());
       final String expected = "Namespace5TestClass5.FIELD1";
@@ -230,7 +230,7 @@ public class XLConstantRegisteringTest {
     for (final FunctionDefinition definition : definitions) {
       assertTrue(definition.isStatic());
       assertTrue(definition.getFieldInvoker() instanceof ObjectFieldGetter);
-      assertEquals(definition.getJavaTypeForFunction(), CallTarget.FIELD);
+      assertEquals(definition.getCallTargetForFunction(), CallTarget.FIELD);
       final FunctionMetadata metadata = definition.getFunctionMetadata();
       assertTrue(metadata.isConstantSpec());
       final String expected = "Namespace6-Class6.FIELD1";

@@ -14,31 +14,43 @@ import org.testng.annotations.Test;
 import com.mcleodmoores.xl4j.v1.api.core.Excel;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
 import com.mcleodmoores.xl4j.v1.api.values.XLBigData;
-import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.mcleodmoores.xl4j.v1.util.SerializationUtils;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Unit tests for XLBigData.
  */
-public final class XLBigDataTests {
+public class XLBigDataTests {
   private static final Logger LOGGER = LoggerFactory.getLogger(XLBigDataTests.class);
   private static final Excel EXCEL = ExcelFactory.getInstance();
 
+  /**
+   * Tests that the input cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testXLBigDataNull() {
     XLBigData.of(null);
   }
 
+  /**
+   * Tests that the input cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testXLBigDataSerializableNull() {
     XLBigData.of((Serializable) null);
   }
 
+  /**
+   * Tests that the Excel callback cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testXLBigDataExcelCallbackNull() {
     XLBigData.of((Excel) null, 0, 1);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataEmpty() {
     final byte[] testData = new byte[0];
@@ -46,6 +58,9 @@ public final class XLBigDataTests {
     Assert.assertEquals(bigData.getBuffer(), testData);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataNonEmpty() {
     final byte[] testData = new byte[256];
@@ -55,6 +70,9 @@ public final class XLBigDataTests {
     Assert.assertEquals(bigData.getBuffer(), testData);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataManualSerialization() {
     final String testString = "TEST STRING";
@@ -64,6 +82,9 @@ public final class XLBigDataTests {
     Assert.assertEquals(bigData.getValue(), testString);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataAutomaticSerialization() {
     final String testString = "TEST STRING";
@@ -71,12 +92,18 @@ public final class XLBigDataTests {
     Assert.assertEquals(bigData.getValue(), testString);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataHandleSize() {
     final XLBigData bigData = XLBigData.of(EXCEL, 1, 0);
     Assert.assertEquals(bigData.getBuffer(), new byte[0]); // this will need changing when Excel interface actually does something!
   }
 
+  /**
+   *
+   */
   @Test
   public void testEqualsAndHashCode() {
     final XLBigData bigData = XLBigData.of(EXCEL, 1, 0);
@@ -100,6 +127,9 @@ public final class XLBigDataTests {
     Assert.assertEquals(bigData4.hashCode(), bigData3.hashCode());
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataToString() {
     final byte[] testData = new byte[256];
@@ -110,6 +140,9 @@ public final class XLBigDataTests {
     Assert.assertEquals(toStr.length(), 127);
   }
 
+  /**
+   *
+   */
   @Test
   public void testXLBigDataToStringEmpty() {
     final byte[] testData = new byte[0];

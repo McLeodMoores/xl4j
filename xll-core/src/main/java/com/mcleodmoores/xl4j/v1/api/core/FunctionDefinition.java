@@ -5,8 +5,8 @@ package com.mcleodmoores.xl4j.v1.api.core;
 
 import com.mcleodmoores.xl4j.v1.core.FunctionMetadata;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 import com.mcleodmoores.xl4j.v1.util.ExportUtils;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Class to store meta-data and type conversion information about Excel functions. The functions can
@@ -140,9 +140,9 @@ public final class FunctionDefinition {
   }
 
   /**
-   * @return the java type (field, method or constructor)
+   * @return the call target (field, method or constructor)
    */
-  public CallTarget getJavaTypeForFunction() {
+  public CallTarget getCallTargetForFunction() {
     return _functionType;
   }
 

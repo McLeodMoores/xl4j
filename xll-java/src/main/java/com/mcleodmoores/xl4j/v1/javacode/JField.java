@@ -22,7 +22,7 @@ import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.ObjectXLObjectTypeConverter;
 
 /**
- * Class contain methods to retrieve fields from classes from Excel.
+ * Class containing methods to retrieve fields from classes from Excel.
  */
 @XLNamespace("J")
 public final class JField {

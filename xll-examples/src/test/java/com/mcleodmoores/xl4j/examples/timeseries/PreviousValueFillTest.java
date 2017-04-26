@@ -15,12 +15,15 @@ import org.threeten.bp.LocalDate;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
- *
+ * Unit tests for {@link PreviousValueFill}.
  */
 public class PreviousValueFillTest {
   private static final Function<TimeSeries, TimeSeries> CALCULATOR = new PreviousValueFill();
   private static final double EPS = 1e-15;
 
+  /**
+   * The first value cannot be null.
+   */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testPreviousValueFillFirstValueNull() {
     final TimeSeries ts = TimeSeries.newTimeSeries();
@@ -28,6 +31,9 @@ public class PreviousValueFillTest {
     CALCULATOR.apply(ts);
   }
 
+  /**
+   * Tests the function.
+   */
   @Test
   public void testPreviousValueFill() {
     final TimeSeries ts = TimeSeries.newTimeSeries();
