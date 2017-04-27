@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Originally the implementation of LowLevelExcelCallback would actually call back into Excel.  Until we
+ * Originally the implementation of {@link LowLevelExcelCallback} would actually call back into Excel.  Until we
  * have actual callbacks (and maybe not even then for efficiency reasons), we use this to accumulate
  * function definitions and convert them into a form that's easy and fast to read using JNI.
  */
