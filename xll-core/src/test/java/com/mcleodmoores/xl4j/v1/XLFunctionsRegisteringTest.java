@@ -11,10 +11,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Function;
 
 import org.testng.annotations.Test;
 
+import com.google.common.base.Function;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
