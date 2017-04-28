@@ -18,7 +18,7 @@ import com.mcleodmoores.xl4j.v1.xll.LowLevelExcelCallback;
  * Represents a mock Excel process and its own internal storage of function definitions, not to be confused with FunctionRegistry, which
  * stores the definitions on the Java side.
  */
-public class MockExcelFunctionRegistry implements LowLevelExcelCallback {
+public class MockExcelFunctionEntryAccumulator implements LowLevelExcelCallback {
   private final ConcurrentMap<String, FunctionEntry> _functions = new ConcurrentHashMap<>();
 
   @Override

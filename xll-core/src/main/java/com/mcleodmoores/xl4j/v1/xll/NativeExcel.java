@@ -28,7 +28,7 @@ public class NativeExcel implements Excel {
   private final ExcelFunctionCallHandler _excelCallHandler;
   private final ReflectiveInvokerFactory _invokerFactory;
   private final TypeConverterRegistry _typeConverterRegistry;
-  private final XLLAccumulatingFunctionRegistry _rawCallback;
+  private final NativeExcelFunctionEntryAccumulator _rawCallback;
 
   /**
    * Create an instance of the Excel interface suitable that gets called by native code.
@@ -39,7 +39,7 @@ public class NativeExcel implements Excel {
     _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
     _functionRegistry = new ReflectiveFunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
-    _rawCallback = new XLLAccumulatingFunctionRegistry();
+    _rawCallback = new NativeExcelFunctionEntryAccumulator();
     _excelCallback = new DefaultExcelCallback(_rawCallback);
   }
 

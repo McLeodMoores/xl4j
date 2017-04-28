@@ -14,13 +14,13 @@ import org.slf4j.LoggerFactory;
  * have actual callbacks (and maybe not even then for efficiency reasons), we use this to accumulate
  * function definitions and convert them into a form that's easy and fast to read using JNI.
  */
-public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
-  private static final Logger LOGGER = LoggerFactory.getLogger(XLLAccumulatingFunctionRegistry.class);
+public class NativeExcelFunctionEntryAccumulator implements LowLevelExcelCallback {
+  private static final Logger LOGGER = LoggerFactory.getLogger(NativeExcelFunctionEntryAccumulator.class);
 
   /**
    * Native accessed data structure (public fields for speed).
    */
-  public class LowLevelEntry {
+  public class FunctionEntry {
     // CHECKSTYLE:OFF
     public int _exportNumber;
     public String _functionExportName;
@@ -41,14 +41,14 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
     // CHECKSTYLE:ON
   }
 
-  private final List<LowLevelEntry> _entries = new ArrayList<>();
+  private final List<FunctionEntry> _entries = new ArrayList<>();
 
   @Override
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
       final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired, final String functionSignature,
       final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
       final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
-    final LowLevelEntry entry = new LowLevelEntry();
+    final FunctionEntry entry = new FunctionEntry();
     entry._exportNumber = exportNumber;
     entry._functionExportName = functionExportName;
     entry._isVarArgs = isVarArgs;
@@ -79,8 +79,8 @@ public class XLLAccumulatingFunctionRegistry implements LowLevelExcelCallback {
   /**
    * @return the function entries
    */
-  public LowLevelEntry[] getEntries() {
-    final LowLevelEntry[] array = _entries.toArray(new LowLevelEntry[] {});
+  public FunctionEntry[] getEntries() {
+    final FunctionEntry[] array = _entries.toArray(new FunctionEntry[] {});
     LOGGER.info("getEntries() called, returning {} items", array.length);
     return array;
   }
