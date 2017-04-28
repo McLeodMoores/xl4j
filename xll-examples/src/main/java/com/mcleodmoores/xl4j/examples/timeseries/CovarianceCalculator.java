@@ -5,6 +5,7 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.threeten.bp.LocalDate;
 
@@ -12,6 +13,7 @@ import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
+import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Calculates the sample covariance of two time series.
@@ -30,25 +32,26 @@ public class CovarianceCalculator implements TimeSeriesBiFunction<TimeSeries, Do
     ArgumentChecker.notNull(ts2, "ts2");
     final TimeSeries m1 = TimeSeries.of(ts1);
     m1.entrySet().removeIf(e -> e.getValue() == null);
-    final int n = m1.size();
-    ArgumentChecker.isTrue(n > 1, "Cannot calculate covariance for series with " + ts1.size() + " values");
+    ArgumentChecker.isTrue(m1.size() > 1, "Cannot calculate covariance for series with {} values", m1.size());
     final TimeSeries m2 = TimeSeries.of(ts2);
     m2.entrySet().removeIf(e -> e.getValue() == null);
-    ArgumentChecker.isTrue(m1.keySet().equals(m2.keySet()), "Time series must have contains the same dates for covariance calculation");
-    double ex = 0, ey = 0, exy = 0;
-    final Iterator<Map.Entry<LocalDate, Double>> iter1 = m1.entrySet().iterator();
-    final Iterator<Map.Entry<LocalDate, Double>> iter2 = m2.entrySet().iterator();
-    while (iter1.hasNext()) {
-      final double value1 = iter1.next().getValue();
-      final double value2 = iter2.next().getValue();
-      ex += value1;
-      ey += value2;
-      exy += value1 * value2;
+    double n = 0, mu1 = 0, mu2 = 0, cov = 0;
+    final Iterator<Map.Entry<LocalDate, Double>> iter = m1.entrySet().iterator();
+    while (iter.hasNext()) {
+      final Entry<LocalDate, Double> entry = iter.next();
+      final LocalDate date = entry.getKey();
+      final double x1 = entry.getValue();
+      final Double x2 = m2.get(date);
+      if (x2 == null) {
+        throw new XL4JRuntimeException("Could not get value for " + date + " from " + ts2);
+      }
+      n++;
+      final double dx = x1 - mu1;
+      mu1 += dx / n;
+      mu2 += (x2 - mu2) / n;
+      cov += dx * (x2 - mu2);
     }
-    exy /= n - 1;
-    ex /= n;
-    ey /= n;
-    return exy - ex * ey;
+    return cov / (n - 1);
   }
 
 }

@@ -5,6 +5,8 @@ package com.mcleodmoores.xl4j.examples.timeseries;
 
 import static org.testng.Assert.assertEquals;
 
+import java.util.Random;
+
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.temporal.ChronoUnit;
@@ -48,11 +50,12 @@ public class ExcelTimeSeriesFunctionsTest {
     final XLValue[][] values1 = new XLValue[1][n];
     final XLValue[][] values2 = new XLValue[1][n];
     final LocalDate now = LocalDate.now();
+    final Random rng = new Random(56743);
     for (int i = 0; i < n; i++) {
       final LocalDate date = now.plusDays(i);
       dates[0][i] = XLNumber.of(date.toEpochDay() + offset);
-      values1[0][i] = i % 2 == 0 ? null : XLNumber.of(i);
-      values2[0][i] = XLNumber.of(3.4 * i);
+      values1[0][i] = XLNumber.of(rng.nextDouble());
+      values2[0][i] = XLNumber.of(rng.nextDouble());
     }
     XL_TS_1 = (XLObject) PROCESSOR.invoke("TimeSeries", XLArray.of(dates), XLArray.of(values1));
     XL_TS_2 = (XLObject) PROCESSOR.invoke("TimeSeries", XLArray.of(dates), XLArray.of(values2));
@@ -150,4 +153,25 @@ public class ExcelTimeSeriesFunctionsTest {
     assertEquals(DOUBLE_CONVERTER.toJavaObject(Double.class, xlValue), new CovarianceCalculator().apply(TS_1, TS_1));
   }
 
+  /**
+   * Tests the variance calculator.
+   */
+  @Test
+  public void testVariance() {
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Variance", new XLValue[0]);
+    final XLValue xlValue = PROCESSOR.invoke("TimeSeries.Variance.apply", calculator, XL_TS_1);
+    assertEquals(DOUBLE_CONVERTER.toJavaObject(Double.class, xlValue), new VarianceCalculator().apply(TS_1));
+  }
+
+  /**
+   * Tests the correlation calculator.
+   */
+  @Test
+  public void testCorrelation() {
+    final XLValue calculator = PROCESSOR.invoke("TimeSeries.Correlation", new XLValue[0]);
+    XLValue xlValue = PROCESSOR.invoke("TimeSeries.Correlation.apply", calculator, XL_TS_1, XL_TS_1);
+    assertEquals((Double) DOUBLE_CONVERTER.toJavaObject(Double.class, xlValue), 1, 1e-15);
+    xlValue = PROCESSOR.invoke("TimeSeries.Correlation.apply", calculator, XL_TS_1, XL_TS_2);
+    assertEquals((Double) DOUBLE_CONVERTER.toJavaObject(Double.class, xlValue), new CorrelationCalculator().apply(TS_1, TS_2), 1e-15);
+  }
 }
