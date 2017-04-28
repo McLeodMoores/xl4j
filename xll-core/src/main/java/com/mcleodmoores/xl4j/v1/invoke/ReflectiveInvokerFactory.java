@@ -181,7 +181,14 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
           continue; // number of arguments don't match so skip this one.
         }
       }
-      final TypeConverter resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      final TypeConverter resultConverter;
+      if (method.getReturnType().equals(Void.TYPE)) {
+        // no converter available for void return type
+        // method invocation returns XLMissing
+        resultConverter = _objectXlObjectConverter;
+      } else {
+        resultConverter = _typeConverterRegistry.findConverter(method.getReturnType());
+      }
       switch (typeConversionMode) {
         case OBJECT_RESULT:
         case SIMPLEST_RESULT: {
@@ -200,14 +207,14 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
             final TypeConverter[] nonVarArgConverters = buildArgumentConverters(nonVarArgParameterTypes, nonVarArgTypes);
             // need to convert each element of the var arg array
             final TypeConverter varArgConverter = buildArgumentConverter(parameterTypes[nNonVarArgParameters], XLArray.class);
-            if (varArgConverter != null) {
+            if (varArgConverter == null) {
+              // no converters for varargs
+              argumentConverters = nonVarArgConverters;
+            } else {
               // append var arg converter to other type converters
               argumentConverters = new TypeConverter[nonVarArgConverters.length + 1];
               System.arraycopy(nonVarArgConverters, 0, argumentConverters, 0, nonVarArgConverters.length);
               argumentConverters[argumentConverters.length - 1] = varArgConverter;
-            } else {
-              // no converters for varargs
-              argumentConverters = nonVarArgConverters;
             }
             // put var arg methods at end of list, as matching on more specific methods is better
             index = backIndex;
@@ -256,7 +263,6 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
     ArgumentChecker.notNull(resultType, "resultType");
     final Class<?>[] genericParameterTypes = method.getParameterTypes();
     try {
-      final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
       final Class<?> returnType = method.getReturnType();
       final TypeConverter resultConverter;
       if (returnType.equals(Void.TYPE)) {
@@ -269,6 +275,7 @@ public class ReflectiveInvokerFactory implements InvokerFactory {
       if (resultConverter == null) {
         throw new XL4JRuntimeException("Could not find type converter for " + returnType + " (return type)");
       }
+      final TypeConverter[] argumentConverters = buildArgumentConverters(genericParameterTypes);
       switch (resultType) {
         case SIMPLEST_RESULT:
           return new SimpleResultMethodInvoker(method, argumentConverters, resultConverter, _objectXlObjectConverter);

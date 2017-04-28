@@ -18,7 +18,7 @@ package com.mcleodmoores.xl4j.v1.util;
 
 import java.util.Iterator;
 
-//CSOFF
+// CHECKSTYLE:OFF
 public interface ReusableIterator<E> extends Iterator<E> {
    void rewind();
 }

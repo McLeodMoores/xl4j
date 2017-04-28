@@ -61,7 +61,7 @@ public class CachingTypeConverterRegistry implements TypeConverterRegistry {
   public TypeConverter findConverter(final ExcelToJavaTypeMapping requiredMapping) {
     if (_excelToJavaCache.containsKey(requiredMapping)) {
       final TypeConverter converter = _excelToJavaCache.get(requiredMapping);
-      if (converter == NULL_CONVERTER) {
+      if (converter.equals(NULL_CONVERTER)) {
         return null;
       }
       return converter;
@@ -79,7 +79,7 @@ public class CachingTypeConverterRegistry implements TypeConverterRegistry {
   public TypeConverter findConverter(final Type requiredJava) {
     if (_javaToExcelCache.containsKey(requiredJava)) {
       final TypeConverter converter = _javaToExcelCache.get(requiredJava);
-      if (converter == NULL_CONVERTER) {
+      if (converter.equals(NULL_CONVERTER)) {
         return null;
       }
       return converter;

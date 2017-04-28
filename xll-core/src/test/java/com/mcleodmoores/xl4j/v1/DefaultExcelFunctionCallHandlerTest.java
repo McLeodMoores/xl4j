@@ -319,7 +319,7 @@ public class DefaultExcelFunctionCallHandlerTest {
     public int hashCode() {
       final int prime = 31;
       int result = 1;
-      result = prime * result + (_field == null ? 0 : _field.hashCode());
+      result = prime * result + _field.hashCode();
       result = prime * result + (_i == null ? 0 : _i.hashCode());
       return result;
     }

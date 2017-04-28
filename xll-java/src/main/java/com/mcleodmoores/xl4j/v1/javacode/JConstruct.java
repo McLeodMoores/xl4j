@@ -57,11 +57,6 @@ public final class JConstruct {
       for (; i < constructorTypeConverters.length; i++) {
         final ConstructorInvoker constructorTypeConverter = constructorTypeConverters[i];
         if (constructorTypeConverter == null) {
-          if (i == constructorTypeConverters.length - 1) {
-            // have reached the end of the available constructors without finding a match
-            LOGGER.error("Could not construct class called {} with arguments {}", className, Arrays.toString(args));
-            return XLError.Null;
-          }
           // go to where it will try any constructors that are at the end of the array
           break;
         }
@@ -87,6 +82,9 @@ public final class JConstruct {
       return XLError.Null;
     } catch (final ClassNotFoundException e) {
       LOGGER.error("Could not find class called {}", className.getValue());
+      return XLError.Null;
+    } catch (final Exception e) {
+      LOGGER.error("Could not construct class called {} with arguments {}: {}", className, Arrays.toString(args), e);
       return XLError.Null;
     }
   }

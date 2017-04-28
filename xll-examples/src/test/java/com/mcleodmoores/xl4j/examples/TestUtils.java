@@ -50,7 +50,7 @@ public final class TestUtils {
       return XLString.of(((Currency) object).getCode());
     }
     if (object.getClass().isArray()) {
-      XLValue[][] values = new XLValue[0][];
+      final XLValue[][] values;
       if (object.getClass().getComponentType().isPrimitive()) {
         final int n = Array.getLength(object);
         values = new XLValue[][] { new XLValue[n] };

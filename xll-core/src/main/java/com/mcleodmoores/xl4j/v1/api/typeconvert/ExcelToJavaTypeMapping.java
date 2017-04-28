@@ -140,7 +140,9 @@ public final class ExcelToJavaTypeMapping {
                   }
                   return true;
                 } else if (otherTypeArgument instanceof WildcardType) {
+                  return true;
                 } else if (otherTypeArgument instanceof GenericArrayType) {
+                  return true;
                 }
               }
             }

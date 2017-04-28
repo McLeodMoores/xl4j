@@ -45,7 +45,7 @@ public class FloatConstructionTest extends TypeConstructionTests {
     final Object floatObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(floatObject instanceof Float);
     final Float floatVal = (Float) floatObject;
-    assertEquals(floatVal.floatValue(), FLOAT.floatValue());
+    assertEquals(floatVal.floatValue(), FLOAT.floatValue(), 1e-15);
   }
 
   /**
@@ -58,7 +58,7 @@ public class FloatConstructionTest extends TypeConstructionTests {
     final Object floatObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(floatObject instanceof Float);
     final Float floatVal = (Float) floatObject;
-    assertEquals(floatVal.floatValue(), FLOAT.floatValue());
+    assertEquals(floatVal.floatValue(), FLOAT.floatValue(), 1e-15);
   }
 
   /**
@@ -71,7 +71,7 @@ public class FloatConstructionTest extends TypeConstructionTests {
     final Object floatObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(floatObject instanceof Float);
     final Float floatVal = (Float) floatObject;
-    assertEquals(floatVal.floatValue(), FLOAT.floatValue());
+    assertEquals(floatVal.floatValue(), FLOAT.floatValue(), 1e-15);
   }
 
   /**
@@ -84,7 +84,7 @@ public class FloatConstructionTest extends TypeConstructionTests {
     final Object floatObject = HEAP.getObject(((XLObject) xlValue).getHandle());
     assertTrue(floatObject instanceof Float);
     final Float floatVal = (Float) floatObject;
-    assertEquals(floatVal.floatValue(), FLOAT.floatValue());
+    assertEquals(floatVal.floatValue(), FLOAT.floatValue(), 1e-15);
   }
 
 }

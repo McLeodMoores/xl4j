@@ -2,9 +2,9 @@ By default, when you launch XL4J, once a day it will check for availability of
 updates by checking for the existence of a web page on the McLeod Moores website.  
 No user-identifying information is sent with this check, but your IP address will
 be logged by the web server in the same way as if you visited our website with a 
-browser.  You can turn off this behavior by unchecking the check for updates 
+browser.  You can turn off this behavior by unchecking the "check for updates"
 setting on the settings dialog.  If you don't want it to do even an initial 
-check, you can change create a file called 'deafult.ini' in the install directory
+check, you can change create a file called 'default.ini' in the install directory
 with the following contents:
 
 [Add-in]

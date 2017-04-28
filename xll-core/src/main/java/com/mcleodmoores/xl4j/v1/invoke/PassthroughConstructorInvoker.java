@@ -49,13 +49,12 @@ public class PassthroughConstructorInvoker implements ConstructorInvoker {
           return (XLValue) _objectXlObjectConverter.toXLValue(_constructor.newInstance(Array.newInstance(varArgType, 0)));
         }
         // create an array for the varargs argument
-        final Object[] args;
         final int nArgs = _constructor.getParameterCount();
         final int varargInputs = arguments.length - nArgs + 1;
         if (varargInputs < 0) {
           throw new XL4JRuntimeException("Wrong number of arguments for " + _constructor + ", have " + Arrays.toString(arguments));
         }
-        args = new Object[nArgs];
+        final Object[] args = new Object[nArgs];
         final Class<?>[] parameterTypes = _constructor.getParameterTypes();
         final Class<?> varArgType = parameterTypes[parameterTypes.length - 1].getComponentType();
         final Object[] varargs = (Object[]) Array.newInstance(varArgType, varargInputs);

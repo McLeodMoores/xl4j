@@ -50,16 +50,8 @@ public final class IsdaCdsConvention {
     _accrualDayCount = DayCountFactory.INSTANCE.instance(accrualDayCount);
     _curveDayCount = DayCountFactory.INSTANCE.instance(curveDayCount);
     _bdc = BusinessDayConventionFactory.INSTANCE.instance(businessDayConvention);
-    if (couponInterval != null) {
-      _couponInterval = parsePeriod(couponInterval);
-    } else {
-      _couponInterval = null;
-    }
-    if (stubType != null) {
-      _stubType = StubType.valueOf(stubType);
-    } else {
-      _stubType = null;
-    }
+    _couponInterval = couponInterval == null ? null : parsePeriod(couponInterval);
+    _stubType = stubType == null ? null : StubType.valueOf(stubType);
     _cashSettlementDays = cashSettlementDays;
     _stepInDays = stepInDays;
     _payAccrualOnDefault = payAccrualOnDefault;

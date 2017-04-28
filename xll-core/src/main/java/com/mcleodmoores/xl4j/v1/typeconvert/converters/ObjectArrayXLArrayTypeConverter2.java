@@ -61,7 +61,6 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    final XLArray xlArr = (XLArray) from;
     Type componentType = null;
     if (expectedType instanceof Class) {
       final Class<?> expectedClass = (Class<?>) expectedType;
@@ -71,6 +70,7 @@ public final class ObjectArrayXLArrayTypeConverter2 extends AbstractTypeConverte
     } else {
       throw new XL4JRuntimeException("expectedType not array or GenericArrayType");
     }
+    final XLArray xlArr = (XLArray) from;
     final XLValue[][] arr = xlArr.getArray();
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;

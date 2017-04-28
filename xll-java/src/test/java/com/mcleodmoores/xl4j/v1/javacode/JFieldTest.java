@@ -4,21 +4,103 @@
 package com.mcleodmoores.xl4j.v1.javacode;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
 
 /**
- *
+ * Unit tests for {@link JField}.
  */
 public class JFieldTest {
   private static final XLString CLASS_NAME = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
+
+  /**
+   * Tests the case where the field does not exist.
+   */
+  @Test
+  public void testNoField1() {
+    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
+    final Object result = JField.jField(object, XLString.of("noFieldOfThisName"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field does not exist.
+   */
+  @Test
+  public void testNoField2() {
+    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
+    final Object result = JField.jFieldX(object, XLString.of("noFieldOfThisName"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field does not exist.
+   */
+  @Test
+  public void testNoField3() {
+    final Object result = JField.jStaticField(XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject"),
+        XLString.of("noFieldOfThisName"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field does not exist.
+   */
+  @Test
+  public void testNoField4() {
+    final Object result = JField.jStaticFieldX(XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject"),
+        XLString.of("noFieldOfThisName"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field is not visible.
+   */
+  @Test
+  public void testPrivateField1() {
+    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
+    final Object result = JField.jField(object, XLString.of("_privateField"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field is not visible.
+   */
+  @Test
+  public void testPrivateField2() {
+    final XLObject object = (XLObject) JMethod.jStaticMethod(CLASS_NAME, XLString.of("ofDouble"), XLNumber.of(12345));
+    final Object result = JField.jFieldX(object, XLString.of("_privateField"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field is not visible.
+   */
+  @Test
+  public void testPrivateField3() {
+    final Object result = JField.jStaticField(XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject"),
+        XLString.of("PRIVATE_FIELD"));
+    assertSame(result, XLError.Null);
+  }
+
+  /**
+   * Tests the case where the field is not visible.
+   */
+  @Test
+  public void testPrivateField4() {
+    final Object result = JField.jStaticFieldX(XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject"),
+        XLString.of("PRIVATE_FIELD"));
+    assertSame(result, XLError.Null);
+  }
 
   /**
    *

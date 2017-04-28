@@ -14,11 +14,11 @@ public final class XLArray implements XLReference {
   /** The underlying array */
   private final XLValue[][] _array;
   /** True if the array is a row */
-  private boolean _isRow;
+  private final boolean _isRow;
   /** True if the array is a column */
-  private boolean _isColumn;
+  private final boolean _isColumn;
   /** True if the array is an area */
-  private boolean _isArea;
+  private final boolean _isArea;
 
   /**
    * @param valueRange
@@ -26,26 +26,32 @@ public final class XLArray implements XLReference {
    */
   private XLArray(final XLValue[][] valueRange) {
     _array = valueRange;
+    boolean isRow;
+    boolean isColumn;
+    boolean isArea;
     if (valueRange.length == 1) {
-      _isRow = true;
-      _isColumn = false;
-      _isArea = false;
+      isRow = true;
+      isColumn = false;
+      isArea = false;
     } else {
-      _isRow = false;
-      _isColumn = true;
+      isRow = false;
+      isColumn = true;
       for (final XLValue[] array : valueRange) {
         if (array.length > 1) {
-          _isColumn = false;
+          isColumn = false;
           break;
         }
       }
-      _isArea = !_isColumn;
+      isArea = !isColumn;
     }
+    _isRow = isRow;
+    _isColumn = isColumn;
+    _isArea = isArea;
   }
 
   /**
    * Static factory method to create an instance of XLArray.
-   * 
+   *
    * @param array
    *          a two dimensional array containing XLValues
    * @return an instance
@@ -64,7 +70,7 @@ public final class XLArray implements XLReference {
 
   /**
    * Returns true if this array represents a row.
-   * 
+   *
    * @return true if the array is a row
    */
   public boolean isRow() {
@@ -73,7 +79,7 @@ public final class XLArray implements XLReference {
 
   /**
    * Returns true if this array represents a column.
-   * 
+   *
    * @return true if the array is a column
    */
   public boolean isColumn() {
@@ -82,7 +88,7 @@ public final class XLArray implements XLReference {
 
   /**
    * Returns true if this array is neither a row nor column.
-   * 
+   *
    * @return true if the array is an area
    */
   public boolean isArea() {

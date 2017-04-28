@@ -4,6 +4,7 @@
 package com.mcleodmoores.xl4j.v1.javacode;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertSame;
 import static org.testng.Assert.assertTrue;
 
 import org.testng.annotations.BeforeTest;
@@ -11,6 +12,7 @@ import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLObject;
 import com.mcleodmoores.xl4j.v1.api.values.XLString;
@@ -18,7 +20,7 @@ import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject;
 
 /**
- *
+ * Unit tests for {@link JMethod#jMethod(XLObject, XLString, XLValue...)}.
  */
 public class JMethodTest {
   private static final XLString CLASS = XLString.of("com.mcleodmoores.xl4j.v1.javacode.testutils.TestObject");
@@ -41,6 +43,39 @@ public class JMethodTest {
     assertTrue(xlValue instanceof XLObject);
     _testObjectReference = (XLObject) xlValue;
     _testObject = (TestObject) ExcelFactory.getInstance().getHeap().getObject(_testObjectReference.getHandle());
+  }
+
+  /**
+   * Tests the result when the method cannot be found.
+   */
+  @Test
+  public void testNoMethod() {
+    final XLValue stringReference = JConstruct.jconstruct(XLString.of("java.lang.StringBuilder"), XLString.of("builder"));
+    assertTrue(stringReference instanceof XLObject);
+    final Object methodResult = JMethod.jMethod((XLObject) stringReference, XLString.of("noMethodCalledThis"), new XLValue[0]);
+    assertSame(methodResult, XLError.Null);
+  }
+
+  /**
+   * Tests wrong number of arguments.
+   */
+  @Test
+  public void testWrongNumberOfArguments() {
+    final XLValue stringReference = JConstruct.jconstruct(XLString.of("java.lang.StringBuilder"), XLString.of("builder"));
+    assertTrue(stringReference instanceof XLObject);
+    final Object methodResult = JMethod.jMethod((XLObject) stringReference, XLString.of("toString"), XLNumber.of(10), XLNumber.of(20));
+    assertSame(methodResult, XLError.Null);
+  }
+
+  /**
+   * Tests wrong type of arguments.
+   */
+  @Test
+  public void testWrongTypeOfArguments() {
+    final XLValue stringReference = JConstruct.jconstruct(XLString.of("java.lang.StringBuilder"), XLString.of("builder"));
+    assertTrue(stringReference instanceof XLObject);
+    final Object methodResult = JMethod.jMethod((XLObject) stringReference, XLString.of("substring"), XLString.of("A"));
+    assertSame(methodResult, XLError.Null);
   }
 
   /**

@@ -29,12 +29,12 @@ public class ConcurrentHeap implements Heap {
 
   private static final int MILLIS_PER_SECOND = 1000;
   private static final int BYTES_IN_64BITS = 8;
+  private static final int MAX_COLLECTION_COUNT = 3;
   private final ConcurrentHashMap<Long, Object> _handleToObj;
   private final ConcurrentIdentityHashMap<Object, Long> _objToHandle;
   private final ConcurrentHashMap<Long, Integer> _handleToCollectCount;
   private final AtomicLong _sequence;
   private long _snapHandle;
-  private int _maxCollectionCount = 3;
 
   // TODO: Need some sort of check-pointing as current GC won't work without freezing sheet operations. #44
   /**
@@ -54,13 +54,13 @@ public class ConcurrentHeap implements Heap {
         final NetworkInterface networkInterface = networkInterfaces.nextElement();
         final byte[] hardwareAddress = networkInterface.getHardwareAddress();
         final byte[] extendedTo64bits = new byte[BYTES_IN_64BITS];
-        if (hardwareAddress != null) {
+        if (hardwareAddress == null) {
+          baseHandle = new SecureRandom().nextLong();
+        } else {
           // we assume the hardware address is going to be 6 bytes, but we handle if it isn't, but top out at 8 bytes
           System.arraycopy(hardwareAddress, 0, extendedTo64bits, 0, Math.min(hardwareAddress.length, BYTES_IN_64BITS));
           final ByteBuffer byteBuffer = ByteBuffer.wrap(extendedTo64bits);
           baseHandle = byteBuffer.getLong();
-        } else {
-          baseHandle = new SecureRandom().nextLong();
         }
       } else {
         baseHandle = new SecureRandom().nextLong();
@@ -78,9 +78,7 @@ public class ConcurrentHeap implements Heap {
   @Override
   public long getHandle(final Object object) {
     final Long key = _objToHandle.get(object);
-    if (key != null) {
-      return key;
-    } else {
+    if (key == null) {
       synchronized (object) { // should be low contention at least, can we get rid of this lock?
         // check no one snuck in while we were waiting with the same object.
         final Long keyAgain = _objToHandle.get(object);
@@ -96,6 +94,8 @@ public class ConcurrentHeap implements Heap {
         _objToHandle.put(object, newKey);
         return newKey;
       }
+    } else {
+      return key;
     }
   }
 
@@ -105,10 +105,10 @@ public class ConcurrentHeap implements Heap {
   @Override
   public Object getObject(final long handle) {
     final Object object = _handleToObj.get(handle);
-    if (object != null) {
-      return object;
-    } else {
+    if (object == null) {
       throw new XL4JRuntimeException("Cannot find object with handle " + handle);
+    } else {
+      return object;
     }
   }
 
@@ -137,12 +137,12 @@ public class ConcurrentHeap implements Heap {
         continue; // skip as we might have missed it in our scan because it was created after we started
       }
       if (Arrays.binarySearch(activeHandles, next.getKey()) < 0) {
-        Integer count = _handleToCollectCount.get(next.getKey());
+        final Integer count = _handleToCollectCount.get(next.getKey());
         if (count == null) {
           // we start counting how many times this has been flagged for collection
           _handleToCollectCount.put(next.getKey(), 1);
           LOGGER.trace("Started count for handle " + Long.toUnsignedString(next.getKey()) + " at 1");
-        } else if (count < _maxCollectionCount) {
+        } else if (count < MAX_COLLECTION_COUNT) {
           LOGGER.trace("Increasing count for handle " + Long.toUnsignedString(next.getKey()) + " to " + count + 1);
           _handleToCollectCount.put(next.getKey(), count + 1);
         } else {
@@ -170,17 +170,16 @@ public class ConcurrentHeap implements Heap {
 
   @Override
   public String toString() {
-    final StringBuilder sb = new StringBuilder();
-    sb.append("WorksheetHeap[\n");
+    final StringBuilder sb = new StringBuilder("WorksheetHeap[\n");
     for (final Entry<Long, Object> entry : _handleToObj.entrySet()) {
       final String number = Long.toUnsignedString(entry.getKey());
       sb.append("  ");
       sb.append(number);
       sb.append(" = > ");
       sb.append(entry.getValue().toString());
-      sb.append("\n");
+      sb.append('\n');
     }
-    sb.append("]");
+    sb.append(']');
     return sb.toString();
   }
 }

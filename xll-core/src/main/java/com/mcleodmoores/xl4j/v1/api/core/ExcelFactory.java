@@ -23,7 +23,7 @@ public final class ExcelFactory {
     final String property = System.getProperty(TEST_PROPERTY_NAME);
     if (property == null) {
       s_testMode = false;
-    } else if (property.toUpperCase().startsWith("T")) {
+    } else if (property.toUpperCase().charAt(0) == 'T') {
       s_testMode = true;
     } else {
       s_testMode = false;

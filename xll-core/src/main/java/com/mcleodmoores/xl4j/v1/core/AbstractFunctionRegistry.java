@@ -222,54 +222,49 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
       final Collection<Class<?>> classesAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
     for (final Class<?> clazz : classesAnnotatedWith) {
-      try {
-        final boolean isAbstract = Modifier.isAbstract(clazz.getModifiers());
-        XLNamespace namespaceAnnotation = null;
-        final String className = clazz.getSimpleName();
-        if (clazz.isAnnotationPresent(XLNamespace.class)) {
-          namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
-        }
-        final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
-        final boolean useClassName = classAnnotation.prefix() == null || classAnnotation.prefix().isEmpty();
-        if (!isAbstract) {
-          // build the constructor invokers
-          final Constructor<?>[] constructors = clazz.getConstructors();
-          int count = 1;
-          for (final Constructor<?> constructor : constructors) {
-            if (constructor.getAnnotation(XLFunction.class) != null) {
-              // this will already have been registered, so skip
-              continue;
-            }
-            final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, useClassName, count);
-            definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
-            count++;
-          }
-        }
-        // build the method invokers
-        final Method[] methods = clazz.getMethods();
-        final Map<String, Integer> methodNames = new HashMap<>();
-        for (final Method method : methods) {
-          if (method.getAnnotation(XLFunction.class) != null) {
+      final boolean isAbstract = Modifier.isAbstract(clazz.getModifiers());
+      XLNamespace namespaceAnnotation = null;
+      final String className = clazz.getSimpleName();
+      if (clazz.isAnnotationPresent(XLNamespace.class)) {
+        namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
+      }
+      final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
+      final boolean useClassName = classAnnotation.prefix() == null || classAnnotation.prefix().isEmpty();
+      if (!isAbstract) {
+        // build the constructor invokers
+        final Constructor<?>[] constructors = clazz.getConstructors();
+        int count = 1;
+        for (final Constructor<?> constructor : constructors) {
+          if (constructor.getAnnotation(XLFunction.class) != null) {
             // this will already have been registered, so skip
             continue;
           }
-          final String methodName = method.getName();
-          if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
-            LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
-            continue;
-          }
-          if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
-            continue;
-          }
-          final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
-          methodNames.put(methodName, methodNameCount);
-          final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
-              useClassName, true, methodNameCount);
-          definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+          final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, useClassName, count);
+          definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+          count++;
         }
-      } catch (final Exception e) {
-        LOGGER.error("Exception while creating function definition for class " + clazz, e);
-        continue;
+      }
+      // build the method invokers
+      final Method[] methods = clazz.getMethods();
+      final Map<String, Integer> methodNames = new HashMap<>();
+      for (final Method method : methods) {
+        if (method.getAnnotation(XLFunction.class) != null) {
+          // this will already have been registered, so skip
+          continue;
+        }
+        final String methodName = method.getName();
+        if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
+          LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
+          continue;
+        }
+        if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
+          continue;
+        }
+        final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
+        methodNames.put(methodName, methodNameCount);
+        final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
+            useClassName, true, methodNameCount);
+        definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
       }
     }
     return definitions;
@@ -342,13 +337,13 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
     if (namespace != null) {
       functionName.append(namespace.value());
     }
-    if (!constant.name().isEmpty()) {
-      functionName.append(constant.name());
-    } else {
+    if (constant.name().isEmpty()) {
       functionName.append(className);
+    } else {
+      functionName.append(constant.name());
     }
     if (appendFieldName) {
-      functionName.append(".");
+      functionName.append('.');
       functionName.append(fieldName);
     }
     return functionName.toString();
@@ -360,16 +355,16 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
     if (namespace != null) {
       functionName.append(namespace.value());
     }
-    if (!nameOrPrefix.isEmpty()) {
+    if (nameOrPrefix.isEmpty()) {
+      functionName.append(className);
+    } else {
       functionName.append(nameOrPrefix);
       if (appendClassName) {
         functionName.append(className);
       }
-    } else {
-      functionName.append(className);
     }
     if (appendMethodName) {
-      functionName.append(".");
+      functionName.append('.');
       functionName.append(methodName);
     }
     if (methodNumber != 1) {
@@ -385,13 +380,13 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
     if (namespace != null) {
       functionName.append(namespace.value());
     }
-    if (!nameOrPrefix.isEmpty()) {
+    if (nameOrPrefix.isEmpty()) {
+      functionName.append(className);
+    } else {
       functionName.append(nameOrPrefix);
       if (appendClassName) {
         functionName.append(className);
       }
-    } else {
-      functionName.append(className);
     }
     if (constructorNumber != 1) {
       functionName.append("_$");

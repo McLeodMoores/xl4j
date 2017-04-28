@@ -272,9 +272,8 @@ public final class CdsTradeDetails {
     final LocalDate effectiveDate = businessDayConvention.adjustDate(calendar, getPrevIMMDate(tradeDate));
     final LocalDate nextIMM = getNextIMMDate(tradeDate);
     final LocalDate maturity = nextIMM.plus(parsePeriod(tenor));
-    final ISDAPremiumLegSchedule paymentSchedule = new ISDAPremiumLegSchedule(effectiveDate, maturity, paymentInterval, stubType,
+    return new ISDAPremiumLegSchedule(effectiveDate, maturity, paymentInterval, stubType,
         businessDayConvention, calendar, true);
-    return paymentSchedule;
   }
 
   /**

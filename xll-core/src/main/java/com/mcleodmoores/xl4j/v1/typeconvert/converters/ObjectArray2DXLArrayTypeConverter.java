@@ -86,7 +86,6 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
   @Override
   public Object toJavaObject(final Type expectedType, final Object from) {
     ArgumentChecker.notNull(from, "from");
-    final XLArray xlArr = (XLArray) from;
     Type componentType = null;
     if (expectedType instanceof Class) {
       // TODO making sure it's reduced to a non-array type is not nice here but otherwise the array creation produced a 3D array
@@ -101,6 +100,7 @@ public final class ObjectArray2DXLArrayTypeConverter extends AbstractTypeConvert
     } else {
       throw new XL4JRuntimeException("expectedType not array or GenericArrayType");
     }
+    final XLArray xlArr = (XLArray) from;
     final XLValue[][] arr = xlArr.getArray();
     final Object[][] targetArr = (Object[][]) Array.newInstance(XL4JReflectionUtils.reduceToClass(componentType), arr.length,
         arr.length > 0 ? arr[0].length : 0);
