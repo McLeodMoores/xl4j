@@ -29,7 +29,7 @@ public class SimulatedExcel implements Excel {
   private final ExcelFunctionCallHandler _excelCallHandler;
   private final ReflectiveInvokerFactory _invokerFactory;
   private final TypeConverterRegistry _typeConverterRegistry;
-  private final MockExcelFunctionRegistry _rawCallback;
+  private final MockExcelFunctionEntryAccumulator _rawCallback;
 
   /**
    * Create an instance of the Excel interface suitable for testing.
@@ -40,7 +40,7 @@ public class SimulatedExcel implements Excel {
     _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
     _functionRegistry = new ReflectiveFunctionRegistry(_invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
-    _rawCallback = new MockExcelFunctionRegistry();
+    _rawCallback = new MockExcelFunctionEntryAccumulator();
     _excelCallback = new DefaultExcelCallback(_rawCallback);
   }
 

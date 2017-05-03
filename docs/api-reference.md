@@ -4,6 +4,7 @@ API Reference
  - [Annotations](#annotations)
    - [@XLNamespace](#xlnamespace)
    - [@XLFunction](#xlfunction)
+   - [@XLFunctions](#xlfunctions)
    - [@XLParameter](#xlparameter)
    - [@XLConstant](#xlconstant)
  - [The type system](#the-type-system)
@@ -27,8 +28,8 @@ API Reference
    - [List of default converters](#list-of-default-converters)
  
    
-## Annotations
-### @XLNamespace
+# Annotations
+## @XLNamespace
 This annotation applies at the class level and specifies a prefix to be prepended to all `@XLFunction` annotated functions within
 the specificied class.  This allows you to easily add, for example, a company-specific prefix to all your functions, and to easily
 change it.  For example, in the xll-java project, there are functions for creating java objects and calling methods, etc.  These use
@@ -49,7 +50,7 @@ public final class JConstruct {
 As you can see, the annotations takes a single argument which defines the namespace prefix to be used.  In this case, the resulting
 new user defined function is called using `JConstruct`.
 
-### @XLFunction
+## @XLFunction
 This annotation applies at the method level, and is used to indicate methods that implement new user-defined functions (UDFs) that should
 be registered with Excel.  There are an number of argument to enable different features:
 
@@ -69,8 +70,15 @@ be registered with Excel.  There are an number of argument to enable different f
 | `isManualAsynchronous` | `boolean` | No | `false` | Register an asynchronous function, but handle the callback manually.  This is not currently supported and is just the same as `isAutoAsynchronous`.  It should not currently be used. |
 | `isCallerRequired` | `boolean` | No | `false` | Tell the add-in to pass the caller information (the cell reference the calculation is taking place in, for example) as the first parameter to the method.  This is not currently supported and should not be used. |
 
+## @XLFunctions
+This annotation is similar to `@XLFunction` but applies at the class level.  It is used to indicate that all methods and constructors
+in the class implement Excel user-defined functions using the arguments specified at the class level (the same parameters as for 
+`@XLFunction` except `name`, `description` and `helpTopic`).  The name will be generated from the Constructor or method name by
+capitalising the first character, e.g. myMethod becomes MyMethod.  To override the these arguments for specific methods, simply use 
+`@XLFunction` on the method or constructor in question.  Note that in this case the `@XLFunction` will not 'inherit' values from the
+enclosing `@XLFunctions`, all required parameters must be stated again, even if they're the same.
 
-### @XLParameter
+## @XLParameter
 This annotation applies to parameters to the method implementing a user-defined function (which should have been annotated with 
 `@XLFunction`) and is used to supply meta-data about each parameter to Excel during function registration.  Below is a list of the
 available annotation arguments.
@@ -82,7 +90,7 @@ available annotation arguments.
 | `optional` | `boolean` | No | `false` | Whether the argument should be considered optional.  Optional parameters will be passed as `null` if not provided otherwise an Exception will be thrown. |
 | `referenceType` | `boolean` | No | `false` | This indicates whether an argument should be registered as being a reference type (e.g. an `XLLocalReference` or `XLMultiReferences` or `XLArray` byref. This will probably only work with commands rather than functions and hasn't been tested. |
 
-### @XLConstant
+## @XLConstant
 This annotation can be applied either to fields, or to classes.  If applied to public fields, it will register a user-defined function
 of the same name that returns the value of the field.  If applied to a class, it will register user-defined functions for all public
 fields of the class.
@@ -95,7 +103,7 @@ fields of the class.
 | `helpTopic` | 'String' | No | `""` | The help topic under which this function should appear in Excel help. |
 | `typeConversionMode` | `TypeConversionMode` | No | `TypeConversionMode` `.SIMPLEST_RESULT` | Indicates to the Java/Excel type  conversion system what type of type conversions are desired.  Options are `SIMPLEST_RESULT`, which converts results into the most  primitive type possible (e.g. an Excel Number `XLNumber` rather than a java.lang.Double object handle); `OBJECT_RESULT`, which forces the type conversion system to return an object handle (possibly boxing the value) and; `PASSTHROUGH`, which is used only by the type conversion system itself when performing conversions recursively (e.g. on the elements on an array) to avoid types being converted more than once. |
 
-## The type system
+# The type system
 XL4J includes a set of immutable Java types that directly mirror the types used by Excel natively and these types are mapped to and 
 from the C union known as `XLOPER12` that is defined by the Excel SDK when calls cross from Java to and from the native code part of 
 the add-in.  
@@ -110,8 +118,8 @@ debugging.  They also all extend the `XLValue` interface, which, beyond acting a
 defines a visitor pattern `accept()` method to make it more efficient to implement functionality that depends on the supplied type 
 than a chain of `instanceof` checks.
 
-### Core types
-#### XLNumber
+## Core types
+### XLNumber
 This wraps a number type.  This can be any double-precision floating point number, but note that Excel does not support cells containing
 `Inf` (infinity) or `NaN` (not-a-number) and sub-normals are truncated to zero.  See `XLError` instances.  It is important to 
 understand that Excel represents percentages, integers, accountancy amounts, even dates, as a formatting issue - the underlying
@@ -132,7 +140,7 @@ float f = xlNumber.getAsFloat();
 double d = xlNumber.getAsDouble(); // same as getValue()
 ```
 
-##### Dates and times
+#### Dates and times
 **Dates** and **times** are actually represented using `XLNumber` - the number represents the number of days since either 0th January
 1900 (yes, the day before 1st January 1900, there is a reason of sorts!) or 0th January 1904, depending on whether the worksheet is in
 1900 or 1904 mode.  
@@ -147,7 +155,7 @@ done for efficiency reasons in Lotus 1-2-3, because it means you can every forth
 
 See the section on type converters for details on conversion of `Date` and Java 8/JSR-310 types `LocalDate` and `LocalDateTime`.
 
-#### XLString
+### XLString
 This wraps a string type.  This can be a unicode string up to 32K characters long.  Some typical uses:
 
 ```java
@@ -159,7 +167,7 @@ if (xlString.isObject()) { // String has object handle prefix
 System.out.println(xlString.toString());
 ```
 
-#### XLBoolean
+### XLBoolean
 This wraps a boolean, and is implemented as a Java `enum`.  It still implements `XLValue` so remains part of the class heirarchy.
 ```java
 XLBoolean xlBooleanT = XLBoolean.TRUE;
@@ -185,7 +193,7 @@ if (converted.getValue()) {
 }
 ```
 
-#### XLArray
+### XLArray
 This type represents an Excel array of either one or two dimensions.  Excel has two ways of specifying an array as an input to a
 function.  One is explicit, using  curly brackets and comma-separated list syntax `{1, 2, 3}`, which is quite rarely used, or a range 
 of the form A1:B2.  A range is not necessarily an array, and if the parameter is registered as a reference type, a range will be passed
@@ -218,7 +226,7 @@ XLValue[][] arr = xlArray.getArray();
 assert arr = xlValueArr; // it's not a copy so take 'immutable' with a pinch of salt.
 ```
 
-#### XLError
+### XLError
 This type is an enum containing the different errors excel functions can return.  For Java, currently exception level information is 
 viewed via the Java log file (see [Logging](https://github.com/McLeodMoores/xl4j/blob/master/docs/logging.md)), although in future
 the intention is to allow per-cell Java exceptions to be accessed more easily (via a function and/or and context sensitive inspector 
@@ -243,14 +251,14 @@ try {
 }
 ```
 
-#### XLNil
+### XLNil
 This type represents an empty worksheet cell and is implemented as a Java `enum` with a single value `INSTANCE`.   As with other enums,
 it remains part of the `XLValue` class heirarchy.
 ```java
 XLValue value = XLNil.INSTANCE;
 ```
 
-#### XLBigData
+### XLBigData
 This type is a strange beast that presently you can probably safely ignore.  It was introduced into Excel to store binary data on a
 worksheet, which sounds really useful.  The problem is that it only works on the current selected worksheet (i.e. where it stores data
 is specific to the GUI state) making it much less useful.  Originally `XLBigData` was crafted to store and retrieve serialized objects
@@ -276,7 +284,7 @@ XLBigData xlBigDataBinary2 - XLBigData.of("Hello"); // serialized data of string
 xlBigDataBinary2.getValue().equals("Hello"); // deserialize binary data
 ```
 
-#### XLLocalReference
+### XLLocalReference
 This type represents a single block of cells on the currently selected worksheet.  It directly maps from the `XLOPER12` type
 `zltypeSRef`.  In itself, it is probably of limited use, and is really included for completeness.  In most cases this will be
 coerced (type converted in the native part of the add-in using the `xlCoerce` API call) into an `XLMultiReference`, which includes
@@ -300,7 +308,7 @@ XLLocalReference xlLocalRef2 = XLLocalReference.of(singleCell);
 assert singleCell == xlLocalRef2.getRange();
 ```
 
-#### XLMultiReference
+### XLMultiReference
 This type represents one or more ranges of cells selected on a particular worksheet.  It directly maps from the `XLOPER12` type
 `zltypeMRef`.  It can be passed into user defined functions from Excel as a way of referring to cells by reference, the alternative
 being `XLArray`, which is effectively by value.  The idea is then that you can call back into Excel's API to put/set elements of the 
@@ -340,7 +348,7 @@ assert ranges2.isSingleRange() == false;
 assert ranges2.getSingleRange() == singleCell; // probably should throw exception in this case, but doesn't
 ```
 
-#### XLMissing
+### XLMissing
 This type represents a missing argument in a parameter list.  As the type converter will generally convert this to a `null` if the 
 function isn't expecting an `XLValue`, it's of limited use, but will likely be more useful once a callback API is available.  It is
 implemented as a singleton `enum` called `INSTANCE`.
@@ -349,8 +357,8 @@ implemented as a singleton `enum` called `INSTANCE`.
 XLValue value = XLMissing.INSTANCE;
 ```
 
-### Associated types
-#### XLRange
+## Associated types
+### XLRange
 This type represents a contiguous range of cells in Excel.  It uses the R1C1 style of cell reference in that the column and row are
 denoted by an index rather than the column being a letter or letters (the A1 style of cell reference).  It simply takes the top left 
 and bottom right indexes of the corners of the contiguous rectangular area inclusive.  Utility methods are included for quickly 
@@ -382,7 +390,7 @@ assert blockRange.isSingleRow() == false;
 assert blockRange.isSingleColumn() == false;
 ```
 
-#### XLSheetId
+### XLSheetId
 This type simply wraps an integer ID of a given worksheet.  It is supplied embedded in an `XLMultiReference` but will become more
 useful as an argument once API access is available.
 
@@ -391,15 +399,16 @@ XLSheetId id = XLSheetId.of(1);
 assert id.getSheetId() == 1;
 ```
 
-#### XLObject 
+### XLObject 
 This is not a direct analogue of an Excel type, but rather a special case of an `XLString` class that encodes an object handle prefixed
 with a special character sequence that it is difficult to enter manually, thus minimizing the possibility of invalid handles being
 present.  The object is formed of two parts, a class, which can be supplied as a `Class<?>` type or a `String`, and a 64-bit `long` 
 handle.  The class is just used as a prefix to the handle to provide a visual indication to the user of what type of object the 
 handle represents, which is considerably more helpful than just having a long number.  The handle is used to identify the actual
-java object this cell is referring to, which is actually stored in an instance of `Heap`, which is in the `com.mcleodmoores.xl4j.heap`
-package and is accessible via the `Excel` singleton.  The type conversion system will handle object handles transparently so for the 
-most part, no explicit use of `XLObject` is required, but it is used internally and may be used explicitly if required.
+java object this cell is referring to, which is actually stored in an instance of `Heap`, which is in the 
+`com.mcleodmoores.xl4j.v1.api.core` package and is accessible via the `Excel` singleton.  The type conversion system will handle 
+object handles transparently so for the most part, no explicit use of `XLObject` is required, but it is used internally and may be 
+used explicitly if required.
 ```
 long handle = 1L;
 XLObject xlObject = XLObject.of(Map.class, 1);
@@ -414,7 +423,7 @@ XLObject xlObject = XLObject.of(jFrame.getClass(), heap.getHandle(jFrame));
 JFrame JFrameBack = (JFrame) heap.getObject(xlObject.getHandle());
 ```
 
-## Type converters
+# Type converters
 To make it easier to work with normal and custom Java types there is a sophisticated type conversion system in place to marshall data
 automatically from Excel types to Java types and back again.  This mostly works transparently as far as the developer and user are
 concerned but there are times it will be useful to add your own custom type converters.  For example, you might want an Excel array
@@ -480,7 +489,7 @@ other converters and more easily be raised and lowered more easily if required. 
 of a black art, but as a rule of thumb, use the default level unless you run into issues and then raise it if necessary.  Low prioriy
 converters are used for the most generic conversions such as `Object` to `XLObject`.
 
-### List of default converters
+## List of default converters
 
 | Priority | Converter Class | Excel Class | Java Type |
 |----------|-----------------|-----------------|---------------|

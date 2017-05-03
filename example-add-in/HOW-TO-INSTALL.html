@@ -1,0 +1,158 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      th, td {
+        vertical-align: top;
+        padding : 8px
+      }
+    </style>
+  </head>
+  <body>
+    <div class="jumbotron text-center">
+    <h1>XL4J Example Add-in</h1>
+    <p>Installation Instructions</p>
+    </div>
+    <div class="container-fluid">
+	<p>To install this add-in, you can either run the add-in one-off, in which case
+      it won't open each time you run Excel, or by using the Excel add-in manager to 
+      install the add-in so it runs each time you run Excel.
+    </p>
+	<h2>Do you have 32-bit or 64-bit Excel?</h2>
+    <p>Firstly you need to determine if you have 32-bit or 64-bit office installed.
+	If you don't know, you probably have the 32-bit version installed, but if you
+	want to check, you can find out by:
+	<ol>
+      <li>Start Microsoft Excel</li>
+      <li>Click the File tab in the ribbon</li>
+      <li>Then click Account</li>
+      <li>On the right, you should seee an About button</li>
+      <li>Click on the About button and you should see either 32-bit or 64-bit
+          on the right of the version number.</li>
+    </ol>
+	</p>
+
+    <h2>Installing a Java Runtime Environment</h2>
+    <p>You must have a (free) Java Runtime Environment installed.  This can be 
+      downloaded from:</p>
+    <div class="well">
+      <a href="https://www.java.com/en/download/manual.jsp">https://www.java.com/en/download/manual.jsp</a>
+	</div>
+    <p>It is important that you choose the correct version.  If you're using a 32-bit
+      version of office, install the 32-bit JRE (they're often not labelled as 32-bit
+      so just look for the downloads that are not labelled 64-bit).</p>
+
+    <h2>Installing in Excel</h2>
+    <p>The XLL file can be found in:<p>
+    <div class="well">
+	  <table>
+	    <tr>
+	      <td><code>bin-x86\excel.xll</code></td><td>if you're using a 32-bit Excel</td>
+        </tr>
+	    <tr>
+          <td><code>bin-x64\excel.xll</code></td><td>if you're using a 64-bit Excel</td>
+	    </tr>
+	  </table>
+	</div>
+	<p>Again, if you don't know if your version of Excel is 32-bit or 64-bit, it's 
+      probably 32-bit.</p>
+    <p>You can just double-click on these XLL files to run the add-in for just one
+      session, but usually you'd want to make it so that the add-in would be 
+      available every time you start Excel. To do that you need to open the Excel
+      add-in manager:</p>
+    <ol>
+	  <li>Start Microsoft Excel</li>
+      <li>Click the File tab in the ribbon</li>
+      <li>Then click Options</li>
+      <li>Click Add-ins in the left panel</li>
+      <li><p>At the bottom, you will see:</p>
+	  <div class="well">
+	  Manage: <button class="btn btn-default btn-xs">Excel Add-ins <span class="glyphicon glyphicon-chevron-down"></span></button> <button class="btn-xs">Go...</button>
+	  </div>
+	   <p>Click the <button class="btn-xs">Go...</button> button</p></li>
+      <li>The Add-ins available list will show currently installed Add-ins.  Add
+        the appropriate XLL file by clicking <button class="btn-xs">Browse...</button> and 
+		navigating to the right <code>excel.xll</code> file (see above), and choose 
+		<button class="btn-xs">OK</button>.</li>
+      <li>You should get a pop-up box saying Thanks for installing XL4J and a new
+          entry in the list labelled XL4J.  If you do not see that, or see 'excel'
+          in the list, see the troubleshooting section.</li>
+      <li>Click <button class="btn-xs">OK</button> to close the Window.
+	</ol>
+    <p>You should now be able to use XL4J.  To check it's loaded try using one of
+	  the example sheets or just test the <code>MyAdd</code> function by putting:
+    <div class="well">
+    <code>=MyAdd(1,2)</code>
+	</div>
+    <p>in any cell.  If you see 3, the Add-in has loaded correctly.  If you see
+      <code>#NAME</code>, then see the troubleshooting section.</p>
+    <p>See the user guide for information about how to use the add-in.</p>
+
+    <h2>Troubleshooting</h2>
+    <p>Things to check if you have problems installing:</p>
+    <ul>
+	  <li><p>If when you add the add-in, you get a pop-up dialog box that says:</p>
+	  <div class="well">
+      <cite>"The file format and extension of 'excel.xll' don't match.  The file
+        could be corrupted or unsage.  Unless you trust its source, don't
+        open it.  Do you want to open it anyway".</cite>
+	  </div>
+      <p>you are probably trying to load/run the add-in from within a zip
+        archive.  Make sure you unzip the download by right-clicking and
+        choosing "Extract All..." in Windows File Explorer.</p>
+      <li>Have you installed an add-in that corresponds to the version of Excel
+        you haver?  32-bit excel should use the add-in in the bin-x86 directory.</p>
+      <li>Check the Java Runtime you have installed corresponds to the version
+        of Excel/the add-in you have.  32-bit Excel requires a 32-bit JRE or
+        JDK, 64-bit Excel requires a 64-bit JRE or JDK.  You cannot (currently)
+        use a 64-bit JDK from a 32-bit Excel or vice-versa.</p>
+      <li>Check that you have not tried to install more than one add-in based on
+        XL4J at the same time.  Currently you can't do this because of JVM 
+        limitations (one JVM per process), although we intend to support it in
+        future versions.  If you have, try uninstalling the other add-in.
+        It's actually possible to merge the functionality of two add-ins by 
+        add-in the lib directory of one to the other (assuming they're based
+        on the same underlying version of XL4J).</li>
+      <li><p>Occasionally a bug in Excel can lead to it getting confused about old
+        add-ins.  This step should only be done after consulting with your 
+        local administrator.</p>
+        <p>First, make sure you close down Excel completely.   Then you need to 
+        open the registry editor (regedit.exe): search for it via the start
+        menu if you're not familiar.  Once it's open, find the key (which look
+        like folders) under:</p>
+        <div class="well">
+        <code>HKEY_CURRENT_USER\SOFTWARE\Microsoft\Office\&lt;<i>internal version number</i>&gt;\Excel</code>
+		</div>
+        <p>where &lt;<i>internal version number</i>&gt; is:</p>
+		<div class="well">
+		<table>
+		  <tr>
+		    <th>&lt;<i>internal version number</i>&gt;</th>
+			<th>Public version</th>
+	      </tr>
+		  <tr>
+            <td>16.0</td><td>Excel 2016</td>
+		  </tr>
+		  <tr>
+            <td>15.0</td><td>Excel 2013</td>
+	      </tr>
+		  <tr>
+            <td>14.0</td><td>Excel 2010</td>
+          </tr>
+		</table>  
+		</div>
+		<p>then look under the 'Add-in Manager' key and you will see the 
+          installed add-ins.  If any entries end with excel.xll (you might need 
+          to make the 'Name' column wider to see the end), you should remove 
+          them by right-clicking and choosing 'Delete'.</p>
+        <p>Also check the 'Options' key and if there's a key called 'OPEN' whose
+          value refers to excel.xll (again, you might need to make the Data 
+          column wider to be able to see) you should delete it too, again by 
+          right clicking and choosing 'Delete'.</p>
+        <p>You should then restart Excel and try the installation procedure 
+          again.</p>
+      </li>
+	</div>
+  </body>
+</html>

@@ -37,13 +37,13 @@ to track down build issues by building the solution in visual studio though.
 
 ## 64-bit support
 We have maintained a 64-bit build since the beginning and included code that should handle the differences, but it's important to note 
-it's currently completely untested and so is likely to be non-functional at the moment.  The intention is to fully qualify 64-bit support
-in later versions and that's likely to be driven by demand, so speak up if it matters to you!
+it's currently not regularly tested, although when we have tried it, it has worked without issues.  The intention is to fully qualify 
+64-bit support in later versions and that's likely to be driven by demand, so speak up if it matters to you!
 
 ## Unicode
-You may find evidence of ANSI/ASCII support in the code too - originally there were ASCII/ANSI variants of each build but we've decided to
-ditch that for Unicode only support.  Most of the code still uses the TCHAR types and functions that work as either ASCII or Unicode 
-builds but over time we'll migrate away from that.
+You may find evidence of ANSI/ASCII support in the code too - originally there were ASCII/ANSI variants of each build but we've 
+decided to ditch that for Unicode only support.  Most of the code still uses the TCHAR types and functions that work as either ASCII or
+Unicode builds but over time we'll migrate away from that.
 
 # Opening in VS2015
 You can open the native code solution simply by opening the `comjvm.sln` file in Visual Studio.  This will open all the projects that
