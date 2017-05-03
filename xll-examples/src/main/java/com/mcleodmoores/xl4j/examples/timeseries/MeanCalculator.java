@@ -15,8 +15,8 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 @XLFunctions(
     prefix = "Mean",
     typeConversionMode = TypeConversionMode.SIMPLEST_RESULT,
-    category = "Time Series",
-    description = "Calculates the arithmetic mean of a time series")
+    description = "Calculates the arithmetic mean of a time series",
+    category = "Time Series")
 public class MeanCalculator implements TimeSeriesFunction<Double> {
 
   @Override
