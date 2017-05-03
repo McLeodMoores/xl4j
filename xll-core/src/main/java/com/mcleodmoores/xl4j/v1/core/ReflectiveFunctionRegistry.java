@@ -152,7 +152,7 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     try {
       addDefinitions(getFunctionsForTypes(invokerFactory, reflections.getTypesAnnotatedWith(XLFunctions.class)), registeredFunctionNames);
     } catch (final Exception e) {
-      LOGGER.error("Exceptions while scanning XLFunctions-annotated methods", e);
+      LOGGER.error("Exception while scanning XLFunctions-annotated classes", e);
     }
     try {
       final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);

@@ -34,7 +34,7 @@ import com.mcleodmoores.xl4j.v1.typeconvert.converters.IntegerXLNumberTypeConver
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.PrimitiveDoubleXLNumberTypeConverter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.StringXLStringTypeConverter;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
-import com.mcleodmoores.xl4j.v1.xll.XLLAccumulatingFunctionRegistry;
+import com.mcleodmoores.xl4j.v1.xll.NativeExcelFunctionEntryAccumulator;
 
 /**
  * Unit tests for {@link DefaultExcelFunctionCallHandler}.
@@ -97,7 +97,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -120,7 +120,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -142,7 +142,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -163,7 +163,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -184,7 +184,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -209,7 +209,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -230,7 +230,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -255,7 +255,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();
@@ -276,7 +276,7 @@ public class DefaultExcelFunctionCallHandlerTest {
         .build();
     final InvokerFactory invokerFactory = new ReflectiveInvokerFactory(EXCEL, TYPE_CONVERTERS);
     final ExcelFunctionCallHandler handler = new DefaultExcelFunctionCallHandler(registry, HEAP);
-    final ExcelCallback callback = new DefaultExcelCallback(new XLLAccumulatingFunctionRegistry());
+    final ExcelCallback callback = new DefaultExcelCallback(new NativeExcelFunctionEntryAccumulator());
     registry.createAndRegisterFunctions(invokerFactory);
     registry.registerFunctions(callback);
     final Collection<FunctionDefinition> definitions = registry.getFunctionDefinitions();

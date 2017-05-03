@@ -16,8 +16,8 @@ import com.mcleodmoores.xl4j.v1.api.core.ExcelFunctionCallHandler;
 import com.mcleodmoores.xl4j.v1.api.values.XLError;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
-import com.mcleodmoores.xl4j.v1.xll.XLLAccumulatingFunctionRegistry;
-import com.mcleodmoores.xl4j.v1.xll.XLLAccumulatingFunctionRegistry.LowLevelEntry;
+import com.mcleodmoores.xl4j.v1.xll.NativeExcelFunctionEntryAccumulator;
+import com.mcleodmoores.xl4j.v1.xll.NativeExcelFunctionEntryAccumulator.FunctionEntry;
 
 /**
  * A mock function processor that allows Excel functions to be tested in Java.
@@ -38,7 +38,7 @@ public final class MockFunctionProcessor {
   }
 
   private final Excel _excel = ExcelFactory.getInstance();
-  private final LowLevelEntry[] _entries;
+  private final FunctionEntry[] _entries;
   private final ExcelFunctionCallHandler _excelCallHandler;
 
   /**
@@ -46,7 +46,7 @@ public final class MockFunctionProcessor {
    */
   private MockFunctionProcessor() {
     _excel.getFunctionRegistry().registerFunctions(_excel.getExcelCallback());
-    final XLLAccumulatingFunctionRegistry excelFunctionRegistry = (XLLAccumulatingFunctionRegistry) _excel.getExcelCallback()
+    final NativeExcelFunctionEntryAccumulator excelFunctionRegistry = (NativeExcelFunctionEntryAccumulator) _excel.getExcelCallback()
         .getLowLevelExcelCallback();
     _entries = excelFunctionRegistry.getEntries();
     _excelCallHandler = _excel.getExcelCallHandler();
@@ -64,7 +64,7 @@ public final class MockFunctionProcessor {
   public XLValue invoke(final String functionName, final XLValue... args) {
     final List<Integer> exportNumbers = new ArrayList<>();
     // might have more than one function called the same thing
-    for (final LowLevelEntry entry : _entries) {
+    for (final FunctionEntry entry : _entries) {
       if (entry._functionWorksheetName.equals(functionName)) {
         exportNumbers.add(entry._exportNumber);
       }

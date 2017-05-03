@@ -67,7 +67,15 @@ See the user guide for information about how to use the add-in.
 Troubleshooting
 ===============
 Things to check if you have problems installing:
+  * If when you add the add-in, you get a pop-up dialog box that says:
 
+    "The file format and extension of 'excel.xll' don't match.  The file
+     could be corrupted or unsage.  Unless you trust its source, don't
+     open it.  Do you want to open it anyway".
+
+    you are probably trying to load/run the add-in from within a zip
+    archive.  Make sure you unzip the download by right-clicking and
+    choosing "Extract All..." in Windows File Explorer.
   * Have you installed an add-in that corresponds to the version of Excel
     you haver?  32-bit excel should use the add-in in the bin-x86 directory.
   * Check the Java Runtime you have installed corresponds to the version
