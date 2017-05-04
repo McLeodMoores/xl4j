@@ -23,6 +23,15 @@ with include and library paths and so on. To create these artifacts, we are  usi
 (http://github.com/McLeodMoores/maven-native-packaging) Maven plug-in, created especially for this project.  See the `examples` 
 directory in that project for example packaging files.
 
+How it works is that maven pulls the native dependencies from the maven repository in the same way it usually handles Java JARs 
+and unpacks them in `comjvm-win32\target\dependency`.  That directory then typically contains:
+
+| Path     | Description      |
++----------+------------------+
+| include  | Header files     |
+| lib-i386 | 32-bit libraries |
+| lib-x64  | 64-bit libraries |
+
 When maven has pulled and expanded the artifacts, it triggers the build by invoking the `build.bat` file.  This batch file simply 
 invokes msbuild for each configuration (you can speed up the build by choosing to edit this batch file and skip some configurations).
 There are currently four configurations built:
@@ -36,9 +45,9 @@ Note that any errors at this stage are stored in a log file in the target folder
 to track down build issues by building the solution in visual studio though.
 
 ## 64-bit support
-We have maintained a 64-bit build since the beginning and included code that should handle the differences, but it's important to note 
-it's currently not regularly tested, although when we have tried it, it has worked without issues.  The intention is to fully qualify 
-64-bit support in later versions and that's likely to be driven by demand, so speak up if it matters to you!
+We have maintained a 64-bit build since the beginning and included code that should handle the differences, but it's currently not
+regularly tested, although when we have tried it, it has worked without issues.  The intention is to fully qualify 64-bit support 
+in later versions and that's likely to be driven by demand, so speak up if it matters to you!
 
 ## Unicode
 You may find evidence of ANSI/ASCII support in the code too - originally there were ASCII/ANSI variants of each build but we've 
