@@ -27,7 +27,7 @@ How it works is that maven pulls the native dependencies from the maven reposito
 and unpacks them in `comjvm-win32\target\dependency`.  That directory then typically contains:
 
 | Path     | Description      |
-+----------+------------------+
+|----------|------------------|
 | include  | Header files     |
 | lib-i386 | 32-bit libraries |
 | lib-x64  | 64-bit libraries |
