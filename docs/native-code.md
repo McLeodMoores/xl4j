@@ -108,6 +108,7 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
       file on every query, so it's important to cache settings in local classes if they're frequently accessed, which will need 
       flushing if the configuration is changed.
     - Register for some calculation handling events, used for handling asynchronous call cancellations.
+    - Create an Excel<->COM type converter for later use using the type library information.
     - Register some commands.  Commands are no-argument functions invoked by a user action or event.
     - Schedule for Excel to call one of these commands, `RegisterSomeFunctions` in 100ms.
     - Put the environment into the STARTED state.
@@ -159,7 +160,8 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
     - We then create an asynchronous call handler and save it in a local member for when we need to call back Excel to notify it
       of a completed auto-asynchronous function call.
   - After 100ms, Excel will invoke the command `RegisterSomeFunctions`.  The stub for this is in `Excel.cpp`, but calls into 
-    `JvmEnvironment::_RegisterSomeFunctions()`.  This polls the `FunctionRegistry` (native) to ask if the scan is complete.  If
+    `JvmEnvironment::_RegisterSomeFunctions()`.  This polls the `FunctionRegistry` (native) to ask if the scan is complete, which 
+    is determined by whether or not there is a SAFEARRAY been set on the member by the `Scan()` COM method.  If
     not, we schedule another call to this command in a short time.  Eventually, the registration will have completed, at which 
     point we can tell the `FunctionRegistry` to register some functions.
       - The `RegsiterFunctions` method will run for a maximum time of (currently) 100ms before returning.  If there are more functions
@@ -172,3 +174,37 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
   - Once all functions have been registered, rather than scheduling more calls to `RegsiterSomeFunctions`, a call to `GarbageCollect`
     is scheduled to periodically perform some incremental garbage collection.
     
+Now all the functions have been registered, Excel will allow the user to call them.  So how does that work?
+  - We define all functions as taking a varargs list of any excel type.
+  - We create a large number of exported symbols, which get allocated one per user-defined function.  These symbols are named
+    `UDF_1`, `UDF_2`, ..., `UDF_2999`.  Each of these is backed by a stub implementation which simply passes it's export number to
+    a single function (`UDF`), along with all of it's arguments.  This single UDF function then passes this data on to the `_UDF` method
+    of the `JVMEnvironment` object.
+  - The `_UDF' method iterates over the arguments, using the registration metadata (which it can look up using the export number) to
+    determine the number of arguments.
+  - It creates a COM `SAFEARRAY` of `VARIANT` of the correct length (possibly including an async handle extra parameter).
+  - It then gets the COM<->Java type converter from the add-in environment we created at start-up and uses it to convert each argument
+    into a COM equivalent `VARIANT` compatible type, which is then added to the `SAFEARRAY`.
+  - Any excess xlNils are trimmed off the array.
+  - Create an ICall instance using the JVM interface.  This will typically be an instance of CCall.  An instance is cached in 
+    thread-local storage where possible.
+  - Call either `Call()` or `AsyncCall()` depending on whether the function is asynchronous or not, passing in the array, export
+    number and a pointer to a `VARIANT` result (not the latter in the asynchronous case, which returns immediately).
+  - In the synchronous case, the result, which will be a `VARIANT`, will be converted to an Excel type using the converter and passed
+    back to Excel as the method returns.
+
+Within the `Call()` or `AsyncCall()` methods, it creates a `CCallExecutor` instance, which is queued on the JVM thread queue and
+eventually, the `Run()` method is called, again in the same was as with `CCollectExector` and `CScanExecutor`.  This `Run()` method
+is passed the JVM environment so it can now access JNI functions.  It uses a lazy-initialised `JniCache` object to minimise the 
+number of calls to `FindClass`, `GetMethodID` and so on (which should eventually be used by the other *Executor classes).
+
+The arguments to `Call()` and `AsyncCall()` are both the export number and `SAFEARRAY` of `VARIANT`.  These are converted into 
+appropriate Java objects using the `ComJavaConverter` class in the `local` project.  This uses the `JniCache` to create instances
+of the classes in `com.mcleodmoores.xl4j.v1.api.values.\*` and add them to an `Object[]` for passing to Java.  Once all the arguments
+are processed, the method `invoke` on the instance of `ExcelFunctionCallHandler` returned by the `Excel` instance, is called.  The
+`Excel` instance is returned by the `ExcelFactory.getInstance()` factory method and cached after first invocation.  The returned Java
+handle is then converted back to a COM `VARIANT` type, again using the `ComJavaConverter`, and returned back to the caller (again 
+over a COM boundary, so possibly over a remote or non-local call).
+
+If the result is asynchrnous, the caller will not be waiting, so we can now use the `AsyncCallHandler` object we created in the 
+AddInEnvironment back at start-up.
