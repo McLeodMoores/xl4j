@@ -22,9 +22,9 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 public class ForwardQuarterlyScheduleFunctionV2 implements ScheduleFunctionV2 {
 
   /**
-   * Restricted constructor for registration example.
+   * Public constructor.
    */
-  ForwardQuarterlyScheduleFunctionV2() {
+  public ForwardQuarterlyScheduleFunctionV2() {
   }
 
   @Override

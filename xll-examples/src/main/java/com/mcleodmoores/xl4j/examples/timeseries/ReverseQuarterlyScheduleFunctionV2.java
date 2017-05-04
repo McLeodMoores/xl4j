@@ -20,7 +20,7 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 @XLFunctions(
     prefix = "ReverseQuarterly",
     typeConversionMode = TypeConversionMode.OBJECT_RESULT,
-    description = "Generates a quarterly schedule from the start to end date",
+    description = "Generates a quarterly schedule from the end to start date",
     category = "Schedule")
 public class ReverseQuarterlyScheduleFunctionV2 implements ScheduleFunctionV2 {
 

@@ -7,21 +7,12 @@ import java.util.Collections;
 
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
-import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
-import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Generates a quarterly schedule from the end date to start date inclusive. The series is returned
  * with increasing dates.
  */
-@XLNamespace("Schedule.")
-@XLFunctions(
-    prefix = "ForwardQuarterly",
-    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
-    description = "Generates a quarterly schedule from the start to end date",
-    category = "Schedule")
 public class ReverseQuarterlyScheduleFunctionV1 implements ScheduleFunctionV1 {
 
   @Override
