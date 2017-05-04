@@ -32,8 +32,10 @@ and unpacks them in `comjvm-win32\target\dependency`.  That directory then typic
 | lib-i386 | 32-bit libraries |
 | lib-x64  | 64-bit libraries |
 
-When maven has pulled and expanded the artifacts, it triggers the build by invoking the `build.bat` file.  This batch file simply 
-invokes msbuild for each configuration (you can speed up the build by choosing to edit this batch file and skip some configurations).
+Note that there is not currently any facility for having both debug and release builds of libraries hosted at the same time.
+
+Once maven has pulled and expanded the artifacts, it triggers the build by invoking the `build.bat` file.  This batch file simply 
+invokes `msbuild` for each configuration (you can speed up the build by choosing to edit this batch file and skip some configurations).
 There are currently four configurations built:
 
  - Debug/Win32
@@ -41,13 +43,13 @@ There are currently four configurations built:
  - Debug/Win64
  - Release/Win64
  
-Note that any errors at this stage are stored in a log file in the target folder (see the batch file).  It's usually more convenient
+Any errors at this stage are stored in a log file in the target folder (see the batch file).  It's usually more convenient
 to track down build issues by building the solution in visual studio though.
 
 ## 64-bit support
-We have maintained a 64-bit build since the beginning and included code that should handle the differences, but it's currently not
-regularly tested, although when we have tried it, it has worked without issues.  The intention is to fully qualify 64-bit support 
-in later versions and that's likely to be driven by demand, so speak up if it matters to you!
+A 64-bit build has been maintained since the beginning and included code that should handle the differences, but it's currently not
+regularly tested, although when it was tested for the first time recently, it worked without issues.  The intention is to fully 
+qualify 64-bit support in later versions and that's likely to be driven by demand, so speak up if it matters to you!
 
 ## Unicode
 You may find evidence of ANSI/ASCII support in the code too - originally there were ASCII/ANSI variants of each build but we've 
@@ -70,4 +72,64 @@ make up the add-in.
 | utils | Utility classes such as the logging system, date and file handling, etc, that are more general utilities not specific to XL4J | excel-test | Unit tests for excel |
 | core-test | Unit tests for core |
 | local-test | Unit tests for local and utils |
+
+## Code style
+The code is mostly C++ written in a C-like style, so more "C with classes" than modern C++.  There are a few reasons for this:
+
+  * JNI is a C library
+  * The Excel XLL interface is C-based
+  * Native COM is C-based
+  * Pure Win32 calls are usually faster than going via the C++ standard library
+  
+You may also see some use of hungarian notation.  While of questionable utility, we generally follow the conventions found in some
+of the initial code and general samples from Microsoft.  This is Windows software and uses so many Microsoft specific technologies
+and products, it will never be portable.
+
+Apart from a couple of places, error/success values and returned using the `HRESULT` type rather than relying on C++ exception 
+handlers.
+
+A JavaDoc-style format for comments is preferred.
+
+# How it works
+The initial entry point is in the `excel` project in `Excel.cpp` in the `xlAutoOpen()` function, which is called when Excel first opens
+a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
+  - Manually load the DLLs required.  This is necessary because the add-in directory is not in the DLL search path.  Normally DLLs
+    would be loaded automatically but in this case they are not as the linker was set to delay load the required DLLs which means
+    they're loaded on demand.  If we load them manually we can specify where they are.  It's possible to determine this by looking
+    up the path of the current module (excel.xll in our case) and constructing relative paths for the other DLLs and loading them
+    explicitly using `LoadLibrary()`.
+  - Perform some version checks.
+  - Initialise COM.
+  - Create an `CAddinEnvironment` instance and call `Start()` on it which:
+    - Puts the add-in environment in a STARTING state.
+    - Loads the COM type library, necessary for using the COM type defined in the `core` project (see `core.idl`), implementation 
+      are split between the `core` and `local` projects.
+    - Read settings from .INI file and initialise the logging system and any global settings.  Most settings are read from the .INI
+      file on every query, so it's important to cache settings in local classes if they're frequently accessed, which will need 
+      flushing if the configuration is changed.
+    - Register for some calculation handling events, used for handling asynchronous call cancellations.
+    - Register some commands.  Commands are no-argument functions invoked by a user action or event.
+    - Schedule for Excel to call one of these commands, `RegisterSomeFunctions` in 100ms.
+    - Put the environment into the STARTED state.
+  - Create a `CJvmEnvironment` and call `Start()` on it which:
+    - Puts the JVM environment in a STARTING state.
+    - Put up the splash screen.
+    - Create a thread running the function `BackgroundJvmThread()` that starts up the JVM.  The JVM environment is passed as an 
+      argument.
+    - Create a thread running the function `BackgroundWatchdogThread()` which closes the splash screen if Excel gets stuck 
+      (revealing any hidden dialogs).
+  - Return control to Excel.  It is important that xlAutoOpen not run for too long, which is why we go to all this performance of
+    creating background threads to start the JVM.  Failure to start quickly will result in Excel black-listing the add-in and 
+    disabling it.
+  - In the background, the JVM thread progresses concurrently with Excel's main event thread:
+    - Acquires a RW lock (enabling multi-threaded access to the JVM object).
+    - Create a JVM wrapper object (`Jvm.cpp` in the `excel` project).  This wrapper reads in classpath data from the .INI config file,
+      creates a JVM template (which defines the characteristics required by the JVM) and creates the JVM object itself using an
+      IJvmConnector instance.  In this case that connector instance is created using `ComJvmCreateLocalConnector`, but will 
+      eventually use the standard COM `CoCreateInstance()` function to create a class object.
+    - Once the JVM is up, we create a `FunctionRegsitry`, passing it the JVM and call `Scan()`
+      - `Scan()` creates an `IScan` instance by calling the factory method on the JVM.  `IScan` defines the interface to a single 
+        method COM object `CScan` in the `local` project that queues an Executor (in this case `CScanExecutor`) for dispatch on the JVM.
+      - This queue and JVM is implemented in the `jni` project - the majority of the code is in `SlaveThread.cpp`.
+        
 
