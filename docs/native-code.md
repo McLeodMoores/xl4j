@@ -122,14 +122,53 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
     creating background threads to start the JVM.  Failure to start quickly will result in Excel black-listing the add-in and 
     disabling it.
   - In the background, the JVM thread progresses concurrently with Excel's main event thread:
-    - Acquires a RW lock (enabling multi-threaded access to the JVM object).
     - Create a JVM wrapper object (`Jvm.cpp` in the `excel` project).  This wrapper reads in classpath data from the .INI config file,
       creates a JVM template (which defines the characteristics required by the JVM) and creates the JVM object itself using an
       IJvmConnector instance.  In this case that connector instance is created using `ComJvmCreateLocalConnector`, but will 
       eventually use the standard COM `CoCreateInstance()` function to create a class object.
+      - After some plumbing and unpacking of the template, the connector ends up in `JNICreateJavaVMA()` which prepares the 
+        JVM arguments and creates another thread (JNIMainThreadProc in `JavaVM.cpp` in the `jni` project) that actually starts the 
+        JVM with the appropriate JNI call and waits for execution jobs to be dispatched to it.  The connector then waits for that 
+        thread to start up.  Actually, that thread spawns a pool of threads running `JNISlaveThread` that can each take execution
+        jobs and run them in the JVM.
     - Once the JVM is up, we create a `FunctionRegsitry`, passing it the JVM and call `Scan()`
       - `Scan()` creates an `IScan` instance by calling the factory method on the JVM.  `IScan` defines the interface to a single 
         method COM object `CScan` in the `local` project that queues an Executor (in this case `CScanExecutor`) for dispatch on the JVM.
-      - This queue and JVM is implemented in the `jni` project - the majority of the code is in `SlaveThread.cpp`.
-        
-
+      - This queue and JVM is implemented in the `jni` project - the majority of the code is in `SlaveThread.cpp` (the JNISlaveThread
+        mentioned above).
+      - So the slave thread pulls an executor it's internal queue.  The `Run` method in the executor is called with the JNI
+        environment as an argument, giving it's implementation access to the JVM API.  In this case we look up a large number of
+        class handles, method IDs and invoke static factory methods to invoke `registerFunctions()` on the `FunctionRegistry` (on the
+        Java side this time).  
+        - The Java `FunctionRegistry` will scan for `@XLFunction` and `@XLFunctions` annotations, build up some data structures and
+          eventually call a NativeExcelFunctionEntryAccumulator, which creates an array of objects with all the function meta-data
+          pre-prepared for fast and easy extraction via JNI.
+      - We then call `getEntries()` using JNI to get an array of FunctionEntry objects.
+      - We then convert this Java array, element by element into a COM SAFEARRAY of a user-defined struct type called 
+        FUNCTIONINFO (defined in core.idl, we have to use it's record ID, which get via the COM type library).
+      - We then set this SAFEARRAY as the result member on the executor object.  The executor and slave thread then wake up
+        the caller, who is waiting on a semaphore.
+      - The `Scan()` method can now read the executors result member and return it to the caller, with the SAFEARRAY possibly
+        being marshalled via a network or non-local COM sub-system.
+      - The caller, the `FunctionRegistry` (native-side class), just copies the array and keeps it ready to be interrogated.  It 
+        will be consumed by Excel in chunks as we will see later.
+    - Now in a very similar way as for function registration, a garbage collector COM interface instance is created, this time by 
+      calling the `CreateCollect()` method on the JVM object.  In this case we pass this into a `GarbageCollector` instance for 
+      invocation at a future moment, but when it is invoked, it is a similar mechanism of using a `CCollect` object and associated
+      `CCollectExecutor` to run on the JVM thread pool.
+    - We then create an asynchronous call handler and save it in a local member for when we need to call back Excel to notify it
+      of a completed auto-asynchronous function call.
+  - After 100ms, Excel will invoke the command `RegisterSomeFunctions`.  The stub for this is in `Excel.cpp`, but calls into 
+    `JvmEnvironment::_RegisterSomeFunctions()`.  This polls the `FunctionRegistry` (native) to ask if the scan is complete.  If
+    not, we schedule another call to this command in a short time.  Eventually, the registration will have completed, at which 
+    point we can tell the `FunctionRegistry` to register some functions.
+      - The `RegsiterFunctions` method will run for a maximum time of (currently) 100ms before returning.  If there are more functions
+        to register it will schedule another call from Excel after a brief delay.  This allows Excel to continue event processing
+        without being blocked and allows us to register functions over a longer period than normal.
+      - The `RegsiterFunctions` method works by maintaining internal state and keep track of execution time by checking the Windows
+        performance counter (`QueryPerformanceCounter`).  Once it gets a function to register, it simply unpacks the struct
+        and makes a call to the native XLL Excel12() function with the command `xlfRegister`, which is used to register new user-defined
+        functions.
+  - Once all functions have been registered, rather than scheduling more calls to `RegsiterSomeFunctions`, a call to `GarbageCollect`
+    is scheduled to periodically perform some incremental garbage collection.
+    
