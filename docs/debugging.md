@@ -89,7 +89,7 @@ There's no `Add-ins` tab, which means that the add-in hasn't been registered. On
 
 ![Third image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-3.png)
 
-Although other schedule functions have been registered, we still can't see either of our functions. The first thing to do is to check that the functions were registered on the Java side. We go to the `Add-ins` tab and open the Java log (note that the logging level is `INFO` - if the logging level is set to be higher than this, then the settings must be changed and Excel restarted **TODO link to settings doc**). There is a section that shows the names of the functions that have been registered (shown in a cut down form in the image below):
+Although other schedule functions have been registered, we still can't see either of our functions. The first thing to do is to check that the functions were registered on the Java side. We go to the `Add-ins` tab and open the Java log (note that the logging level is `INFO` - if the logging level is set to be higher than this, then the settings must be changed and Excel restarted **TODO link to settings doc**). There is a section that shows the names of the functions that have been registered (shown with some registrations removed):
 
 ![Fourth image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-4.png)
 
@@ -238,13 +238,13 @@ However, when we try to call the `Schedule.ForwardNMonths.apply` function, it do
 
 ![Ninth image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-8.png)
 
-This is because the `@XLFunction` annotation takes precedence over the `@XLFunctions`, which prevents the same method from being registered twice. The `apply` method has been registered as `Schedule.GenerateForwardNMonthsSchedule`. Using this function name, the schedule can be generated.
+This is because the `@XLFunction` annotation takes precedence over `@XLFunctions`, which prevents the same method from being registered twice. The `apply` method has been registered as `Schedule.GenerateForwardNMonthsSchedule`. Using this function name, the schedule can be generated.
 
 ![Tenth image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/fixed-function-2.png)
 
 ![Eleventh image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-call-1.png)
 
-As we don't intend to call the `andThen` method for this calculator, we've removed the class-level annotation:
+As we don't intend to call the `andThen` method for this calculator, we've removed the class-level annotation and added an annotation for the constructor (very important: the object can't be constructed otherwise):
 
 ``` java
 /**
@@ -258,7 +258,13 @@ public class ForwardNMonthsScheduleFunctionV2 implements ScheduleFunctionV2 {
    * @param n
    *          the number of months in the interval
    */
-  public ForwardNMonthsScheduleFunctionV2(final int n) {
+  @XLFunction(
+      name = "ForwardNMonths",
+      typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+      description = "Generates a schedule from the start to end date",
+      category = "Schedule")
+  public ForwardNMonthsScheduleFunctionV2(
+      @XLParameter(name = "Number of months") final int n) {
     _n = n;
   }
 
