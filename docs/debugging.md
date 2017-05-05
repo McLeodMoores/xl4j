@@ -66,6 +66,9 @@ public class ReverseQuarterlyScheduleFunction implements ScheduleFunctionV1 {
 ```
 These classes can be found on the `examples-for-docs` branch in the `xll-examples` project.
 
+# General note about errors
+It can sometimes be hard to work out if an error is coming from Excel or the add-in itself. It's worth noting that errors returned from XL4J are the `#NULL!` error type. Excel only returns this type of error "when you refer to an intersection of two ranges that do not intersect". As a general rule of thumb, therefore, any errors other than `#NULL!` are because there's an error in the formula (including the too many parameters to an XL4J function; see **TODO section link**), division by zero, etc., and `#NULL!` is an error from XL4J if there are no ranges referenced in the formula.
+
 # The function is missing
 After the plugin has been built with these new classes, the next step is to try to use them. However, when we try to use the reverse quarterly function in Excel, the function name doesn't appear in the suggestions:
 
@@ -265,7 +268,7 @@ This section uses a class that performs simple adjustments on a `Schedule` that 
 
 ``` java
 @XLNamespace(value = "Schedule.")
-public final class ScheduleAdjuster {
+public final class ScheduleAdjusterV1 {
 
   @XLFunction(
       name = "ScheduleAdjuster",
@@ -310,6 +313,7 @@ public final class ScheduleAdjuster {
   public Schedule withMonthOffset(
       @XLParameter(name = "months") final int months,
       @XLParameter(name = "daysPerMonth", optional = true) final Integer daysPerMonth) {
+    ArgumentChecker.notNegative(daysPerMonth, "The number of days per month cannot be negative");
     final Schedule adjusted = new Schedule();
     if (daysPerMonth != null) {
       for (final LocalDate date : _schedule) {
@@ -325,7 +329,7 @@ public final class ScheduleAdjuster {
 
   @XLFunction(
       name = "IntersectTimeSeries",
-      typeConversionMode = TypeConversionMode.OBJECT_RESULT)
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
   public TimeSeries intersectTimeSeries(
       @XLParameter(name = "ts") final TimeSeries ts) {
     final TimeSeries result = TimeSeries.newTimeSeries();
@@ -357,10 +361,81 @@ but the lines above show what the problem is. The arguments to the function are 
 
 ![Successful instance call 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-instance-call-1.png)
 
-## Wrong number of arguments
-## Optional arguments
+## Too many arguments
+
+If a function is called with too many arguments:
+
+![Too many arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-1.png)
+
+then Excel itself will return a `#VALUE!` error:
+
+![Too many arguments 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-2.png)
+
+According to the Excel help page, this error means "There's something wrong with the way your formula is typed." Unfortunately, there is no way to get a more detailed error for these type of problems.
+
+## Too few arguments
+
+We have already seen the effect of inadvertently supplying too few arguments when calling an instance function. A `#NULL!` error is returned
+
+![Too few arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-few-arguments-1.png)
+
+and there is a message in the log showing the arguments that were supplied and the number that were expected:
+
+![Too few arguments 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-few-arguments-2.png)
+
+Unless some or all of the arguments to a method or constructor are `Optional` (** TODO link to section**), an argument of `XLMissing` shows that the wrong number of arguments were provided.
+
 ## Wrong argument type
-## Unexpected return type
+
+## Optional arguments
+
+Optional arguments to XL4J functions are provided to functions in the same was as for other Excel functions - if the optional argument is in the middle of a list of arguments, the value can be left empty (e.g. `=FUNC(A1,A2,,,A3)`). If the last argument is optional, then either `=FUNC(A1,A2,)` or `=FUNC(A1,A2)` will work.
+
+The `withMonthOffset` function in our schedule adjuster takes an optional argument (the number of days per month). This function works if we provide a value for this field:
+
+![Successful optional argument 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-optional-argument-1.png)
+
+but not if it's left out:
+
+![Failed optional argument 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-1.png)
+
+Looking in the log, we can see the issue. 
+
+![Failed optional argument 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-2.png)
+
+Missing values are passed into Java methods / constructors as `null`. However, this value is dereferenced before any check for null. If we change the method to check the value of `daysPerMonth` only after a `null` check:
+
+``` java
+  @XLFunction(
+      name = "WithMonthOffset",
+      typeConversionMode = TypeConversionMode.OBJECT_RESULT)
+  public Schedule withMonthOffset(
+      @XLParameter(name = "months") final int months,
+      @XLParameter(name = "daysPerMonth", optional = true) final Integer daysPerMonth) {
+    final Schedule adjusted = new Schedule();
+    if (daysPerMonth != null) {
+      ArgumentChecker.notNegative(daysPerMonth, "The number of days per month cannot be negative");
+      for (final LocalDate date : _schedule) {
+        adjusted.add(date.plusDays(daysPerMonth * months));
+      }
+    } else {
+      for (final LocalDate date : _schedule) {
+        adjusted.add(date.plusMonths(months));
+      }
+    }
+    return adjusted;
+  }
+```
+then the function returns a schedule:
+
+![Successful optional argument 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-optional-argument-2.png)
+
+In this case, `null` was allowed as an input to the method because the type was `Integer`. If this is replaced by `int`, an exception is thrown before the method is called:
+
+![Failed optional argument 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-3.png)
+
+
+## Unexpected value returned to Excel
 
 # The function does not complete as expected
 ## Logging output
