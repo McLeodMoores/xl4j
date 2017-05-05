@@ -341,7 +341,7 @@ public final class ScheduleAdjusterV1 {
   }
 
 ```
-and has mutator methods that offset the dates in the schedule by a fixed amouht, and a method that performs an intersection with a time series.
+and has mutator methods that offset the dates in the schedule by a fixed amount, and a method that performs an intersection with a time series.
 
 ## Calling an instance method
 
