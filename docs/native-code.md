@@ -2,7 +2,7 @@ Native code structure
 =====================
 
 # Overview
-Many developers will not need to ever build the native code portion of XL4J and will usually consume the pre-built biniaries by pulling
+Many developers will not need to ever build the native code portion of XL4J and will usually consume the pre-built binaries by pulling
 in zip files using Maven and expanding them into the final packaging folder, but for those interested in contributing new low level 
 features, adding custom native functionality (e.g. native UDFs for extra performance), this guide is for you.
 
@@ -19,8 +19,7 @@ both VS2013 and VS2015.
 
 Once you have Visual Studio installed, Maven will detect that and find and download all the libraries and SDKs you need, pre-packaged 
 by us as Maven artifacts.  This frees the you from needing to install a range of SDKs and libraries in specific locations and fiddle
-with include and library paths and so on. To create these artifacts, we are  using the [maven-native-packaging]
-(http://github.com/McLeodMoores/maven-native-packaging) Maven plug-in, created especially for this project.  See the `examples` 
+with include and library paths and so on. To create these artifacts, we are  using the ![maven-native-packaging](http://github.com/McLeodMoores/maven-native-packaging) Maven plug-in, created especially for this project.  See the `examples` 
 directory in that project for example packaging files.
 
 How it works is that maven pulls the native dependencies from the maven repository in the same way it usually handles Java JARs 
@@ -44,7 +43,7 @@ There are currently four configurations built:
  - Release/Win64
  
 Any errors at this stage are stored in a log file in the target folder (see the batch file).  It's usually more convenient
-to track down build issues by building the solution in visual studio though.
+to track down build issues by building the solution in Visual Studio, though.
 
 ## 64-bit support
 A 64-bit build has been maintained since the beginning and included code that should handle the differences, but it's currently not
@@ -65,11 +64,11 @@ make up the add-in.
 |--------------|-------------|
 | excel | Covers the XLL add-in interface between Excel and XL4J.  It is this project that handles incoming function calls, lifecycle calls and defines objects to encapsulate the state and lifecycle of the Add-in. |
 | core | Defines all the COM interfaces used to talk to the JVM, and the common infrastructure classes for the JVM to support Classpaths, JVM discovery, JVM options, and so on. |
-| local | Defines the default implementation of the JVM, and marshalls data to and from COM to Java objects using JNI.  Calls are constructed and handed to the JVM via the `jni` project\`s scheduler |
+| local | Defines the default implementation of the JVM, and marshalls data to and from COM to Java objects using JNI.  Calls are constructed and handed to the JVM via the `jni` project\'s scheduler |
 | jni | Defines the low level call scheduler multiple thread-pools to handle synchronous and asynchronous function calls |
 | settings | Contains the user MFC-based user interface components needed by XL4J, including the Settings dialog, the splash screen, info dialog and update prompt dialogs |
-| helper | Various helper classes that are specific to XL4J. |
-| utils | Utility classes such as the logging system, date and file handling, etc, that are more general utilities not specific to XL4J | excel-test | Unit tests for excel |
+| helper | Various helper classes that are specific to XL4J |
+| utils | Utility classes such as the logging system, date and file handling, etc., that are more general utilities not specific to XL4J | excel-test | Unit tests for excel |
 | core-test | Unit tests for core |
 | local-test | Unit tests for local and utils |
 
@@ -81,9 +80,9 @@ The code is mostly C++ written in a C-like style, so more "C with classes" than 
   * Native COM is C-based
   * Pure Win32 calls are usually faster than going via the C++ standard library
   
-You may also see some use of hungarian notation.  While of questionable utility, we generally follow the conventions found in some
-of the initial code and general samples from Microsoft.  This is Windows software and uses so many Microsoft specific technologies
-and products, it will never be portable.
+You may also see some use of Hungarian notation.  While of questionable utility, we generally follow the conventions found in some
+of the initial code and general samples from Microsoft.  This is Windows software and uses so many Microsoft-specific technologies
+and products; it will never be portable.
 
 Apart from a couple of places, error/success values and returned using the `HRESULT` type rather than relying on C++ exception 
 handlers.
@@ -104,26 +103,26 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
     - Puts the add-in environment in a STARTING state.
     - Loads the COM type library, necessary for using the COM type defined in the `core` project (see `core.idl`), implementation 
       are split between the `core` and `local` projects.
-    - Read settings from .INI file and initialise the logging system and any global settings.  Most settings are read from the .INI
+    - Reads settings from .INI file and initialise the logging system and any global settings.  Most settings are read from the .INI
       file on every query, so it's important to cache settings in local classes if they're frequently accessed, which will need 
       flushing if the configuration is changed.
-    - Register for some calculation handling events, used for handling asynchronous call cancellations.
-    - Create an Excel<->COM type converter for later use using the type library information.
-    - Register some commands.  Commands are no-argument functions invoked by a user action or event.
-    - Schedule for Excel to call one of these commands, `RegisterSomeFunctions` in 100ms.
-    - Put the environment into the STARTED state.
+    - Registers for some calculation handling events, used for handling asynchronous call cancellations.
+    - Creates an Excel<->COM type converter for later use using the type library information.
+    - Registers some commands.  Commands are no-argument functions invoked by a user action or event.
+    - Schedules Excel to call one of these commands, `RegisterSomeFunctions` in 100ms.
+    - Puts the environment into the STARTED state.
   - Create a `CJvmEnvironment` and call `Start()` on it which:
     - Puts the JVM environment in a STARTING state.
-    - Put up the splash screen.
-    - Create a thread running the function `BackgroundJvmThread()` that starts up the JVM.  The JVM environment is passed as an 
+    - Puts up the splash screen.
+    - Creates a thread running the function `BackgroundJvmThread()` that starts up the JVM.  The JVM environment is passed as an 
       argument.
-    - Create a thread running the function `BackgroundWatchdogThread()` which closes the splash screen if Excel gets stuck 
+    - Creates a thread running the function `BackgroundWatchdogThread()` which closes the splash screen if Excel gets stuck 
       (revealing any hidden dialogs).
   - Return control to Excel.  It is important that xlAutoOpen not run for too long, which is why we go to all this performance of
     creating background threads to start the JVM.  Failure to start quickly will result in Excel black-listing the add-in and 
     disabling it.
   - In the background, the JVM thread progresses concurrently with Excel's main event thread:
-    - Create a JVM wrapper object (`Jvm.cpp` in the `excel` project).  This wrapper reads in classpath data from the .INI config file,
+    - Creates a JVM wrapper object (`Jvm.cpp` in the `excel` project).  This wrapper reads in classpath data from the .INI config file,
       creates a JVM template (which defines the characteristics required by the JVM) and creates the JVM object itself using an
       IJvmConnector instance.  In this case that connector instance is created using `ComJvmCreateLocalConnector`, but will 
       eventually use the standard COM `CoCreateInstance()` function to create a class object.
@@ -132,24 +131,24 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
         JVM with the appropriate JNI call and waits for execution jobs to be dispatched to it.  The connector then waits for that 
         thread to start up.  Actually, that thread spawns a pool of threads running `JNISlaveThread` that can each take execution
         jobs and run them in the JVM.
-    - Once the JVM is up, we create a `FunctionRegsitry`, passing it the JVM and call `Scan()`
+    - Once the JVM is up, we create a `FunctionRegistry`, passing it the JVM and call `Scan()`
       - `Scan()` creates an `IScan` instance by calling the factory method on the JVM.  `IScan` defines the interface to a single 
         method COM object `CScan` in the `local` project that queues an Executor (in this case `CScanExecutor`) for dispatch on the JVM.
       - This queue and JVM is implemented in the `jni` project - the majority of the code is in `SlaveThread.cpp` (the JNISlaveThread
         mentioned above).
-      - So the slave thread pulls an executor it's internal queue.  The `Run` method in the executor is called with the JNI
-        environment as an argument, giving it's implementation access to the JVM API.  In this case we look up a large number of
+      - So the slave thread pulls an executor to its internal queue.  The `Run` method in the executor is called with the JNI
+        environment as an argument, giving its implementation access to the JVM API.  In this case we look up a large number of
         class handles, method IDs and invoke static factory methods to invoke `registerFunctions()` on the `FunctionRegistry` (on the
         Java side this time).  
         - The Java `FunctionRegistry` will scan for `@XLFunction` and `@XLFunctions` annotations, build up some data structures and
-          eventually call a NativeExcelFunctionEntryAccumulator, which creates an array of objects with all the function meta-data
+          eventually call a `NativeExcelFunctionEntryAccumulator`, which creates an array of objects with all the function meta-data
           pre-prepared for fast and easy extraction via JNI.
-      - We then call `getEntries()` using JNI to get an array of FunctionEntry objects.
-      - We then convert this Java array, element by element into a COM SAFEARRAY of a user-defined struct type called 
-        FUNCTIONINFO (defined in core.idl, we have to use it's record ID, which get via the COM type library).
+      - We then call `getEntries()` using JNI to get an array of `FunctionEntry` objects.
+      - We then convert this Java array element by element into a COM SAFEARRAY of a user-defined struct type called 
+        FUNCTIONINFO (defined in core.idl, we have to use its record ID, which get via the COM type library).
       - We then set this SAFEARRAY as the result member on the executor object.  The executor and slave thread then wake up
         the caller, who is waiting on a semaphore.
-      - The `Scan()` method can now read the executors result member and return it to the caller, with the SAFEARRAY possibly
+      - The `Scan()` method can now read the executor's result member and return it to the caller, with the SAFEARRAY possibly
         being marshalled via a network or non-local COM sub-system.
       - The caller, the `FunctionRegistry` (native-side class), just copies the array and keeps it ready to be interrogated.  It 
         will be consumed by Excel in chunks as we will see later.
@@ -164,47 +163,47 @@ a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
     is determined by whether or not there is a SAFEARRAY been set on the member by the `Scan()` COM method.  If
     not, we schedule another call to this command in a short time.  Eventually, the registration will have completed, at which 
     point we can tell the `FunctionRegistry` to register some functions.
-      - The `RegsiterFunctions` method will run for a maximum time of (currently) 100ms before returning.  If there are more functions
+      - The `RegisterFunctions` method will run for a maximum time of (currently) 100ms before returning.  If there are more functions
         to register it will schedule another call from Excel after a brief delay.  This allows Excel to continue event processing
         without being blocked and allows us to register functions over a longer period than normal.
-      - The `RegsiterFunctions` method works by maintaining internal state and keep track of execution time by checking the Windows
+      - The `RegisterFunctions` method works by maintaining internal state and keep track of execution time by checking the Windows
         performance counter (`QueryPerformanceCounter`).  Once it gets a function to register, it simply unpacks the struct
         and makes a call to the native XLL Excel12() function with the command `xlfRegister`, which is used to register new user-defined
         functions.
-  - Once all functions have been registered, rather than scheduling more calls to `RegsiterSomeFunctions`, a call to `GarbageCollect`
+  - Once all functions have been registered, rather than scheduling more calls to `RegisterSomeFunctions`, a call to `GarbageCollect`
     is scheduled to periodically perform some incremental garbage collection.
     
 Now all the functions have been registered, Excel will allow the user to call them.  So how does that work?
-  - We define all functions as taking a varargs list of any excel type.
+  - We define all functions as taking a varargs list of any Excel type.
   - We create a large number of exported symbols, which get allocated one per user-defined function.  These symbols are named
-    `UDF_1`, `UDF_2`, ..., `UDF_2999`.  Each of these is backed by a stub implementation which simply passes it's export number to
-    a single function (`UDF`), along with all of it's arguments.  This single UDF function then passes this data on to the `_UDF` method
+    `UDF_0`, `UDF_1`, ..., `UDF_2999`.  Each of these is backed by a stub implementation which simply passes its export number to
+    a single function (`UDF`), along with all of its arguments.  This single UDF function then passes this data on to the `_UDF` method
     of the `JVMEnvironment` object.
-  - The `_UDF' method iterates over the arguments, using the registration metadata (which it can look up using the export number) to
+  - The `_UDF` method iterates over the arguments, using the registration metadata (which it can look up using the export number) to
     determine the number of arguments.
   - It creates a COM `SAFEARRAY` of `VARIANT` of the correct length (possibly including an async handle extra parameter).
   - It then gets the COM<->Java type converter from the add-in environment we created at start-up and uses it to convert each argument
-    into a COM equivalent `VARIANT` compatible type, which is then added to the `SAFEARRAY`.
+    into a COM-equivalent `VARIANT` compatible type, which is then added to the `SAFEARRAY`.
   - Any excess xlNils are trimmed off the array.
   - Create an ICall instance using the JVM interface.  This will typically be an instance of CCall.  An instance is cached in 
-    thread-local storage where possible.
+    thread-local storage after first use.
   - Call either `Call()` or `AsyncCall()` depending on whether the function is asynchronous or not, passing in the array, export
-    number and a pointer to a `VARIANT` result (not the latter in the asynchronous case, which returns immediately).
+    number, and a pointer to a `VARIANT` result (not the latter in the asynchronous case, which returns immediately).
   - In the synchronous case, the result, which will be a `VARIANT`, will be converted to an Excel type using the converter and passed
     back to Excel as the method returns.
 
 Within the `Call()` or `AsyncCall()` methods, it creates a `CCallExecutor` instance, which is queued on the JVM thread queue and
 eventually, the `Run()` method is called, again in the same was as with `CCollectExector` and `CScanExecutor`.  This `Run()` method
-is passed the JVM environment so it can now access JNI functions.  It uses a lazy-initialised `JniCache` object to minimise the 
+is passed the JVM environment so it can now access JNI functions.  It uses a lazily-initialised `JniCache` object to minimise the 
 number of calls to `FindClass`, `GetMethodID` and so on (which should eventually be used by the other *Executor classes).
 
 The arguments to `Call()` and `AsyncCall()` are both the export number and `SAFEARRAY` of `VARIANT`.  These are converted into 
 appropriate Java objects using the `ComJavaConverter` class in the `local` project.  This uses the `JniCache` to create instances
-of the classes in `com.mcleodmoores.xl4j.v1.api.values.\*` and add them to an `Object[]` for passing to Java.  Once all the arguments
+of the classes in ![com.mcleodmoores.xl4j.v1.api.values.\*](https://github.com/McLeodMoores/xl4j/tree/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/api/values) and add them to an `Object[]` for passing to Java.  Once all the arguments
 are processed, the method `invoke` on the instance of `ExcelFunctionCallHandler` returned by the `Excel` instance, is called.  The
 `Excel` instance is returned by the `ExcelFactory.getInstance()` factory method and cached after first invocation.  The returned Java
 handle is then converted back to a COM `VARIANT` type, again using the `ComJavaConverter`, and returned back to the caller (again 
 over a COM boundary, so possibly over a remote or non-local call).
 
-If the result is asynchrnous, the caller will not be waiting, so we can now use the `AsyncCallHandler` object we created in the 
+If the result is asynchronous, the caller will not be waiting, so we can now use the `AsyncCallHandler` object we created in the 
 AddInEnvironment back at start-up.
