@@ -89,6 +89,24 @@ handlers.
 
 A JavaDoc-style format for comments is preferred.
 
+## Strings
+This project contains just about every type of string encoding outside of EBCDIC.  Originally the code supported both ANSI and Unicode
+(i.e. UTF-16) builds, but given the decision not to support version of Excel prior to 2010, there's little point.  Some of the different
+string types and how they're used:
+
+  - Excel uses arrays of XCHAR (16-bit characters in this case) where the first character pointed to is the length.  We NULL terminate
+    these so they can be printed with standard logging without too much trouble.
+  - COM uses BSTR - arrays of 16-bit chars with the length stored *before* the character pointed to by the pointer.  These are usually
+    allocated using `SysAllocString` and `SysFreeString`.  Unfortunately the seemingly useful `_bstr_t` wrapper class can be more
+    trouble than it's worth given it's rather confusing conversions.
+  - MFC based stuff uses CString in places.
+  - Some slightly purer C++ code uses `std::string` and `std::wstring` as well as a type `_std_string` which supports either (a vestage
+    of the ANSI support).
+  - And of course the code uses standard NULL-terminated C-style strings where possible.
+  
+Hopefully over time we can eliminate some of these, perhaps generally moving to std::wstring where possible.  Note that an effort has
+been made to at least use safe string functions with counted bounds.
+
 # How it works
 The initial entry point is in the `excel` project in `Excel.cpp` in the `xlAutoOpen()` function, which is called when Excel first opens
 a sheet.  Assuming the add-in hasn't been initialised by a previous call, we:
@@ -207,3 +225,13 @@ over a COM boundary, so possibly over a remote or non-local call).
 
 If the result is asynchronous, the caller will not be waiting, so we can now use the `AsyncCallHandler` object we created in the 
 AddInEnvironment back at start-up.
+
+## The toolbar
+The toolbar is initialised as part of the start-up sequence in `AddinEnvironment` and works using the `xlcPasteTool` function to
+add icons, embedded as resources, into the toolbar.  Those buttons then call the commands registered, again as part of the start-up
+sequence in `AddinEnvironment`.  In the future it'd be nice (and pretty straightforward) to add extra buttons listed in a section
+of the config .INI file (key = name of function, value = name of image resource).
+
+## The MFC UI part
+This is all in the `settings` project (which should be renamed).  The DLL is built as an MFC extension DLL with a custom `dllmain`.
+Aside from the extension DLL part it's pretty standard MFC code.
