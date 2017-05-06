@@ -217,7 +217,7 @@ number of calls to `FindClass`, `GetMethodID` and so on (which should eventually
 
 The arguments to `Call()` and `AsyncCall()` are both the export number and `SAFEARRAY` of `VARIANT`.  These are converted into 
 appropriate Java objects using the `ComJavaConverter` class in the `local` project.  This uses the `JniCache` to create instances
-of the classes in ![com.mcleodmoores.xl4j.v1.api.values.\*](https://github.com/McLeodMoores/xl4j/tree/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/api/values) and add them to an `Object[]` for passing to Java.  Once all the arguments
+of the classes in ![com.mcleodmoores.xl4j.v1.api.values.*](https://github.com/McLeodMoores/xl4j/tree/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/api/values) and add them to an `Object[]` for passing to Java.  Once all the arguments
 are processed, the method `invoke` on the instance of `ExcelFunctionCallHandler` returned by the `Excel` instance, is called.  The
 `Excel` instance is returned by the `ExcelFactory.getInstance()` factory method and cached after first invocation.  The returned Java
 handle is then converted back to a COM `VARIANT` type, again using the `ComJavaConverter`, and returned back to the caller (again 
