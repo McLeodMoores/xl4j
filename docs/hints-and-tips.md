@@ -24,4 +24,16 @@ Before using array formulas with abandon though, you should consider whether you
 using array formulas very annoying, or, more likely, are completely unfamiliar with them.  You should either plan to survey or 
 train users before moving forward.
 
-An alternative is to use indexed accessor functions.  These pass 
+An alternative is to creat some indexed accessor functions.  With this you return an object handle rather than an array, and then
+pass that into another function to pick out a particular element.  An example is `JSONArray.Get` implemented by the `get(JSONArray, int)`
+method in [com.mcleodmoores.xl4j.examples.rest.JsonFunctions](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/rest/JsonFunctions.java).  
+
+|   |            A            |                     B                   | C |
+|---|-------------------------|-----------------------------------------|---|
+| 1 | =CreateJsonObject()     |                                         |   |
+| 2 | *Using hardcoded index* | *Using computed index (easy to copy)*   |   |
+| 3 | =JSONArray.Get($A$1, 1) | =JSONArray.Get($A$1, ROW() - ROW($A$1)) |   |
+| 4 | =JSONArray.Get($A$1, 2) | =JSONArray.Get($A$1, ROW() - ROW($A$1)) |   |
+| 5 | =JSONArray.Get($A$1, 3) | =JSONArray.Get($A$1, ROW() - ROW($A$1)) |   |
+
+Obviously this can be done in two dimensions as well
