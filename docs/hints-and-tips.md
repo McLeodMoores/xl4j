@@ -32,8 +32,9 @@ method in [com.mcleodmoores.xl4j.examples.rest.JsonFunctions](https://github.com
 |---|-------------------------|-----------------------------------------|---|
 | 1 | =CreateJsonObject()     |                                         |   |
 | 2 | *Using hardcoded index* | *Using computed index (easy to copy)*   |   |
-| 3 | =JSONArray.Get($A$1, 1) | =JSONArray.Get($A$1, ROW() - ROW($A$1)) |   |
-| 4 | =JSONArray.Get($A$1, 2) | =JSONArray.Get($A$1, ROW() - ROW($A$1)) |   |
-| 5 | =JSONArray.Get($A$1, 3) | =JSONArray.Get($A$1, ROW() - ROW($A$1)) |   |
+| 3 | =JSONArray.Get($A$1, 1) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
+| 4 | =JSONArray.Get($A$1, 2) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
+| 5 | =JSONArray.Get($A$1, 3) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
 
-Obviously this can be done in two dimensions as well
+Obviously this can be done in two dimensions as well.  Note that in this case we're using a 1-based index so the subtract row
+number (`ROW($A$2)`) is the header rather than the first value.
