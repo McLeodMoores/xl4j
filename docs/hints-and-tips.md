@@ -60,7 +60,15 @@ You might this that because Excel does multi-threaded recalculation, it can calc
 is not true.  Any of the calculation threads blocking can cause the UI to freeze up.  For the best results, use asynchronous functions
 for any I/O or long running calculatoins.
 
-XL4J uses two separate thread pools, one for normal synchronous function calls that has a one to one
+XL4J uses two separate thread pools:
+
+ 1) one for normal synchronous function calls that has a one to one mapping with Excel's threads (in fact, this pool probably isn't
+    necessary, it's a precaution to prevent binding Excel threads to the JVM and we might experiment
+    with getting rid of it)
+ 2) one for asynchronous operations that's larger, but of a fixed upper size.
+ 
+The reason for separate pools is that a single unified pools leads to the problem where you have a large number of blocked
+asynchronous functions using up the whole pool, leaving nothing for the syncrhonous requests and causing the UI to lock up.
 
 # Asynchronous functions get cancelled and recalculated often
 Excel often calls the add-in with an asynchronous function call, only to trigger the calculation cancellation event shortly afterwards
@@ -74,4 +82,16 @@ Excel often calls the add-in with an asynchronous function call, only to trigger
 This means your asynchronous thread-pool is not held hostage by cancelled functions.  We effectively let them do their thing and shut
 them down.  Using a fixed thread pool is important though as Excel can easily create hundreds of concurrent threads if the pool is
 unbounded, and will eventually exhaust the machine's resources.
-  
+
+# Bugs might be caused by highly concurrent requests to your back-end rather than any issue with the add-in
+I've seen an Excel add-in get continually blamed for stability issues that were actually caused by bugs in underlying systems.  They
+often only show up via Excel because that's the only client that does lots of requests in parallel.
+
+# Observed unexpected behvaiours of Excel
+Excel does some strange things sometimes.  They almost certainly all have good reasons:
+
+ - All processing is blocked, including scheduled (timed) command execution, when a formula is being edited.
+ - Sometimes copy/paste fails, leaving toolsbars with smiley faces instead of the icons you expect.
+ - Pressing recalc or hitting F9 often does not force recalculation.  A better approach is to hit F2 and then ENTER to re-enter 
+   the formula in a cell or hit CTRL-ALT-F9 (recalc all workbooks).  Another thing that will force recalculation is adding or removing
+   a row or column.
