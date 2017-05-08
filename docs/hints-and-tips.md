@@ -36,5 +36,42 @@ method in [com.mcleodmoores.xl4j.examples.rest.JsonFunctions](https://github.com
 | 4 | =JSONArray.Get($A$1, 2) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
 | 5 | =JSONArray.Get($A$1, 3) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
 
-Obviously this can be done in two dimensions as well.  Note that in this case we're using a 1-based index so the subtract row
-number (`ROW($A$2)`) is the header rather than the first value.
+The `=CreateJsonObject` isn't a real function, just a placeholder for something that would return a JSON object like `ResponseJSON`.
+Also, in this case we're using a 1-based index so the subtract row number (`ROW($A$2)`) is the header rather than the first value, which
+is what you'd use for zero-based indices.  Obviously type of accessor function can be done in two or more dimensions as well.
+
+A future intention is to implement functionality that allows you to write function results into the cells below the formula without
+either array formulas or accessor functions.
+
+# Minimise the use of volatile functions if any of your functions are doing intensive calculations or I/O
+If you have a calculation chain (the chain of dependencies between cells) that contains a function marked 'volatile', the chain will
+be constantly re-evaluated.  If any of your functions are even slightly slow, the whole of Excel will slow to a crawl and quite
+probably intermittantly lock up.  Often the culprit is an `=TODAY()` or `=NOW()` function in a cell.
+
+# Be aware that Excel often recalculates very aggressively
+Excel will often re-compute cells that logically really don't need to be recalculated multiple times.  Long running functions can
+therefore end up appearing to take longer than expected as they are actually run several times before appearing.  One way to mitigate
+this issue is to cache results when a function is called with the same arguments, essentially memoization.  This obviously requires 
+the function is idempotent (that it has no hidden state that affects its results).  For an example of this, using a rather crude 
+hand-rolled cache, see the Quandl example.
+
+# Excel being multi-threaded now doesn't necessarily mean what you think it does
+You might this that because Excel does multi-threaded recalculation, it can calculate cells in the background without blocking.  This
+is not true.  Any of the calculation threads blocking can cause the UI to freeze up.  For the best results, use asynchronous functions
+for any I/O or long running calculatoins.
+
+XL4J uses two separate thread pools, one for normal synchronous function calls that has a one to one
+
+# Asynchronous functions get cancelled and recalculated often
+Excel often calls the add-in with an asynchronous function call, only to trigger the calculation cancellation event shortly afterwards
+(which cancels all outstanding calculations).  What currently happens in this case is:
+
+  1) The current asynchronous thread pool is flagged for shutdown, existing calls continue until finished but then will shut down and
+     any threads will terminate.  We might one day put these threads in a java `ThreadGroup` and `interrupt()` the group as this will
+     interrupt some operations (but not others).  This isn't implemented currently though.
+  2) A new asynchronous thread pool is created running the next wave of asynchronous calls.
+
+This means your asynchronous thread-pool is not held hostage by cancelled functions.  We effectively let them do their thing and shut
+them down.  Using a fixed thread pool is important though as Excel can easily create hundreds of concurrent threads if the pool is
+unbounded, and will eventually exhaust the machine's resources.
+  
