@@ -1,6 +1,6 @@
 Debugging Functions
 ===================
-As anyone who as spent time in Excel knows, it can sometimes be difficult to work out why formulas returns errors. This problem can be magnified if an add-in is used. Fortunately, both the nature of Java and the XL4J add-in itself have features that can make debugging easier. This document attempts to outline the most common problems and suggests ways to track down any issues and resolve them.
+As anyone who as spent time in Excel knows, it can sometimes be difficult to work out why a formula returns an error. This problem can be magnified if an add-in is used. Fortunately, both the nature of Java and the XL4J add-in itself have features that can make debugging easier. This document attempts to outline the most common problems and suggests ways to track down any issues and resolve them.
 
 ## Examples used in this document
 To show some trouble-shooting methods, we start with some functions that are extensions of the [Schedule](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/Schedule.java) class that is available in the `xll-examples` project.
@@ -380,11 +380,11 @@ Unless some or all of the arguments to a method or constructor are `Optional` (*
 
 The ![argument converters](https://github.com/McLeodMoores/xl4j/blob/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/typeconvert/converters/) available in the `xll-core` project can handle most of the expected types to and from Excel types (e.g. `XLNumber`, `XLString`, etc.). However, especially for functions with many arguments, it can be easy to get the arguments in the wrong order or provide the wrong type.
 
-In an extremely artifical example, we supply a string where an integer (`XLString` -> `int`) is expected:
+In an extremely artifical example, we supply a string where an integer (`XLString` -> `int` instead of `XLNumber` -> `int`) is expected:
 
 ![Wrong argument type 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/wrong-argument-type-1.png)
 
-In the majority of cases, an exception will be thrown in the type converter that was implied for the function:
+In the majority of cases, an exception will be thrown in the type converter that was registered for the function:
 
 ![Wrong argument type 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/wrong-argument-type-2.png)
 
