@@ -456,8 +456,41 @@ According to the Excel help page, this error means "There's something wrong with
 
 ## Unexpected value returned to Excel
 
-# The function does not complete as expected
-## Logging output
+Finally, everything seems to work so we try to intersect the dates of the schedule with the dates of a time series. However, instead of the `TimeSeries` object returned by `ScheduleAdjusterV2.intersectTimeSeries()`, we get a single number output:
+
+![Unexpected result 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-1.png)
+
+This is because the `TypeConversionMode` of this function is `SIMPLEST_RESULT`. This means that the add-in searches for a type converter for `TimeSeries`, which is available and ![converts `TimeSeries` to `XLArray`](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeriesTypeConverter.java). So, the result returned to Excel is an array, rather than an object reference. What Excel is displaying is the [0,0]th element of the array.
+
+There are three ways of dealing with this:
+  - change the type conversion mode to `OBJECT_RESULT`
+  - remove the time series type converter
+  - expand the result as an array formula
+  
+To expand the result as an array, select a range:
+
+![Unexpected result 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-2.png)
+
+and hit `CTRL+SHIFT+ENTER`, which tells Excel that this is an array formula. Note that we've transposed the array, as the time series type converter happens to return a time series as two columns.
+
+![Unexpected result 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-3.png)
+
+The formula is now surrounded by curly brackets, which shows that it is an Excel array formula. 
+
+Finally, the first row of the time series is formatted as dates:
+  
+![Unexpected result 4](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-4.png)
+
+![Expected result 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/expected-result-1.png)
+
+ ### Dates in Excel
+ 
+The previous example showed something that can cause issues: dates in Excel are numbers. This doesn't cause a problem for the XL4J add-in, as conversion to and from dates takes this into account. However, it's worth noting that Excel will display any dates returned from the add-in as numbers, which can be a bit disconcerting. Formatting the cells as dates, although not necessary, can help prevent confusion.
+
+# Attaching a debugger
+
+If you have the source code / jars available, it's often quicker and easier to debug any problems within a function using an IDE. Once the code is reached, the debugger behaves the same as it would for any other Java project.
+
 ## Attaching a debugger (Eclipse)
 ## Attaching a debugger (IntelliJ)
 
