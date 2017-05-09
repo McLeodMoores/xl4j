@@ -68,7 +68,7 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
       switch (functionDefinition.getCallTargetForFunction()) {
         case METHOD: {
           final MethodInvoker methodInvoker = functionDefinition.getMethodInvoker();
-          LOGGER.info("method invoker = {}", methodInvoker.getMethodName());
+          LOGGER.info("method = {}", methodInvoker.getMethodName());
           if (methodInvoker.isStatic()) {
             return methodInvoker.invoke(null, args);
           }

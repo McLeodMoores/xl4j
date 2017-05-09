@@ -1,19 +1,29 @@
 /**
  * Copyright (C) 2017 - Present McLeod Moores Software Limited.  All rights reserved.
  */
-package com.mcleodmoores.xl4j.examples.timeseries;
+package com.mcleodmoores.xl4j.examples.timeseries.troubleshooting;
 
 import java.util.Collections;
 
 import org.threeten.bp.LocalDate;
 
+import com.mcleodmoores.xl4j.examples.timeseries.Schedule;
+import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
+import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
  * Generates a quarterly schedule from the end date to start date inclusive. The series is returned
  * with increasing dates.
  */
-public class ReverseQuarterlyScheduleFunctionV1 implements ScheduleFunctionV1 {
+@XLNamespace("Schedule.")
+@XLFunctions(
+    prefix = "ReverseQuarterly",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Generates a quarterly schedule from the end to start date",
+    category = "Schedule")
+public class ReverseQuarterlyScheduleFunctionV2 implements ScheduleFunctionV2 {
 
   @Override
   public Schedule apply(final LocalDate start, final LocalDate endInclusive) {

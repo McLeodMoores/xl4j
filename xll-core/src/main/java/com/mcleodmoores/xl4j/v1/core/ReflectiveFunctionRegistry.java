@@ -129,11 +129,10 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
 
   @Override
   protected void createAndRegisterFunctions(final InvokerFactory invokerFactory) {
-    final Set<String> registeredFunctionNames = new HashSet<>();
     final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
         .addScanners(new MethodAnnotationsScanner(), new MethodParameterScanner(), new TypeAnnotationsScanner(), new FieldAnnotationsScanner()));
     try {
-      addDefinitions(getFunctionsForMethods(invokerFactory, reflections.getMethodsAnnotatedWith(XLFunction.class)), registeredFunctionNames);
+      addDefinitions(getFunctionsForMethods(invokerFactory, reflections.getMethodsAnnotatedWith(XLFunction.class)));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLFunction-annotated methods", e);
     }
@@ -145,23 +144,23 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
       for (final Constructor<?> constructor : constructorsAnnotatedWithFunction) {
         constructors.add(constructor);
       }
-      addDefinitions(getFunctionsForConstructors(invokerFactory, constructors), registeredFunctionNames);
+      addDefinitions(getFunctionsForConstructors(invokerFactory, constructors));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLFunction-annotated constructors", e);
     }
     try {
-      addDefinitions(getFunctionsForTypes(invokerFactory, reflections.getTypesAnnotatedWith(XLFunctions.class)), registeredFunctionNames);
+      addDefinitions(getFunctionsForTypes(invokerFactory, reflections.getTypesAnnotatedWith(XLFunctions.class)));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLFunctions-annotated classes", e);
     }
     try {
       final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);
-      addDefinitions(getConstantsForTypes(invokerFactory, classesAnnotatedWithConstant), registeredFunctionNames);
+      addDefinitions(getConstantsForTypes(invokerFactory, classesAnnotatedWithConstant));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLConstant-annotated classes", e);
     }
     try {
-      addDefinitions(getConstantsForFields(invokerFactory, reflections.getFieldsAnnotatedWith(XLConstant.class)), registeredFunctionNames);
+      addDefinitions(getConstantsForFields(invokerFactory, reflections.getFieldsAnnotatedWith(XLConstant.class)));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLConstant-annotated fields", e);
     }
@@ -194,22 +193,12 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     throw new XL4JRuntimeException("Cannot find function definition with export number " + exportNumber);
   }
 
-  private void addDefinitions(final List<FunctionDefinition> definitions, final Set<String> registeredFunctionNames) {
+  private void addDefinitions(final List<FunctionDefinition> definitions) {
     for (final FunctionDefinition definition : definitions) {
-      checkForDuplicateFunctionNames(registeredFunctionNames, definition);
       // put the definition in some look-up tables.
       LOGGER.info("Allocating export number {} to function {}", definition.getExportNumber(), definition.getFunctionMetadata().getName());
       _functionDefinitionLookup.put(definition.getExportNumber(), definition);
       _functionDefinitions.add(definition);
-    }
-  }
-
-  private static void checkForDuplicateFunctionNames(final Set<String> registeredFunctionNames, final FunctionDefinition functionDefinition) {
-    final String name = functionDefinition.getFunctionMetadata().getName();
-    if (registeredFunctionNames.contains(name.toUpperCase())) {
-      LOGGER.warn("Have already registered a function called {}, ignoring", name);
-    } else {
-      registeredFunctionNames.add(name.toUpperCase());
     }
   }
 
