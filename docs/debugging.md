@@ -2,7 +2,7 @@ Debugging Functions
 ===================
 As anyone who as spent time in Excel knows, it can sometimes be difficult to work out why formulas returns errors. This problem can be magnified if an add-in is used. Fortunately, both the nature of Java and the XL4J add-in itself have features that can make debugging easier. This document attempts to outline the most common problems and suggests ways to track down any issues and resolve them.
 
-# Examples used in this document
+## Examples used in this document
 To show some trouble-shooting methods, we start with some functions that are extensions of the [Schedule](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/Schedule.java) class that is available in the `xll-examples` project.
 
 We have added a simple marker interface:
@@ -66,10 +66,13 @@ public class ReverseQuarterlyScheduleFunction implements ScheduleFunctionV1 {
 ```
 These classes can be found on the `examples-for-docs` branch in the `xll-examples` project.
 
-# General note about errors
-It can sometimes be hard to work out if an error is coming from Excel or the add-in itself. It's worth noting that errors returned from XL4J are the `#NULL!` error type. Excel only returns this type of error "when you refer to an intersection of two ranges that do not intersect". As a general rule of thumb, therefore, any errors other than `#NULL!` are because there's an error in the formula (including the too many parameters to an XL4J function; see **TODO section link**), division by zero, etc., and `#NULL!` is an error from XL4J if there are no ranges referenced in the formula.
+### General note about errors
+It can sometimes be hard to work out if an error is coming from Excel or the add-in itself. It's worth noting that errors returned from XL4J are the `#NULL!` error type. Excel only returns this type of error "when you refer to an intersection of two ranges that do not intersect". As a general rule of thumb, therefore, any errors other than `#NULL!` are because there's an error in the formula, division by zero, etc., and `#NULL!` is an error from XL4J if there are no ranges referenced in the formula.
 
-# The function is missing
+
+## \#NULL!
+
+### The function is missing
 After the plugin has been built with these new classes, the next step is to try to use them. However, when we try to use the reverse quarterly function in Excel, the function name doesn't appear in the suggestions:
 
 ![Missing function 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-1.png)
@@ -169,7 +172,7 @@ Going back to the log, we see that there are entries for the `apply()` and `andT
 
 Only `public` classes, constructors or methods can be registered as functions. Once the constructor visibility is changed, the forward quarterly calculator can also be created in Excel.
 
-## The function name is not what's expected
+### The function name seems wrong
 
 We've added another function that generates a forward schedule with a user-supplied month interval:
 
@@ -262,7 +265,7 @@ public class ForwardNMonthsScheduleFunctionV2 implements ScheduleFunctionV2 {
 ```
 ![Successful call 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-call-2.png)
 
-# The function cannot be called successfully
+### The function cannot be called successfully
 
 This section uses a class that performs simple adjustments on a `Schedule` that contains a static factory method:
 
@@ -343,7 +346,7 @@ public final class ScheduleAdjusterV1 {
 ```
 and has mutator methods that offset the dates in the schedule by a fixed amount, and a method that performs an intersection with a time series.
 
-## Calling an instance method
+### Calling an instance method
 
 The adjuster is created:
 
@@ -361,21 +364,9 @@ but the lines above show what the problem is. The arguments to the function are 
 
 ![Successful instance call 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-instance-call-1.png)
 
-## Too many arguments
+### Too few arguments
 
-If a function is called with too many arguments:
-
-![Too many arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-1.png)
-
-then Excel itself will return a `#VALUE!` error:
-
-![Too many arguments 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-2.png)
-
-According to the Excel help page, this error means "There's something wrong with the way your formula is typed." Unfortunately, there is no way to get a more detailed error for these type of problems.
-
-## Too few arguments
-
-We have already seen the effect of inadvertently supplying too few arguments when calling an instance function. A `#NULL!` error is returned
+We have already seen the effect of inadvertently supplying too few arguments when calling an instance function:
 
 ![Too few arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-few-arguments-1.png)
 
@@ -385,9 +376,21 @@ and there is a message in the log showing the arguments that were supplied and t
 
 Unless some or all of the arguments to a method or constructor are `Optional` (** TODO link to section**), an argument of `XLMissing` shows that the wrong number of arguments were provided.
 
-## Wrong argument type
+### Wrong argument type
 
-## Optional arguments
+The argument converters available in the ![`xll-core`](https://github.com/McLeodMoores/xl4j/blob/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/typeconvert/converters/) project can handle most of the expected types to and from Excel types (e.g. `XLNumber`, `XLString`, etc.). However, especially for functions with many arguments, it can be easy to get the arguments in the wrong order or provide the wrong type.
+
+In an extremely artifical example, we supply a string where an integer (`XLString` -> `int`) is expected:
+
+![Wrong argument type 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/wrong-argument-type-1.png)
+
+In the majority of cases, an exception will be thrown in the type converter that was implied for the function:
+
+![Wrong argument type 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/wrong-argument-type-2.png)
+
+The solution to this is to either fix the function call by supplying an argument of the expected type, or changing the function and rebuilding.
+
+### Optional arguments
 
 Optional arguments to XL4J functions are provided to functions in the same was as for other Excel functions - if the optional argument is in the middle of a list of arguments, the value can be left empty (e.g. `=FUNC(A1,A2,,,A3)`). If the last argument is optional, then either `=FUNC(A1,A2,)` or `=FUNC(A1,A2)` will work.
 
@@ -433,6 +436,21 @@ then the function returns a schedule:
 In this case, `null` was allowed as an input to the method because the type was `Integer`. If this is replaced by `int`, an exception is thrown before the method is called:
 
 ![Failed optional argument 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-3.png)
+
+
+## \#VALUE!
+
+### Too many arguments
+
+If a function is called with too many arguments:
+
+![Too many arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-1.png)
+
+then Excel itself will return a `#VALUE!` error:
+
+![Too many arguments 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-2.png)
+
+According to the Excel help page, this error means "There's something wrong with the way your formula is typed." Unfortunately, there is no way to get a more detailed error for these type of problems.
 
 
 ## Unexpected value returned to Excel
