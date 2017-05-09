@@ -378,7 +378,7 @@ Unless some or all of the arguments to a method or constructor are `Optional` (*
 
 ### Wrong argument type
 
-The argument converters available in the ![`xll-core`](https://github.com/McLeodMoores/xl4j/blob/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/typeconvert/converters/) project can handle most of the expected types to and from Excel types (e.g. `XLNumber`, `XLString`, etc.). However, especially for functions with many arguments, it can be easy to get the arguments in the wrong order or provide the wrong type.
+The ![argument converters](https://github.com/McLeodMoores/xl4j/blob/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/typeconvert/converters/) available in the `xll-core` project can handle most of the expected types to and from Excel types (e.g. `XLNumber`, `XLString`, etc.). However, especially for functions with many arguments, it can be easy to get the arguments in the wrong order or provide the wrong type.
 
 In an extremely artifical example, we supply a string where an integer (`XLString` -> `int`) is expected:
 
@@ -392,7 +392,7 @@ The solution to this is to either fix the function call by supplying an argument
 
 ### Optional arguments
 
-Optional arguments to XL4J functions are provided to functions in the same was as for other Excel functions - if the optional argument is in the middle of a list of arguments, the value can be left empty (e.g. `=FUNC(A1,A2,,,A3)`). If the last argument is optional, then either `=FUNC(A1,A2,)` or `=FUNC(A1,A2)` will work.
+Optional arguments to XL4J functions are provided in the same way as for other Excel functions. If the optional argument is in the middle of a list of arguments, the value can be left empty (e.g. `=FUNC(A1,A2,,,A3)`). If the last argument is optional, then either `=FUNC(A1,A2,)` or `=FUNC(A1,A2)` will work.
 
 The `withMonthOffset` function in our schedule adjuster takes an optional argument (the number of days per month). This function works if we provide a value for this field:
 
