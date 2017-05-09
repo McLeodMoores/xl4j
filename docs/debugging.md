@@ -86,7 +86,7 @@ There's no `Add-ins` tab, which means that the add-in hasn't been registered. On
 
 ![Missing function 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-3.png)
 
-Although other schedule functions have been registered, we still can't see either of our functions. The first thing to do is to check that the functions were registered on the Java side. We go to the `Add-ins` tab and open the Java log (note that the logging level is `INFO` - if the logging level is set to be higher than this, then the settings must be changed and Excel restarted **TODO link to settings doc**). There is a section that shows the names of the functions that have been registered (shown with some registrations removed):
+Although other schedule functions have been registered, we still can't see either of our functions. The first thing to do is to check that the functions were registered on the Java side. We go to the `Add-ins` tab and open the Java log (note that the logging level is `INFO` - if the logging level is set to be higher than this, then the ![settings](https://github.com/McLeodMoores/xl4j/blob/master/docs/settings.md) must be changed and Excel restarted). There is a section that shows the names of the functions that have been registered (shown with some registrations removed):
 
 ![Missing function 4](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-4.png)
 
