@@ -471,7 +471,7 @@ To expand the result as an array, select a range:
 
 ![Unexpected result 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-2.png)
 
-and hit `CTRL+SHIFT+ENTER`, which tells Excel that this is an array formula. Note that we've transposed the array, as the time series type converter happens to return a time series as two columns.
+and hit `CTRL+SHIFT+ENTER`, which tells Excel that this is an array formula (see the ![hints and tips](https://github.com/McLeodMoores/xl4j/blob/master/docs/hints-and-tips.md) document for more information about array formulas). Note that we've transposed the array, as the time series type converter happens to return a time series as two columns.
 
 ![Unexpected result 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-3.png)
 
