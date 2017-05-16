@@ -20,7 +20,7 @@ of object handles.  This means you can store any complex object in a single Exce
      - [Features in development](#features-in-development)
      - [Features in the pipeline](#features-in-the-pipeline)
    - [Limitations](#limitations)
- - [Add-in Settings](docs/settings.md)
+ - [Settings & Configuration](docs/settings.md)
  - [Logging](docs/logging.md)
  - [Tutorial](docs/tutorial.md)
  - [Hints & Tips on Writing Add-ins](docs/hints-and-tips.md)
