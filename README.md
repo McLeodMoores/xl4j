@@ -35,7 +35,7 @@ of object handles.  This means you can store any complex object in a single Exce
      }
    ```
 
-  ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
+  ![MyAdd](docs/images/my-add.PNG "MyAdd in use")
    
   See the tutorial for more complex examples that return objects and arrays, including documentation and more.
  - Automatic marshalling (conversion) from Java to Excel types and back again.
