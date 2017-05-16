@@ -7,18 +7,19 @@ XL4J is a Java and native code library that allows you to build native-quality E
 In addition to supporting the standard Excel types (numbers, strings, dates, booleans, etc.) it also supports Java objects in the form
 of object handles.  This means you can store any complex object in a single Excel sheet cell, allowing much more complex applications.  A background incremental garbage collector prevents discarded and overwritten objects from hanging around.
 # Table of contents
-
- - [Objectives](#objectives)
- - [Features](#features)
-   - [Writing Excek user-defined functions](#writing-excel-user-defined-functions)
-   - [Calling constructors and methods on Java objects](#calling-constructors-and-methods-on-java-objects)
-   - [Configuration and easy logging access](#configuration-and-easy-logging-access)
-   - [Deployment features](#deployment-features)
-   - [Add-in features](#add-in-features)
- - [Roadmap](#roadmap)
-   - [Features in development](#features-in-development)
-   - [Features in the pipeline](#features-in-the-pipeline)
- - [Limitations](#limitations)
+ - Introduction
+   - [Objectives](#objectives)
+   - [Requirements](#requirements)
+   - [Features](#features)
+     - [Writing Excek user-defined functions](#writing-excel-user-defined-functions)
+     - [Calling constructors and methods on Java objects](#calling-constructors-and-methods-on-java-objects)
+     - [Configuration and easy logging access](#configuration-and-easy-logging-access)
+     - [Deployment features](#deployment-features)
+     - [Add-in features](#add-in-features)
+   - [Roadmap](#roadmap)
+     - [Features in development](#features-in-development)
+     - [Features in the pipeline](#features-in-the-pipeline)
+   - [Limitations](#limitations)
  
 # Objectives
  - Make no compromises 
@@ -37,6 +38,23 @@ of object handles.  This means you can store any complex object in a single Exce
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase.
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
+# Requirements
+ - Build requirements
+   - Java modules (most users will only ever need to use the Java modules as dependencies)
+     - JDK8 is required to build all modules, although only one example package actually requires JDK8 so modification for JDK7 is 
+       trivial
+     - Maven 3.2+ (although it should be possible to use Gradle or Ant/Ivy with very few alterations)
+   - Native modules (most users will not need to build the native modules)
+     - Visual Studio 2013 AND Visual Studio 2015 are required if you wish to rebuild them.  The free Community Editions are probably 
+       enough although all development is done on the Enterprise edition.
+ - Runtime requirements
+   - Java 8 Runtime Environment (or 7 with minor adjustments).  
+     - Bitness must match Excel version. 
+   - Excel 2010, 2013 or 2016.  
+     - 32-bit builds are fully tested, 64-bit builds are experimental but do work.
+ - Windows 7, 8, 8.1 or 10.  Only 64-bit versions are tested but 32-bit versions should be fine.
+     - Builds may run on Windows Vista, but it is unsupported.  
+     - Windows XP is not supported.
 
 # Features
 ## Writing Excel user-defined functions
