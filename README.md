@@ -9,6 +9,16 @@ of object handles.  This means you can store any complex object in a single Exce
 # Table of contents
 
  - [Objectives](#objectives)
+ - [Features](#features)
+   - [Writing Excek user-defined functions](#writing-excel-user-defined-functions)
+   - [Calling constructors and methods on Java objects](#calling-constructors-and-methods-on-java-objects)
+   - [Configuration and easy logging access](#configuration-and-easy-logging-access)
+   - [Deployment features](#deployment-features)
+   - [Add-in features](#add-in-features)
+ - [Roadmap](#roadmap)
+   - [Features in development](#features-in-development)
+   - [Features in the pipeline](#features-in-the-pipeline)
+ - [Limitations)(#limitations)
  
 # Objectives
  - Make no compromises 
@@ -58,7 +68,7 @@ of object handles.  This means you can store any complex object in a single Exce
    - XLL API calls can be made from the caller's Excel calculation thread or from the Excel main thread depending on context required.  
      Excel documentation specifies that many API calls can only be safely made from the main Excel thread. **CURRENTLY IN DEVELOPMENT**
  
-## Calling constructors and methods on arbitrary Java objects
+## Calling constructors and methods on Java objects
 The follwing example allows you to create and show a Swing JFrame with no coding at all:
 
 |   | A                                                      |                          B                        |
