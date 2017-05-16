@@ -20,6 +20,14 @@ of object handles.  This means you can store any complex object in a single Exce
      - [Features in development](#features-in-development)
      - [Features in the pipeline](#features-in-the-pipeline)
    - [Limitations](#limitations)
+ - [Add-in Settings](docs/settings.md)
+ - [Logging](docs/logging.md)
+ - [Tutorial](docs/tutorial.md)
+ - [Hints & Tips on Writing Add-ins](docs/hints-and-tips.md)
+ - [Debugging & Troubleshooting](docs/debugging.md)
+ - [API Reference](docs/api-reference.md)
+ - [Native code structure & Walkthrough](docs/native-code.md)
+ - [Background about Excel Types for Developers](docs/excel-types-primer-for-developers.md)
  
 # Objectives
  - Make no compromises 
