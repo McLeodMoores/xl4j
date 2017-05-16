@@ -7,11 +7,11 @@ XL4J is a Java and native code library that allows you to build native-quality E
 In addition to supporting the standard Excel types (numbers, strings, dates, booleans, etc.) it also supports Java objects in the form
 of object handles.  This means you can store any complex object in a single Excel sheet cell, allowing much more complex applications.  A background incremental garbage collector prevents discarded and overwritten objects from hanging around.
 # Table of contents
- - Introduction
+ - Overview (this document)
    - [Objectives](#objectives)
    - [Requirements](#requirements)
    - [Features](#features)
-     - [Writing Excek user-defined functions](#writing-excel-user-defined-functions)
+     - [Writing Excel user-defined functions](#writing-excel-user-defined-functions)
      - [Calling constructors and methods on Java objects](#calling-constructors-and-methods-on-java-objects)
      - [Configuration and easy logging access](#configuration-and-easy-logging-access)
      - [Deployment features](#deployment-features)
