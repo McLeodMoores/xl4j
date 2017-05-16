@@ -18,7 +18,7 @@ of object handles.  This means you can store any complex object in a single Exce
  - [Roadmap](#roadmap)
    - [Features in development](#features-in-development)
    - [Features in the pipeline](#features-in-the-pipeline)
- - [Limitations)(#limitations)
+ - [Limitations](#limitations)
  
 # Objectives
  - Make no compromises 
