@@ -51,6 +51,7 @@ of object handles.  This means you can store any complex object in a single Exce
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase.
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
+   
 # Requirements
  - Build requirements
    - Java modules (most users will only ever need to use the Java modules as dependencies)
