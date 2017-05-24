@@ -110,7 +110,7 @@ The follwing example allows you to create and show a Swing JFrame with no coding
 
 which looks like this in Excel - note the object handles with the >> prefix followed by the type and the handle number:
 
-![JFrame in Excel](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe-example.PNG "How it looks in Excel")
+![JFrame in Excel](docs/images/jframe-example.PNG "How it looks in Excel")
 
 Breaking this example down:
  - The `JConstruct` function calls the named class's constructor with any supplied arguments and returns an object handle.  The first
@@ -124,14 +124,14 @@ Breaking this example down:
    
 Evaluating the sheet results JFrame appearing:
 
-![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
+![JFrame](docs/images/jframe.PNG "The Resulting JFrame")
 
 ## Configuration and Easy Logging Access
 By default there are toolbar icons for opening the settings dialog, and opening the Java and C++ Logs in Notepad (or default 
 `.log` file viewer).  These can be disabled for end users if preferred.
  - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
  
- ![Toolbar](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/toolbar.png "The default toolbar")
+ ![Toolbar](docs/images/toolbar.png "The default toolbar")
  
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software - you 
@@ -213,4 +213,4 @@ There are a few limitations with the current build.  These should slowly disappe
     to build a wrapper XLA to install a ribbon if needed before official support is added.
   - 32-bit JVM limits maximum heap as it needs to share address space with Excel.  This will go away once we move to an 
     out-of-process JVM with the first updates.
-  - 64-bit Add-in/JVM combination builds but hasn't been tested.
+  - 64-bit Add-in/JVM combination builds and appears fine but hasn't been as tested as the 32-bit build.
