@@ -76,23 +76,23 @@ It can sometimes be hard to work out if an error is coming from Excel or the add
 ### The function is missing
 After the plugin has been built with these new classes, the next step is to try to use them. However, when we try to use the reverse quarterly function in Excel, the function name doesn't appear in the suggestions:
 
-![Missing function 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-1.png)
+![Missing function 1](images/missing-function-1.png)
 
 The first thing to check is that the add-in has installed successfully by looking at the tabs: **TODO what are these called**:
 
-![Missing function 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-2.png)
+![Missing function 2](images/missing-function-2.png)
 
 There's no `Add-ins` tab, which means that the add-in hasn't been registered. Once we've fixed this, we try again and see:
 
-![Missing function 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-3.png)
+![Missing function 3](images/missing-function-3.png)
 
-Although other schedule functions have been registered, we still can't see either of our functions. The first thing to do is to check that the functions were registered on the Java side. We go to the `Add-ins` tab and open the Java log (note that the logging level is `INFO` - if the logging level is set to be higher than this, then the ![settings](https://github.com/McLeodMoores/xl4j/blob/master/docs/settings.md) must be changed and Excel restarted). There is a section that shows the names of the functions that have been registered (shown with some registrations removed):
+Although other schedule functions have been registered, we still can't see either of our functions. The first thing to do is to check that the functions were registered on the Java side. We go to the `Add-ins` tab and open the Java log (note that the logging level is `INFO` - if the logging level is set to be higher than this, then the ![settings](settings.md) must be changed and Excel restarted). There is a section that shows the names of the functions that have been registered (shown with some registrations removed):
 
-![Missing function 4](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-4.png)
+![Missing function 4](images/missing-function-4.png)
 
 As expected, there is no entry for either of our functions. Looking further in the log, there is an error message warning us that we cannot mark the interface with an `@XLFunctions` annotation:
 
-![Missing function 5](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-5.png)
+![Missing function 5](images/missing-function-5.png)
 
 To fix this problem, we remove the annotation on `ScheduleFunctionV1` and move it to both functions:
 
@@ -161,15 +161,15 @@ public class ReverseQuarterlyScheduleFunctionV2 implements ScheduleFunctionV2 {
 ```
 After rebuilding and reinstalling, we can create the reverse quarterly schedule calculator:
 
-![Fixed function 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/fixed-function-1.png)
+![Fixed function 1](images/fixed-function-1.png)
 
 However, the forward calculator is still not available:
 
-![Missing function 6](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-6.png)
+![Missing function 6](images/missing-function-6.png)
 
 Going back to the log, we see that there are entries for the `apply()` and `andThen()` methods, but not the constructor.
 
-![Missing function 7](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-7.png)
+![Missing function 7](images/missing-function-7.png)
 
 Only `public` classes, constructors or methods can be registered as functions. Once the constructor visibility is changed, the forward quarterly calculator can also be created in Excel.
 
@@ -216,13 +216,13 @@ public class ForwardNMonthsScheduleFunctionV1 implements ScheduleFunctionV2 {
 ```
 However, when we try to call the `Schedule.ForwardNMonths.apply` function, it does not appear in the list of available functions.
 
-![Missing function 8](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/missing-function-8.png)
+![Missing function 8](images/missing-function-8.png)
 
 This is because the `@XLFunction` annotation takes precedence over `@XLFunctions`, which prevents the same method from being registered twice. The `apply` method has been registered as `Schedule.GenerateForwardNMonthsSchedule`. Using this function name, the schedule can be generated.
 
-![Fixed function 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/fixed-function-2.png)
+![Fixed function 2](images/fixed-function-2.png)
 
-![Successful call 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-call-1.png)
+![Successful call 1](images/successful-call-1.png)
 
 As we don't intend to call the `andThen` method for this calculator, we've removed the class-level annotation and added an annotation for the constructor (very important: the object can't be constructed otherwise):
 
@@ -264,7 +264,7 @@ public class ForwardNMonthsScheduleFunctionV2 implements ScheduleFunctionV2 {
   }
 }
 ```
-![Successful call 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-call-2.png)
+![Successful call 2](images/successful-call-2.png)
 
 ### The function cannot be called successfully
 
@@ -351,29 +351,29 @@ and has mutator methods that offset the dates in the schedule by a fixed amount,
 
 The adjuster is created:
 
-![Static call 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/static-call-1.png)
+![Static call 1](images/static-call-1.png)
 
 and we unsuccessfully try to adjust the schedule by a 4 day offset:
 
-![Failed instance call 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-instance-call-1.png)
+![Failed instance call 1](images/failed-instance-call-1.png)
 
 The last error message in the log does not give many clues:
 
-![Failed instance call 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-instance-call-2.png)
+![Failed instance call 2](images/failed-instance-call-2.png)
 
 but the lines above show what the problem is. The arguments to the function are `XLNumber` and `XLMissing`. For instance methods, the first argument to the Excel function must be the object that the method is being called on. The call handler is expecting an `XLObject` (the schedule adjuster) and `XLNumber` (the number of days to adjust by). Once the schedule adjuster is passed into the function as the first argument, the function completes successfully:
 
-![Successful instance call 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-instance-call-1.png)
+![Successful instance call 1](images/successful-instance-call-1.png)
 
 ### Too few arguments
 
 We have already seen the effect of inadvertently supplying too few arguments when calling an instance function:
 
-![Too few arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-few-arguments-1.png)
+![Too few arguments 1](images/too-few-arguments-1.png)
 
 and there is a message in the log showing the arguments that were supplied and the number that were expected:
 
-![Too few arguments 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-few-arguments-2.png)
+![Too few arguments 2](images/too-few-arguments-2.png)
 
 Unless some or all of the arguments to a method or constructor are `Optional` (** TODO link to section**), an argument of `XLMissing` shows that the wrong number of arguments were provided.
 
@@ -383,11 +383,11 @@ The ![argument converters](https://github.com/McLeodMoores/xl4j/blob/master/xll-
 
 In an extremely artifical example, we supply a string where an integer (`XLString` -> `int` instead of `XLNumber` -> `int`) is expected:
 
-![Wrong argument type 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/wrong-argument-type-1.png)
+![Wrong argument type 1](images/wrong-argument-type-1.png)
 
 In the majority of cases, an exception will be thrown in the type converter that was registered for the function:
 
-![Wrong argument type 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/wrong-argument-type-2.png)
+![Wrong argument type 2](images/wrong-argument-type-2.png)
 
 The solution to this is to either fix the function call by supplying an argument of the expected type, or changing the function and rebuilding.
 
@@ -397,15 +397,15 @@ Optional arguments to XL4J functions are provided in the same way as for other E
 
 The `withMonthOffset` function in our schedule adjuster takes an optional argument (the number of days per month). This function works if we provide a value for this field:
 
-![Successful optional argument 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-optional-argument-1.png)
+![Successful optional argument 1](images/successful-optional-argument-1.png)
 
 but not if it's left out:
 
-![Failed optional argument 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-1.png)
+![Failed optional argument 1](images/failed-optional-argument-1.png)
 
 Looking in the log, we can see the issue. 
 
-![Failed optional argument 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-2.png)
+![Failed optional argument 2](images/failed-optional-argument-2.png)
 
 Missing values are passed into Java methods / constructors as `null`. However, this value is dereferenced before any check for null. If we change the method to check the value of `daysPerMonth` only after a `null` check:
 
@@ -432,11 +432,11 @@ Missing values are passed into Java methods / constructors as `null`. However, t
 ```
 then the function returns a schedule:
 
-![Successful optional argument 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/successful-optional-argument-2.png)
+![Successful optional argument 2](images/successful-optional-argument-2.png)
 
 In this case, `null` was allowed as an input to the method because the type was `Integer`. If this is replaced by `int`, an exception is thrown before the method is called:
 
-![Failed optional argument 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/failed-optional-argument-3.png)
+![Failed optional argument 3](images/failed-optional-argument-3.png)
 
 
 ## \#VALUE!
@@ -445,11 +445,11 @@ In this case, `null` was allowed as an input to the method because the type was 
 
 If a function is called with too many arguments:
 
-![Too many arguments 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-1.png)
+![Too many arguments 1](images/too-many-arguments-1.png)
 
 then Excel itself will return a `#VALUE!` error:
 
-![Too many arguments 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/too-many-arguments-2.png)
+![Too many arguments 2](images/too-many-arguments-2.png)
 
 According to the Excel help page, this error means "There's something wrong with the way your formula is typed." Unfortunately, there is no way to get a more detailed error for these type of problems.
 
@@ -458,7 +458,7 @@ According to the Excel help page, this error means "There's something wrong with
 
 Finally, everything seems to work so we try to intersect the dates of the schedule with the dates of a time series. However, instead of the `TimeSeries` object returned by `ScheduleAdjusterV2.intersectTimeSeries()`, we get a single number output:
 
-![Unexpected result 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-1.png)
+![Unexpected result 1](images/unexpected-result-1.png)
 
 This is because the `TypeConversionMode` of this function is `SIMPLEST_RESULT`. This means that the add-in searches for a type converter for `TimeSeries`, which is available and ![converts `TimeSeries` to `XLArray`](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeriesTypeConverter.java). So, the result returned to Excel is an array, rather than an object reference. What Excel is displaying is the [0,0]th element of the array.
 
@@ -469,19 +469,19 @@ There are three ways of dealing with this:
   
 To expand the result as an array, select a range:
 
-![Unexpected result 2](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-2.png)
+![Unexpected result 2](images/unexpected-result-2.png)
 
-and hit `CTRL+SHIFT+ENTER`, which tells Excel that this is an array formula (see the ![hints and tips](https://github.com/McLeodMoores/xl4j/blob/master/docs/hints-and-tips.md) document for more information about array formulas). Note that we've transposed the array, as the time series type converter happens to return a time series as two columns.
+and hit `CTRL+SHIFT+ENTER`, which tells Excel that this is an array formula (see the ![hints and tips](hints-and-tips.md) document for more information about array formulas). Note that we've transposed the array, as the time series type converter happens to return a time series as two columns.
 
-![Unexpected result 3](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-3.png)
+![Unexpected result 3](images/unexpected-result-3.png)
 
 The formula is now surrounded by curly brackets, which shows that it is an Excel array formula. 
 
 Finally, the first row of the time series is formatted as dates:
   
-![Unexpected result 4](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/unexpected-result-4.png)
+![Unexpected result 4](images/unexpected-result-4.png)
 
-![Expected result 1](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/expected-result-1.png)
+![Expected result 1](images/expected-result-1.png)
 
  ### Dates in Excel
  
