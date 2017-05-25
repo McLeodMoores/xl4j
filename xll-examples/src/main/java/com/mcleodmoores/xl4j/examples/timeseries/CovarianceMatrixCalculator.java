@@ -20,7 +20,8 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
     description = "Creates a labelled covariance matrix",
     category = "Time series")
 public class CovarianceMatrixCalculator implements BiFunction<List<String>, List<TimeSeries>, LabelledMatrix> {
-  private static final TimeSeriesBiFunction<TimeSeries, Double> CALCULATOR = new CovarianceCalculator();
+  private static final TimeSeriesFunction<Double> VAR = new VarianceCalculator();
+  private static final TimeSeriesBiFunction<TimeSeries, Double> COV = new CovarianceCalculator();
 
   @Override
   public LabelledMatrix apply(final List<String> namesList, final List<TimeSeries> tsList) {
@@ -33,9 +34,10 @@ public class CovarianceMatrixCalculator implements BiFunction<List<String>, List
     for (int i = 0; i < n; i++) {
       names[i] = namesList.get(i);
       final TimeSeries ts1 = tsList.get(i);
+      covariances[i][i] = VAR.apply(ts1);
       for (int j = 0; j < i; j++) {
         final TimeSeries ts2 = tsList.get(j);
-        covariances[i][j] = CALCULATOR.apply(ts1, ts2);
+        covariances[i][j] = COV.apply(ts1, ts2);
         covariances[j][i] = covariances[i][j];
       }
     }

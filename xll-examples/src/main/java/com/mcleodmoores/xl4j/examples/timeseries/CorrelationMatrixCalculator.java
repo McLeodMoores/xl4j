@@ -34,7 +34,7 @@ public class CorrelationMatrixCalculator implements BiFunction<List<String>, Lis
       names[i] = namesList.get(i);
       final TimeSeries ts1 = tsList.get(i);
       correlations[i][i] = 1;
-      for (int j = 0; j < i - 1; j++) {
+      for (int j = 0; j < i; j++) {
         final TimeSeries ts2 = tsList.get(j);
         correlations[i][j] = CALCULATOR.apply(ts1, ts2);
         correlations[j][i] = correlations[i][j];

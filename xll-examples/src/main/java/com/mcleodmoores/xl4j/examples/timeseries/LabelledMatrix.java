@@ -28,12 +28,13 @@ public final class LabelledMatrix {
     ArgumentChecker.notNull(names, "names");
     ArgumentChecker.notNull(matrix, "matrix");
     final int n = names.length;
+    ArgumentChecker.isTrue(n > 0, "Matrix size must be greater than 0");
     ArgumentChecker.isTrue(n == matrix.length, "Names array and matrix rows must be the same length, have {} and {}", n, matrix.length);
     final String[] copyNames = new String[names.length];
     final double[][] copyMatrix = new double[matrix.length][];
     int i = 0;
     for (final double[] row : matrix) {
-      ArgumentChecker.isTrue(n == matrix.length, "Names array and matrix columns must be the same, have {} and {}", n, row.length);
+      ArgumentChecker.isTrue(n == row.length, "Names array and matrix columns must be the same, have {} and {}", n, row.length);
       copyMatrix[i] = new double[row.length];
       copyNames[i] = names[i];
       System.arraycopy(row, 0, copyMatrix[i++], 0, row.length);
@@ -66,9 +67,9 @@ public final class LabelledMatrix {
           result[i][j + 1] = _names[j];
         }
       } else {
-        result[i + 1][0] = _names[i];
+        result[i][0] = _names[i - 1];
         for (int j = 1; j < n + 1; j++) {
-          result[i + 1][j] = _matrix[i - 1][j - 1];
+          result[i][j] = _matrix[i - 1][j - 1];
         }
       }
     }
