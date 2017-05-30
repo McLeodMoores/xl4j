@@ -1,5 +1,15 @@
 Hints and tips on writing add-ins
 =================================
+# Common performance issue
+Jumpy performance, freezes, etc. are often caused by:
+ - Long running functions, consider using auto asynchronous functions if your function can be long running.  This will particularly 
+   mess with the insert function dialog (the dialog that comes up when you click the 'fx' button next to the edit box for cells. 
+   This is because Excel calls the function being edited each time you edit an input field in the dialog so it can interactively
+   show the result.  We intend to add functionality later to allow the function author to detect being called from the insert function
+   dialog, but asynchronous execution is probably a better long term solution anyway.
+    - Synchronous (normal) UDFs will also commonly freeze the UI, even if in multi-threaded mode.
+ - Logging level is too detailed.  Logging should be set to WARN or ERROR in normal use.  Check both the Java and C++ logging levels.
+ - Check the VM options, make sure *Check JNI* is switched OFF.  This causes a 10-20x penalty in marshalling data.
 
 # Learn how to use array formulas
 Some of the most useful functions returns structured data that should be spread over a grid of cells.  Array formulas refers to
@@ -22,6 +32,7 @@ smaller) and hit CTRL-SHIFT-ENTER.
 ## Alternatives to array formulas
 Before using array formulas with abandon though, you should consider whether your users are familiar with them.  Some users find
 using array formulas very annoying, or, more likely, are completely unfamiliar with them.  You should either plan to survey or 
+
 train users before moving forward.
 
 An alternative is to creat some indexed accessor functions.  With this you return an object handle rather than an array, and then
@@ -31,6 +42,7 @@ method in [com.mcleodmoores.xl4j.examples.rest.JsonFunctions](https://github.com
 |   |            A            |                     B                   | C |
 |---|-------------------------|-----------------------------------------|---|
 | 1 | =CreateJsonObject()     |                                         |   |
+
 | 2 | *Using hardcoded index* | *Using computed index (easy to copy)*   |   |
 | 3 | =JSONArray.Get($A$1, 1) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
 | 4 | =JSONArray.Get($A$1, 2) | =JSONArray.Get($A$1, ROW() - ROW($A$2)) |   |
