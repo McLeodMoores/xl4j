@@ -15,6 +15,7 @@ import com.mcleodmoores.xl4j.v1.api.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.v1.util.ConverterUtils;
@@ -99,23 +100,28 @@ public final class Set2XLArrayTypeConverter extends AbstractTypeConverter {
     TypeConverter lastConverter = null;
     Class<?> lastClass = null;
     final TypeConverterRegistry typeConverterRegistry = _excel.getTypeConverterRegistry();
+    final boolean isRow = arr.length == 1;
     final int n = arr.length == 1 ? arr[0].length : arr.length;
     for (int i = 0; i < n; i++) {
-      final XLValue value;
-      if (arr.length == 1) { // row
-        value = arr[0][i];
-      } else { // column
-        value = arr[i][0];
+      final XLValue value = isRow ? arr[0][i] : arr[i][0];
+      final Class<?> valueClass;
+      final XLValue valueToConvert;
+      if (value instanceof XLString && ((XLString) value).isXLObject()) {
+        valueToConvert = ((XLString) value).toXLObject();
+        valueClass = valueToConvert.getClass();
+      } else {
+        valueClass = value.getClass();
+        valueToConvert = value;
       }
-      if (lastConverter == null || !value.getClass().equals(lastClass)) {
-        lastClass = value.getClass();
+      if (lastConverter == null || !valueClass.equals(lastClass)) {
+        lastClass = valueClass;
         lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, type));
         if (lastConverter == null) {
           // TODO should we use conversion to Object here?
           throw new XL4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + type);
         }
       }
-      targetSet.add(lastConverter.toJavaObject(type, value));
+      targetSet.add(lastConverter.toJavaObject(type, valueToConvert));
     }
     return targetSet;
   }

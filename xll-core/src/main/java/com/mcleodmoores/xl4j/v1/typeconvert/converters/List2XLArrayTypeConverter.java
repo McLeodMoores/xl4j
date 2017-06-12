@@ -15,6 +15,7 @@ import com.mcleodmoores.xl4j.v1.api.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.v1.util.ConverterUtils;
@@ -104,17 +105,26 @@ public final class List2XLArrayTypeConverter extends AbstractTypeConverter {
     final int n = isRow ? arr[0].length : arr.length;
     for (int i = 0; i < n; i++) {
       final XLValue value = isRow ? arr[0][i] : arr[i][0];
+      final Class<?> valueClass;
+      final XLValue valueToConvert;
+      if (value instanceof XLString && ((XLString) value).isXLObject()) {
+        valueToConvert = ((XLString) value).toXLObject();
+        valueClass = valueToConvert.getClass();
+      } else {
+        valueClass = value.getClass();
+        valueToConvert = value;
+      }
       // This is a rather weak attempt at optimizing converter lookup - other
       // options seemed to have greater overhead.
-      if (lastConverter == null || !value.getClass().equals(lastClass)) {
-        lastClass = value.getClass();
+      if (lastConverter == null || !valueClass.equals(lastClass)) {
+        lastClass = valueClass;
         lastConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastClass, type));
         if (lastConverter == null) {
           // TODO should we use conversion to Object here?
           throw new XL4JRuntimeException("Could not find type converter for " + lastClass + " using component type " + type);
         }
       }
-      targetList.add(lastConverter.toJavaObject(type, value));
+      targetList.add(lastConverter.toJavaObject(type, valueToConvert));
     }
     return targetList;
   }
