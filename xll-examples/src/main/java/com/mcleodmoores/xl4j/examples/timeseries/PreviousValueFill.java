@@ -3,11 +3,12 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
+import org.threeten.bp.LocalDate;
+
 import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunctions;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLNamespace;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
-import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
  * Fills any missing values in a time series with the previous value available in the time series.
@@ -25,12 +26,21 @@ public class PreviousValueFill implements TimeSeriesFunction<TimeSeries> {
     if (ts.size() == 0) {
       return TimeSeries.newTimeSeries();
     }
-    if (ts.get(ts.firstKey()) == null) {
-      throw new XL4JRuntimeException("First value of time series was null: no value with which to pad");
-    }
+    final LocalDate firstDate = ts.firstKey();
+    final LocalDate lastDate = ts.lastKey();
     final TimeSeries result = TimeSeries.newTimeSeries();
-    result.putAll(ts);
-    result.forEach((date, value) -> result.computeIfAbsent(date, value1 -> result.get(result.headMap(date).lastKey())));
+    LocalDate date = firstDate;
+    Double previousValue = ts.values().stream().filter(value -> value != null).findFirst().get();
+    while (!date.isAfter(lastDate)) {
+      final Double value = ts.get(date);
+      if (value == null) {
+        result.put(date, previousValue);
+      } else {
+        previousValue = value;
+        result.put(date, value);
+      }
+      date = date.plusDays(1);
+    }
     return result;
   }
 

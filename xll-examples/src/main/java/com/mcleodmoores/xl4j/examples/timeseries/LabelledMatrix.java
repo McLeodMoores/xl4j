@@ -115,6 +115,21 @@ public final class LabelledMatrix {
     return _matrix[row][column];
   }
 
+  /**
+   * Gets a copy of the underlying matrix.
+   * @return
+   *          a copy of the underlying matrix
+   */
+  public double[][] getUnderlyingMatrix() {
+    final double[][] copy = new double[_matrix.length][];
+    int i = 0;
+    for (final double[] row : _matrix) {
+      copy[i] = new double[row.length];
+      System.arraycopy(row, 0, copy[i++], 0, row.length);
+    }
+    return copy;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

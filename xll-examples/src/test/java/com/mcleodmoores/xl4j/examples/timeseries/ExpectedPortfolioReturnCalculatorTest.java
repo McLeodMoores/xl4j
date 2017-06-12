@@ -3,13 +3,13 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import static org.testng.Assert.assertEquals;
-
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.testng.annotations.Test;
+import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
@@ -18,13 +18,33 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
  */
 public class ExpectedPortfolioReturnCalculatorTest {
   private static final ExpectedPortfolioReturnCalculator CALC = new ExpectedPortfolioReturnCalculator();
+  private static final List<Double> WEIGHTS;
+  private static final List<TimeSeries> TS = new ArrayList<>();
+
+  static {
+    final int n = 100;
+    WEIGHTS = new ArrayList<>(Collections.nCopies(n, 1. / n));
+    final Random rng = new Random(6739857);
+    for (int i = 0; i < n; i++) {
+      final LocalDate date = LocalDate.of(2015, 1, 1);
+      final int m = 500;
+      final List<LocalDate> dates = new ArrayList<>();
+      final List<Double> values = new ArrayList<>();
+      for (int j = 0; j < m; j++) {
+        final double a = rng.nextDouble() / 100;
+        dates.add(date.plusDays(j));
+        values.add(a * rng.nextGaussian());
+      }
+      TS.add(TimeSeries.of(dates, values));
+    }
+  }
 
   /**
    * Tests that the weights cannot be null.
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullWeights() {
-    CALC.apply(null, Arrays.asList(2., 3., 4., 5.));
+    CALC.apply(null, TS);
   }
 
   /**
@@ -32,7 +52,7 @@ public class ExpectedPortfolioReturnCalculatorTest {
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullExpectedReturns() {
-    CALC.apply(Arrays.asList(0.25, 0.25, 0.25, 0.25), null);
+    CALC.apply(WEIGHTS, null);
   }
 
   /**
@@ -48,26 +68,7 @@ public class ExpectedPortfolioReturnCalculatorTest {
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testDifferentSizes() {
-    CALC.apply(Arrays.asList(0.25, 0.25, 0.25, 0.25), Arrays.asList(3., 5., 6.));
+    CALC.apply(WEIGHTS, TS.subList(0, TS.size() - 1));
   }
 
-  /**
-   * Tests the expected return of a two-asset portfolio.
-   */
-  @Test
-  public void testTwoAssets() {
-    final List<Double> weights = Arrays.asList(0.5, 0.5);
-    final List<Double> returns = Arrays.asList(0.12, 0.2);
-    assertEquals(new ExpectedPortfolioReturnCalculator().apply(weights, returns), 0.16, 1e-15);
-  }
-
-  /**
-   * Tests the expected return of a three-asset portfolio.
-   */
-  @Test
-  public void testThreeAssets() {
-    final List<Double> weights = Arrays.asList(1 / 3., 1 / 3., 1 / 3.);
-    final List<Double> returns = Arrays.asList(0.2, 0.12, 0.15);
-    assertEquals(new ExpectedPortfolioReturnCalculator().apply(weights, returns), 47 / 300., 1e-15);
-  }
 }

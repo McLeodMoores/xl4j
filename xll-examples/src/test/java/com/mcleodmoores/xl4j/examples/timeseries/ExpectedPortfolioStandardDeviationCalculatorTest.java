@@ -3,13 +3,13 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
-import static org.testng.Assert.assertEquals;
-
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import org.testng.annotations.Test;
+import org.threeten.bp.LocalDate;
 
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
@@ -18,21 +18,41 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
  */
 public class ExpectedPortfolioStandardDeviationCalculatorTest {
   private static final ExpectedPortfolioStandardDeviationCalculator CALC = new ExpectedPortfolioStandardDeviationCalculator();
+  private static final List<Double> WEIGHTS;
+  private static final List<TimeSeries> TS = new ArrayList<>();
+
+  static {
+    final int n = 100;
+    WEIGHTS = new ArrayList<>(Collections.nCopies(n, 1. / n));
+    final Random rng = new Random(6739857);
+    for (int i = 0; i < n; i++) {
+      final LocalDate date = LocalDate.of(2015, 1, 1);
+      final int m = 500;
+      final List<LocalDate> dates = new ArrayList<>();
+      final List<Double> values = new ArrayList<>();
+      for (int j = 0; j < m; j++) {
+        final double a = rng.nextDouble() / 100;
+        dates.add(date.plusDays(j));
+        values.add(a * rng.nextGaussian());
+      }
+      TS.add(TimeSeries.of(dates, values));
+    }
+  }
 
   /**
    * Tests that the weights cannot be null.
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testNullWeights() {
-    CALC.apply(null, LabelledMatrix.of(new String[] {"A",  "B"}, new double[][] {{1, 2}, {3, 4}}));
+    CALC.apply(null, TS);
   }
 
   /**
-   * Tests that the covariance matrix cannot be null.
+   * Tests that the expected returns cannot be null.
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
-  public void testNullCovarianceMatrix() {
-    CALC.apply(Arrays.asList(0.5, 0.5), null);
+  public void testNullExpectedReturns() {
+    CALC.apply(WEIGHTS, null);
   }
 
   /**
@@ -40,36 +60,14 @@ public class ExpectedPortfolioStandardDeviationCalculatorTest {
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
   public void testEmptyPortfolio() {
-    CALC.apply(Collections.emptyList(), LabelledMatrix.of(new String[] {"A",  "B"}, new double[][] {{1, 2}, {3, 4}}));
+    CALC.apply(Collections.emptyList(), Collections.emptyList());
   }
 
   /**
-   * Tests that the weights and covariance matrix must the the same size.
+   * Tests that there must be one return for each weight.
    */
   @Test(expectedExceptions = XL4JRuntimeException.class)
-  public void testSameSize() {
-    CALC.apply(Arrays.asList(0.25, 0.25, 0.25, 0.25), LabelledMatrix.of(new String[] {"A",  "B"}, new double[][] {{1, 2}, {3, 4}}));
-  }
-
-  /**
-   * Tests the expected standard deviation of a two-asset portfolio.
-   */
-  @Test
-  public void testTwoAssetPortfolio() {
-    final String[] names = {"A", "B"};
-    final double[][] covariances = {{0.04, -0.016}, {-0.016, 0.16}};
-    final List<Double> weights = Arrays.asList(0.5, 0.5);
-    assertEquals(CALC.apply(weights, LabelledMatrix.of(names, covariances)), Math.sqrt(0.042), 1e-15);
-  }
-
-  /**
-   * Tests the expected standard deviation of a three-asset portfolio.
-   */
-  @Test
-  public void testThreeAssetPortfolio() {
-    final String[] names = {"A", "B", "C"};
-    final double[][] covariances = {{0.09, 0.045, 0.05}, {0.045, 0.07, 0.04}, {0.05, 0.04, 0.06}};
-    final List<Double> weights = Arrays.asList(1. / 3, 1. / 3, 1. / 3);
-    assertEquals(CALC.apply(weights, LabelledMatrix.of(names, covariances)), Math.sqrt(49. / 900), 1e-15);
+  public void testDifferentSizes() {
+    CALC.apply(WEIGHTS, TS.subList(0, TS.size() - 1));
   }
 }

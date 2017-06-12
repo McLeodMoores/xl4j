@@ -12,8 +12,6 @@ import java.util.stream.IntStream;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
-
 /**
  * Unit tests for {@link PreviousValueFill}.
  */
@@ -22,13 +20,30 @@ public class PreviousValueFillTest {
   private static final double EPS = 1e-15;
 
   /**
-   * The first value cannot be null.
+   * If the first value is null, the front of the series is padded with the first available value.
    */
-  @Test(expectedExceptions = XL4JRuntimeException.class)
+  @Test
   public void testPreviousValueFillFirstValueNull() {
     final TimeSeries ts = TimeSeries.newTimeSeries();
     IntStream.range(0, 100).forEach(i -> ts.put(LocalDate.now().plusDays(i), i % 2 == 0 ? null : i * 2.));
-    CALCULATOR.apply(ts);
+    final TimeSeries result = CALCULATOR.apply(ts);
+    IntStream.range(0, 100).forEach(i -> {
+      final Double value = result.get(LocalDate.now().plusDays(i));
+      if (i == 0) {
+        assertEquals(value, 2., EPS);
+      } else {
+        switch (i % 2) {
+          case 0:
+            assertEquals(value, (i - 1) * 2., EPS);
+            break;
+          case 1:
+            assertEquals(value, i * 2., EPS);
+            break;
+          default:
+            throw new IllegalStateException();
+        }
+      }
+    });
   }
 
   /**
