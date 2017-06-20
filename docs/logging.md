@@ -41,7 +41,7 @@ If C++/native logs are sent to the debug system, the Sysinternals utility
 file is used, the C++ logs can be opened in the default registered file handling application for files with a `.log` extension by
 clicking on the C++ logs icon on the toolbar:
 
-![Toolbar](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/toolbar.png "The default toolbar")
+![Toolbar](images/toolbar.png "The default toolbar")
 
 Java logs are always stored in a file, which can be accessed using the Java log button on the toolbar.
 
@@ -62,4 +62,4 @@ Logs are actually stored in `%TEMP%\xl4j-cpp.log` and `%TEMP%\xl4j-java.log`, wh
 is usually to click on the path breadcrumb trail and entering/editing the path on the keyboard.  Below is an image showing you where 
 to click in explorer to edit the full path (albeit the picture shows a slightly different target location).
     
-![How to edit the path in explorer](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/explorer-breadcrumbs.PNG "Windows Explorer where to click to edit path")
+![How to edit the path in explorer](images/explorer-breadcrumbs.PNG "Windows Explorer where to click to edit path")

@@ -52,6 +52,7 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
     EXCLUDED_METHOD_NAMES.add("wait");
   }
   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFunctionRegistry.class);
+  private final Set<String> _registeredFunctionNames = new HashSet<>();
 
   /**
    * Allocate an export number for the function.
@@ -92,7 +93,9 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
         for (final Field field : clazz.getFields()) {
           final String functionName = generateFunctionNameForField(namespaceAnnotation, constantAnnotation, clazz.getSimpleName(),
               field.getName(), true);
-          definitions.add(generateDefinition(field, invokerFactory, constantAnnotation, namespaceAnnotation, functionName));
+          if (isNewFunctionName(functionName)) {
+            definitions.add(generateDefinition(field, invokerFactory, constantAnnotation, namespaceAnnotation, functionName));
+          }
         }
       } catch (final Exception e) {
         LOGGER.error("Exception while creating function definition for field in class " + clazz, e);
@@ -126,7 +129,9 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
         final XLConstant constantAnnotation = field.getAnnotation(XLConstant.class);
         final String functionName = generateFunctionNameForField(namespaceAnnotation, constantAnnotation,
             field.getDeclaringClass().getSimpleName(), field.getName(), constantAnnotation.name().isEmpty());
-        definitions.add(generateDefinition(field, invokerFactory, constantAnnotation, namespaceAnnotation, functionName));
+        if (isNewFunctionName(functionName)) {
+          definitions.add(generateDefinition(field, invokerFactory, constantAnnotation, namespaceAnnotation, functionName));
+        }
       } catch (final Exception e) {
         LOGGER.error("Exception while creating function definition for field " + field, e);
         continue;
@@ -151,6 +156,11 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
       final Collection<Method> methodsAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
     for (final Method method : methodsAnnotatedWith) {
+      // don't register abstract or bridge methods
+      if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
+        LOGGER.warn("{} in {} is abstract or bridge method, not registering function", method, method.getDeclaringClass());
+        continue;
+      }
       try {
         XLNamespace namespaceAnnotation = null;
         if (method.getDeclaringClass().isAnnotationPresent(XLNamespace.class)) {
@@ -160,9 +170,11 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
         final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(method.getParameterAnnotations());
         final String functionName = generateFunctionNameForMethod(namespaceAnnotation, functionAnnotation.name(),
             method.getDeclaringClass().getSimpleName(), method.getName(), false, functionAnnotation.name().isEmpty(), 1);
-        definitions.add(generateDefinition(method, invokerFactory, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName));
+        if (isNewFunctionName(functionName)) {
+          definitions.add(generateDefinition(method, invokerFactory, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName));
+        }
       } catch (final Exception e) {
-        LOGGER.error("Exception while creating function definition for method " + method, e);
+        LOGGER.error("Exception while creating function definition for method {}", method, e);
         continue;
       }
     }
@@ -194,9 +206,11 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
         final XLParameter[] xlParameterAnnotations = getXLParameterAnnotations(constructor.getParameterAnnotations());
         final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, functionAnnotation.name(),
             constructor.getDeclaringClass().getSimpleName(), false, 1);
-        definitions.add(generateDefinition(constructor, invokerFactory, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName));
+        if (isNewFunctionName(functionName)) {
+          definitions.add(generateDefinition(constructor, invokerFactory, functionAnnotation, namespaceAnnotation, xlParameterAnnotations, functionName));
+        }
       } catch (final Exception e) {
-        LOGGER.error("Exception while creating function definition for constructor " + constructor, e);
+        LOGGER.error("Exception while creating function definition for constructor {}", constructor, e);
         continue;
       }
     }
@@ -222,49 +236,66 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
       final Collection<Class<?>> classesAnnotatedWith) {
     final List<FunctionDefinition> definitions = new ArrayList<>();
     for (final Class<?> clazz : classesAnnotatedWith) {
-      final boolean isAbstract = Modifier.isAbstract(clazz.getModifiers());
       XLNamespace namespaceAnnotation = null;
       final String className = clazz.getSimpleName();
-      if (clazz.isAnnotationPresent(XLNamespace.class)) {
-        namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
-      }
-      final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
-      final boolean useClassName = classAnnotation.prefix() == null || classAnnotation.prefix().isEmpty();
-      if (!isAbstract) {
-        // build the constructor invokers
-        final Constructor<?>[] constructors = clazz.getConstructors();
-        int count = 1;
-        for (final Constructor<?> constructor : constructors) {
-          if (constructor.getAnnotation(XLFunction.class) != null) {
+      final int modifiers = clazz.getModifiers();
+      try {
+        if (clazz.isAnnotationPresent(XLNamespace.class)) {
+          namespaceAnnotation = clazz.getAnnotation(XLNamespace.class);
+        }
+        final XLFunctions classAnnotation = clazz.getAnnotation(XLFunctions.class);
+        // if a superclass is annotated, classAnnotation will be null
+        if (classAnnotation == null) {
+          LOGGER.error("Could not get @XLFunctions annotation for {}; is the annotation on a superclass?", className);
+          continue;
+        }
+        final boolean useClassName = classAnnotation.prefix() == null || classAnnotation.prefix().isEmpty();
+        if (!Modifier.isAbstract(modifiers)) {
+          // build the constructor invokers
+          final Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+          int count = 1;
+          for (final Constructor<?> constructor : constructors) {
+            if (constructor.getAnnotation(XLFunction.class) != null) {
+              // this will already have been registered, so skip
+              continue;
+            }
+            final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, useClassName, count);
+            if (isNewFunctionName(functionName)) {
+              definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+            }
+            count++;
+          }
+        }
+        // build the method invokers
+        final Method[] methods = clazz.getMethods();
+        final Map<String, Integer> methodNames = new HashMap<>();
+        for (final Method method : methods) {
+          final int methodModifiers = method.getModifiers();
+          if (method.getAnnotation(XLFunction.class) != null) {
             // this will already have been registered, so skip
             continue;
           }
-          final String functionName = generateFunctionNameForConstructor(namespaceAnnotation, classAnnotation.prefix(), className, useClassName, count);
-          definitions.add(generateDefinition(constructor, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
-          count++;
+          final String methodName = method.getName();
+          // don't register abstract methods, bridge methods or default methods in interfaces
+          final boolean shouldNotRegister = Modifier.isAbstract(methodModifiers) || method.isBridge() || clazz.isInterface() && method.isDefault();
+          if (shouldNotRegister) {
+            LOGGER.warn("{} in {} is abstract, bridge or default method in an interface, not registering function", method, method.getDeclaringClass());
+            continue;
+          }
+          if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
+            continue;
+          }
+          final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
+          methodNames.put(methodName, methodNameCount);
+          final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
+              useClassName, true, methodNameCount);
+          if (isNewFunctionName(functionName)) {
+            definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+          }
         }
-      }
-      // build the method invokers
-      final Method[] methods = clazz.getMethods();
-      final Map<String, Integer> methodNames = new HashMap<>();
-      for (final Method method : methods) {
-        if (method.getAnnotation(XLFunction.class) != null) {
-          // this will already have been registered, so skip
-          continue;
-        }
-        final String methodName = method.getName();
-        if (Modifier.isAbstract(method.getModifiers()) || method.isBridge()) {
-          LOGGER.warn("{} in {} is abstract or a bridge method, not registering function", methodName, method.getDeclaringClass());
-          continue;
-        }
-        if (EXCLUDED_METHOD_NAMES.contains(methodName)) {
-          continue;
-        }
-        final int methodNameCount = methodNames.containsKey(methodName) ? methodNames.get(methodName) + 1 : 1;
-        methodNames.put(methodName, methodNameCount);
-        final String functionName = generateFunctionNameForMethod(namespaceAnnotation, classAnnotation.prefix(), className, methodName,
-            useClassName, true, methodNameCount);
-        definitions.add(generateDefinition(method, invokerFactory, classAnnotation, namespaceAnnotation, EMPTY_PARAMETER_ARRAY, functionName));
+      } catch (final Exception e) {
+        LOGGER.error("Exception while creating function definition for constructor / method in {}", className, e);
+        continue;
       }
     }
     return definitions;
@@ -380,7 +411,7 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
     if (namespace != null) {
       functionName.append(namespace.value());
     }
-    if (nameOrPrefix.isEmpty()) {
+    if (nameOrPrefix == null || nameOrPrefix.isEmpty()) {
       functionName.append(className);
     } else {
       functionName.append(nameOrPrefix);
@@ -393,5 +424,14 @@ public abstract class AbstractFunctionRegistry implements FunctionRegistry {
       functionName.append(constructorNumber);
     }
     return functionName.toString();
+  }
+
+  private boolean isNewFunctionName(final String name) {
+    if (_registeredFunctionNames.contains(name.toUpperCase())) {
+      LOGGER.warn("Have already registered a function called {}, ignoring", name);
+      return false;
+    }
+    _registeredFunctionNames.add(name.toUpperCase());
+    return true;
   }
 }

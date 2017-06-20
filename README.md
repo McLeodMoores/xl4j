@@ -1,12 +1,39 @@
 XL4J - Native Excel XLL Add-ins in Java
 =======================================
 
+**THIS PROJECT IS PRE-RELEASE, THE GITHUB SITE ISN'T YET PUBLIC, BUT WE'RE OPENING THE DOCUMENTATION TO GIVE YOU A TASTE**
+
+*[Sign up to be notified when the project is opened for public beta](https://www.mcleodmoores.com/signup)* or visit the 
+[XL4J Commercial Site](https://www.mcleodmoores.com/xl4j) for more information.
+
 # Introduction
 XL4J is a Java and native code library that allows you to build native-quality Excel Add-ins using only standard Java tooling (Maven + JDK).  It lets you write high performance custom Excel functions and commands for end users, but also works as a dynamic rapid application development tool in its own right.
 
 In addition to supporting the standard Excel types (numbers, strings, dates, booleans, etc.) it also supports Java objects in the form
 of object handles.  This means you can store any complex object in a single Excel sheet cell, allowing much more complex applications.  A background incremental garbage collector prevents discarded and overwritten objects from hanging around.
-
+# Table of contents
+ - Overview (this document)
+   - [Objectives](#objectives)
+   - [Requirements](#requirements)
+   - [Features](#features)
+     - [Writing Excel user-defined functions](#writing-excel-user-defined-functions)
+     - [Calling constructors and methods on Java objects](#calling-constructors-and-methods-on-java-objects)
+     - [Configuration and easy logging access](#configuration-and-easy-logging-access)
+     - [Deployment features](#deployment-features)
+     - [Add-in features](#add-in-features)
+   - [Roadmap](#roadmap)
+     - [Features in development](#features-in-development)
+     - [Features in the pipeline](#features-in-the-pipeline)
+   - [Limitations](#limitations)
+ - [Settings & Configuration](docs/settings.md)
+ - [Logging](docs/logging.md)
+ - [Tutorial](docs/tutorial.md)
+ - [Hints & Tips on Writing Add-ins](docs/hints-and-tips.md)
+ - [Debugging & Troubleshooting](docs/debugging.md)
+ - [API Reference](docs/api-reference.md)
+ - [Native code structure & Walkthrough](docs/native-code.md)
+ - [Background about Excel Types for Developers](docs/excel-types-primer-for-developers.md)
+ 
 # Objectives
  - Make no compromises 
    - allowing developers to access any functionality they would be able to through a pure native XLL project written in C++.  This 
@@ -24,6 +51,24 @@ of object handles.  This means you can store any complex object in a single Exce
      open source projects without payment.
    - Each commerical license provides perpetual Add-in distribution and source code license for latest version at time of purchase.
    - Per developer-seat licensing, with royalty-free end-user licensing (you pay per developer, not per deployment).
+   
+# Requirements
+ - Build requirements
+   - Java modules (most users will only ever need to use the Java modules as dependencies)
+     - JDK8 is required to build all modules, although only one example package actually requires JDK8 so modification for JDK7 is 
+       trivial
+     - Maven 3.2+ (although it should be possible to use Gradle or Ant/Ivy with very few alterations)
+   - Native modules (most users will not need to build the native modules)
+     - Visual Studio 2013 AND Visual Studio 2015 are required if you wish to rebuild them.  The free Community Editions are probably 
+       enough although all development is done on the Enterprise edition.
+ - Runtime requirements
+   - Java 8 Runtime Environment (or 7 with minor adjustments).  
+     - Bitness must match Excel version. 
+   - Excel 2010, 2013 or 2016.  
+     - 32-bit builds are fully tested, 64-bit builds are experimental but do work.
+ - Windows 7, 8, 8.1 or 10.  Only 64-bit versions are tested but 32-bit versions should be fine.
+     - Builds may run on Windows Vista, but it is unsupported.  
+     - Windows XP is not supported.
 
 # Features
 ## Writing Excel user-defined functions
@@ -35,7 +80,7 @@ of object handles.  This means you can store any complex object in a single Exce
      }
    ```
 
-  ![MyAdd](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/my-add.PNG "MyAdd in use")
+  ![MyAdd](docs/images/my-add.PNG "MyAdd in use")
    
   See the tutorial for more complex examples that return objects and arrays, including documentation and more.
  - Automatic marshalling (conversion) from Java to Excel types and back again.
@@ -55,7 +100,7 @@ of object handles.  This means you can store any complex object in a single Exce
    - XLL API calls can be made from the caller's Excel calculation thread or from the Excel main thread depending on context required.  
      Excel documentation specifies that many API calls can only be safely made from the main Excel thread. **CURRENTLY IN DEVELOPMENT**
  
-## Calling constructors and methods on arbitrary Java objects
+## Calling constructors and methods on Java objects
 The follwing example allows you to create and show a Swing JFrame with no coding at all:
 
 |   | A                                                      |                          B                        |
@@ -67,7 +112,7 @@ The follwing example allows you to create and show a Swing JFrame with no coding
 
 which looks like this in Excel - note the object handles with the >> prefix followed by the type and the handle number:
 
-![JFrame in Excel](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe-example.PNG "How it looks in Excel")
+![JFrame in Excel](docs/images/jframe-example.PNG "How it looks in Excel")
 
 Breaking this example down:
  - The `JConstruct` function calls the named class's constructor with any supplied arguments and returns an object handle.  The first
@@ -81,14 +126,14 @@ Breaking this example down:
    
 Evaluating the sheet results JFrame appearing:
 
-![JFrame](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/jframe.PNG "The Resulting JFrame")
+![JFrame](docs/images/jframe.PNG "The Resulting JFrame")
 
 ## Configuration and Easy Logging Access
 By default there are toolbar icons for opening the settings dialog, and opening the Java and C++ Logs in Notepad (or default 
 `.log` file viewer).  These can be disabled for end users if preferred.
  - Support for custom tool icons on the Add-in ribbon via a super-simple extension to the configuration file. **CURRENTLY IN DEVELOPMENT**
  
- ![Toolbar](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/toolbar.png "The default toolbar")
+ ![Toolbar](docs/images/toolbar.png "The default toolbar")
  
 ## Deployment features
  - Zero-install (a.k.a. XCOPY install) works for non-Adminstrator users who lack permission to install software - you 
@@ -170,4 +215,4 @@ There are a few limitations with the current build.  These should slowly disappe
     to build a wrapper XLA to install a ribbon if needed before official support is added.
   - 32-bit JVM limits maximum heap as it needs to share address space with Excel.  This will go away once we move to an 
     out-of-process JVM with the first updates.
-  - 64-bit Add-in/JVM combination builds but hasn't been tested.
+  - 64-bit Add-in/JVM combination builds and appears fine but hasn't been as tested as the 32-bit build.

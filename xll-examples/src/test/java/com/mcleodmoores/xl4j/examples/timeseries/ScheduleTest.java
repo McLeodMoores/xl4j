@@ -8,8 +8,6 @@ import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
-import com.mcleodmoores.xl4j.v1.api.core.Excel;
-import com.mcleodmoores.xl4j.v1.api.core.ExcelFactory;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
 import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
@@ -20,8 +18,6 @@ import com.mcleodmoores.xl4j.v1.util.XlDateUtils;
  * Unit tests for {@link Schedule}.
  */
 public class ScheduleTest {
-  /** Test Excel instance */
-  private static final Excel EXCEL = ExcelFactory.getInstance();
   /** The function processor */
   private static final MockFunctionProcessor PROCESSOR = MockFunctionProcessor.getInstance();
 

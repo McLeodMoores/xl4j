@@ -15,6 +15,7 @@ import com.mcleodmoores.xl4j.v1.api.typeconvert.ExcelToJavaTypeMapping;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverter;
 import com.mcleodmoores.xl4j.v1.api.typeconvert.TypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.api.values.XLArray;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 import com.mcleodmoores.xl4j.v1.util.ConverterUtils;
@@ -121,26 +122,42 @@ public final class Map2XLArrayTypeConverter extends AbstractTypeConverter {
         keyValue = arr[i][0];
         valueValue = arr[i][1];
       }
+      final Class<?> keyClass, valueClass;
+      final XLValue keyToConvert, valueToConvert;
+      if (keyValue instanceof XLString && ((XLString) keyValue).isXLObject()) {
+        keyToConvert = ((XLString) keyValue).toXLObject();
+        keyClass = keyToConvert.getClass();
+      } else {
+        keyClass = keyValue.getClass();
+        keyToConvert = keyValue;
+      }
+      if (valueValue instanceof XLString && ((XLString) valueValue).isXLObject()) {
+        valueToConvert = ((XLString) valueValue).toXLObject();
+        valueClass = valueToConvert.getClass();
+      } else {
+        valueClass = valueValue.getClass();
+        valueToConvert = valueValue;
+      }
       // This is a rather weak attempt at optimizing converter lookup - other
       // options seemed to have greater overhead.
-      if (lastKeyConverter == null || !keyValue.getClass().equals(lastKeyClass)) {
-        lastKeyClass = keyValue.getClass();
+      if (lastKeyConverter == null || !keyClass.equals(lastKeyClass)) {
+        lastKeyClass = keyClass;
         lastKeyConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastKeyClass, keyType));
         if (lastKeyConverter == null) {
           // TODO should we use conversion to Object here?
           throw new XL4JRuntimeException("Could not find type converter for " + lastKeyClass + " using component type " + keyType);
         }
       }
-      if (lastValueConverter == null || !valueValue.getClass().equals(lastValueClass)) {
-        lastValueClass = valueValue.getClass();
+      if (lastValueConverter == null || !valueClass.equals(lastValueClass)) {
+        lastValueClass = valueClass;
         lastValueConverter = typeConverterRegistry.findConverter(ExcelToJavaTypeMapping.of(lastValueClass, valueType));
         if (lastValueConverter == null) {
           // TODO should we use conversion to Object here?
           throw new XL4JRuntimeException("Could not find type converter for " + lastValueClass + " using component type " + valueType);
         }
       }
-      final Object key = lastKeyConverter.toJavaObject(keyType, keyValue);
-      final Object value = lastValueConverter.toJavaObject(valueType, valueValue);
+      final Object key = lastKeyConverter.toJavaObject(keyType, keyToConvert);
+      final Object value = lastValueConverter.toJavaObject(valueType, valueToConvert);
       targetMap.put(key, value);
     }
     return targetMap;

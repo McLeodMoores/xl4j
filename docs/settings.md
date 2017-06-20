@@ -5,14 +5,14 @@ XL4J stores all its settings in an `.ini` style file rather than the registry. T
 the configuration and makes it less likely that there will be issues with permissions.  To make configuration easier to manage, you can
 edit all configuration via the in-built settings panel, which you can access via the Add-in toolbar:
 
-![Toolbar](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/toolbar.png "The default toolbar")
+![Toolbar](images/toolbar.png "The default toolbar")
 
 # Configuring XL4J via the Settings dialog
 Clicking the Settings icon will open the dialog, which contains three tabs.
 
 ## General Add-in Settings
 
-![Settings (Add-in)](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/settings-add-in.PNG "The settings dialog (add-in tab)")
+![Settings (Add-in)](images/settings-add-in.PNG "The settings dialog (add-in tab)")
 
 The default tab here is for options relating to the whole Add-in:
  * General Options
@@ -28,7 +28,7 @@ The default tab here is for options relating to the whole Add-in:
 
 ## Classpath Settings
   
-![Settings (Classpath)](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/settings-classpath.PNG "The settings dialog (classpath tab)")
+![Settings (Classpath)](images/settings-classpath.PNG "The settings dialog (classpath tab)")
 
 By default, the classpath is set to include all the jars in the `lib/` directory in the root of the installation directory.  This dialog
 lets you include other jars or folders (folders will be searched for all contained jars).  Both the **Add JAR...** and **Add Folder...**
@@ -45,13 +45,14 @@ added classes.
 
 ## VM Options
 
-![Settings (VM Options)](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/settings-vm-options.PNG "The settings dialog (VM options)")
+![Settings (VM Options)](images/settings-vm-options.PNG "The settings dialog (VM options)")
 
 The VM Options tab allows you to easily specify options that are passed directly to the Java Virtual Machine.  A range of commonly
 used and useful options have been made available to save the developer from having to look up the options.  These options are:
  * Turn JVMTI debugging support on and off, which is used by Java debuggers and profiling tools to interact with the JVM.  
    It should be turned off in normal operation as it has a performance penalty.
- * Check JNI calls - this performs extra checks on JNI calls.  It can be disabled in normal operation.
+ * Check JNI calls - this performs extra checks on JNI calls.  It **must** be disabled in normal operation as it causes a considerable 
+   slowdown in marshalling data, especially large returned arrays.
  * Maximum Heap - the number of megabytes allowed for the heap.  This will depend on whether your VM is in-process, out-of-process 
    and whether it's 32 or 64 bit.  Currently VMs are in-process and 32-bit only and so must share the 32-bit address space with Excel.
    This means you shouldn't expect to be able to have very large heaps.  This restriction should change once out-of-process JVMs are
