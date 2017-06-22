@@ -210,5 +210,57 @@ As optional values are passed in as nulls, it's necessary to test for them and h
  
  
  ## Starting from scratch
+ 
+ We're going to build a sheet that takes historical time series data from **Quandl insert link**, performs some basic statistical analysis and compares a long-only portfolio to the efficient frontier. 
+ 
+A prerequisite for any sort of time series analysis is to make sure that the data are clean (e.g. no spikes)  and consistent across dates (i.e. all have the same dates with no missing values). To do this, we should at a minumum:
+ 
+  - Allow the time series to be sampled at a particular frequency e.g. daily or monthly
+  - Have the ability to pad the series when there is no data for a particular date
+
+It is certainly possible to do these operations using only Excel and / or VBA. However, it is easier write functions in Java to do this, with the added bonus that the resulting spreadsheet is smaller (10 years of daily data is ~2500 data points - that's a lot of rows or columns to manage), which means, amongst other things, that any errors can be more easily spotted.
+
+We start with a toy ![```TimeSeries```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java) implementation that extends a ```SortedMap```. There's a factory method that takes either a ```2 x n``` or ```n x 2``` range and returns the ```TimeSeries``` as an **object**:
+
+```java
+  @XLFunction(name = "TimeSeries",
+      description = "Create a time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.OBJECT_RESULT)  // NOTE THE CONVERSION MODE
+  public static TimeSeries of(@XLParameter(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
+    ArgumentChecker.notNull(datesAndValues, "datesAndValues");
+    if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
+      return ofRange((XLArray) datesAndValues[0]);
+    } else if (datesAndValues.length == 2 && datesAndValues[0] instanceof XLArray && datesAndValues[1] instanceof XLArray) {
+      return of((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
+    }
+    throw new XL4JRuntimeException("Cannot create time series from input");
+  }
+```
+
+The only difference between this function and the ones in the previous section is that the conversion mode for the results is set to ```OBJECT_RESULT```. ```OBJECT_RESULT``` functions do not perform any conversions, so the sheet will show an object reference. 
+
+** Object reference picture**
+
+The default mode is ```SIMPLEST_RESULT```, which performs conversions to Excel types (e.g. ```Double``` to ```XLNumber```) where a converter is available, or returns an ```XLObject``` for more complex types without converters, like ```ISDACompliantYieldCurve```. 
+
+For this example, we will use functions with ```OBJECT_RESULT``` , as this will help with our stated aim of writing a compact spreadsheet. 
+
+We've also added a function that expands a time series to an Excel array:
+
+```java
+  @XLFunction(name = "ExpandTimeSeries",
+      description = "Expand a time series into an array",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  public static TimeSeries expand(@XLParameter(name = "timeSeries", description = "time series object") final TimeSeries timeSeries) {
+    return timeSeries;
+  }
+```
+
+At first, this function does not look like it does anything to the time series. However, note that the conversion mode is ```SIMPLEST_RESULT```. If we add a class that converts ![a ```TimeSeries``` to ```XLArray```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java), then the time series will be converted to an array that can be used like any array formula in Excel.
+
+
+ 
  ## Using existing code (2)
  
