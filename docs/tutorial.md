@@ -260,7 +260,12 @@ We've also added a function that expands a time series to an Excel array:
 
 At first, this function does not look like it does anything to the time series. However, note that the conversion mode is ```SIMPLEST_RESULT```. If we add a class that converts ![a ```TimeSeries``` to ```XLArray```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java), then the time series will be converted to an array that can be used like any array formula in Excel.
 
+Next, we need functions that generate schedules, a sampling function that gets the dates and values from a time series for a particular schedule, functions that deal with missing data, return calculators and arithmetic operations. All of these classes are in the ![timeseries](https://github.com/McLeodMoores/xl4j/tree/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries) package.
 
+One of these functions is a percentage return calculator:
+
+```java
+``` 
  
  ## Using existing code (2)
  
