@@ -40,19 +40,6 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
  * Class to scan for {@link XLFunction}, {@link XLConstant} and {@link XLFunctions} annotations and register each function with Excel.
  */
 public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
-  private static final Set<String> EXCLUDED_METHOD_NAMES = new HashSet<>();
-  static {
-    EXCLUDED_METHOD_NAMES.add("clone");
-    EXCLUDED_METHOD_NAMES.add("equals");
-    EXCLUDED_METHOD_NAMES.add("finalize");
-    EXCLUDED_METHOD_NAMES.add("getClass");
-    EXCLUDED_METHOD_NAMES.add("hashCode");
-    EXCLUDED_METHOD_NAMES.add("notify");
-    EXCLUDED_METHOD_NAMES.add("notifyAll");
-    EXCLUDED_METHOD_NAMES.add("toString");
-    EXCLUDED_METHOD_NAMES.add("wait");
-  }
-
   private static final Logger LOGGER = LoggerFactory.getLogger(ReflectiveFunctionRegistry.class);
   // REVIEW: is this the best structure to use?
   private final Set<FunctionDefinition> _functionDefinitions =
