@@ -289,6 +289,17 @@ public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries
 
 }
 ``` 
-There are two new annotations: ```XLNamespace``` and ```XLFunction**s**```
+There are two annotations that weren't used in the other examples: ```XLNamespace``` and ```XLFunctions```.
+
+### ```XLNamespace```
+
+As its name implies, this annotation allows functions to be categorised into namespaces by prepending the value of the annotation to all functions in a class. This can be very useful if you have a large number of functions, as they will be sorted alphabetically in a drop-down list.
+
+** Image of list with namespaces **
+
+### ```XLFunctions```
+
+
+
  ## Using existing code (2)
  
