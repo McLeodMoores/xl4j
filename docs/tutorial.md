@@ -265,6 +265,30 @@ Next, we need functions that generate schedules, a sampling function that gets t
 One of these functions is a percentage return calculator:
 
 ```java
+@XLNamespace("TimeSeries.")
+@XLFunctions(
+    prefix = "PercentageReturn",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Calculates the percentage return of a time series",
+    category = "Time Series")
+public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries> {
+
+  @Override
+  public TimeSeries apply(final TimeSeries ts) {
+    ArgumentChecker.notNull(ts, "ts");
+    final int n = ts.size();
+    ArgumentChecker.isTrue(n > 1, "Need more than one data point to calculate the returns");
+    final TimeSeries result = TimeSeries.newTimeSeries();
+    final Double[] previous = new Double[1];
+    ts.forEach((k, v) -> {
+      if (previous[0] != null) {
+        result.put(k, v / previous[0] - 1);
+      }
+      previous[0] = v;
+    });
+    return result;
+  }
+
 ``` 
  
  ## Using existing code (2)
