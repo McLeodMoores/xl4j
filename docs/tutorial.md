@@ -218,7 +218,7 @@ A prerequisite for any sort of time series analysis is to make sure that the dat
   - Allow the time series to be sampled at a particular frequency e.g. daily or monthly
   - Have the ability to pad the series when there is no data for a particular date
 
-It is certainly possible to do these operations using only Excel and / or VBA. However, it is easier write functions in Java to do this, with the added bonus that the resulting spreadsheet is smaller (10 years of daily data is ~2500 data points - that's a lot of rows or columns to manage), which means, amongst other things, that any errors can be more easily spotted.
+It is certainly possible to do these operations using only Excel and / or VBA. However, it's easier write functions in Java to do this, with the added bonus that the resulting spreadsheet is smaller (10 years of daily data is ~2500 data points - that's a lot of rows or columns to manage), which means, amongst other things, that any errors or problems like ```#VALUE!``` can be more easily spotted.
 
 We start with a toy ![```TimeSeries```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java) implementation that extends a ```SortedMap```. There's a factory method that takes either a ```2 x n``` or ```n x 2``` range and returns the ```TimeSeries``` as an **object**:
 
@@ -279,17 +279,16 @@ public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries
     final int n = ts.size();
     ArgumentChecker.isTrue(n > 1, "Need more than one data point to calculate the returns");
     final TimeSeries result = TimeSeries.newTimeSeries();
-    final Double[] previous = new Double[1];
-    ts.forEach((k, v) -> {
-      if (previous[0] != null) {
-        result.put(k, v / previous[0] - 1);
-      }
-      previous[0] = v;
+    final Double[] previous = new Double[] { ts.get(ts.firstKey()) };
+    ts.entrySet().stream().skip(1L).forEach(e -> {
+      result.put(e.getKey(), e.getValue() / previous[0] - 1);
+      previous[0] = e.getValue();
     });
     return result;
   }
 
+}
 ``` 
- 
+There are two new annotations: ```XLNamespace``` and ```XLFunction**s**```
  ## Using existing code (2)
  
