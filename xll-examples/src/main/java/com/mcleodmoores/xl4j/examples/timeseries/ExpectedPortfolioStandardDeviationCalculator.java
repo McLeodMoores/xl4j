@@ -16,7 +16,10 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
  * Calculates the expected return of a portfolio from the instrument weights and returns.
  */
 @XLNamespace("Portfolio.")
-@XLFunctions(prefix = "ExpectedStandardDeviation", description = "Calculates the expected standard devation of a portfolio")
+@XLFunctions(
+    prefix = "ExpectedStandardDeviation",
+    description = "Calculates the expected standard devation of a portfolio",
+    category = "Portfolio")
 public class ExpectedPortfolioStandardDeviationCalculator implements BiFunction<List<Double>, List<TimeSeries>, Double> {
   private static final CovarianceMatrixCalculator COV = new CovarianceMatrixCalculator();
 

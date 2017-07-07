@@ -56,7 +56,7 @@ public final class LabelledMatrix {
    * @return
    *          the matrix as an array
    */
-  @XLFunction(name = "Matrix.ExpandAsArray", description = "Expands the matrix as an array")
+  @XLFunction(name = "Matrix.ExpandAsArray", description = "Expands the matrix as an array", category = "Matrix")
   public Object[][] expandAsArray() {
     final int n = _names.length;
     final Object[][] result = new Object[n + 1][n + 1];
@@ -82,7 +82,7 @@ public final class LabelledMatrix {
    * @return
    *          the size
    */
-  @XLFunction(name = "Matrix.Size", description = "Gets the matrix size")
+  @XLFunction(name = "Matrix.Size", description = "Gets the matrix size", category = "Matrix")
   public int getSize() {
     return _names.length;
   }
@@ -95,7 +95,7 @@ public final class LabelledMatrix {
    * @return
    *          the label
    */
-  @XLFunction(name = "Matrix.LabelAt", description = "Gets the ith label")
+  @XLFunction(name = "Matrix.LabelAt", description = "Gets the ith label", category = "Matrix")
   public String getLabelAt(@XLParameter(name = "i") final int i) {
     return _names[i];
   }
@@ -110,7 +110,7 @@ public final class LabelledMatrix {
    * @return
    *          the value
    */
-  @XLFunction(name = "Matrix.ValueAt", description = "Gets the (row, column)th value")
+  @XLFunction(name = "Matrix.ValueAt", description = "Gets the (row, column)th value", category = "Matrix")
   public double getValueAt(@XLParameter(name = "row") final int row, @XLParameter(name = "column") final int column) {
     return _matrix[row][column];
   }

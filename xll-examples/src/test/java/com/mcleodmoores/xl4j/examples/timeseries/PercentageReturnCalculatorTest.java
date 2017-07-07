@@ -3,6 +3,10 @@
  */
 package com.mcleodmoores.xl4j.examples.timeseries;
 
+import static org.testng.Assert.assertEquals;
+
+import java.util.stream.IntStream;
+
 import org.testng.annotations.Test;
 import org.threeten.bp.LocalDate;
 
@@ -38,5 +42,8 @@ public class PercentageReturnCalculatorTest {
   @Test
   public void testCalculator() {
     final TimeSeries ts = TimeSeries.newTimeSeries();
+    final double r = 0.001;
+    IntStream.range(0, 100).forEach(i -> ts.put(LocalDate.now().plusDays(i), Math.pow(1 + r, i)));
+    CALC.apply(ts).forEach((k, v) -> assertEquals(v, r, 1e-15));
   }
 }
