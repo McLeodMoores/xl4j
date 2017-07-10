@@ -299,6 +299,7 @@ As its name implies, this annotation allows functions to be categorised into nam
 
 ### ```XLFunctions```
 
+The ```XLFunctions``` annotation is used when you want to register all constructors and methods in a class (with the exception of the methods from ```Object```: ```hashCode```, ```equals```, ```toString```, ```finalize```, ```getClass```, ```wait```, ```notify```, ```notifyAll``` and ```clone``` - if you need one of these methods then you'll need to add an explicit ```XLFunction``` annotation to it).
 
 
  ## Using existing code (2)
