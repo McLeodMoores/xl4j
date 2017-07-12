@@ -43,8 +43,8 @@ private:
 	const static LARGE_INTEGER TOOLARGE;
 	static size_t m_cMaxFileNameLength;
 	static size_t m_cMaxFunctionNameLength;
-	static LOGLEVEL m_logLevel;
-	static LOGTARGET m_logTarget;
+	volatile static LOGLEVEL m_logLevel;
+	volatile static LOGTARGET m_logTarget;
 	static FILE *m_fdLogFile;
 	static void appendExceptionTraceMessages (
 		JNIEnv&      a_jni_env,

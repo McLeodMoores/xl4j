@@ -412,34 +412,34 @@ __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction
 	static XLOPER12 xIntAction;
 	LOGINFO("Add-in Manager Info called");
 	ExcelUtils::PrintXLOPER(xAction);
-	//LoadDLLs ();
-	//if (!g_pAddinEnv) {
-	//	g_pAddinEnv = new CAddinEnvironment ();
-	//	g_pAddinEnv->Start();
-	//}
+	LoadDLLs ();
+	if (!g_pAddinEnv) {
+		g_pAddinEnv = new CAddinEnvironment ();
+		g_pAddinEnv->Start();
+	}
 	Excel12f(xlCoerce, &xIntAction, 2, xAction, TempInt12(xltypeInt));
 
 	if (xIntAction.xltype == xltypeInt && xIntAction.val.w == 1) {
-		//bstr_t addinName = ExcelUtils::GetAddinSetting(L"AddinName", L"XL4J");
-		//LPWSTR pszName = (LPWSTR)calloc(addinName.length() + 2, sizeof(wchar_t)); // prefix length and null
-		//if (!pszName) {
-		//	LOGERROR("calloc failed");
+		bstr_t addinName = ExcelUtils::GetAddinSetting(L"AddinName", L"XL4J");
+		LPWSTR pszName = (LPWSTR)calloc(addinName.length() + 2, sizeof(wchar_t)); // prefix length and null
+		if (!pszName) {
+			LOGERROR("calloc failed");
 			name.xltype = xltypeStr;
 			name.val.str = L"\004XL4J";
 			return &name;
-		//}
-		//if (FAILED(StringCchCopy(pszName + 1, addinName.length(), (wchar_t *)addinName))) {
-		//	LOGERROR("StringCchCopy failed"); 
-		//	name.xltype = xltypeStr;
-		//	name.val.str = L"\004XL4J";
-		//	return &name;
-		//}
-		//*pszName = (short)(addinName.length());
-		//name.xltype = xltypeStr;
-		//name.val.str = (XCHAR *)pszName;
-		//LOGINFO("Add-in name is %s", pszName);
-        //return &name;
-		//addinName.Detach(); // to prevent it being deallocated.
+		}
+		if (FAILED(StringCchCopy(pszName + 1, addinName.length(), (wchar_t *)addinName))) {
+			LOGERROR("StringCchCopy failed"); 
+			name.xltype = xltypeStr;
+			name.val.str = L"\004XL4J";
+			return &name;
+		}
+		*pszName = (short)(addinName.length());
+		name.xltype = xltypeStr;
+		name.val.str = (XCHAR *)pszName;
+		LOGINFO("Add-in name is %s", pszName);
+        return &name;
+		addinName.Detach(); // to prevent it being deallocated.
 	} else {
 		err.xltype = xltypeErr;
 		err.val.err = xlerrValue;
@@ -478,7 +478,24 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 		if (hr == S_OK) {
 			LOGTRACE("Releasing Lock");
 			LOGTRACE("Registration complete, starting GC");
-			ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2.0);
+			CSettings *pSettings;
+			// g_pAddinEnv != NULL should be invariant
+			if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
+				LOGERROR("Could not get settings from AddinEnv");
+			} else {
+				_bstr_t bstrGCEnabled = pSettings->GetString(SECTION_ADDIN, TEXT("GarbageCollection"));
+				if (bstrGCEnabled.length() > 0) {
+					LOGTRACE("bstrGCEnabled.length() > 0");
+					const _bstr_t ENABLED(TEXT("Enabled"));
+					if (bstrGCEnabled == ENABLED) {
+						ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2.0);
+					} else {
+						LOGINFO("GarbageCollector disabled");
+					}
+				} else {
+					LOGINFO("GarbageCollector disabled");
+				}
+			}
 		} else if (hr == ERROR_CONTINUE) {
 			LOGTRACE("Registration not complete, scheduling another go");
 			ExcelUtils::ScheduleCommand(TEXT("RegisterSomeFunctions"), 0.4);

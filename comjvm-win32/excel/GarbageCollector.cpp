@@ -6,8 +6,10 @@
 #include "stdafx.h"
 #include "GarbageCollector.h"
 #include "ExcelUtils.h"
+#include "Excel.h"
 #include <wchar.h>
 
+#define XLFGETDOCUMENT_BUG_WORKAROUND
 //#include "../utils/TraceOff.h"
 
 void GarbageCollector::ScanCell (XLOPER12 *cell) {
@@ -47,12 +49,23 @@ bool GarbageCollector::ScanCells (int cols, int rows, XLOPER12 *arr) {
 	return false;
 }
 
+void GarbageCollector::SetFallbackArea() {
+	m_firstRow.xltype = xltypeNum;
+	m_firstRow.val.num = 1;
+	m_lastRow.xltype = xltypeNum;
+	m_lastRow.val.num = 2048;
+	m_firstCol.xltype = xltypeNum;
+	m_firstCol.val.num = 1;
+	m_lastCol.xltype = xltypeNum;
+	m_lastCol.val.num = 256;
+}
+
 bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
 	XLOPER12 docType;
 	Excel12f(xlfGetDocument, &docType, 2, TempInt12(3), pSheetName); // 3 == GetType
-	LOGTRACE("Worksheet detected type %f (%d)", docType.val.num, docType.val.w);
+	LOGINFO("Worksheet detected type %f (%d)", docType.val.num, docType.val.w);
 	if (docType.val.num != 1.) { // 1 == worksheet (as opposed to e.g. a chart)
-		LOGTRACE("Non-worksheet detected type %f (%d)", docType.val.num, docType.val.w);
+		LOGWARN("Non-worksheet detected type %f (%d)", docType.val.num, docType.val.w);
 		// don't need to free docType as no pointers involved.
 		return false;
 	}
@@ -61,8 +74,12 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 		ExcelUtils::PrintXLOPER(&m_firstRow);
 		if (m_firstRow.val.num == 0.) {
 			Excel12f(xlFree, 0, 1, &m_firstRow);
-			LOGTRACE("Returned zero (empty sheet) on get first row");
+			LOGINFO("Returned zero (empty sheet) on get first row");
+#ifdef XLFGETDOCUMENT_BUG_WORKAROUND
+			SetFallbackArea();
+#else
 			m_firstRow.xltype = xltypeMissing;
+#endif
 			return false;
 		}
 		Excel12f (xlfGetDocument, &m_lastRow, 2, TempInt12 (10), pSheetName); // 10 == Get last row
@@ -70,8 +87,12 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 		if (m_lastRow.val.num == 0.) {
 			Excel12f(xlFree, 0, 1, &m_firstRow);
 			Excel12f(xlFree, 0, 1, &m_lastRow);
-			LOGTRACE("Returned zero(empty sheet) on get last row");
+			LOGINFO("Returned zero(empty sheet) on get last row");
+#ifdef XLFGETDOCUMENT_BUG_WORKAROUND
+			SetFallbackArea();
+#else
 			m_firstRow.xltype = xltypeMissing;
+#endif
 			return false;
 		}
 		Excel12f (xlfGetDocument, &m_firstCol, 2, TempInt12 (11), pSheetName); // 11 == Get first column
@@ -80,9 +101,14 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 			Excel12f(xlFree, 0, 1, &m_firstRow);
 			Excel12f(xlFree, 0, 1, &m_lastRow);
 			Excel12f(xlFree, 0, 1, &m_firstCol);
-			LOGTRACE("Returned zero (empty sheet) on get first column");
+			LOGINFO("Returned zero (empty sheet) on get first column");
+#ifdef XLFGETDOCUMENT_BUG_WORKAROUND
+			SetFallbackArea();
+			goto skip_xlfgetdocument;
+#else
 			m_firstRow.xltype = xltypeMissing;
 			return false;
+#endif
 		}
 
 		Excel12f (xlfGetDocument, &m_lastCol, 2, TempInt12 (12), pSheetName); // 12 = Get last column
@@ -92,10 +118,16 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 			Excel12f(xlFree, 0, 1, &m_lastRow);
 			Excel12f(xlFree, 0, 1, &m_firstCol);
 			Excel12f(xlFree, 0, 1, &m_lastCol);
-			LOGTRACE("Returned zero (empty sheet) on get last column");
+			LOGINFO("Returned zero (empty sheet) on get last column");
+#ifdef XLFGETDOCUMENT_BUG_WORKAROUND
+			SetFallbackArea();
+			goto skip_xlfgetdocument;
+#else
 			m_firstRow.xltype = xltypeMissing;
 			return false;
+#endif
 		}
+skip_xlfgetdocument:
 		Excel12f (xlSheetId, &m_sheetId, 1, pSheetName);
 		if (m_sheetId.xltype == xltypeErr) {
 			Excel12f (xlFree, 0, 1, &m_firstRow);
@@ -118,7 +150,7 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 		// initialise the loop variable
 		m_iRow = (RW)m_firstRow.val.num - 1;
 	}
-	
+	LOGINFO("Collecting in workbook %s, sheet %s, firstRow = %d, lastRow = %d, firstCol = %d, lastCol = %d, currentRow = %d", pWorkbookName->val.str, pSheetName->val.str, (RW)m_firstRow.val.num, (RW)m_lastRow.val.num, (COL)m_firstCol.val.num, (COL)m_lastCol.val.num, m_iRow);
 	while (m_iRow <= (RW)m_lastRow.val.num - 1) {
 		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
 		m_wholeRow.val.mref.lpmref->reftbl[0].rwFirst = m_iRow;
@@ -154,11 +186,11 @@ bool GarbageCollector::ScanWorkbook (XLOPER12 *pWorkbookName) {
 		LOGTRACE ("Sheet");
 		ExcelUtils::PrintXLOPER (m_pSheetName);
 		bool partial = ScanSheet (pWorkbookName, m_pSheetName);
-		m_pSheetName++;
-		m_iSheet++;
 		if (partial) {
 			return true;
 		}
+		m_pSheetName++;
+		m_iSheet++;
 	}
 
 	FreeAllTempMemory ();
@@ -178,11 +210,12 @@ bool GarbageCollector::ScanDocuments () {
 	while (m_iDoc < m_cDocs) {
 		LOGTRACE ("WorkbookName=");
 		bool partial = ScanWorkbook (m_pWorkbookName);
-		m_pWorkbookName++;
-		m_iDoc++;
 		if (partial) {
+			LOGINFO("Abandoning pass as timeout happened");
 			return true;
 		}
+		m_pWorkbookName++;
+		m_iDoc++;
 	}
 	Excel12f (xlFree, 0, 1, (LPXLOPER12)&m_documents);
 	m_documents.xltype = xltypeMissing;
@@ -190,6 +223,10 @@ bool GarbageCollector::ScanDocuments () {
 }
 
 void GarbageCollector::Collect () {
+	if (g_pAddinEnv->IsCalculateFullRebuildInProgress()) {
+		LOGTRACE("Rebuild in progress, skipping GC scan");
+		return;
+	}
 	LARGE_INTEGER liNow;
 	QueryPerformanceCounter (&liNow);
 	m_liLatestTime.QuadPart = liNow.QuadPart + m_liMaxTicks.QuadPart;
@@ -197,14 +234,23 @@ void GarbageCollector::Collect () {
 		LOGTRACE ("Partial collection");
 	} else {
 		LOGTRACE ("Full collection");
-		__int64 allocations;
+		__int64 unrecognisedHandles;
 		SAFEARRAY *psaIds;
 		if (SUCCEEDED (MakeSafeArray (&psaIds))) {
 			//Debug::odprintf (TEXT("Marking %d items still in use"), m_vObservedIds.size ());
-			m_pCollector->Collect (psaIds, &allocations);
+			m_pCollector->Collect (psaIds, &unrecognisedHandles);
 			SafeArrayDestroy (psaIds);
 			//Debug::odprintf (TEXT("Collection complete, there were %ll allocations since"), allocations);
 			Reset ();
+			if (unrecognisedHandles > 0) {
+				LOGINFO("There were %lld unrecognised handles", unrecognisedHandles);
+				if (unrecognisedHandles > m_previousUnknownHandles) {
+					LOGINFO("which is not the same as last time (there were %lld last time)", m_previousUnknownHandles);
+					// TODO: Pass this in rather than using global.
+					g_pAddinEnv->CalculateFullRebuild();
+				}
+				m_previousUnknownHandles = unrecognisedHandles; // save so we can only refresh when situation changes.
+			}
 		} else {
 			LOGTRACE ("Collector returned error");
 		}
@@ -262,8 +308,10 @@ void GarbageCollector::Reset () {
 
 GarbageCollector::GarbageCollector (ICollect *pCollector) {
 	m_pCollector = pCollector;
+	m_previousUnknownHandles = 0;
 	Reset ();
 	QueryPerformanceFrequency (&m_liFrequency);
+	m_liPreviousRefresh.QuadPart = 0;
 	SetMaxTime (10);
 }
 

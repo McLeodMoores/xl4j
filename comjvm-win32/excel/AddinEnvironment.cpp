@@ -21,11 +21,15 @@ CAddinEnvironment::CAddinEnvironment () {
 	m_pSettings = nullptr;
 	m_pConverter = nullptr;
 	m_pLicenseChecker = nullptr;
+	m_pExcelCOM = nullptr;
 	m_idRegisterSomeFunctions = 0;
 	m_idSettings = 0;
 	m_idGarbageCollect = 0;
 	m_idViewJavaLogs = 0;
 	m_idViewCppLogs = 0;
+	m_bCalculateFullRebuildInProgress = false;
+	m_bAutoRecalcAskEnabled = true;
+	m_bAutoRecalcEnabled = true;
 }
 
 CAddinEnvironment::~CAddinEnvironment () {
@@ -92,6 +96,7 @@ HRESULT CAddinEnvironment::Start() {
 	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationEndedEvent"), TempInt12(xleventCalculationEnded));
 	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationCancelledEvent"), TempInt12(xleventCalculationCanceled));
 
+	m_pExcelCOM = new CExcelCOM();
 	m_pConverter = new Converter(m_pTypeLib);
 	// Register polling command that registers chunks of functions
 	m_idRegisterSomeFunctions = ExcelUtils::RegisterCommand(TEXT("RegisterSomeFunctions"));
@@ -109,6 +114,7 @@ HRESULT CAddinEnvironment::Start() {
 	m_idViewJavaLogs = ExcelUtils::RegisterCommand(TEXT("ViewJavaLogs"));
 	m_idViewCppLogs = ExcelUtils::RegisterCommand(TEXT("ViewCppLogs"));
 	m_idLicenseInfo = ExcelUtils::RegisterCommand(TEXT("LicenseInfo"));
+
 	EnterStartedState();
 	return S_OK;
 }
@@ -271,6 +277,24 @@ HRESULT CAddinEnvironment::InitFromSettings() {
 			AddToolbar(); // but I'm doing it in case we add new buttons
 			m_bToolbarEnabled = true;
 		}
+		_bstr_t autoRecalculateEnabled;
+		autoRecalculateEnabled = m_pSettings->GetString(SECTION_ADDIN, KEY_AUTO_RECALCULATE);
+		if (autoRecalculateEnabled == _bstr_t(VALUE_AUTO_RECALCULATE_DISABLED.c_str())) {
+			LOGTRACE("AutoRecalculate=Disabled");
+			m_bAutoRecalcEnabled = false;
+		} else {
+			LOGTRACE("AutoRecalculate=Enabled");
+			m_bAutoRecalcEnabled = true;
+		}
+		_bstr_t autoRecalculateAskEnabled;
+		autoRecalculateAskEnabled = m_pSettings->GetString(SECTION_ADDIN, KEY_AUTO_RECALCULATE_ASK);
+		if (autoRecalculateAskEnabled == _bstr_t(VALUE_AUTO_RECALCULATE_ASK_DISABLED.c_str())) {
+			LOGTRACE("AutoRecalculateAsk=Disabled");
+			m_bAutoRecalcAskEnabled = false;
+		} else {
+			LOGTRACE("AutoRecalculateAsk=Enabled");
+			m_bAutoRecalcAskEnabled = true;
+		}
 		LeaveCriticalSection(&m_csState);
 		return S_OK;
 	} else {
@@ -431,6 +455,64 @@ HRESULT CAddinEnvironment::ViewLogs(const wchar_t *szFileName) {
 		}
 		LeaveCriticalSection(&m_csState);
 		return S_OK;
+	} else {
+		LeaveCriticalSection(&m_csState);
+		return E_NOT_VALID_STATE;
+	}
+}
+
+
+/**
+ * Force full recalculation via the COM API.
+ */
+HRESULT CAddinEnvironment::CalculateFullRebuild() {
+	EnterCriticalSection(&m_csState);
+	if (m_state == STARTED) {
+		if (m_bAutoRecalcEnabled) {
+			LOGINFO("Background calc activated");
+			if (m_bAutoRecalcAskEnabled) {
+				m_bCalculateFullRebuildInProgress = true; // stop more scans while user mulls.
+				LOGINFO("Asking user if we can recalc");
+				const int OK_CANCEL = 1;
+				XLOPER12 retVal;
+				Excel12f(xlcAlert, &retVal, 2, TempStr12(L"Stale objects detected.  Click OK to recalculate object references (may take a while)."), TempInt12(OK_CANCEL));
+				if (retVal.val.xbool == FALSE) {
+					// user clicked cancel
+					m_bCalculateFullRebuildInProgress = false;
+					LeaveCriticalSection(&m_csState);
+					return S_OK;
+				}
+			}
+			auto backgroundCalc = [](LPVOID data) -> DWORD {
+				//boolean *pbCalculateFullRebuildInProgress = (boolean *)data;
+				HRESULT hr = OleInitialize(NULL);
+				if (SUCCEEDED(hr)) {
+					LOGINFO("COM initialized (not lambda)");
+					CExcelCOM *pExcelCOM = new CExcelCOM();
+					LOGINFO("Created CExcelCOM");
+					HRESULT hr = pExcelCOM->CalculateFullRebuild();
+					//*pbCalculateFullRebuildInProgress = false;
+					LOGINFO("Invoked CalculateFullRebuild");
+					delete pExcelCOM;
+					LOGINFO("Delted CExcelCOM");
+					OleUninitialize();
+					LOGINFO("Background calc completed and COM shutdown");
+				}
+				return 0;
+			};
+			// note we set the flag here rather than in the thread to avoid a race
+			// condition where it would very briefly appear that the calc had finished
+			// before the thread comes to life and sets the flag (so it doesn't set the 
+			// flag at all)
+			m_bCalculateFullRebuildInProgress = true;
+			auto thread = CreateThread(nullptr, 4096 * 1024, backgroundCalc, (LPVOID)&m_bCalculateFullRebuildInProgress, 0, nullptr);
+			CloseHandle(thread); // closing the handle doesn't affect the thread		
+			LeaveCriticalSection(&m_csState);
+			return S_OK;
+		} else {
+			LOGINFO("Not triggering recalc as it's disabled in configuration");
+			return S_OK;
+		}
 	} else {
 		LeaveCriticalSection(&m_csState);
 		return E_NOT_VALID_STATE;

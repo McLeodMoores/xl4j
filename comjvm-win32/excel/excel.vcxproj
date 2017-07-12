@@ -239,6 +239,7 @@
     <ClInclude Include="AsyncCallResult.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="AddinFileUtils.h" />
+    <ClInclude Include="ExcelCOM.h" />
     <ClInclude Include="JvmEnvironment.h" />
     <ClInclude Include="Excel.h" />
     <ClInclude Include="ExcelUtils.h" />
@@ -255,6 +256,7 @@
     <ClCompile Include="AsyncCallResult.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="AddinFileUtils.cpp" />
+    <ClCompile Include="ExcelCOM.cpp" />
     <ClCompile Include="JvmEnvironment.cpp" />
     <ClCompile Include="Excel.cpp" />
     <ClCompile Include="ExcelUtils.cpp" />

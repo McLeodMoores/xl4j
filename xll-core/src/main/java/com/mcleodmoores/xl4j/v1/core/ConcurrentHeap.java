@@ -106,6 +106,7 @@ public class ConcurrentHeap implements Heap {
   public Object getObject(final long handle) {
     final Object object = _handleToObj.get(handle);
     if (object == null) {
+      LOGGER.warn("Cannot find object with handle " + handle);
       throw new XL4JRuntimeException("Cannot find object with handle " + handle);
     } else {
       return object;
@@ -123,20 +124,30 @@ public class ConcurrentHeap implements Heap {
   /**
    * Remove any objects that aren't live, minimizing locking period.
    */
-  private void endGC(final long[] activeHandles) {
+  private long endGC(final long[] activeHandles) {
     Arrays.sort(activeHandles);
+    long unique = 0;
     for (int i = 0; i < activeHandles.length; i++) {
+      if (i < activeHandles.length - 1) {
+        if (activeHandles[i + 1] != activeHandles[i]) {
+          unique++;
+        }
+      } else {
+        unique++;
+      }
       LOGGER.trace("handle[{}] = {}", i, Long.toUnsignedString(activeHandles[i]));
     }
     final Iterator<Entry<Long, Object>> iterator = _handleToObj.entrySet().iterator();
     long removed = 0;
+    long currentHandles = 0;
     while (iterator.hasNext()) {
       final Entry<Long, Object> next = iterator.next();
       if (next.getKey() >= _snapHandle) {
         LOGGER.trace("Handle {} >= snap {} so skipping", Long.toUnsignedString(next.getKey()), Long.toUnsignedString(_snapHandle));
         continue; // skip as we might have missed it in our scan because it was created after we started
       }
-      if (Arrays.binarySearch(activeHandles, next.getKey()) < 0) {
+      if (Arrays.binarySearch(activeHandles, next.getKey()) < 0) { 
+        // if this key isn't in the active handles list it's a candidate for collection 
         final Integer count = _handleToCollectCount.get(next.getKey());
         if (count == null) {
           // we start counting how many times this has been flagged for collection
@@ -152,9 +163,13 @@ public class ConcurrentHeap implements Heap {
           _objToHandle.remove(next.getValue());
           removed++;
         }
+      } else {
+        // keep track of how many of the items in the heap _were_ in the active handles list so we can establish 
+        currentHandles++;
       }
     }
     LOGGER.trace(removed + " objects removed during GC pass");
+    return unique - currentHandles;
   }
 
   /* (non-Javadoc)
@@ -162,10 +177,14 @@ public class ConcurrentHeap implements Heap {
    */
   @Override
   public long cycleGC(final long[] activeHandles) {
-    final long snapBefore = _snapHandle;
-    endGC(activeHandles);
+    //final long snapBefore = _snapHandle;
+    long unrecognisedHandles = endGC(activeHandles);
+    LOGGER.trace("There were " + unrecognisedHandles + " unrecognised handles");
+    if (unrecognisedHandles > 0) {
+      LOGGER.error("There were unrecognised handles, triggering recalc");
+    }
     startGC();
-    return _snapHandle - snapBefore; // object allocated during cycle
+    return unrecognisedHandles;//_snapHandle - snapBefore; // object allocated during cycle
   }
 
   @Override

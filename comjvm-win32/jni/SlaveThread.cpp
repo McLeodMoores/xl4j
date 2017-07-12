@@ -27,7 +27,7 @@ private:
 	std::deque<PVOID> m_apData;
 	volatile int m_iSize;
 	volatile DWORD m_dwTotalThreads; // total threads
-	const DWORD MAX_THREADS = 16;
+	const DWORD MAX_THREADS = 8;
 public:
 	CCallbackRequests () {
 		LOGTRACE ("(%p) constructor", GetCurrentThreadId ()); 
