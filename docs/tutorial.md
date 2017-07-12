@@ -299,8 +299,14 @@ As its name implies, this annotation allows functions to be categorised into nam
 
 ### ```XLFunctions```
 
-The ```XLFunctions``` annotation is used when you want to register all constructors and methods in a class (with the exception of the methods from ```Object```: ```hashCode```, ```equals```, ```toString```, ```finalize```, ```getClass```, ```wait```, ```notify```, ```notifyAll``` and ```clone``` - if you need one of these methods then you'll need to add an explicit ```XLFunction``` annotation to it).
+The ```XLFunctions``` annotation is used when you want to register all **public** constructors and methods, including static methods, in a class (with the exception of the methods from ```Object```: ```hashCode```, ```equals```, ```toString```, ```finalize```, ```getClass```, ```wait```, ```notify```, ```notifyAll``` and ```clone``` - if you need one of these methods then you'll need to add an explicit ```XLFunction``` annotation to it). The fields in this annotation are fairly straightforward:
 
+  - ```prefix``` is an optional field that effectively renames a class. In the ```PercentageReturnCalculator``` class shown above, the prefix field is set to ```PercentageReturn```. This means that the function name for the constructor is ```TimeSeries.PercentageReturn```, while the ```apply``` method's function name is ```TimeSeries.PercentageReturn.apply```. If this field is not set, the class name is used instead (e.g. giving ```TimeSeries.PercentageReturnCalculator``` and ```TimeSeries.PercentageReturnCalculator.apply```).
+  - ```typeConversionMode``` sets the return type mode of the methods in the class. By default, it is set to return the simplest result, which means that if there are any converters available for the return type they will be used.
+  - ```description``` provides the description of the constructors and methods 
+  - ```category``` puts all constructor and method functions into a particular category.
+  
+  Note that when the functions are registered, the visibility of the constructors or methods is not changed, so only ```public``` ones will be registered. 
 
  ## Using existing code (2)
  
