@@ -291,13 +291,13 @@ public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries
 ``` 
 There are two annotations that weren't used in the other examples: ```XLNamespace``` and ```XLFunctions```.
 
-### ```XLNamespace```
+#### ```XLNamespace```
 
 As its name implies, this annotation allows functions to be categorised into namespaces by prepending the value of the annotation to all functions in a class. This can be very useful if you have a large number of functions, as they will be sorted alphabetically in a drop-down list.
 
 ** Image of list with namespaces **
 
-### ```XLFunctions```
+#### ```XLFunctions```
 
 The ```XLFunctions``` annotation is used when you want to register all **public** constructors and methods, including static methods, in a class (with the exception of the methods from ```Object```: ```hashCode```, ```equals```, ```toString```, ```finalize```, ```getClass```, ```wait```, ```notify```, ```notifyAll``` and ```clone``` - if you need one of these methods then you'll need to add an explicit ```XLFunction``` annotation to it). 
 
@@ -312,6 +312,34 @@ The registered functions for the percentage return calculator are:
 ** IMAGE **
 
 Note that when the functions are registered, the visibility of the constructors or methods is not changed, so only ```public``` ones will be registered. 
+
+### The sample sheet
+
+Using the functions that we've created, we can now put together our sheet. The ```Market Data``` sheet makes a call to Quandl for data and splits the ```TabularResult``` by field name:
+
+** Screenshot first page **
+
+The ```Statistics``` sheet uses the calculators that we've written to prepare the time series data:
+
+** IMAGE **
+
+and calculate some statistics:
+
+** IMAGE **
+
+Finally, the ```Efficient Frontier``` page uses some Java functions, such as the covariance matrix calculator:
+
+** IMAGE **
+
+and inbuilt Excel functions:
+
+** IMAGE **
+
+and Solver
+
+** IMAGE **
+
+to calculate minimum risk portfolio weights for various target returns. Much more straightforward than writing your own minimiser in Java, or trying to keep track of 10 years of data in Excel!
 
  ## Using existing code (2)
  
