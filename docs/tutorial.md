@@ -77,7 +77,7 @@ files:
  
     ![Third function image](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/first-function-3.png)
  
- ##TODO add an image of the argument wizard when it's fixed
+ **TODO add an image of the argument wizard when it's fixed**
 
 # Using Java projects from Excel
 ## A simple wrapper
@@ -240,7 +240,7 @@ We start with a toy ![```TimeSeries```](https://github.com/McLeodMoores/xl4j/blo
 
 The only difference between this function and the ones in the previous section is that the conversion mode for the results is set to ```OBJECT_RESULT```. ```OBJECT_RESULT``` functions do not perform any conversions, so the sheet will show an object reference. 
 
-** Object reference picture**
+![Object reference]()
 
 The default mode is ```SIMPLEST_RESULT```, which performs conversions to Excel types (e.g. ```Double``` to ```XLNumber```) where a converter is available, or returns an ```XLObject``` for more complex types without converters, like ```ISDACompliantYieldCurve```. 
 
@@ -258,7 +258,9 @@ We've also added a function that expands a time series to an Excel array:
   }
 ```
 
-At first, this function does not look like it does anything to the time series. However, note that the conversion mode is ```SIMPLEST_RESULT```. If we add a class that converts ![a ```TimeSeries``` to ```XLArray```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java), then the time series will be converted to an array that can be used like any array formula in Excel.
+At first, this function does not look like it does anything to the time series. However, note that the conversion mode is ```SIMPLEST_RESULT```. If we add a class that converts ![a ```TimeSeries``` to ```XLArray```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java), then the time series will be converted to an array that can be used like any array formula in Excel:
+
+![Expand time series]()
 
 Next, we need functions that generate schedules, a sampling function that gets the dates and values from a time series for a particular schedule, functions that deal with missing data, return calculators and arithmetic operations. All of these classes are in the ![timeseries](https://github.com/McLeodMoores/xl4j/tree/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries) package.
 
@@ -295,7 +297,7 @@ There are two annotations that weren't used in the other examples: ```XLNamespac
 
 As its name implies, this annotation allows functions to be categorised into namespaces by prepending the value of the annotation to all functions in a class. This can be very useful if you have a large number of functions, as they will be sorted alphabetically in a drop-down list.
 
-** Image of list with namespaces **
+![Namespace list]()
 
 #### ```XLFunctions```
 
@@ -309,7 +311,7 @@ The fields in this annotation are fairly straightforward:
 
 The registered functions for the percentage return calculator are:
 
-** IMAGE **
+![Percentage return functions]()
 
 Note that when the functions are registered, the visibility of the constructors or methods is not changed, so only ```public``` ones will be registered. 
 
@@ -317,27 +319,27 @@ Note that when the functions are registered, the visibility of the constructors 
 
 Using the functions that we've created, we can now put together our sheet. The ```Market Data``` sheet makes a call to Quandl for data and splits the ```TabularResult``` by field name:
 
-** Screenshot first page **
+![Market data sheet]()
 
 The ```Statistics``` sheet uses the calculators that we've written to prepare the time series data:
 
-** IMAGE **
+![Data cleaning]()
 
 and calculate some statistics:
 
-** IMAGE **
+![Statistics calculators]()
 
 Finally, the ```Efficient Frontier``` page uses some Java functions, such as the covariance matrix calculator:
 
-** IMAGE **
+![Covariance matrix calculator]()
 
 and inbuilt Excel functions:
 
-** IMAGE **
+![Excel function]()
 
 and Solver
 
-** IMAGE **
+![Solver]()
 
 to calculate minimum risk portfolio weights for various target returns. Much more straightforward than writing your own minimiser in Java, or trying to keep track of 10 years of data in Excel!
 
