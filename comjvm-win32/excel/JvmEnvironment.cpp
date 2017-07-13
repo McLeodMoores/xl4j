@@ -82,7 +82,7 @@ void CJvmEnvironment::ShutdownError(wchar_t *szTerminateErrorMessage) {
 DWORD WINAPI CJvmEnvironment::BackgroundShutdownThread(LPVOID pData) {
 	CJvmEnvironment *me = reinterpret_cast<CJvmEnvironment*>(pData);
 	me->EnterTerminatingState();
-	// this should trigger GC command to call ExcelThreadShutdown().
+	// this should trigger GarbageCollect or RegisterSomeFunctions command to call ExcelThreadShutdown().
 	return 0;
 }
 
@@ -104,7 +104,11 @@ void CJvmEnvironment::ExcelThreadShutdown() {
 		Excel12f(xlcAlert, &retVal, 2, TempStr12(m_szTerminateErrorMessage), TempInt12(WARNING_OK));
 	}
 	LOGTRACE("Releasing JVM");
-	m_pJvm->Release();
+	if (m_pJvm) {
+		m_pJvm->Release();
+	} else {
+		LOGERROR("jvm was already a nullptr, meaning multiple shutdown calls occurred.");
+	}
 	LOGTRACE("Deleteing function registry");
 	if (m_pFunctionRegistry) {
 		delete m_pFunctionRegistry;
@@ -170,6 +174,17 @@ HRESULT CJvmEnvironment::_RegisterSomeFunctions ()  {
 	} else if (m_state == STARTING) {
 		ReleaseSRWLockShared(&m_rwlock);
 		return ERROR_CONTINUE;
+	} else if (m_state == TERMINATING) {
+		m_pSplashScreen->Close();
+		ReleaseSRWLockShared(&m_rwlock);
+		// note we only enter the exclusive lock here to reduce contention.
+		AcquireSRWLockExclusive(&m_rwlock);
+		if (m_state == TERMINATING) {
+			ExcelThreadShutdown();
+			m_state = NOT_RUNNING;
+		} // else someone else got in between lock release so we assume they did it.
+		ReleaseSRWLockExclusive(&m_rwlock);
+		return ERROR_INVALID_STATE;
 	} else {
 		m_pSplashScreen->Close();
 		ReleaseSRWLockShared(&m_rwlock);
@@ -228,11 +243,13 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		return 0;
 	} catch (const std::exception& ex) {
 		LOGERROR("Could not create JVM, have you got a 32-bit Java 8 installed?  Exception was %S", ex.what());
+		pThis->m_pJvm = nullptr;
 		ReleaseSRWLockShared(&(pThis->m_rwlock));
 		pThis->ShutdownError(L"Could not create JVM, have you got a 32-bit Java 8 installed?");
 		return 1;
 	} catch (_com_error& e) {
 		LOGERROR("COM Error creating JVM, have you got a 32-bit Java 8 installed?  Message is %s", e.ErrorMessage());
+		pThis->m_pJvm = nullptr;
 		ReleaseSRWLockShared(&(pThis->m_rwlock));
 		pThis->ShutdownError(L"Could not create JVM (com error, see logs), have you got a 32-bit Java 8 installed?");
 		return 1;

@@ -8,7 +8,7 @@
 #include "Converter.h"
 #include "../core/Settings.h"
 #include "../helper/LicenseChecker.h"
-
+#include "ExcelCOM.h"
 
 
 
@@ -21,6 +21,7 @@ private:
 	TypeLib *m_pTypeLib;
 	CSettings *m_pSettings;
 	CLicenseChecker *m_pLicenseChecker;
+	CExcelCOM *m_pExcelCOM;
 
 	int m_idRegisterSomeFunctions;
 	int m_idSettings;
@@ -30,7 +31,12 @@ private:
 	int m_idLicenseInfo;
 
 	bool m_bToolbarEnabled;
+	bool m_bAutoRecalcEnabled;
+	bool m_bAutoRecalcAskEnabled;
 
+	// flag to indicate a recalculate is in progress so not to
+	// do GC or trigger any more.
+	volatile bool m_bCalculateFullRebuildInProgress;
 	
 	bool EnterStartingState();
     bool EnterStartedState();
@@ -39,6 +45,7 @@ private:
 	void AddToolbar();
 	void RemoveToolbar();
 	bool IsToolbarEnabled() const { return m_bToolbarEnabled; }
+	
 	HRESULT GetLogViewerPath(wchar_t *pBuffer, size_t cbSize);
 	HRESULT InitFromSettings();
 public:
@@ -61,9 +68,24 @@ public:
 	HRESULT RefreshSettings() { return InitFromSettings(); }
 	HRESULT ViewLogs(const wchar_t *szFileName);
 	HRESULT ShowLicenseInfo();
+	HRESULT CalculateFullRebuild();
 	HRESULT LoadEULA(wchar_t ** szEULA);
 	HRESULT GetLicenseText(wchar_t **pszLicenseText) {
 		return m_pLicenseChecker->GetLicenseText(pszLicenseText);
 	}
 	bool IsShutdown() { return m_state == TERMINATING || m_state == NOT_RUNNING; }
+	bool IsCalculateFullRebuildInProgress() {
+		if (m_bCalculateFullRebuildInProgress) {
+			// if rebuild started we poll excel until calculation state is done.
+			CExcelCOM::XlState state;
+			HRESULT result = m_pExcelCOM->GetCalculationState(&state);
+			LOGINFO("GetCalculationState returned %d (%s)", state, HRESULT_TO_STR(result));
+			if (state == CExcelCOM::XlState::xlDone) {
+				m_bCalculateFullRebuildInProgress = false; // we're all done.
+			}
+			return (state != CExcelCOM::XlState::xlDone);
+		} else {
+			return false;
+		}
+	}
 };

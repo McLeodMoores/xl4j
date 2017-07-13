@@ -41,6 +41,9 @@ private:
 	LARGE_INTEGER m_liFrequency;
 	LARGE_INTEGER m_liMaxTicks;
 
+	// This is to prevent repeated refreshes.
+	__int64 m_previousUnknownHandles;
+	LARGE_INTEGER m_liPreviousRefresh;
 	// list observed ids
 	std::vector<unsigned hyper> m_vObservedIds;
 	// Java interface
@@ -50,6 +53,7 @@ private:
 	HRESULT MakeSafeArray (SAFEARRAY **ppsaIds);
 	hyper ParseId (XCHAR *pExcelStr);
 	void Reset ();
+	void SetFallbackArea ();
 	void ScanCell (XLOPER12 *cell);
 	bool ScanCells (int cols, int rows, XLOPER12 *arr);
 	bool ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName);

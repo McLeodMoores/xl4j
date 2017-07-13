@@ -216,7 +216,7 @@ int GetExcelVersion() {
 __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	// Force load delay-loaded DLLs from absolute paths calculated as relative to this DLL path
 	if (FAILED(LoadDLLs())) {
-		ExcelUtils::ErrorMessageBox(L"Couldn't find required DLLs in XL4J XLL directory");
+		ExcelUtils::ErrorMessageBox(L"Couldn't find required DLLs in install directory.  If you chose to install a local copy from network drive during installation, reinstall but don't copy or copy whole folder manually.");
 		return 0;
 	}
 	if (XLCallVer () < (12 * 256)) {
@@ -407,39 +407,48 @@ __declspec(dllexport) int WINAPI xlAutoRemove (void) {
 ///***************************************************************************
 
 __declspec(dllexport) LPXLOPER12 WINAPI xlAddInManagerInfo12 (LPXLOPER12 xAction) {
-	static XLOPER12 xInfo, xIntAction;
-
-	//
-	// This code coerces the passed-in value to an integer. This is how the
-	// code determines what is being requested. If it receives a 1, 
-	// it returns a string representing the long name. If it receives 
-	// anything else, it returns a #VALUE! error.
-	//
+	static XLOPER12 name;
+	static XLOPER12 err;
+	static XLOPER12 xIntAction;
+	LOGINFO("Add-in Manager Info called");
+	ExcelUtils::PrintXLOPER(xAction);
 	LoadDLLs ();
 	if (!g_pAddinEnv) {
 		g_pAddinEnv = new CAddinEnvironment ();
 		g_pAddinEnv->Start();
 	}
-	Excel12f (xlCoerce, &xIntAction, 2, xAction, TempInt12 (xltypeInt));
-	bstr_t addinName = ExcelUtils::GetAddinSetting (L"AddinName", L"XL4J");
-	if (xIntAction.val.w == 1)
-	{
-		xInfo.xltype = xltypeStr;
-		
-		xInfo.val.str = TempStr12 (addinName)->val.str;
+	Excel12f(xlCoerce, &xIntAction, 2, xAction, TempInt12(xltypeInt));
+
+	if (xIntAction.xltype == xltypeInt && xIntAction.val.w == 1) {
+		bstr_t addinName = ExcelUtils::GetAddinSetting(L"AddinName", L"XL4J");
+		LPWSTR pszName = (LPWSTR)calloc(addinName.length() + 2, sizeof(wchar_t)); // prefix length and null
+		if (!pszName) {
+			LOGERROR("calloc failed");
+			name.xltype = xltypeStr;
+			name.val.str = L"\004XL4J";
+			return &name;
+		}
+		if (FAILED(StringCchCopy(pszName + 1, addinName.length(), (wchar_t *)addinName))) {
+			LOGERROR("StringCchCopy failed"); 
+			name.xltype = xltypeStr;
+			name.val.str = L"\004XL4J";
+			return &name;
+		}
+		*pszName = (short)(addinName.length());
+		name.xltype = xltypeStr;
+		name.val.str = (XCHAR *)pszName;
+		LOGINFO("Add-in name is %s", pszName);
+        return &name;
+		addinName.Detach(); // to prevent it being deallocated.
+	} else {
+		err.xltype = xltypeErr;
+		err.val.err = xlerrValue;
+		return &err;
 	}
-	else
-	{
-		xInfo.xltype = xltypeErr;
-		xInfo.val.err = xlerrValue;
-	}
-	addinName.Detach (); // to prevent it being deallocated.
-	//Word of caution - returning static XLOPERs/XLOPER12s is not thread safe
-	//for UDFs declared as thread safe, use alternate memory allocation mechanisms
-	return static_cast<LPXLOPER12>(&xInfo);
 }
 
 __declspec(dllexport) int GarbageCollect () {
+	//return 1;
 	// LOGTRACE ("GarbageCollect() called.");
     // LOGTRACE ("Acquiring Lock");
 	AcquireSRWLockShared (&g_JvmEnvLock);
@@ -469,7 +478,24 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 		if (hr == S_OK) {
 			LOGTRACE("Releasing Lock");
 			LOGTRACE("Registration complete, starting GC");
-			ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2.0);
+			CSettings *pSettings;
+			// g_pAddinEnv != NULL should be invariant
+			if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
+				LOGERROR("Could not get settings from AddinEnv");
+			} else {
+				_bstr_t bstrGCEnabled = pSettings->GetString(SECTION_ADDIN, TEXT("GarbageCollection"));
+				if (bstrGCEnabled.length() > 0) {
+					LOGTRACE("bstrGCEnabled.length() > 0");
+					const _bstr_t ENABLED(TEXT("Enabled"));
+					if (bstrGCEnabled == ENABLED) {
+						ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2.0);
+					} else {
+						LOGINFO("GarbageCollector disabled");
+					}
+				} else {
+					LOGINFO("GarbageCollector disabled");
+				}
+			}
 		} else if (hr == ERROR_CONTINUE) {
 			LOGTRACE("Registration not complete, scheduling another go");
 			ExcelUtils::ScheduleCommand(TEXT("RegisterSomeFunctions"), 0.4);

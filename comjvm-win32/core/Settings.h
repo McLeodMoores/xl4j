@@ -46,7 +46,14 @@ const _std_string_t KEY_UPGRADE_CHECK_REQUIRED = _T("CheckForUpgrades");
 const _std_string_t VALUE_UPGRADE_CHECK_REQUIRED_YES = _T("Yes");
 const _std_string_t VALUE_UPGRADE_CHECK_REQUIRED_NO = _T("No");
 const _std_string_t VALUE_UPGRADE_CHECK_REQUIRED_DEFAULT = VALUE_UPGRADE_CHECK_REQUIRED_YES;
-
+const _std_string_t KEY_AUTO_RECALCULATE = _T("AutoRecalculate");
+const _std_string_t VALUE_AUTO_RECALCULATE_ENABLED = _T("Enabled");
+const _std_string_t VALUE_AUTO_RECALCULATE_DISABLED = _T("Disabled");
+const _std_string_t VALUE_AUTO_RECALCULATE_DEFAULT = VALUE_AUTO_RECALCULATE_ENABLED;
+const _std_string_t KEY_AUTO_RECALCULATE_ASK = _T("AutoRecalculateAsk");
+const _std_string_t VALUE_AUTO_RECALCULATE_ASK_ENABLED = _T("Enabled");
+const _std_string_t VALUE_AUTO_RECALCULATE_ASK_DISABLED = _T("Disabled");
+const _std_string_t VALUE_AUTO_CALCULATE_ASK_DEFAULT = VALUE_AUTO_RECALCULATE_ASK_ENABLED;
 /// <summary>Configuration settings.</summary>
 ///
 /// <para>Configuration may be defined in the registry or on disk alongside the DLL.</para>

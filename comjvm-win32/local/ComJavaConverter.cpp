@@ -268,7 +268,7 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 
 			QueryPerformanceFrequency(&Frequency);
 			QueryPerformanceCounter(&StartingTime);
-			//LOGTRACE ("XLArray");
+			LOGINFO("XLArray");
 			jobjectArray joaValuesRows = pJniCache->XLArray_getArray(pEnv, joXLValue);
 			jsize jsValuesRows = pEnv->GetArrayLength(joaValuesRows);
 			SAFEARRAY *psa;
@@ -292,6 +292,7 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 				HRESULT hr = SafeArrayAccessData(psa, (PVOID *)&pVariant);
 				for (jsize j = 0; j < jsValuesRows; j++) {
 					jobjectArray joaValuesRow = (jobjectArray)pEnv->GetObjectArrayElement(joaValuesRows, j);
+					pEnv->EnsureLocalCapacity(jsValuesColumns);
 					for (jsize i = 0; i < jsValuesColumns; i++) {
 						jobject joValue = pEnv->GetObjectArrayElement(joaValuesRow, i);
 						/*VARIANT v; this was here to test the overhead of this loop.
@@ -308,7 +309,7 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 			V_ARRAY(&result) = psa;
 			QueryPerformanceCounter(&EndingTime);
 			ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
-			LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
+			LOGINFO("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
 		} else {
 			LOGTRACE("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass("com/mcleodmoores/xl4j/v1/api/values/XLValue"));
 			jclass jcObject = pEnv->FindClass("java/lang/Object");

@@ -41,8 +41,8 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 
 size_t Debug::m_cMaxFileNameLength = 0;
 size_t Debug::m_cMaxFunctionNameLength = 0;
-LOGLEVEL Debug::m_logLevel = LOGLEVEL_TRACE;
-LOGTARGET Debug::m_logTarget = LOGTARGET_WINDEBUG;
+volatile LOGLEVEL Debug::m_logLevel;// = LOGLEVEL_TRACE;
+volatile LOGTARGET Debug::m_logTarget;// = LOGTARGET_WINDEBUG;
 FILE *Debug::m_fdLogFile = nullptr;
 const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ", L"ERROR", L"FATAL", L"NONE " };
 const wchar_t *Debug::LOGFILENAME = L"xl4j-cpp.log";
