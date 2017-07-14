@@ -64,11 +64,12 @@ make up the add-in.
 |--------------|-------------|
 | excel | Covers the XLL add-in interface between Excel and XL4J.  It is this project that handles incoming function calls, lifecycle calls and defines objects to encapsulate the state and lifecycle of the Add-in. |
 | core | Defines all the COM interfaces used to talk to the JVM, and the common infrastructure classes for the JVM to support Classpaths, JVM discovery, JVM options, and so on. |
-| local | Defines the default implementation of the JVM, and marshalls data to and from COM to Java objects using JNI.  Calls are constructed and handed to the JVM via the `jni` project\'s scheduler |
+| local | Defines the default implementation of the JVM, and marshalls data to and from COM to Java objects using JNI.  Calls are constructed and handed to the JVM via the `jni` project's scheduler |
 | jni | Defines the low level call scheduler multiple thread-pools to handle synchronous and asynchronous function calls |
 | settings | Contains the user MFC-based user interface components needed by XL4J, including the Settings dialog, the splash screen, info dialog and update prompt dialogs |
 | helper | Various helper classes that are specific to XL4J |
-| utils | Utility classes such as the logging system, date and file handling, etc., that are more general utilities not specific to XL4J | excel-test | Unit tests for excel |
+| utils | Utility classes such as the logging system, date and file handling, etc., that are more general utilities not specific to XL4J |
+| excel-test | Unit tests for excel |
 | core-test | Unit tests for core |
 | local-test | Unit tests for local and utils |
 
@@ -98,7 +99,7 @@ string types and how they're used:
     these so they can be printed with standard logging without too much trouble.
   - COM uses BSTR - arrays of 16-bit chars with the length stored *before* the character pointed to by the pointer.  These are usually
     allocated using `SysAllocString` and `SysFreeString`.  Unfortunately the seemingly useful `_bstr_t` wrapper class can be more
-    trouble than it's worth given it's rather confusing conversions.
+    trouble than it's worth given its rather confusing conversions.
   - MFC based stuff uses CString in places.
   - Some slightly purer C++ code uses `std::string` and `std::wstring` as well as a type `_std_string` which supports either (a vestage
     of the ANSI support).
@@ -217,7 +218,7 @@ number of calls to `FindClass`, `GetMethodID` and so on (which should eventually
 
 The arguments to `Call()` and `AsyncCall()` are both the export number and `SAFEARRAY` of `VARIANT`.  These are converted into 
 appropriate Java objects using the `ComJavaConverter` class in the `local` project.  This uses the `JniCache` to create instances
-of the classes in [com.mcleodmoores.xl4j.v1.api.values.*](https://github.com/McLeodMoores/xl4j/tree/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/api/values) and add them to an `Object[]` for passing to Java.  Once all the arguments
+of the classes in [com.mcleodmoores.xl4j.v1.api.values.](https://github.com/McLeodMoores/xl4j/tree/master/xll-core/src/main/java/com/mcleodmoores/xl4j/v1/api/values) and add them to an `Object[]` for passing to Java.  Once all the arguments
 are processed, the method `invoke` on the instance of `ExcelFunctionCallHandler` returned by the `Excel` instance, is called.  The
 `Excel` instance is returned by the `ExcelFactory.getInstance()` factory method and cached after first invocation.  The returned Java
 handle is then converted back to a COM `VARIANT` type, again using the `ComJavaConverter`, and returned back to the caller (again 
