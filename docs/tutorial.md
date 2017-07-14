@@ -82,7 +82,7 @@ files:
 # Using Java projects from Excel
 ## A simple wrapper
  
-In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Excel. To get pricing and risk metrics, we need 
+In this example, we are going to write a layer that allows the ![starling implementation of the ISDA CDS model](https://github.com/McLeodMoores/starling/tree/mcleodmoores/projects/analytics/src/main/java/com/opengamma/analytics/financial/credit/isdastandardmodel) to be used from Excel. To get pricing and risk metrics, we need 
   - A yield curve
   - A CDS curve
   - A CDS trade definition
