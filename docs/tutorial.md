@@ -134,9 +134,9 @@ Just for reference, here is some example Java code that constructs a yield curve
   ```
 The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed in Excel. This means that conventions can be stored in Excel tables.
  
-** TODO links to all of the classes referenced **
+
 ### The conventions
-We've added two POJOs, ```IdsaYieldCurveConvention``` and ```IsdaCdsConvention``` that contain all of the convention information for yield curves and CDS, and a utility class, ```ConventionFunctions```, that contains static Excel functions that build these objects.
+We've added two POJOs, ![```IdsaYieldCurveConvention```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/credit/IsdaYieldCurveConvention.java) and ![```IsdaCdsConvention```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/credit/IsdaCdsConvention.java) that contain all of the convention information for yield curves and CDS, and a utility class, ![```ConventionFunctions```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/credit/ConventionFunctions.java), that contains static Excel functions that build these objects.
  
 The yield curve convention builder is simple: all fields are required and can be represented as ```String``` or ```int```. 
 This method takes Excel types (```XLString, XLNumber```) as arguments, which means that there is no type conversion done on the objects coming from the add-in.
@@ -211,7 +211,7 @@ As optional values are passed in as nulls, it's necessary to test for them and h
  
  ## Starting from scratch
  
- We're going to build a sheet that takes historical time series data from **Quandl insert link**, performs some basic statistical analysis and compares a long-only portfolio to the efficient frontier. 
+ We're going to build a sheet that takes historical time series data from ![Quandl](https://www.quandl.com/), performs some basic statistical analysis and compares a long-only portfolio to the efficient frontier. 
  
 A prerequisite for any sort of time series analysis is to make sure that the data are clean (e.g. no spikes)  and consistent across dates (i.e. all have the same dates with no missing values). To do this, we should at a minumum:
  
@@ -242,7 +242,7 @@ The only difference between this function and the ones in the previous section i
 
 ![Object reference](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/object-reference.png)
 
-The default mode is ```SIMPLEST_RESULT```, which performs conversions to Excel types (e.g. ```Double``` to ```XLNumber```) where a converter is available, or returns an ```XLObject``` for more complex types without converters, like ```ISDACompliantYieldCurve```. 
+The default mode is ```SIMPLEST_RESULT```, which performs conversions to Excel types (e.g. ```Double``` to ```XLNumber```) where a converter is available, or returns an object reference for more complex types without converters, like ```ISDACompliantYieldCurve```. 
 
 For this example, we will use functions with ```OBJECT_RESULT``` , as this will help with our stated aim of writing a compact spreadsheet. 
 
@@ -327,13 +327,13 @@ The ```Statistics``` sheet uses the calculators that we've written to prepare th
 
 and calculate some statistics:
 
-![Statistics calculators](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/solver.png)
+![Statistics calculators](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/statistics-calculators.png)
 
 Finally, the ```Efficient Frontier``` page uses some Java functions, such as the covariance matrix calculator:
 
 ![Covariance matrix calculator](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/covariance-matrix-calculator.png)
 
-and inbuilt Excel functions:
+inbuilt Excel functions:
 
 ![Sun product](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/sumproduct.png)
 
