@@ -315,6 +315,8 @@ The registered functions for the percentage return calculator are:
 
 Note that when the functions are registered, the visibility of the constructors or methods is not changed, so only ```public``` ones will be registered. 
 
+For a detailed description of all of the fields in the annotations that have been used, see the ![API reference](https://github.com/McLeodMoores/xl4j/blob/master/docs/api-reference.md) document.
+
 ### The sample sheet
 
 Using the functions that we've created, we can now put together our sheet. The ```Market Data``` sheet makes a call to Quandl for data and splits the ```TabularResult``` by field name:
