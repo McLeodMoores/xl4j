@@ -50,7 +50,8 @@ public final class JConstruct {
     try {
       final Excel excelFactory = ExcelFactory.getInstance();
       final InvokerFactory invokerFactory = excelFactory.getInvokerFactory();
-      final ConstructorInvoker[] constructorTypeConverters = invokerFactory.getConstructorTypeConverter(resolveClass(className),
+      Class<?> temp = resolveClass(className);
+      final ConstructorInvoker[] constructorTypeConverters = invokerFactory.getConstructorTypeConverter(temp,
           TypeConversionMode.OBJECT_RESULT, getArgTypes(args));
       int i = 0;
       // TODO remove any constructor with Object or Object[] types and try them last?
