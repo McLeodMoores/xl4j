@@ -31,9 +31,7 @@ smaller) and hit CTRL-SHIFT-ENTER.
 
 ## Alternatives to array formulas
 Before using array formulas with abandon though, you should consider whether your users are familiar with them.  Some users find
-using array formulas very annoying, or, more likely, are completely unfamiliar with them.  You should either plan to survey or 
-
-train users before moving forward.
+using array formulas very annoying, or, more likely, are completely unfamiliar with them.  You should either plan to survey or train users before moving forward.
 
 An alternative is to creat some indexed accessor functions.  With this you return an object handle rather than an array, and then
 pass that into another function to pick out a particular element.  An example is `JSONArray.Get` implemented by the `get(JSONArray, int)`
@@ -65,12 +63,12 @@ Excel will often re-compute cells that logically really don't need to be recalcu
 therefore end up appearing to take longer than expected as they are actually run several times before appearing.  One way to mitigate
 this issue is to cache results when a function is called with the same arguments, essentially memoization.  This obviously requires 
 the function is idempotent (that it has no hidden state that affects its results).  For an example of this, using a rather crude 
-hand-rolled cache, see the Quandl example.
+hand-rolled cache, see the [Quandl example](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/quandl/QuandlFunctions.java).
 
 # Excel being multi-threaded now doesn't necessarily mean what you think it does
 You might this that because Excel does multi-threaded recalculation, it can calculate cells in the background without blocking.  This
 is not true.  Any of the calculation threads blocking can cause the UI to freeze up.  For the best results, use asynchronous functions
-for any I/O or long running calculatoins.
+for any I/O or long running calculations.
 
 XL4J uses two separate thread pools:
 
@@ -79,8 +77,8 @@ XL4J uses two separate thread pools:
     with getting rid of it)
  2) one for asynchronous operations that's larger, but of a fixed upper size.
  
-The reason for separate pools is that a single unified pools leads to the problem where you have a large number of blocked
-asynchronous functions using up the whole pool, leaving nothing for the syncrhonous requests and causing the UI to lock up.
+The reason for separate pools is that a single unified pool leads to the problem where you have a large number of blocked
+asynchronous functions using up the whole pool, leaving nothing for the synchronous requests and causing the UI to lock up.
 
 # Asynchronous functions get cancelled and recalculated often
 Excel often calls the add-in with an asynchronous function call, only to trigger the calculation cancellation event shortly afterwards
