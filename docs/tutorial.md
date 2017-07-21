@@ -77,12 +77,12 @@ files:
  
     ![Third function image](images/first-function-3.png)
  
- ##TODO add an image of the argument wizard when it's fixed
+ **TODO add an image of the argument wizard when it's fixed**
 
 # Using Java projects from Excel
 ## A simple wrapper
  
-In this example, we are going to write a layer that allows the **TODO link** starling implementation of the ISDA CDS model to be used from Excel. To get pricing and risk metrics, we need 
+In this example, we are going to write a layer that allows the ![starling implementation of the ISDA CDS model](https://github.com/McLeodMoores/starling/tree/mcleodmoores/projects/analytics/src/main/java/com/opengamma/analytics/financial/credit/isdastandardmodel) to be used from Excel. To get pricing and risk metrics, we need 
   - A yield curve
   - A CDS curve
   - A CDS trade definition
@@ -134,9 +134,9 @@ Just for reference, here is some example Java code that constructs a yield curve
   ```
 The curve is built from convention information (day-counts, payment intervals, etc.), a list of instruments used in the curve, the tenors of these instruments, a working day calendar, and market data. As conventions are defined on a per-currency basis, we are going to bundle all of the convention information into a class and then add functions that allow these objects to be constructed in Excel. This means that conventions can be stored in Excel tables.
  
-** TODO links to all of the classes referenced **
+
 ### The conventions
-We've added two POJOs, ```IdsaYieldCurveConvention``` and ```IsdaCdsConvention``` that contain all of the convention information for yield curves and CDS, and a utility class, ```ConventionFunctions```, that contains static Excel functions that build these objects.
+We've added two POJOs, ![```IdsaYieldCurveConvention```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/credit/IsdaYieldCurveConvention.java) and ![```IsdaCdsConvention```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/credit/IsdaCdsConvention.java) that contain all of the convention information for yield curves and CDS, and a utility class, ![```ConventionFunctions```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/credit/ConventionFunctions.java), that contains static Excel functions that build these objects.
  
 The yield curve convention builder is simple: all fields are required and can be represented as ```String``` or ```int```. 
 This method takes Excel types (```XLString, XLNumber```) as arguments, which means that there is no type conversion done on the objects coming from the add-in.
@@ -210,5 +210,140 @@ As optional values are passed in as nulls, it's necessary to test for them and h
  
  
  ## Starting from scratch
+ 
+ We're going to build a sheet that takes historical time series data from ![Quandl](https://www.quandl.com/), performs some basic statistical analysis and compares a long-only portfolio to the efficient frontier. 
+ 
+A prerequisite for any sort of time series analysis is to make sure that the data are clean (e.g. no spikes)  and consistent across dates (i.e. all have the same dates with no missing values). To do this, we should at a minumum:
+ 
+  - Allow the time series to be sampled at a particular frequency e.g. daily or monthly
+  - Have the ability to pad the series when there is no data for a particular date
+
+It is certainly possible to do these operations using only Excel and / or VBA. However, it's easier write functions in Java to do this, with the added bonus that the resulting spreadsheet is smaller (10 years of daily data is ~2500 data points - that's a lot of rows or columns to manage), which means, amongst other things, that any errors or problems like ```#VALUE!``` can be more easily spotted.
+
+We start with a toy ![```TimeSeries```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java) implementation that extends a ```SortedMap```. There's a factory method that takes either a ```2 x n``` or ```n x 2``` range and returns the ```TimeSeries``` as an **object**:
+
+```java
+  @XLFunction(name = "TimeSeries",
+      description = "Create a time series",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.OBJECT_RESULT)  // NOTE THE CONVERSION MODE
+  public static TimeSeries of(@XLParameter(name = "datesAndValues", description = "The dates and values") final XLValue... datesAndValues) {
+    ArgumentChecker.notNull(datesAndValues, "datesAndValues");
+    if (datesAndValues.length == 1 && datesAndValues[0] instanceof XLArray) {
+      return ofRange((XLArray) datesAndValues[0]);
+    } else if (datesAndValues.length == 2 && datesAndValues[0] instanceof XLArray && datesAndValues[1] instanceof XLArray) {
+      return of((XLArray) datesAndValues[0], (XLArray) datesAndValues[1]);
+    }
+    throw new XL4JRuntimeException("Cannot create time series from input");
+  }
+```
+
+The only difference between this function and the ones in the previous section is that the conversion mode for the results is set to ```OBJECT_RESULT```. ```OBJECT_RESULT``` functions do not perform any conversions, so the sheet will show an object reference. 
+
+![Object reference](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/object-reference.png)
+
+The default mode is ```SIMPLEST_RESULT```, which performs conversions to Excel types (e.g. ```Double``` to ```XLNumber```) where a converter is available, or returns an object reference for more complex types without converters, like ```ISDACompliantYieldCurve```. 
+
+For this example, we will use functions with ```OBJECT_RESULT``` , as this will help with our stated aim of writing a compact spreadsheet. 
+
+We've also added a function that expands a time series to an Excel array:
+
+```java
+  @XLFunction(name = "ExpandTimeSeries",
+      description = "Expand a time series into an array",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.SIMPLEST_RESULT)
+  public static TimeSeries expand(@XLParameter(name = "timeSeries", description = "time series object") final TimeSeries timeSeries) {
+    return timeSeries;
+  }
+```
+
+At first, this function does not look like it does anything to the time series. However, note that the conversion mode is ```SIMPLEST_RESULT```. If we add a class that converts ![a ```TimeSeries``` to ```XLArray```](https://github.com/McLeodMoores/xl4j/blob/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries/TimeSeries.java), then the time series will be converted to an array that can be used like any array formula in Excel:
+
+![Expand time series](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/expand-time-series.png)
+
+Next, we need functions that generate schedules, a sampling function that gets the dates and values from a time series for a particular schedule, functions that deal with missing data, return calculators and arithmetic operations. All of these classes are in the ![timeseries](https://github.com/McLeodMoores/xl4j/tree/master/xll-examples/src/main/java/com/mcleodmoores/xl4j/examples/timeseries) package.
+
+One of these functions is a percentage return calculator:
+
+```java
+@XLNamespace("TimeSeries.")
+@XLFunctions(
+    prefix = "PercentageReturn",
+    typeConversionMode = TypeConversionMode.OBJECT_RESULT,
+    description = "Calculates the percentage return of a time series",
+    category = "Time Series")
+public class PercentageReturnCalculator implements TimeSeriesFunction<TimeSeries> {
+
+  @Override
+  public TimeSeries apply(final TimeSeries ts) {
+    ArgumentChecker.notNull(ts, "ts");
+    final int n = ts.size();
+    ArgumentChecker.isTrue(n > 1, "Need more than one data point to calculate the returns");
+    final TimeSeries result = TimeSeries.newTimeSeries();
+    final Double[] previous = new Double[] { ts.get(ts.firstKey()) };
+    ts.entrySet().stream().skip(1L).forEach(e -> {
+      result.put(e.getKey(), e.getValue() / previous[0] - 1);
+      previous[0] = e.getValue();
+    });
+    return result;
+  }
+
+}
+``` 
+There are two annotations that weren't used in the other examples: ```XLNamespace``` and ```XLFunctions```.
+
+#### ```XLNamespace```
+
+As its name implies, this annotation allows functions to be categorised into namespaces by prepending the value of the annotation to all functions in a class. This can be very useful if you have a large number of functions, as they will be sorted alphabetically in a drop-down list.
+
+![Namespace list](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/namespace-list.png)
+
+#### ```XLFunctions```
+
+The ```XLFunctions``` annotation is used when you want to register all **public** constructors and methods, including static methods, in a class (with the exception of the methods from ```Object```: ```hashCode```, ```equals```, ```toString```, ```finalize```, ```getClass```, ```wait```, ```notify```, ```notifyAll``` and ```clone``` - if you need one of these methods then you'll need to add an explicit ```XLFunction``` annotation to it). 
+
+The fields in this annotation are fairly straightforward:
+  - ```prefix``` is an optional field that effectively renames a class. In the ```PercentageReturnCalculator``` class shown above, the prefix field is set to ```PercentageReturn```. This means that the function name for the constructor is ```TimeSeries.PercentageReturn```, while the ```apply``` method's function name is ```TimeSeries.PercentageReturn.apply```. If this field is not set, the class name is used instead (e.g. giving ```TimeSeries.PercentageReturnCalculator``` and ```TimeSeries.PercentageReturnCalculator.apply```).
+  - ```typeConversionMode``` sets the return type mode of the methods in the class. By default, it is set to return the simplest result, which means that if there are any converters available for the return type they will be used.
+  - ```description``` provides the description of the constructors and methods 
+  - ```category``` puts all constructor and method functions into a particular category.
+
+The registered functions for the percentage return calculator are:
+
+![Percentage return functions](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/percentage-return-calculator.png)
+
+Note that when the functions are registered, the visibility of the constructors or methods is not changed, so only ```public``` ones will be registered. 
+
+For a detailed description of all of the fields in the annotations that have been used, see the ![API reference](https://github.com/McLeodMoores/xl4j/blob/master/docs/api-reference.md) document.
+
+### The sample sheet
+
+Using the functions that we've created, we can now put together our sheet. The ```Market Data``` sheet makes a call to Quandl for data and splits the ```TabularResult``` by field name:
+
+![Market data sheet](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/market-data-sheet.png)
+
+The ```Statistics``` sheet uses the calculators that we've written to prepare the time series data:
+
+![Data cleaning](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/data-cleaning.png)
+
+and calculate some statistics:
+
+![Statistics calculators](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/statistics-calculators.png)
+
+Finally, the ```Efficient Frontier``` page uses some Java functions, such as the covariance matrix calculator:
+
+![Covariance matrix calculator](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/covariance-matrix-calculator.png)
+
+inbuilt Excel functions:
+
+![Sun product](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/sumproduct.png)
+
+and Solver
+
+![Solver](https://github.com/McLeodMoores/xl4j/blob/master/docs/images/solver.png)
+
+to calculate minimum risk portfolio weights for various target returns. Much more straightforward than writing your own minimiser in Java, or trying to keep track of 10 years of data in Excel!
+
  ## Using existing code (2)
  

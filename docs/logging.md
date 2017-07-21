@@ -26,7 +26,8 @@ levels.  These are summarised below:
 | `DEBUG`   | Information that's likely to be useful only when examining the code, but at a slightly more abstract level |
 | `INFO`    | General informational messages about the state of execution                                                |
 | `WARN`    | Messages indicating possible errors during execution                                                       |
-| `ERROR`   | Indication of error conditions which may, or may not be fatal                                              |
+| `ERROR`   | Indication of error conditions which may or may not be fatal                                              |
+|
 | `FATAL`   | Indication of error conditions which are definitely fatal to execution                                     |
 
 ### Log target for C++

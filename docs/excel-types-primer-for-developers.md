@@ -49,14 +49,14 @@ now becomes
 | 2 | 456 | =$A$1 |
 | 3 | 789 | =$A$1 |
 
-Note that we can anchor one dimension and not the other, so $A1 will always refer to column A if it's expanded horizontally, but it's 
-row will change relative to the original.  Similarly, we can anchor the row A$1 will always refer to row 1, but change the column 
+Note that we can anchor one dimension and not the other, so $A1 will always refer to column A if it's expanded horizontally, but its 
+row will change relative to the original.  Similarly, we can anchor the row: A$1 will always refer to row 1, but change the column 
 relative the original.  A useful keyboard shortcut is that F4 will cycle between the 4 different variants, which can save you a lot of
 re-typing.
 
 Interestingly, in R1C1 format, relative references are expressed as R[*&lt;offset&gt;*]C[*&lt;offset&gt;*] where if either the R or C offset 
 is optional, so R[-1]C refers to the cell above the current cell.  This can be more readable for complex sheets, so you might want to
-use it sometimes and also if you're generating sheets, it can be simpler.
+use it sometimes; also, if you're generating sheets, it can be simpler.
 
 ## Excel Cell Types
 | Excel Type       | Notes/Values |
@@ -95,7 +95,7 @@ Conversions take place as operators are applied to values:
 ### The equals operator
 Will convert any cell references into _values_ before invoking functions and will only return one of the basic Excel types listed above
 ### Unary minus
-Will convert a string representation of a number to a negated number representation, so double negation converts from String to Number.  Booleans convert to -1 or 0, so an easy Boolean to Number conversion is achieved with double negation. Note that the unary plus operator does not have the same effect.
+Will convert a string representation of a number to a negated number representation, so double negation converts from String to Number.  Booleans convert to 1 or 0, so an easy Boolean to Number conversion is achieved with double negation. Note that the unary plus operator does not have the same effect.
 ### Binary arithmetic operators (`+`, `-`, `*`, `/`, `^`)
 Will try to convert any values to Numbers.  This includes strings in any recognised format, dates and times and percentages.
 ### Percentage operators (`%`)
