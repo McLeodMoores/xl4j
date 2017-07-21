@@ -158,7 +158,7 @@ static HRESULT Scan (const _std_string_t &strPath, long *plFiles, long *plLength
 	} catch (_com_error &e) {
 		hr = e.Error ();
 	}
-	if (hFind) FindClose (hFind);
+	if (hFind) FindClose (hFind); //-V547
 	return hr;
 }
 

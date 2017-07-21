@@ -101,7 +101,7 @@ static HRESULT CreateLocalObject (const _bstr_t &bstrModule, REFCLSID clsid, IJv
 	} catch (_com_error &e) {
 		hr = e.Error ();
 	}
-	if (hModule) FreeLibrary (hModule);
+	if (hModule) FreeLibrary (hModule); //-V547
 	if (pFactory) pFactory->Release ();
 	if (pConnector) pConnector->Release ();
 	return hr;

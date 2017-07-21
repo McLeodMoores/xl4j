@@ -101,17 +101,17 @@
 	  <type>zip</type>
 	  <exclusions>
 	    <exclusion>
-          <groupId>com.oracle.jdk</groupId>
+          <groupId>com.mcleodmoores.oracle.jdk</groupId>
           <artifactId>win32</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>com.microsoft.excel</groupId>
+          <groupId>com.mcleodmoores.microsoft.excel</groupId>
           <artifactId>xllsdk</artifactId>
         </exclusion>
 	  </exclusions>
     </dependency>
 	<dependency>
-	  <groupId>com.microsoft.visualstudio</groupId>
+	  <groupId>com.mcleodmoores.microsoft.visualstudio</groupId>
 	  <artifactId>redist</artifactId>
 	  <version>12.0</version>
 	  <type>zip</type>

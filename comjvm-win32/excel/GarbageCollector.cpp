@@ -63,7 +63,7 @@ void GarbageCollector::SetFallbackArea() {
 bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName) {
 	XLOPER12 docType;
 	Excel12f(xlfGetDocument, &docType, 2, TempInt12(3), pSheetName); // 3 == GetType
-	LOGINFO("Worksheet detected type %f (%d)", docType.val.num, docType.val.w);
+	LOGTRACE("Worksheet detected type %f (%d)", docType.val.num, docType.val.w);
 	if (docType.val.num != 1.) { // 1 == worksheet (as opposed to e.g. a chart)
 		LOGWARN("Non-worksheet detected type %f (%d)", docType.val.num, docType.val.w);
 		// don't need to free docType as no pointers involved.
@@ -150,7 +150,7 @@ skip_xlfgetdocument:
 		// initialise the loop variable
 		m_iRow = (RW)m_firstRow.val.num - 1;
 	}
-	LOGINFO("Collecting in workbook %s, sheet %s, firstRow = %d, lastRow = %d, firstCol = %d, lastCol = %d, currentRow = %d", pWorkbookName->val.str, pSheetName->val.str, (RW)m_firstRow.val.num, (RW)m_lastRow.val.num, (COL)m_firstCol.val.num, (COL)m_lastCol.val.num, m_iRow);
+	LOGTRACE("Collecting in workbook %s, sheet %s, firstRow = %d, lastRow = %d, firstCol = %d, lastCol = %d, currentRow = %d", pWorkbookName->val.str, pSheetName->val.str, (RW)m_firstRow.val.num, (RW)m_lastRow.val.num, (COL)m_firstCol.val.num, (COL)m_lastCol.val.num, m_iRow);
 	while (m_iRow <= (RW)m_lastRow.val.num - 1) {
 		XLOPER12 *pMulti = TempInt12 (xltypeMulti); // Excel type == multi (array)
 		m_wholeRow.val.mref.lpmref->reftbl[0].rwFirst = m_iRow;
@@ -211,7 +211,7 @@ bool GarbageCollector::ScanDocuments () {
 		LOGTRACE ("WorkbookName=");
 		bool partial = ScanWorkbook (m_pWorkbookName);
 		if (partial) {
-			LOGINFO("Abandoning pass as timeout happened");
+			LOGTRACE("Abandoning pass as timeout happened");
 			return true;
 		}
 		m_pWorkbookName++;
@@ -243,16 +243,16 @@ void GarbageCollector::Collect () {
 			//Debug::odprintf (TEXT("Collection complete, there were %ll allocations since"), allocations);
 			Reset ();
 			if (unrecognisedHandles > 0) {
-				LOGINFO("There were %lld unrecognised handles", unrecognisedHandles);
+				LOGTRACE("There were %lld unrecognised handles", unrecognisedHandles);
 				if (unrecognisedHandles > m_previousUnknownHandles) {
-					LOGINFO("which is not the same as last time (there were %lld last time)", m_previousUnknownHandles);
+					LOGINFO("Unrecognised handle count is not the same as last time (there were %lld last time)", m_previousUnknownHandles);
 					// TODO: Pass this in rather than using global.
 					g_pAddinEnv->CalculateFullRebuild();
 				}
 				m_previousUnknownHandles = unrecognisedHandles; // save so we can only refresh when situation changes.
 			}
 		} else {
-			LOGTRACE ("Collector returned error");
+			LOGERROR ("Collector returned error");
 		}
 	}
 }

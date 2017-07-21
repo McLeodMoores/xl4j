@@ -138,9 +138,8 @@ HRESULT CLicenseChecker::Validate() {
 		CryptReleaseContext(hProv, 0);
 		return hr;
 	} else {
-		LOGTRACE("Success");
+		LOGINFO("Successfully decoded certificate");
 	}
-	LOGTRACE("Decoded cert");
 
 	HCRYPTKEY hCryptKey = NULL;
 	if (!CryptImportPublicKeyInfo(hProv, X509_ASN_ENCODING, &pCertInfo->SubjectPublicKeyInfo, &hCryptKey)) {
@@ -177,7 +176,7 @@ HRESULT CLicenseChecker::Validate() {
 		return hr;
 	}
 	CryptDestroyHash(hHash);
-	LOGTRACE("Verified signature");
+	LOGINFO("Verified signature of license file");
 	CryptReleaseContext(hProv, 0);
 	m_bLicenseValidated = true;
 	return S_OK;
@@ -217,29 +216,40 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 		LOGERROR("Problem reading license file size: %s", GETLASTERROR_TO_STR());
 		return GETLASTERROR_TO_HRESULT();
 	}
-	LPVOID pBuffer = malloc(dwLicenseFileSize);
+	PCHAR pBuffer = (PCHAR)calloc(dwLicenseFileSize + 1, 1); // leave a zeroed gap on the end so we can find the end of the string/file.
 	if (!pBuffer) {
 		LOGERROR("malloc failed");
 		return E_OUTOFMEMORY;
 	}
 	DWORD dwBytesRead;
-	if (!ReadFile(hLicenseFile, pBuffer, dwLicenseFileSize, &dwBytesRead, nullptr)) {
-		LOGERROR("Problem reading license file: %s", GETLASTERROR_TO_STR());
-		return GETLASTERROR_TO_HRESULT();
+	PCHAR pReadBuf = (PCHAR)pBuffer;
+	DWORD dwBytesRemaining = dwLicenseFileSize;
+	while (ReadFile(hLicenseFile, pReadBuf, dwBytesRemaining, &dwBytesRead, nullptr)) {
+		if (dwBytesRead == 0) goto noerror;
+		pReadBuf += dwBytesRead;
+		dwBytesRemaining -= dwBytesRead;
 	}
+	LOGERROR("Problem reading license file: %s", GETLASTERROR_TO_STR());
+	return GETLASTERROR_TO_HRESULT();
+noerror:
+	LOGINFO("Read license file, total of %d bytes read", dwLicenseFileSize);
+	LOGINFO("File read was %S", pBuffer);
 	CloseHandle(hLicenseFile);
-	BYTE *pDecoded = (BYTE *)malloc(dwLicenseFileSize);
-	if (!pDecoded) {
-		LOGERROR("malloc failed");
-		return E_OUTOFMEMORY;
-	}
-	DWORD dwDecodedSize = dwLicenseFileSize;
+	//BYTE *pDecoded = (BYTE *)malloc(dwLicenseFileSize);
+	//if (!pDecoded) {
+	//	LOGERROR("malloc failed");
+	//	return E_OUTOFMEMORY;
+	//}
+	//DWORD dwDecodedSize = dwLicenseFileSize;
 	char *szContent;
 	char *szSignature;
 	if (FAILED(hr = Parse((const char *)pBuffer, &szContent, &szSignature))) {
 		LOGERROR("License file parsing failed: %s", HRESULT_TO_STR(hr));
+		//free (pDecoded);
 		return hr;
 	}
+	LOGINFO("Content = %S", szContent);
+	LOGINFO("Signature = %S", szSignature);
 	if (pszLicenseText != NULL) {
 		*pszLicenseText = szContent;
 	}
@@ -250,8 +260,8 @@ HRESULT CLicenseChecker::ParseFile(char **pszLicenseText, char **pszSignature) {
 }
 
 HRESULT CLicenseChecker::Parse(const char *pBuffer, char **pszFirstBlock, char **pszSecondBlock) {
-	size_t cchBoundaryString = 7;
-	char *szBoundaryString = "------\n";
+	size_t cchBoundaryString = 8;
+	char *szBoundaryString = "------\r\n";
 	const char *szFirstBlock = pBuffer;
 	const char *szSecondBlockStart = strstr(szFirstBlock, szBoundaryString);
 	if (!szSecondBlockStart) {
@@ -263,15 +273,19 @@ HRESULT CLicenseChecker::Parse(const char *pBuffer, char **pszFirstBlock, char *
 	if (!szFirstBlockResult) return E_OUTOFMEMORY;
 	if (strncpy_s(szFirstBlockResult, cchFirstBlock + 1, szFirstBlock, cchFirstBlock)) {
 		LOGERROR("Could not copy first block result");
+		free(szFirstBlockResult);
 		return E_FAIL;
 	}
 	const char *szSecondBlock = szSecondBlockStart + cchBoundaryString; // don't count null
-	const char *szEndSecondBlock = strstr(szSecondBlock, "=="); // find end of base64 sequence
+	const char *szEndSecondBlock = szSecondBlock;
+	while (*szEndSecondBlock) szEndSecondBlock++; // run until we hit the zero at the end of the buffer (left on calloc)
+	//strstr(szSecondBlock, "=="); // find end of base64 sequence - stopped using this when i realised base64 can end in =, == or nothing!
 	if (!szEndSecondBlock) {
 		LOGERROR("Could not find end of second block");
+		free(szFirstBlockResult);
 		return E_FAIL;
 	}
-	szEndSecondBlock += 2; // skip over ==
+	//szEndSecondBlock += 2; // skip over ==
 	//LOGTRACE("End of second block looks like this: %S", szEndSecondBlock);
 	size_t cchSecondBlock = szEndSecondBlock - szSecondBlock;
 	//LOGTRACE("Count = %d", cchSecondBlock);
@@ -279,9 +293,10 @@ HRESULT CLicenseChecker::Parse(const char *pBuffer, char **pszFirstBlock, char *
 	if (!szSecondBlockResult) return E_OUTOFMEMORY;
 	if (strncpy_s(szSecondBlockResult, cchSecondBlock + 1, szSecondBlock, cchSecondBlock)) {
 		LOGERROR("Could not copy second block result");
+		free(szFirstBlockResult);
+		free(szSecondBlockResult);
 		return E_FAIL;
 	}
-	//OutputDebugStringA(szSecondBlockResult);
 	*pszFirstBlock = szFirstBlockResult;
 	*pszSecondBlock = szSecondBlockResult;
 	return S_OK;
@@ -296,6 +311,19 @@ HRESULT CLicenseChecker::GetLicenseText(wchar_t ** ppszLicenseText) {
 			LOGERROR("Error parsing license file");
 			return hr;
 		}
+		/* skip over two lines */
+		if (szLicenseText) {
+			szLicenseText = strstr(szLicenseText, "\r\n");	
+		}
+		if (szLicenseText) {
+			szLicenseText += 2; // we do it here so we don't mess with the check.
+			szLicenseText = strstr(szLicenseText, "\r\n");
+		}
+		if (!szLicenseText) {
+			LOGERROR("No license text after skipping two lines");
+			return E_FAIL;
+		}
+		szLicenseText += 2; // note we do it after the check.
 		size_t chLicenseText = MultiByteToWideChar(CP_UTF8, 0, szLicenseText, -1, NULL, 0);
 		if (!chLicenseText) {
 			HRESULT hr = GETLASTERROR_TO_HRESULT();

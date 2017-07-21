@@ -108,7 +108,7 @@ HRESULT COMJVM_CORE_API ComJvmCreateClasspathEntryA (/* [in] */ PCSTR pszLocalPa
 	} catch (_com_error &e) {
 		hr = e.Error ();
 	}
-	if (hFind) FindClose (hFind);
+	if (hFind) FindClose (hFind); //-V547
 	if (pMultiClasspathEntry) pMultiClasspathEntry->Release ();
 	return hr;
 }

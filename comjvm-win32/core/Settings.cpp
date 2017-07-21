@@ -61,7 +61,7 @@ public:
 	const _bstr_t GetString (const _std_string_t &strKey, long lIndex) const {
 		TCHAR szKey[16];
 		TCHAR szBuffer[MAX_PATH];
-		StringCbPrintf (szKey, sizeof (szKey), TEXT ("v%d"), lIndex + 1);
+		StringCbPrintf (szKey, sizeof szKey, TEXT ("v%d"), lIndex + 1); //-V512
 		if (GetPrivateProfileString (strKey.data (), szKey, NULL, szBuffer, sizeof (szBuffer) / sizeof (TCHAR), m_strPath.data ()) > 0) {
 			_bstr_t bstrResult (szBuffer);
 			return bstrResult.Detach();
@@ -79,7 +79,7 @@ public:
 			_bstr_t bstrResult (szBuffer);
 			return bstrResult;
 		} else {
-			LOGTRACE ("GetPrivateProfileString returned error, returning empty string _bstr_t");
+			LOGTRACE ("GetPrivateProfileString returned error, returning empty string _bstr_t"); //-V769
 			//_bstr_t bstrResult ();
 			return (LPCSTR)NULL;
 		}
@@ -87,7 +87,7 @@ public:
 
 	BOOL PutString (const _std_string_t &strKey, long lIndex, const _std_string_t &strValue) {
 		TCHAR szKey[16];
-		StringCbPrintf (szKey, sizeof (szKey), TEXT ("v%d"), lIndex + 1);
+		StringCbPrintf (szKey, sizeof szKey, TEXT ("v%d"), lIndex + 1); //-V512
 		return WritePrivateProfileString (strKey.data (), szKey, strValue.data (), m_strPath.data());
 	}
 
@@ -97,7 +97,7 @@ public:
 
 	BOOL DeleteString (const _std_string_t &strKey, long lIndex) {
 		TCHAR szKey[16];
-		StringCbPrintf (szKey, sizeof (szKey), TEXT ("v%d"), lIndex + 1);
+		StringCbPrintf (szKey, sizeof szKey, TEXT ("v%d"), lIndex + 1); //-V512
 		return WritePrivateProfileString (strKey.data (), szKey, NULL, m_strPath.data ());
 	}
 
@@ -173,8 +173,7 @@ static CSettingsImpl *LoadFrom (PathBuilder pfPathBuilder, const _std_string_t &
 	HRESULT hr;
 	// Note the following call is deprecated, but on the offchance we want to support XP, we use it instead of the replacement.
 	if (FAILED (hr = pfPathBuilder (strType, strIdentifier, szPathBuffer, MAX_PATH))) {
-		_com_error err (hr);
-		LOGERROR ("CreateAppDataPath failed: %s", err.ErrorMessage ());
+		LOGERROR ("CreateAppDataPath failed: %s", HRESULT_TO_STR(hr));
 		return NULL;
 	}
 	if (!PathFileExists (szPathBuffer)) {
@@ -275,7 +274,7 @@ static BOOL CreateDefaultFile (const _std_string_t &strType, const _std_string_t
 /// <param name="strIdentifier">Configuration identifier</param>
 /// <param name="eLoadType">Whether to initialise AppData settings from template (INIT_APPDATA) or read AppData and fallback to DLL directory if not present (MOST_LOCAL)</param>
 CSettings::CSettings (const _std_string_t &strType, const _std_string_t &strIdentifier, LoadType eLoadType) {
-	if (strIdentifier.data () == NULL) {
+	if (strIdentifier.data () == NULL) { //-V547
 		m_pImpl = new CEmptySettings ();
 	} else {
 		// If we should initialise a new AppData settings file...

@@ -40,10 +40,10 @@ BOOL CAddinPropertyPage::OnInitDialog () {
 			const _bstr_t ENABLED(TEXT("Enabled"));
 			if (bstrGCEnabled == ENABLED) {
 				m_bGarbageCollection.SetCheck (BST_CHECKED);
-				LOGTRACE ("bstrGCEnabled was %s, ENABLED is %s, they were equal", bstrGCEnabled, ENABLED);
+				LOGTRACE ("bstrGCEnabled was %s, ENABLED is %s, they were equal", (wchar_t *)bstrGCEnabled, (wchar_t *)ENABLED);
 			} else {
 				m_bGarbageCollection.SetCheck (BST_UNCHECKED);
-				LOGTRACE ("bstrGCEnabled was %s, ENABLED is %s, they were NOT equal", bstrGCEnabled, ENABLED);
+				LOGTRACE ("bstrGCEnabled was %s, ENABLED is %s, they were NOT equal", (wchar_t *)bstrGCEnabled, (wchar_t *)ENABLED);
 			}
 		} else {
 			LOGTRACE ("bstrGCEnabled.length() <= 0");

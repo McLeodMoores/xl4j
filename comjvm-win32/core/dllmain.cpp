@@ -73,7 +73,7 @@ static HRESULT RegisterServer (HKEY hkeyRoot) {
 	hr = StringFromCLSID (CLSID_JvmSupport, &lpsz);
 	if (FAILED (hr)) return hr;
 	TCHAR szKey[MAX_PATH];
-	hr = StringCbPrintf (szKey, sizeof (szKey), TEXT ("%s%ws"), TEXT ("SOFTWARE\\Classes\\CLSID\\"), lpsz);
+	hr = StringCbPrintfW (szKey, MAX_PATH * sizeof(TCHAR), TEXT ("%s%ws"), TEXT ("SOFTWARE\\Classes\\CLSID\\"), lpsz); //-V512
 	CoTaskMemFree (lpsz);
 	if (FAILED (hr)) return hr;
 	DWORD dwError = RegCreateKeyEx (hkeyRoot, szKey, 0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &hkeyCLSID, NULL);
@@ -124,8 +124,8 @@ static HRESULT UnregisterServer (HKEY hkeyRoot) {
 	LPOLESTR lpsz;
 	hr = StringFromCLSID (CLSID_JvmSupport, &lpsz);
 	if (FAILED (hr)) return hr;
-	TCHAR szKey[MAX_PATH];
-	hr = StringCbPrintf (szKey, sizeof (szKey), TEXT ("%s%ws"), TEXT ("SOFTWARE\\Classes\\CLSID\\"), lpsz);
+	TCHAR szKey[MAX_PATH * 2];
+	hr = StringCbPrintf (szKey, sizeof szKey, TEXT ("%s%ws"), TEXT ("SOFTWARE\\Classes\\CLSID\\"), lpsz); //-V512
 	CoTaskMemFree (lpsz);
 	if (FAILED (hr)) return hr;
 	DWORD dwError = RegDeleteTree (hkeyRoot, szKey);
