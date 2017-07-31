@@ -73,7 +73,13 @@ public class DefaultExcelFunctionCallHandler implements ExcelFunctionCallHandler
             return methodInvoker.invoke(null, args);
           }
           final Object obj;
-          final XLObject object = (XLObject) args[0];
+          final XLObject object;
+          try {
+            object = (XLObject) args[0];
+          } catch (ClassCastException cce) {
+            LOGGER.error("Function's first argument wasn't an object reference.  Perhaps your function should be static?");
+            throw cce;
+          }
           obj = _heap.getObject(object.getHandle());
           if (obj == null) {
             LOGGER.error("Object handle was invalid, returning XLError.Ref");

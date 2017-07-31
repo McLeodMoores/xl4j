@@ -80,7 +80,8 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 #else
 			m_firstRow.xltype = xltypeMissing;
 #endif
-			return false;
+			goto skip_xlfgetdocument;
+			//return false;
 		}
 		Excel12f (xlfGetDocument, &m_lastRow, 2, TempInt12 (10), pSheetName); // 10 == Get last row
 		ExcelUtils::PrintXLOPER(&m_lastRow);
@@ -93,7 +94,8 @@ bool GarbageCollector::ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName)
 #else
 			m_firstRow.xltype = xltypeMissing;
 #endif
-			return false;
+			goto skip_xlfgetdocument;
+			//return false;
 		}
 		Excel12f (xlfGetDocument, &m_firstCol, 2, TempInt12 (11), pSheetName); // 11 == Get first column
 		ExcelUtils::PrintXLOPER(&m_firstCol);

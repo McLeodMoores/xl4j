@@ -9,7 +9,7 @@
 #include "../core/Settings.h"
 #include "../helper/LicenseChecker.h"
 #include "ExcelCOM.h"
-
+#include "AsyncQueue.h"
 
 
 class CAddinEnvironment {
@@ -22,6 +22,7 @@ private:
 	CSettings *m_pSettings;
 	CLicenseChecker *m_pLicenseChecker;
 	CExcelCOM *m_pExcelCOM;
+	CAsyncQueue *m_pAsyncQueue;
 
 	int m_idRegisterSomeFunctions;
 	int m_idSettings;
@@ -73,6 +74,10 @@ public:
 	HRESULT GetLicenseText(wchar_t **pszLicenseText) {
 		return m_pLicenseChecker->GetLicenseText(pszLicenseText);
 	}
+	HRESULT QueueAsyncResult(LPXLOPER12 pHandle, LPXLOPER12 pResult);
+	HRESULT ProcessAsyncResults() {
+		return m_pAsyncQueue->NotifyResults(100); // 100ms max per call
+	}
 	bool IsShutdown() { return m_state == TERMINATING || m_state == NOT_RUNNING; }
 	bool IsCalculateFullRebuildInProgress() {
 		if (m_bCalculateFullRebuildInProgress) {
@@ -88,4 +93,5 @@ public:
 			return false;
 		}
 	}
+
 };

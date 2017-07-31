@@ -150,7 +150,7 @@ public:
 			m_apfnCallback.push_back (NULL);
 			m_apData.clear();
 			m_apData.push_back (NULL);
-			m_iSize = 1;
+			m_iSize = 1; // was = 1
 			hr = S_OK;
 		} catch (std::bad_alloc) {
 			LOGINFO ("(%p) memory allocation exception", GetCurrentThreadId ());

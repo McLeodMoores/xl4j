@@ -21,6 +21,7 @@ class CJvmEnvironment;
 #include "Lifecycle.h"
 #include "AddinEnvironment.h"
 #include "AsyncCallResult.h"
+#include "QueuingAsyncCallResult.h"
 
 class CJvmEnvironment {
 	enum JvmEnvState { NOT_RUNNING, STARTING, STARTED, TERMINATING };

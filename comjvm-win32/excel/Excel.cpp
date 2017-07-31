@@ -451,6 +451,15 @@ __declspec(dllexport) int GarbageCollect () {
 	//return 1;
 	// LOGTRACE ("GarbageCollect() called.");
     // LOGTRACE ("Acquiring Lock");
+	//LOGTRACE("Processing async results");
+	//HRESULT hr = g_pAddinEnv->ProcessAsyncResults();
+	//if (hr == ERROR_CONTINUE) {
+	//	LOGTRACE("Ran out of time processing async results");
+	//} else if (hr == S_OK) {
+	//	LOGTRACE("Finished processing async results");
+	//} else {
+	//	LOGTRACE("Other error processing async results: %s", HRESULT_TO_STR(hr));
+	//}
 	AcquireSRWLockShared (&g_JvmEnvLock);
     // LOGTRACE ("Lock Acquired");
 	HRESULT hr = g_pJvmEnv->_GarbageCollect();

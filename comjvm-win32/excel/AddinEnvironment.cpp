@@ -22,6 +22,7 @@ CAddinEnvironment::CAddinEnvironment () {
 	m_pConverter = nullptr;
 	m_pLicenseChecker = nullptr;
 	m_pExcelCOM = nullptr;
+	m_pAsyncQueue = nullptr;
 	m_idLicenseInfo = 0;
 	m_bToolbarEnabled = true;
 	m_idRegisterSomeFunctions = 0;
@@ -81,10 +82,17 @@ bool CAddinEnvironment::EnterNotRunningState() {
 HRESULT CAddinEnvironment::Start() {
 	EnterStartingState();
 	HRESULT hr;
-	
+	m_pAsyncQueue = new CAsyncQueue();
 	m_pTypeLib = new TypeLib();
 	m_pSettings = new CSettings(TEXT("inproc"), TEXT("default"), CSettings::INIT_APPDATA);
-	
+	HANDLE hAsyncThread = CreateThread(NULL, 4096 * 1024, [](LPVOID param) -> DWORD {
+		CAsyncQueue *pAsyncQueue = static_cast<CAsyncQueue *>(param);
+		while (true) {
+			pAsyncQueue->NotifyResults(100);
+			Sleep(1000);
+		}
+	}, m_pAsyncQueue, 0, NULL);
+	CloseHandle(hAsyncThread);
 	if (FAILED(hr = InitFromSettings())) {
 		LOGFATAL("Could not initialise add-in from settings");
 		return hr;
@@ -196,6 +204,8 @@ HRESULT CAddinEnvironment::Shutdown() {
 	if (m_pSettings) delete m_pSettings;
 	LOGTRACE("Deleting license checker");
 	if (m_pLicenseChecker) delete m_pLicenseChecker;
+	LOGTRACE("Delteing async queue");
+	if (m_pAsyncQueue) delete m_pAsyncQueue;
 	/* We don't unregister GarbageColect so that it doesn't get called by xlOnTime after it's been deregistered.  It's not hugely important to deregister anyway. */
 	// if (m_idGarbageCollect) {
 	//	 if (FAILED(ExcelUtils::UnregisterFunction (_T ("GarbageCollect"), m_idGarbageCollect))) {
@@ -620,6 +630,15 @@ HRESULT CAddinEnvironment::LoadEULA(wchar_t **szEULA) {
 	free(pBuffer);
 	*szEULA = szUnicodeLicenseAgreement;
 	return S_OK;
+}
+
+HRESULT CAddinEnvironment::QueueAsyncResult(LPXLOPER12 pHandle, LPXLOPER12 pResult) {
+	if (m_state == STARTED) {
+		LOGINFO("QueueAsyncResult");
+		return m_pAsyncQueue->Enqueue(pHandle, pResult);
+	} else {
+		return E_NOT_VALID_STATE;
+	}
 }
 
 

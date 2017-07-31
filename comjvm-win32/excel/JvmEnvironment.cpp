@@ -231,7 +231,11 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		LOGTRACE("Creating GarbageCollector");
 		pThis->m_pCollector = new GarbageCollector(pCollect);
 		LOGTRACE("Created GarbageCollector");
+#if 1
+		pThis->m_pAsyncHandler = new CQueuingAsyncCallResult(pThis->m_pAddinEnvironment);
+#else
 		pThis->m_pAsyncHandler = new CAsyncCallResult(pThis->m_pAddinEnvironment);
+#endif
 		ReleaseSRWLockShared(&(pThis->m_rwlock));
 		pThis->EnterStartedState();
 		return 0;
@@ -349,6 +353,7 @@ HRESULT CJvmEnvironment::TrimArgs(FUNCTIONINFO *pFunctionInfo, long nArgs, VARIA
  */
 HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER12 first, va_list ap)  {
 	LOGTRACE ("UDF entered");
+	m_pAddinEnvironment->ProcessAsyncResults();
 	AcquireSRWLockShared(&m_rwlock);
 	if (m_state == STARTING) {
 		ReleaseSRWLockShared(&m_rwlock);
