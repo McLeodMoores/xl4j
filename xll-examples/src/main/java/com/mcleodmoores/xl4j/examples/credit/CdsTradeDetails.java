@@ -11,10 +11,10 @@ import static com.opengamma.analytics.financial.credit.isdastandardmodel.IMMDate
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
+import com.mcleodmoores.date.CalendarAdapter;
+import com.mcleodmoores.date.WeekendWorkingDayCalendar;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
-import com.opengamma.analytics.date.CalendarAdapter;
-import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSAnalyticFactory;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.CDSCoupon;
 import com.opengamma.analytics.financial.credit.isdastandardmodel.ISDAPremiumLegSchedule;
