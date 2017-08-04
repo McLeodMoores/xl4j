@@ -68,7 +68,7 @@ static HRESULT CreateParentDirectoryA (PCSTR pszPath) {
 			CopyMemory (pszParent, pszPath, cch * sizeof (CHAR));
 			pszParent[cch] = 0;
 			HRESULT hr = CreateDirectoryImplA (pszParent);
-			delete pszParent;
+			delete [] pszParent;
 			return hr;
 		}
 	}
@@ -102,7 +102,7 @@ static HRESULT CreateParentDirectoryW (PCWSTR pszPath) {
 			CopyMemory (pszParent, pszPath, cch * sizeof (WCHAR));
 			pszParent[cch] = 0;
 			HRESULT hr = CreateDirectoryImplW (pszParent);
-			delete pszParent;
+			delete [] pszParent;
 			return hr;
 		}
 	}

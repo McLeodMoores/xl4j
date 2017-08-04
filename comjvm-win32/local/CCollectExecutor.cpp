@@ -49,7 +49,7 @@ HRESULT CCollectExecutor::Run (JNIEnv *pEnv) {
 			LOGERROR ("SafeArrayAccessData failed");
 			goto error;
 		}
-		jlong *plRawArray = pEnv->GetLongArrayElements (jlaValidIds, false);
+		jlong *plRawArray = pEnv->GetLongArrayElements (jlaValidIds, NULL);
 		//for (int i = 0; i < szValidIds; i++) {
 		//	unsigned long long handle = plRawArray[i];
 		//	LOGTRACE("Element %d is %I64u", i, handle);

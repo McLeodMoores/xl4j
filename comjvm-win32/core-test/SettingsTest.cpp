@@ -54,6 +54,7 @@ public:
 					LOGTRACE ("bstrGCEnabled.length() <= 0");
 				}
 			}
+			delete m_pSettings;
 		}
 		LOGTRACE ("After block");
 	}

@@ -22,6 +22,8 @@ CAddinEnvironment::CAddinEnvironment () {
 	m_pConverter = nullptr;
 	m_pLicenseChecker = nullptr;
 	m_pExcelCOM = nullptr;
+	m_idLicenseInfo = 0;
+	m_bToolbarEnabled = true;
 	m_idRegisterSomeFunctions = 0;
 	m_idSettings = 0;
 	m_idGarbageCollect = 0;
@@ -79,18 +81,19 @@ bool CAddinEnvironment::EnterNotRunningState() {
 HRESULT CAddinEnvironment::Start() {
 	EnterStartingState();
 	HRESULT hr;
-	m_pLicenseChecker = new CLicenseChecker();
-	if (FAILED(hr = m_pLicenseChecker->Validate())) {
-		LOGERROR("License checker validation failed");
-	} else {
-		LOGTRACE("License checker validation succeeded");
-	}
+	
 	m_pTypeLib = new TypeLib();
 	m_pSettings = new CSettings(TEXT("inproc"), TEXT("default"), CSettings::INIT_APPDATA);
 	
 	if (FAILED(hr = InitFromSettings())) {
 		LOGFATAL("Could not initialise add-in from settings");
 		return hr;
+	}
+	m_pLicenseChecker = new CLicenseChecker();
+	if (FAILED(hr = m_pLicenseChecker->Validate())) {
+		LOGERROR("License checker validation failed");
+	} else {
+		LOGTRACE("License checker validation succeeded");
 	}
 	// register calculation event handlers
 	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationEndedEvent"), TempInt12(xleventCalculationEnded));

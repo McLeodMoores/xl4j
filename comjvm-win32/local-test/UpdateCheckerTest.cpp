@@ -37,7 +37,7 @@ public:
 		wchar_t *szYesterday = (wchar_t *)calloc(cchYesterday, sizeof(wchar_t));
 		Assert::IsNotNull(szYesterday);
 		Assert::AreEqual(S_OK, DateUtils::DateToStr(time, szYesterday, &cchYesterday));
-		pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_EARLIEST, szYesterday);
+		pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_EARLIEST, szYesterday); //-V522
 		Assert::AreEqual(S_OK, checker.ShouldWeCheck(pSettings, &result));
 		Assert::AreEqual(false, result);
 		// Now change check required to yes, now with a date yesterday
@@ -60,7 +60,7 @@ public:
 		wchar_t *szTomorrow = (wchar_t *)calloc(cchTomorrow, sizeof(wchar_t));
 		Assert::IsNotNull(szTomorrow);
 		Assert::AreEqual(S_OK, DateUtils::DateToStr(tomorrow, szTomorrow, &cchTomorrow));
-		pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_EARLIEST, szTomorrow);
+		pSettings->PutString(SECTION_ADDIN, KEY_UPGRADE_EARLIEST, szTomorrow); //-V522
 		Assert::AreEqual(S_OK, checker.ShouldWeCheck(pSettings, &result));
 		Assert::AreEqual(false, false);
 		// Now change check required to yes, now with a date yesterday

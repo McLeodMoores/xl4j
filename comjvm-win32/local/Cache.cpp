@@ -38,7 +38,7 @@ static void AddSanitized (const _std_string_t &strSource, _std_string_t &strDest
 				}
 			} else {
 				TCHAR szEscape[6];
-				if (SUCCEEDED (StringCbPrintf (szEscape, sizeof (szEscape), TEXT ("%c%04X"), '%', sz[0]))) {
+				if (SUCCEEDED (StringCbPrintf (szEscape, sizeof (szEscape), TEXT ("%c%04X"), '%', sz[0]))) { //-V576
 					strDest += szEscape;
 					*pbSlash = FALSE;
 				}

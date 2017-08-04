@@ -183,6 +183,7 @@ HRESULT Converter::convert (VARIANT *in, XLOPER12 *out) {
 		out->xltype = xltypeInt;
 		out->val.w = V_INT (in);
 	}
+	break;
 	case VT_I8://INT_PTR:
 	{
 		out->xltype = xltypeBigData;

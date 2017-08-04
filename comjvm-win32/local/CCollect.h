@@ -25,13 +25,13 @@ private:
 	IJvmConnector *m_pConnector;
 public:
 	CCollect (CJvm *pJvm);
-	~CCollect ();
-	HRESULT STDMETHODCALLTYPE Collect (/* [in] */ SAFEARRAY *psaValidIds, /* [retval][out] */ hyper *piAllocations);
-	ULONG STDMETHODCALLTYPE AddRef ();
-	ULONG STDMETHODCALLTYPE Release ();
+	virtual ~CCollect ();
+	virtual HRESULT STDMETHODCALLTYPE Collect (/* [in] */ SAFEARRAY *psaValidIds, /* [retval][out] */ hyper *piAllocations);
+	virtual ULONG STDMETHODCALLTYPE AddRef ();
+	virtual ULONG STDMETHODCALLTYPE Release ();
 	// IUnknown
-	HRESULT STDMETHODCALLTYPE QueryInterface (
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface (
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject);
-	IJvm * STDMETHODCALLTYPE getJvm () { return m_pJvm; }
+	virtual IJvm * STDMETHODCALLTYPE getJvm () { return m_pJvm; }
 };

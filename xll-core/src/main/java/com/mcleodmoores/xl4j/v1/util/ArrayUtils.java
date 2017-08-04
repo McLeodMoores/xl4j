@@ -109,6 +109,20 @@ public final class ArrayUtils {
           + " in at least one dimension, but was " + arr.length + " x " + arr[0].length);
     }
   }
+  
+  public static <T> T[] makeRowOrColumnArray(final T[][] arr) throws ArrayWrongSizeException {
+    if (arr.length == 1) {
+      return arr[0];
+    } else if (arr.length == 0) {
+      throw new ArrayWrongSizeException("Array needed have at least one element");
+    } else {
+      if (isRectangular(arr)) {
+        return transposeIfNeeded(arr, 1, FixedDimension.ROWS)[0];
+      } else {
+        throw new ArrayWrongSizeException("Array isn't rectangular");
+      }
+    }
+  }
 
   private ArrayUtils() {
   }

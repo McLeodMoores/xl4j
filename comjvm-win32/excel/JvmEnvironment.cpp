@@ -202,12 +202,6 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 	try {
 		pThis->m_pJvm = new Jvm();
 		LOGTRACE("Created JVM");
-		if (!pThis->m_pJvm) {
-			LOGFATAL("JVM global pointer is NULL");
-			pThis->ShutdownError(L"Could not create JVM");
-			ReleaseSRWLockShared(&(pThis->m_rwlock));
-			return 1;
-		}
 		
 		TypeLib *pTypeLib;
 		if (FAILED(pThis->m_pAddinEnvironment->GetTypeLib(&pTypeLib))) {

@@ -1,8 +1,11 @@
 package com.mcleodmoores.xl4j.v1.util;
 
+import java.util.Arrays;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
 import com.mcleodmoores.xl4j.v1.util.ArrayUtils.FixedDimension;
 
 /**
@@ -169,4 +172,66 @@ public class ArrayUtilsTests {
     }
 
   }
+  
+  /**
+   * Tests jagged arrays passed to makeRowOrColumnArray
+   * @throws ArrayWrongSizeException 
+   */
+  @Test(expectedExceptions={ ArrayWrongSizeException.class })
+  public void testMakeRowOrColumnArrayJaggedArray() throws ArrayWrongSizeException {
+    final XLNumber[][] arr = new XLNumber[10][];
+    for (int i = 0; i < 10; i++) {
+      arr[i] = new XLNumber[i];
+      for (int j = 0; j < i; j++) {
+        arr[i][j] = XLNumber.of(i * j);
+      }
+    }
+    ArrayUtils.makeRowOrColumnArray(arr);
+    Assert.fail();
+  }
+  
+  /**
+   * Tests zero length (first dim) arrays passed to makeRowOrColumnArray
+   * @throws ArrayWrongSizeException
+   */
+  @Test(expectedExceptions={ ArrayWrongSizeException.class })
+  public void testMakeRowOrColumnArrayZeroLengthFirstDim() throws ArrayWrongSizeException {
+    final XLNumber[][] arr = new XLNumber[0][];
+    ArrayUtils.makeRowOrColumnArray(arr);
+    Assert.fail();
+  }
+  
+  @Test(expectedExceptions={ ArrayWrongSizeException.class })
+  public void testMakeRowOrColumnArrayRectangle() throws ArrayWrongSizeException {
+    final XLNumber[][] arr = new XLNumber[10][];
+    for (int i = 0; i < 10; i++) {
+      arr[i] = new XLNumber[5];
+      for (int j = 0; j < 5; j++) {
+        arr[i][j] = XLNumber.of(i * j);
+      }
+    }
+    ArrayUtils.makeRowOrColumnArray(arr);
+    Assert.fail();    
+  }
+  
+  public void testMakeRowOrColumnArrayRectangleRow() throws ArrayWrongSizeException {
+    final XLNumber[][] arr = new XLNumber[1][10];
+    for (int i = 0; i < 10; i++) {
+      arr[0][i] = XLNumber.of(i);
+    }
+    XLNumber[] flattened = ArrayUtils.makeRowOrColumnArray(arr);
+    Assert.assertEquals(flattened, arr[0]);
+  }
+  
+  public void testMakeRowOrColumnArrayRectangleColumn() throws ArrayWrongSizeException {
+    final XLNumber[][] arr = new XLNumber[10][1];
+    for (int i = 0; i < 10; i++) {
+      arr[i][0] = XLNumber.of(i);
+    }
+    XLNumber[] flattened = ArrayUtils.makeRowOrColumnArray(arr);
+    XLNumber[] expected = new XLNumber[] { XLNumber.of(0), XLNumber.of(1), XLNumber.of(2), XLNumber.of(3), XLNumber.of(4), 
+                                           XLNumber.of(5), XLNumber.of(6), XLNumber.of(7), XLNumber.of(8), XLNumber.of(9) }; 
+    Assert.assertEquals(flattened, expected);
+  }
 }
+
