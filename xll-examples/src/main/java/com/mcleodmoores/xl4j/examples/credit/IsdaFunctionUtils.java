@@ -10,10 +10,10 @@ import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
 import org.threeten.bp.Period;
 
+import com.mcleodmoores.date.CalendarAdapter;
+import com.mcleodmoores.date.SimpleWorkingDayCalendar;
+import com.mcleodmoores.date.WeekendWorkingDayCalendar;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
-import com.opengamma.analytics.date.CalendarAdapter;
-import com.opengamma.analytics.date.SimpleWorkingDayCalendar;
-import com.opengamma.analytics.date.WeekendWorkingDayCalendar;
 import com.opengamma.financial.convention.calendar.Calendar;
 
 /**
