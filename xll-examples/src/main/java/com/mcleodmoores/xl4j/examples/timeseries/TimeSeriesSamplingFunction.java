@@ -25,7 +25,7 @@ public class TimeSeriesSamplingFunction implements TimeSeriesBiFunction<Schedule
     ArgumentChecker.notNull(schedule, "schedule");
     final TimeSeries result = TimeSeries.newTimeSeries();
     // adds a null if there is no value in the series
-    schedule.parallelStream().forEach((date) -> result.put(date, ts.get(date)));
+    schedule.stream().forEach((date) -> result.put(date, ts.get(date)));
     return result;
   }
 

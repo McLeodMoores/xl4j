@@ -20,7 +20,7 @@ import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 @XLNamespace("TimeSeries.")
 @XLFunctions(
     typeConversionMode = TypeConversionMode.OBJECT_RESULT,
-    description = "Fill missing values in a time series with the previous value",
+    description = "Fill missing values in a time series with the previous value or the first if the start of the series is empty",
     category = "Time series")
 public class PreviousValueFill implements TimeSeriesFunction<TimeSeries> {
 
