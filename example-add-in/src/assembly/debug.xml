@@ -30,9 +30,15 @@
 	  <useProjectArtifact>false</useProjectArtifact>
 	</dependencySet>
   </dependencySets>
+  <fileSets>
+    <fileSet>
+      <directory>${project.basedir}/docs</directory>
+      <outputDirectory>/docs</outputDirectory>
+    </fileSet>
+  </fileSets>
   <files>
     <file>
-      <source>HOW-TO-INSTALL.txt</source>
+      <source>HOW-TO-INSTALL.html</source>
       <outputDirectory>./</outputDirectory>
       <filtered>false</filtered>
     </file>

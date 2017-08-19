@@ -15,25 +15,67 @@
     <p>Installation Instructions</p>
     </div>
     <div class="container-fluid">
-	<p>To install this add-in, you can either run the add-in one-off, in which case
+	<p>There are two ways to install this add-in:
+	<ol>
+	  <li><a href="#installer">Use the installer</a> (recommended)</li>
+	  <li><a href="#manual">Manual install from within Excel</a></li>
+	</ol>
+	</p>
+	<h2><a name="installer"></a>Using the installer</h2>
+	<p>To use the installer, first <b>make sure you've unzipped the download</b> in the directory
+	you want the add-in to be installed in. Do not run the installer directly inside the
+	ZIP file.</p>
+	<p>Simply double-click the install.exe file.  If you're running from a network drive or you're 
+	using an unsigned build, you may see a warning</p>
+	<p>
+	  <img class="img-responsive" src="docs/images/install-warning-no-cert.png" 
+	       alt="Install warning when unsigned"/>
+	</p>
+	<p>If you see this, click <button class="btn-xs">&nbsp;Run&nbsp;</button> to run the installer.</p>
+	<p>The installer will...
+	  <ul>
+	    <li>...test for Java being present and prompt you to install it if it is not.
+		  <a href="#installjre">See the section below,</a> noting whether the installer 
+	      specified a 32-bit or 64-bit install.</li>
+	    <li>...check Excel is not running and prompt you to close it if it is running.
+	      Occasionally, even after it appears you've closed down Excel, an invisible background 
+		  process will be running. In this case, the installer can force Excel to quit.</li>
+		<li>...check for any existing XL4J add-ins and offer to remove them 
+		  before continuing.</li>
+	    <li>...then test whether you have 32-bit or 64-bit Excel installed, and configure Excel 
+		  to use the appropriate version of the add-in.</li>
+      </ul>
+	</p>
+	<div class="well">
+      <p>The installer will only work with this example and is not included under the same license
+	  as the rest of XL4J.  If you want an automatic installer for your own add-ins, you'll need to 
+	  buy a commerical license.</p>
+	</div>
+	<h2><a name="manual"></a>Manual installation from within Excel</h2>
+	<p>To install this add-in manually you can either run the add-in one-off, in which case
       it won't open each time you run Excel, or by using the Excel add-in manager to 
       install the add-in so it runs each time you run Excel.
     </p>
-	<h2>Do you have 32-bit or 64-bit Excel?</h2>
+	<h3>Do you have 32-bit or 64-bit Excel?</h3>
     <p>Firstly you need to determine if you have 32-bit or 64-bit office installed.
 	If you don't know, you probably have the 32-bit version installed, but if you
 	want to check, you can find out by:
 	<ol>
-      <li>Start Microsoft Excel</li>
-      <li>Click the File tab in the ribbon</li>
-      <li>Then click Account</li>
-      <li>On the right, you should seee an About button</li>
+      <li>Start Microsoft Excel and open new blank workbook</li>
+      <li>Click the File tab in the ribbon 
+	     <p><img class="img-responsive" src="docs/images/excel-blank.png" alt="Choose File tab"/></p>
+	  </li>
+      <li>Then click Account
+	     <p><img class="img-responsive" src="docs/images/excel-file-tab.png" alt="Choose Accounts"/></p></li>
+      <li>On the right, you should seee an About button<p><img class="img-reponsive" src="docs/images/excel-account-tab.png" alt="Click About"/></p>
+	  </li>
       <li>Click on the About button and you should see either 32-bit or 64-bit
-          on the right of the version number.</li>
+          on the right of the version number.
+		  <p><img class="img-reponsive" src="docs/images/excel-about.png" alt="Check bitness in About dialog"/></p>
+	  </li>
     </ol>
 	</p>
-
-    <h2>Installing a Java Runtime Environment</h2>
+    <h3><a name="installjre"></a>Installing a Java Runtime Environment</h2>
     <p>You must have a (free) Java Runtime Environment installed.  This can be 
       downloaded from:</p>
     <div class="well">
@@ -42,8 +84,13 @@
     <p>It is important that you choose the correct version.  If you're using a 32-bit
       version of office, install the 32-bit JRE (they're often not labelled as 32-bit
       so just look for the downloads that are not labelled 64-bit).</p>
-
-    <h2>Installing in Excel</h2>
+	<div class="well">
+	 <p>
+	 <img class="img-responsive" src="docs/images/java-download-page.png" alt="Java download page"/>
+	 </p>
+	 <p><em>How to choose the correct download on the java download page (Source: java.com)</em></p>
+	</div>
+    <h3>Installing in Excel</h2>
     <p>The XLL file can be found in:<p>
     <div class="well">
 	  <table>
@@ -62,7 +109,7 @@
       available every time you start Excel. To do that you need to open the Excel
       add-in manager:</p>
     <ol>
-	  <li>Start Microsoft Excel</li>
+	  <li>Start Microsoft Excel and open a blank workbook</li>
       <li>Click the File tab in the ribbon</li>
       <li>Then click Options</li>
       <li>Click Add-ins in the left panel</li>
@@ -146,7 +193,8 @@
           installed add-ins.  If any entries end with excel.xll (you might need 
           to make the 'Name' column wider to see the end), you should remove 
           them by right-clicking and choosing 'Delete'.</p>
-        <p>Also check the 'Options' key and if there's a key called 'OPEN' whose
+        <p>Also check the 'Options' key and if there's a key called 'OPEN' 
+		  (or it might be called 'OPEN1', 'OPEN2', etc...) whose
           value refers to excel.xll (again, you might need to make the Data 
           column wider to be able to see) you should delete it too, again by 
           right clicking and choosing 'Delete'.</p>

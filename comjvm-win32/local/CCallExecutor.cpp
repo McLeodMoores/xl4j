@@ -49,6 +49,7 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 		for (int i = 0; i < szArgs; i++) {
 			jobject joArg = CComJavaConverter::convert (pEnv, m_pJniCache, &(args[i]));
 			pEnv->SetObjectArrayElement (joaArgs, i, joArg);
+			//pEnv->DeleteLocalRef(joArg);
 		}
 		SafeArrayUnaccessData (m_pArgs);
 		SafeArrayDestroy(m_pArgs);
@@ -66,6 +67,7 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 		//LOGTRACE ("About to convert result");
 		//LOGTRACE("joResult = %p, about to convert", joResult);
 		*m_pResult = CComJavaConverter::convert (pEnv, m_pJniCache, joResult);
+		//pEnv->DeleteLocalRef(joResult);
 		hr = S_OK;
 
 	} catch (std::bad_alloc) {

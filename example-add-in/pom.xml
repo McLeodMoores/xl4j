@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.mcleodmoores.xl4j</groupId>
     <artifactId>xl4j-parent</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>1.0.0-beta.1-SNAPSHOT</version>
   </parent>
   <artifactId>example-add-in</artifactId>
   <packaging>pom</packaging>
@@ -97,7 +97,7 @@
     <dependency>
       <groupId>com.mcleodmoores.xl4j</groupId>
 	  <artifactId>comjvm-win32</artifactId>
-	  <version>0.1.0-SNAPSHOT</version>
+	  <version>1.0.0-beta.1-SNAPSHOT</version>
 	  <type>zip</type>
 	  <exclusions>
 	    <exclusion>
@@ -119,17 +119,17 @@
 	<dependency>
 	  <groupId>com.mcleodmoores.xl4j</groupId>
 	  <artifactId>xll-core</artifactId>
-	  <version>0.1.0-SNAPSHOT</version>
+	  <version>1.0.0-beta.1-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 	  <groupId>com.mcleodmoores.xl4j</groupId>
 	  <artifactId>xll-java</artifactId>
-	  <version>0.1.0-SNAPSHOT</version>
+	  <version>1.0.0-beta.1-SNAPSHOT</version>
 	</dependency>
 	<dependency>
 	  <groupId>com.mcleodmoores.xl4j</groupId>
 	  <artifactId>xll-examples</artifactId>
-	  <version>0.1.0-SNAPSHOT</version>
+	  <version>1.0.0-beta.1-SNAPSHOT</version>
 	</dependency>
 
   </dependencies>

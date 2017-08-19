@@ -4,7 +4,7 @@
 
   <groupId>com.mcleodmoores.xl4j</groupId>
   <artifactId>xl4j-parent</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.0.0-beta.1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>XL4J Parent Project</name>
@@ -61,7 +61,11 @@
   </properties>
   
   <distributionManagement> 
-    <repository> 
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <!--repository> 
       <id>releases</id> 
       <name>McLeod Moores public release maven repository</name> 
       <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url> 
@@ -70,7 +74,7 @@
       <id>snapshots</id> 
       <name>McLeod Moores public snapshot maven repository</name> 
       <url>http://maven.mcleodmoores.com:8081/content/repositories/snapshots</url> 
-    </snapshotRepository> 
+    </snapshotRepository--> 
   </distributionManagement> 
   <repositories> 
     <repository>

@@ -1,7 +1,7 @@
 This product is available under either the GPL detailed below, or a 
 commercial license providing exclusions to GPL requirements and IP
 indemnifications, etc.  Please contact jim@mcleodmoores.com for more 
-details.
+details.  Please note the install.exe file is not covered by the GPL.
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007

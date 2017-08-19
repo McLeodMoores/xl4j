@@ -215,7 +215,10 @@ void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	while (pRequests->WaitForRequest (dwIdleTimeout, &pfnCallback, &pData)) {
 		LOGTRACE ("(%p) got request for callback on %p with data %p", GetCurrentThreadId (), pfnCallback, pData);
 		if (pfnCallback) {
+			// TODO: Check for OOME
+			pEnv->PushLocalFrame(32);
 			pfnCallback(pData, pEnv);
+			pEnv->PopLocalFrame(nullptr);
 		}
 		LOGTRACE ("(%p) callback %p returned", GetCurrentThreadId (), pfnCallback);
 	}
@@ -228,7 +231,10 @@ void JNISlaveAsyncThread(JNIEnv *pEnv, DWORD dwIdleTimeout) {
 	while (pAsyncRequests->WaitForRequest(dwIdleTimeout, &pfnCallback, &pData)) {
 		LOGTRACE("(%p) got request for callback on %p with data %p", GetCurrentThreadId(), pfnCallback, pData);
 		if (pfnCallback) {
+			// TODO: Check for OOME
+			pEnv->PushLocalFrame(32);
 			pfnCallback(pData, pEnv);
+			pEnv->PopLocalFrame(nullptr);
 		}
 		LOGTRACE("(%p) callback %p returned", GetCurrentThreadId(), pfnCallback);
 	}

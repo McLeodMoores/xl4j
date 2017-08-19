@@ -100,7 +100,9 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 				//LOGTRACE ("converting (%d, %d)", i, j);
 				jobject joElement = convert(pEnv, pJniCache, pArray++);
 				pEnv->SetObjectArrayElement(jaRowArray, i, joElement);
+				pEnv->DeleteLocalRef(joElement);
 			}
+			pEnv->DeleteLocalRef(jaRowArray);
 		}
 		SafeArrayUnaccessData(psa);
 		QueryPerformanceCounter(&EndingTime);
@@ -265,7 +267,6 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 		} else if (pJniCache->IsXLArray(pEnv, jcXLValue)) {
 			LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
 			LARGE_INTEGER Frequency;
-
 			QueryPerformanceFrequency(&Frequency);
 			QueryPerformanceCounter(&StartingTime);
 			LOGINFO("XLArray");
@@ -299,9 +300,9 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 						V_VT(&v) = VT_R8;
 						V_R8(&v) = 7;*/
 						*(pVariant++) = convert(pEnv, pJniCache, joValue);
-						pEnv->DeleteLocalRef(joValue);
+						//pEnv->DeleteLocalRef(joValue);
 					}
-					pEnv->DeleteLocalRef(joaValuesRow);
+					//pEnv->DeleteLocalRef(joaValuesRow);
 				}
 				SafeArrayUnaccessData(psa);
 			}
