@@ -216,7 +216,7 @@ void JNISlaveThread (JNIEnv *pEnv, DWORD dwIdleTimeout) {
 		LOGTRACE ("(%p) got request for callback on %p with data %p", GetCurrentThreadId (), pfnCallback, pData);
 		if (pfnCallback) {
 			// TODO: Check for OOME
-			pEnv->PushLocalFrame(32);
+			pEnv->PushLocalFrame(16);
 			pfnCallback(pData, pEnv);
 			pEnv->PopLocalFrame(nullptr);
 		}
@@ -232,7 +232,7 @@ void JNISlaveAsyncThread(JNIEnv *pEnv, DWORD dwIdleTimeout) {
 		LOGTRACE("(%p) got request for callback on %p with data %p", GetCurrentThreadId(), pfnCallback, pData);
 		if (pfnCallback) {
 			// TODO: Check for OOME
-			pEnv->PushLocalFrame(32);
+			pEnv->PushLocalFrame(16);
 			pfnCallback(pData, pEnv);
 			pEnv->PopLocalFrame(nullptr);
 		}
