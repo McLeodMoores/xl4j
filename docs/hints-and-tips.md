@@ -1,6 +1,6 @@
 Hints and tips on writing add-ins
 =================================
-# Common performance issue
+# Common performance/hanging issues
 Jumpy performance, freezes, etc. are often caused by:
  - Long running functions, consider using auto asynchronous functions if your function can be long running.  This will particularly 
    mess with the insert function dialog (the dialog that comes up when you click the 'fx' button next to the edit box for cells. 
@@ -8,6 +8,9 @@ Jumpy performance, freezes, etc. are often caused by:
    show the result.  We intend to add functionality later to allow the function author to detect being called from the insert function
    dialog, but asynchronous execution is probably a better long term solution anyway.
     - Synchronous (normal) UDFs will also commonly freeze the UI, even if in multi-threaded mode.
+ - Slow functions used in cells with conditional formatting can cause Excel to lock up, so avoid conditional formatting for anything not
+   very fast.  This is because Excel continually re-evaluates the function during redraws and makes it essentially volatile.  A good way
+   to tell if this is your issue is to create a copy of your sheet and remove all conditional formatting and see if that helps.
  - Logging level is too detailed.  Logging should be set to WARN or ERROR in normal use.  Check both the Java and C++ logging levels.
  - Check the VM options, make sure *Check JNI* is switched OFF.  This causes a 10-20x penalty in marshalling data.
 
