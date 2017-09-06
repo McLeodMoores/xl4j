@@ -96,13 +96,22 @@ void JniCache::Init (JNIEnv *pEnv) {
 	jfieldID jfName = pEnv->GetStaticFieldID (m_jcXLError, "Name", "Lcom/mcleodmoores/xl4j/v1/api/values/XLError;");
 	jfieldID jfNum = pEnv->GetStaticFieldID (m_jcXLError, "Num", "Lcom/mcleodmoores/xl4j/v1/api/values/XLError;");
 	jfieldID jfNA = pEnv->GetStaticFieldID (m_jcXLError, "NA", "Lcom/mcleodmoores/xl4j/v1/api/values/XLError;");
-	m_joXLError_Null = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNull));
-	m_joXLError_Div0 = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfDiv0));
-	m_joXLError_Value = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfValue));
-	m_joXLError_Ref = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfRef));
-	m_joXLError_Name = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfName));
-	m_joXLError_Num = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNum));
-	m_joXLError_NA = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNA));
+	m_jcEnum = (jclass) pEnv->NewGlobalRef(pEnv->FindClass("java/lang/Enum"));
+	m_jmEnum_ValueOf = pEnv->GetStaticMethodID(m_jcEnum, "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;");
+	m_joXLError_Null = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("Null"))));
+	m_joXLError_Div0 = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("Div0"))));
+	m_joXLError_Value = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("Value"))));
+	m_joXLError_Ref = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("Ref"))));
+	m_joXLError_Name = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("Name"))));
+	m_joXLError_Num = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("Num"))));;
+	m_joXLError_NA = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewGlobalRef(pEnv->NewStringUTF("NA"))));
+	//m_joXLError_Null = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNull));
+	//m_joXLError_Div0 = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfDiv0));
+	//m_joXLError_Value = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfValue));
+	//m_joXLError_Ref = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfRef));
+	//m_joXLError_Name = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfName));
+	//m_joXLError_Num = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNum));
+	//m_joXLError_NA = pEnv->NewGlobalRef (pEnv->GetStaticObjectField (m_jcXLError, jfNA));
 	m_jcXLArray = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/xl4j/v1/api/values/XLArray"));
 	m_jmXLArray_of = pEnv->GetStaticMethodID (m_jcXLArray, "of", "([[Lcom/mcleodmoores/xl4j/v1/api/values/XLValue;)Lcom/mcleodmoores/xl4j/v1/api/values/XLArray;");
 	m_jcXLValue = (jclass) pEnv->NewGlobalRef (pEnv->FindClass ("com/mcleodmoores/xl4j/v1/api/values/XLValue"));
@@ -150,7 +159,10 @@ void JniCache::Init (JNIEnv *pEnv) {
 	m_jmHeap_cycleGC = pEnv->GetMethodID (jcHeap, "cycleGC", "([J)J");
 
 	ValidateHandles ();
-	LOGTRACE ("JCache::init() done");
+	if (CHECK_EXCEPTION(pEnv)) {
+		LOGERROR("Exception in initialiser");
+	}
+	LOGTRACE ("JniCache::init() done");
 	m_initializerEnv = pEnv;
 }
 
@@ -304,19 +316,26 @@ jobject JniCache::XLError_from (JNIEnv *pEnv, jint err) {
 	EnsureInit (pEnv);
 	switch (err) {
 	case xl4jerrNull: 
-		return m_joXLError_Null;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("Null"));
+		//return m_joXLError_Null;
 	case xl4jerrDiv0: 
-		return m_joXLError_Div0;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("Div0"));
+		//return m_joXLError_Div0;
 	case xl4jerrValue: 
-		return m_joXLError_Value;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("Value"));
+		//return m_joXLError_Value;
 	case xl4jerrRef: 
-		return m_joXLError_Ref;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("Ref"));
+		//return m_joXLError_Ref;
 	case xl4jerrName:
-		return m_joXLError_Name;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("Name"));
+		//return m_joXLError_Name;
 	case xl4jerrNum: 
-		return m_joXLError_Num;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("Num"));
+		//return m_joXLError_Num;
 	case xl4jerrNA: 
-		return m_joXLError_NA;
+		return pEnv->CallStaticObjectMethod(m_jcEnum, m_jmEnum_ValueOf, m_jcXLError, pEnv->NewStringUTF("NA"));
+		//return m_joXLError_NA;
 	default:
 	case xl4jerrGettingData:
 		LOGERROR ("CCallExecutor::convert: invalid error number");

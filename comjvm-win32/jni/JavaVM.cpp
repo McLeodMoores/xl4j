@@ -266,7 +266,12 @@ DWORD APIENTRY JNIMainThreadProc (LPVOID lpCreateJVM) {
 	JavaVM *pJvm = ((struct _CreateJVM*)lpCreateJVM)->pJvm;
 	pEnv->GetJavaVM(&pJvm);
 	JNISlaveAsyncMainThreadStart (pJvm); // initial thread to handle async queue
+	if (pJvm->AttachCurrentThread((void **)&pEnv, NULL) != 0) {
+		LOGERROR("Failed to attach");
+		return E_FAIL;
+	}
 	JNISlaveThread (pEnv, INFINITE);
+	pJvm->DetachCurrentThread();
 	LOGTRACE ("(%p) JNIMainThreadProc: Returned from  slave thread handler, Stopping VM", GetCurrentThreadId ());
 	StopJVM (pEnv);
 	g_oVM.EnterNotRunningState ();

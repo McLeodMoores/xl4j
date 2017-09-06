@@ -14,7 +14,7 @@ CComJavaConverter::CComJavaConverter() {
 CComJavaConverter::~CComJavaConverter() {
 }
 
-jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *oper) {
+HRESULT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject *result, VARIANT *oper) {
 	LOGTRACE("pJniCache=%p", pJniCache);
 	LOGTRACE("VARIANT %p", oper);
 	LOGTRACE("convert type = %d", oper->vt);
@@ -23,16 +23,27 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 	}
 	switch (oper->vt) {
 	case VT_R8:
-		return pJniCache->XLNumber_of(pEnv, oper->dblVal);
+		*result = pJniCache->XLNumber_of(pEnv, oper->dblVal);
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
+		break;
 	case VT_BSTR:
 	{
 		size_t sz;
 		StringCchLengthW(oper->bstrVal, STRSAFE_MAX_CCH, &sz);
 		jstring jsStr = pEnv->NewString(reinterpret_cast<jchar *>(oper->bstrVal), sz);
-		return pJniCache->XLString_of(pEnv, jsStr);
+		*result = pJniCache->XLString_of(pEnv, jsStr);
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
 	} break;
 	case VT_BOOL:
-		return pJniCache->XLBoolean_from(pEnv, oper->boolVal != VARIANT_FALSE); // hope this deals with TRUE == -1 crap
+		*result = pJniCache->XLBoolean_from(pEnv, oper->boolVal != VARIANT_FALSE); // hope this deals with TRUE == -1 crap
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
+		break;
 	case VT_RECORD:
 	{
 		// Find the type of the record by comparing the GUID with known GUIDs for Local and Multi
@@ -41,7 +52,8 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 		if (FAILED(hr)) {
 			_com_error err(hr);
 			LOGERROR("recordinfo->GetGuid returned: %s", err.ErrorMessage());
-			return NULL;
+			*result = nullptr;
+			return hr;
 		}
 		if (guid == IID_XL4JMULTIREFERENCE) { // if the IRecordInfo type is an XL4JMULTIREFERENCE
 			XL4JMULTIREFERENCE *pMultiRef = static_cast<XL4JMULTIREFERENCE *>V_RECORD(oper);
@@ -54,18 +66,29 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 													   // Create a Java XLMultiReference from the array elements and the sheet id
 			jobject joResult = pJniCache->XLMultiReference_of(pEnv, pMultiRef->idSheet, pRef, cRanges);
 			SafeArrayUnaccessData(psa);
-			return joResult;
+			*result = joResult;
+			if (CHECK_EXCEPTION(pEnv)) {
+				return E_FAIL;
+			}
 		} else if (guid == IID_XL4JREFERENCE) { // if the IRecordInfo type is an XL4JREFERENCE
 			XL4JREFERENCE *pRef = static_cast<XL4JREFERENCE *>(V_RECORD(oper));
 			// Create a Java XLLocalReference from it
-			return pJniCache->XLLocalReference_of(pEnv, pRef);
+			*result = pJniCache->XLLocalReference_of(pEnv, pRef);
+			if (CHECK_EXCEPTION(pEnv)) {
+				return E_FAIL;
+			}
 		} else {
 			LOGERROR("unrecognised RECORDINFO guid %x", guid);
-			return NULL;
+			*result = nullptr;
+			return E_FAIL;
 		}
 	} break;
 	case VT_UI1: // UI1 encodes an error number, convert to an XLError object
-		return pJniCache->XLError_from(pEnv, V_UI1(oper));
+		*result = pJniCache->XLError_from(pEnv, V_UI1(oper));
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
+		break;
 	case VT_ARRAY:
 	{
 		LARGE_INTEGER StartingTime, EndingTime, ElapsedMicroseconds;
@@ -76,7 +99,8 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 		SAFEARRAY *psa = V_ARRAY(oper);
 		if (SafeArrayGetDim(psa) != 2) {
 			LOGERROR("VT_ARRAY not a 2D array");
-			return NULL;
+			*result = nullptr;
+			return E_FAIL;
 		}
 		long cRows;
 		SafeArrayGetUBound(psa, 1, &cRows);
@@ -86,21 +110,71 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 		cColumns++; // size = upper bound + 1
 		LOGTRACE("processing (%d x %d) array", cColumns, cRows);
 		jobjectArray jaValues = pJniCache->AllocXLValueArrayOfArrays(pEnv, cRows);
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Error creating XLValue array of arrays: cRows = %d", cRows);
+			return E_FAIL;
+		}
 		VARIANT *pArray;
 		HRESULT hr = SafeArrayAccessData(psa, (PVOID *)&pArray);
 		if (FAILED(hr)) {
 			_com_error err(hr);
 			LOGERROR("SafeArrayAccessData failed: %s", err.ErrorMessage());
-			return NULL;
+			*result = nullptr;
+			return hr;
 		}
 		for (int j = 0; j < cRows; j++) {
+			if (CHECK_EXCEPTION(pEnv)) {
+				LOGERROR("Exception BEFORE AllocXLValueArray");
+				return E_FAIL;
+			}
 			jobjectArray jaRowArray = pJniCache->AllocXLValueArray(pEnv, cColumns);
+			if (CHECK_EXCEPTION(pEnv)) {
+				LOGERROR("AllocXLValueArray failed: cColumns = %d", cColumns);
+				return E_FAIL;
+			}
 			pEnv->SetObjectArrayElement(jaValues, j, jaRowArray);
+			if (CHECK_EXCEPTION(pEnv)) {
+				return E_FAIL;
+			}
 			for (int i = 0; i < cColumns; i++) {
 				//LOGTRACE ("converting (%d, %d)", i, j);
-				jobject joElement = convert(pEnv, pJniCache, pArray++);
-				pEnv->SetObjectArrayElement(jaRowArray, i, joElement);
-				pEnv->DeleteLocalRef(joElement);
+				jobject joElement;
+				HRESULT hr = convert(pEnv, pJniCache, &joElement, pArray++);
+				if (SUCCEEDED(hr)) {
+					if (CHECK_EXCEPTION(pEnv)) {
+						LOGERROR("Exception check failed after successful convert");
+					}
+					pEnv->SetObjectArrayElement(jaRowArray, i, joElement);
+					if (CHECK_EXCEPTION(pEnv)) {
+						JniCache *pJniCache2 = static_cast<JniCache *>(TlsGetValue(g_dwTlsJniCacheIndex));
+						LOGERROR("SetObjectArrayElement failed: (%d, %d) = %p", i, j, joElement);
+						Debug::LOGERROR_VARIANT(pArray - 1);
+						jclass elClass = pEnv->GetObjectClass(joElement);
+						if (pJniCache->IsXLError(pEnv, elClass)) {
+							LOGERROR("joElement returns true for IsXLError");
+						} else {
+							LOGERROR("joElement return false for IsXLError");
+						}
+
+						jclass cls = pEnv->FindClass("java/lang/Class");
+						jmethodID mid_getName = pEnv->GetMethodID(cls, "getName", "()Ljava/lang/String;");
+						jstring name = (jstring) pEnv->CallObjectMethod(elClass, mid_getName);
+						const char* msg_str = pEnv->GetStringUTFChars(name, 0);
+						LOGERROR("Class name of joElement is %S", msg_str);
+						pEnv->ReleaseStringUTFChars(name, msg_str);
+						jclass jcEnum = pEnv->FindClass("java/lang/Enum");
+						jmethodID jmValueOf = pEnv->GetStaticMethodID(jcEnum, "valueOf", "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;");
+						jclass jcXLError = pEnv->FindClass("com/mcleodmoores/xl4j/v1/api/values/XLError");
+						jobject joXLError_Null = pEnv->NewGlobalRef(pEnv->CallStaticObjectMethod(jcEnum, jmValueOf, jcXLError, pEnv->NewStringUTF("Null")));
+						jclass arClass = pEnv->GetObjectClass(joXLError_Null);
+						jstring arrName = (jstring) pEnv->CallObjectMethod(arClass, mid_getName);
+						msg_str = pEnv->GetStringUTFChars(arrName, 0);
+						LOGERROR("Class name of XLError.Null is %S", msg_str);
+						pEnv->ReleaseStringUTFChars(arrName, msg_str);
+						return E_FAIL;
+					}
+					pEnv->DeleteLocalRef(joElement);
+				}
 			}
 			pEnv->DeleteLocalRef(jaRowArray);
 		}
@@ -109,56 +183,75 @@ jobject CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *o
 		ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
 		LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
 		LOGTRACE("Creating Java object XLArray");
-		return pJniCache->XLArray_of(pEnv, jaValues);
+		*result = pJniCache->XLArray_of(pEnv, jaValues);
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
 	} break;
 	case VT_NULL:
-		return pJniCache->XLNil(pEnv);
+		*result = pJniCache->XLNil(pEnv);
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
+		break;
 	case VT_EMPTY:
-		return pJniCache->XLMissing(pEnv);
+		*result = pJniCache->XLMissing(pEnv);
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
+		break;
 	case VT_INT:
-		return pJniCache->XLInteger_of(pEnv, V_INT(oper));
+		*result = pJniCache->XLInteger_of(pEnv, V_INT(oper));
+		if (CHECK_EXCEPTION(pEnv)) {
+			return E_FAIL;
+		}
+		break;
 	default:
 	{
 		LOGERROR("Unrecognised VARIANT type %d", oper->vt);
-		return NULL;
+		*result = nullptr;
+		return E_FAIL;
 	} break;
 	}
-	return NULL;
+	return S_OK;
 }
 
 #include "../utils/TraceOff.h"
 
-VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject joXLValue) {
-	VARIANT result;
+HRESULT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *pResult, jobject joXLValue) {
 	if (joXLValue == NULL) {
-		VariantClear(&result);
-		V_VT(&result) = VT_NULL;
+		VariantClear(pResult);
+		V_VT(pResult) = VT_NULL;
+		return S_OK;
 	} else {
 		jclass jcXLValue = pEnv->GetObjectClass(joXLValue);
-
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Couldn't get object class");
+			return E_FAIL;
+		}
 		if (pJniCache->IsXLObject(pEnv, jcXLValue)) {
 			//LOGTRACE("XLObject");
 			jstring joStringValue = pJniCache->XLObject_getValue(pEnv, joXLValue);
-			V_VT(&result) = VT_BSTR;
-			storeBSTR(pEnv, joStringValue, &V_BSTR(&result));
+			V_VT(pResult) = VT_BSTR;
+			storeBSTR(pEnv, joStringValue, &V_BSTR(pResult));
 		} else if (pJniCache->IsXLString(pEnv, jcXLValue)) {
 			//LOGTRACE("XLString");
 			jstring joStringValue = pJniCache->XLString_getValue(pEnv, joXLValue);
-			V_VT(&result) = VT_BSTR;
-			storeBSTR(pEnv, joStringValue, &V_BSTR(&result));
+			V_VT(pResult) = VT_BSTR;
+			storeBSTR(pEnv, joStringValue, &V_BSTR(pResult));
 			//LOGTRACE("String is %s", V_BSTR(&result));
 		} else if (pJniCache->IsXLNumber(pEnv, jcXLValue)) {
 			//LOGTRACE("XLNumber");
 			jdouble value = pJniCache->XLNumber_getValue(pEnv, joXLValue);
-			V_VT(&result) = VT_R8;
-			V_R8(&result) = value;
+			V_VT(pResult) = VT_R8;
+			V_R8(pResult) = value;
 		} else if (pJniCache->IsXLNil(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLNil");
-			VariantClear(&result);
-			V_VT(&result) = VT_NULL;
+			VariantClear(pResult);
+			V_VT(pResult) = VT_NULL;
 		} else if (pJniCache->IsXLMultiReference(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLMultiReference");
-			V_VT(&result) = VT_RECORD;
+			V_VT(pResult) = VT_RECORD;
 			// look up record info for struct we're using.
 			IRecordInfo *pRecInfo;
 			HRESULT hr = GetRecordInfoFromGuids(LIBID_ComJvmCore, 1, 0, 0, IID_XL4JMULTIREFERENCE, &pRecInfo);
@@ -167,7 +260,7 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 				LOGERROR("Could not get RecordInfo for XL4JMULTIREFERENCE: %s", err.ErrorMessage());
 				throw std::logic_error("Couldn't get RecordInfo for XL4JMULTIREFERENCE");
 			}
-			V_RECORDINFO(&result) = pRecInfo;
+			V_RECORDINFO(pResult) = pRecInfo;
 			// get ranges array so we can get the size and allocate the array for the UDT
 			jobjectArray joaXLRanges = pJniCache->XLMultiReference_getRangesArray(pEnv, joXLValue);
 			jsize jsXLRanges = pEnv->GetArrayLength(joaXLRanges);
@@ -176,9 +269,10 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 			if (FAILED(hr)) {
 				_com_error err(hr);
 				LOGERROR("Could not allocate XL4JMULTIREFERENCE: %s", err.ErrorMessage());
+				
 				throw std::logic_error("Couldn't allocate XL4JMULTIREFERENCE");
 			}
-			V_RECORD(&result) = pMultiReference;
+			V_RECORD(pResult) = pMultiReference;
 
 			// get the sheet id part and copy that into the UDT
 			jint sheetId = pJniCache->XLMultiReference_getSheetId(pEnv, joXLValue);
@@ -196,11 +290,11 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 			SafeArrayUnaccessData(pMultiReference->refs);
 		} else if (pJniCache->IsXLMissing(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLMissing");
-			VariantClear(&result);
-			V_VT(&result) = VT_EMPTY;
+			VariantClear(pResult);
+			V_VT(pResult) = VT_EMPTY;
 		} else if (pJniCache->IsXLLocalReference(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLLocalReference");
-			V_VT(&result) = VT_RECORD;
+			V_VT(pResult) = VT_RECORD;
 			// look up record info for struct we're using.
 			IRecordInfo *pRecInfo;
 			HRESULT hr = GetRecordInfoFromGuids(LIBID_ComJvmCore, 1, 0, 0, IID_XL4JREFERENCE, &pRecInfo);
@@ -209,7 +303,7 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 				LOGERROR("Could not get RecordInfo for XL4JREFERENCE: %s", err.ErrorMessage());
 				throw std::logic_error("Couldn't get RecordInfo for XL4JREFERENCE");
 			}
-			V_RECORDINFO(&result) = pRecInfo;
+			V_RECORDINFO(pResult) = pRecInfo;
 			XL4JREFERENCE *pReference;
 			hr = allocReference(&pReference);
 			if (FAILED(hr)) {
@@ -217,49 +311,49 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 				LOGERROR("Could not allocate XL4JREFERENCE: %s", err.ErrorMessage());
 				throw std::logic_error("Couldn't allocate XL4JREFERENCE");
 			}
-			V_RECORD(&result) = pReference;
+			V_RECORD(pResult) = pReference;
 			pJniCache->XLLocalReference_getValue(pEnv, joXLValue, pReference);
 		} else if (pJniCache->IsXLInteger(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLInteger");
-			V_VT(&result) = VT_INT;
-			V_INT(&result) = pJniCache->XLInteger_getValue(pEnv, joXLValue);
+			V_VT(pResult) = VT_INT;
+			V_INT(pResult) = pJniCache->XLInteger_getValue(pEnv, joXLValue);
 		} else if (pJniCache->IsXLError(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLError");
-			V_VT(&result) = VT_UI1;
+			V_VT(pResult) = VT_UI1;
 			jint jiOrdinal = pJniCache->XLError_ordinal(pEnv, joXLValue);
 			switch (jiOrdinal) { // depends on declaration order in XLError source.
 			case 0:
-				V_UI1(&result) = xl4jerrNull;
+				V_UI1(pResult) = xl4jerrNull;
 				break;
 			case 1:
-				V_UI1(&result) = xl4jerrDiv0;
+				V_UI1(pResult) = xl4jerrDiv0;
 				break;
 			case 2:
-				V_UI1(&result) = xl4jerrValue;
+				V_UI1(pResult) = xl4jerrValue;
 				break;
 			case 3:
-				V_UI1(&result) = xl4jerrRef;
+				V_UI1(pResult) = xl4jerrRef;
 				break;
 			case 4:
-				V_UI1(&result) = xl4jerrName;
+				V_UI1(pResult) = xl4jerrName;
 				break;
 			case 5:
-				V_UI1(&result) = xl4jerrNum;
+				V_UI1(pResult) = xl4jerrNum;
 				break;
 			case 6:
-				V_UI1(&result) = xl4jerrNA;
+				V_UI1(pResult) = xl4jerrNA;
 				break;
 			default:
 				throw std::invalid_argument("Invalid error ordinal");
 			}
 		} else if (pJniCache->IsXLBoolean(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLBoolean");
-			V_VT(&result) = VT_BOOL;
+			V_VT(pResult) = VT_BOOL;
 			jint jiOrdinal = pJniCache->XLBoolean_ordinal(pEnv, joXLValue);
 			if (jiOrdinal == 0) { // depends on declaration order in XLBoolean source.
-				V_BOOL(&result) = VARIANT_TRUE;
+				V_BOOL(pResult) = VARIANT_TRUE;
 			} else {
-				V_BOOL(&result) = VARIANT_FALSE;
+				V_BOOL(pResult) = VARIANT_FALSE;
 			}
 		} else if (pJniCache->IsXLBigData(pEnv, jcXLValue)) {
 			//LOGTRACE ("XLBigData");
@@ -271,6 +365,10 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 			QueryPerformanceCounter(&StartingTime);
 			LOGINFO("XLArray");
 			jobjectArray joaValuesRows = pJniCache->XLArray_getArray(pEnv, joXLValue);
+			if (CHECK_EXCEPTION(pEnv)) {
+				LOGERROR("Error getting XLArray");
+				return E_FAIL;
+			}
 			jsize jsValuesRows = pEnv->GetArrayLength(joaValuesRows);
 			SAFEARRAY *psa;
 			if (jsValuesRows == 0) {
@@ -299,15 +397,19 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 						/*VARIANT v; this was here to test the overhead of this loop.
 						V_VT(&v) = VT_R8;
 						V_R8(&v) = 7;*/
-						*(pVariant++) = convert(pEnv, pJniCache, joValue);
+						if (FAILED(convert(pEnv, pJniCache, pVariant, joValue))) {
+							VariantClear(pVariant);
+							V_VT(pVariant) = VT_EMPTY;
+						}
+						pVariant++;
 						//pEnv->DeleteLocalRef(joValue);
 					}
 					//pEnv->DeleteLocalRef(joaValuesRow);
 				}
 				SafeArrayUnaccessData(psa);
 			}
-			V_VT(&result) = VT_ARRAY;
-			V_ARRAY(&result) = psa;
+			V_VT(pResult) = VT_ARRAY;
+			V_ARRAY(pResult) = psa;
 			QueryPerformanceCounter(&EndingTime);
 			ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
 			LOGINFO("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
@@ -322,9 +424,10 @@ VARIANT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, jobject jo
 			const jchar *pClassName = pEnv->GetStringChars(jsClassName, NULL);
 			//LOGTRACE ("Class name of xlvalue object is %s", pClassName);
 			pEnv->ReleaseStringChars(jsClassName, pClassName);
+			return E_FAIL;
 		}
 	}
-	return result;
+	return S_OK;
 }
 #include "../utils/TraceOn.h"
 

@@ -194,7 +194,8 @@ public final class CdsPricer {
    * @return  the CS01
    */
   @XLFunction(name = "CDS.CS01", category = "ISDA CDS model",
-      description = "The sensitivity of the price to a 1 basis point change in the market spread")
+      description = "The sensitivity of the price to a 1 basis point change in the market spread"
+      )
   public static double cs01(
       @XLParameter(description = "CDS", name = "CDS") final CdsTrade cds,
       @XLParameter(description = "Yield Curve", name = "Yield Curve") final ISDACompliantYieldCurve yieldCurve) {

@@ -59,8 +59,11 @@ public:
 	static COMJVM_DEBUG_API void PrettyLogPrintf (LOGLEVEL logLevel, const char *sFileName, int iLineNum, const char *sFunctionName, LPCTSTR sFormat, ...);
 	static COMJVM_DEBUG_API HRESULT print_HRESULT (HRESULT result);
 	static COMJVM_DEBUG_API void LOGTRACE_SAFEARRAY(SAFEARRAY * psa);
+	static COMJVM_DEBUG_API void LOGERROR_SAFEARRAY(SAFEARRAY * psa);
 	static COMJVM_DEBUG_API void LOGTRACE_VARIANT(VARIANT * pVariant);
+	static COMJVM_DEBUG_API void LOGERROR_VARIANT(VARIANT * pVariant);
 	static COMJVM_DEBUG_API void printException (JNIEnv *pEnv, jthrowable exception);
+	static COMJVM_DEBUG_API bool CheckException (JNIEnv *pEnv);
 	//static void printXLOPER (XLOPER12 *oper);
 	static COMJVM_DEBUG_API void SetThreadName (DWORD dwThreadID, const char* threadName);
 	static COMJVM_DEBUG_API void SetLogLevel(LOGLEVEL logLevel);
@@ -122,6 +125,11 @@ public:
 #define WIN32_TO_STR(x) _com_error(HRESULT_FROM_WIN32(x)).ErrorMessage()
 #define GETLASTERROR_TO_STR() _com_error(HRESULT_FROM_WIN32(GetLastError())).ErrorMessage()
 #define GETLASTERROR_TO_HRESULT() HRESULT_FROM_WIN32(GetLastError())
+#define CHECK_EXCEPTION(pEnv)\
+  (pEnv->ExceptionCheck() ? \
+      Debug::PrettyLogPrintf(LOGLEVEL_ERROR, __SHORT_FILE__, __LINE__, __FUNCTION__, TEXT("Native-side Java Exception")), \
+      Debug::printException(pEnv, pEnv->ExceptionOccurred()), \
+      pEnv->ExceptionClear(), true : false) 
 #ifdef __cplusplus
 }
 #endif /* ifdef __cplusplus */

@@ -79,19 +79,21 @@ bool CAddinEnvironment::EnterNotRunningState() {
 	return bResult;
 }
 
+DWORD APIENTRY AsyncThreadProc(LPVOID param) {
+	CAsyncQueue *pAsyncQueue = static_cast<CAsyncQueue *>(param);
+	while (true) {
+		pAsyncQueue->NotifyResults(50);
+		Sleep(1000);
+	}
+}
+
 HRESULT CAddinEnvironment::Start() {
 	EnterStartingState();
 	HRESULT hr;
 	m_pAsyncQueue = new CAsyncQueue();
 	m_pTypeLib = new TypeLib();
 	m_pSettings = new CSettings(TEXT("inproc"), TEXT("default"), CSettings::INIT_APPDATA);
-	HANDLE hAsyncThread = CreateThread(NULL, 4096 * 1024, [](LPVOID param) -> DWORD {
-		CAsyncQueue *pAsyncQueue = static_cast<CAsyncQueue *>(param);
-		while (true) {
-			pAsyncQueue->NotifyResults(100);
-			Sleep(1000);
-		}
-	}, m_pAsyncQueue, 0, NULL);
+	HANDLE hAsyncThread = CreateThread(NULL, 16 * 1024 * 1024, AsyncThreadProc, m_pAsyncQueue, 0, NULL);
 	CloseHandle(hAsyncThread);
 	if (FAILED(hr = InitFromSettings())) {
 		LOGFATAL("Could not initialise add-in from settings");

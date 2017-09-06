@@ -21,8 +21,7 @@ class CComJavaConverter {
 	CComJavaConverter();
 	~CComJavaConverter();
 public:
-	static jobject convert(JNIEnv * pEnv, JniCache * pJniCache, VARIANT * oper);
-	static VARIANT convert(JNIEnv * pEnv, JniCache * pJniCache, jobject joXLValue);
-
+	static HRESULT convert(JNIEnv * pEnv, JniCache * pJniCache, jobject * result, VARIANT * oper);
+	static HRESULT convert(JNIEnv * pEnv, JniCache * pJniCache, VARIANT * result, jobject joXLValue);
 };
 

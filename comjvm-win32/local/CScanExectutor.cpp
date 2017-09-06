@@ -21,8 +21,6 @@ CScanExecutor::~CScanExecutor () {
 	m_pOwner->Release ();
 }
 
-#define CHECK_EXCEPTION() if (pEnv->ExceptionCheck ()) { LOGERROR("EXCEPTION!"); Debug::printException (pEnv, pEnv->ExceptionOccurred ()); return E_FAIL; } 0
-
 HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 	HRESULT hResult = S_OK;
 	try {
@@ -30,31 +28,56 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jclass jcExcelFactory = pEnv->FindClass ("com/mcleodmoores/xl4j/v1/api/core/ExcelFactory");
 		jmethodID jmExcelFactory_Instance = pEnv->GetStaticMethodID (jcExcelFactory, "getInstance", "()Lcom/mcleodmoores/xl4j/v1/api/core/Excel;");
 		jobject joExcel = pEnv->CallStaticObjectMethod (jcExcelFactory, jmExcelFactory_Instance);
-		CHECK_EXCEPTION ();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Problem calling ExcelFactory");
+			return E_FAIL;
+		}
 		//LOGTRACE ("Got Excel object %p", joExcel);
 		jclass jcExcel = pEnv->FindClass ("com/mcleodmoores/xl4j/v1/api/core/Excel");
-		CHECK_EXCEPTION ();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Could not find Excel Class");
+			return E_FAIL;
+		}
 		jmethodID jmExcel_GetExcelCallback = pEnv->GetMethodID (jcExcel, "getExcelCallback", "()Lcom/mcleodmoores/xl4j/v1/api/core/ExcelCallback;");
 		jobject joExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetExcelCallback);
-		CHECK_EXCEPTION ();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Problem getting excel callback");
+			return E_FAIL;
+		}
 		//LOGTRACE ("Got Excel callback object %p", joExcelCallback);
 		jclass jcFunctionRegistry = pEnv->FindClass ("com/mcleodmoores/xl4j/v1/api/core/FunctionRegistry");
 		jmethodID jmFunctionRegistry_RegisterFunctions = pEnv->GetMethodID (jcFunctionRegistry, "registerFunctions", "(Lcom/mcleodmoores/xl4j/v1/api/core/ExcelCallback;)V");
 		jmethodID jmExcel_GetFunctionRegistry = pEnv->GetMethodID (jcExcel, "getFunctionRegistry", "()Lcom/mcleodmoores/xl4j/v1/api/core/FunctionRegistry;");
 		jobject joFunctionRegistry = pEnv->CallObjectMethod (joExcel, jmExcel_GetFunctionRegistry);
-		CHECK_EXCEPTION ();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Error getting function registry");
+			hResult = E_FAIL;
+			goto fail;
+		}
 		LOGTRACE ("Calling registerFunctions...");
 		pEnv->CallVoidMethod (joFunctionRegistry, jmFunctionRegistry_RegisterFunctions, joExcelCallback);
 		LOGTRACE ("...Returned.");
-		CHECK_EXCEPTION();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Error registering functions");
+			hResult = E_FAIL;
+			goto fail;
+		}
 		jmethodID jmExcel_GetLowLevelExcelCallback = pEnv->GetMethodID (jcExcel, "getLowLevelExcelCallback", "()Lcom/mcleodmoores/xl4j/v1/xll/LowLevelExcelCallback;");
 		jobject joLowLevelExcelCallback = pEnv->CallObjectMethod (joExcel, jmExcel_GetLowLevelExcelCallback);
-		CHECK_EXCEPTION ();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Error getting low level callback");
+			hResult = E_FAIL;
+			goto fail;
+		}
 		//LOGTRACE ("Got LowLevelExcelCallback %p", joLowLevelExcelCallback);
 		jclass jcNativeExcelFunctionEntryAccumulator = pEnv->FindClass ("com/mcleodmoores/xl4j/v1/xll/NativeExcelFunctionEntryAccumulator");
 		jmethodID jmNativeExcelFunctionEntryAccumulator_GetEntries = pEnv->GetMethodID (jcNativeExcelFunctionEntryAccumulator, "getEntries", "()[Lcom/mcleodmoores/xl4j/v1/xll/NativeExcelFunctionEntryAccumulator$FunctionEntry;");
 		jobjectArray jaEntries = (jobjectArray) pEnv->CallObjectMethod (joLowLevelExcelCallback, jmNativeExcelFunctionEntryAccumulator_GetEntries);
-		CHECK_EXCEPTION ();
+		if (CHECK_EXCEPTION(pEnv)) {
+			LOGERROR("Error getting function entries");
+			hResult = E_FAIL;
+			goto fail;
+		}
 		//LOGTRACE ("Got entries array %p", jaEntries);
 		long cEntries = pEnv->GetArrayLength (jaEntries);
 		LOGTRACE ("Got %d entries", cEntries);
@@ -96,8 +119,16 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		}
 		FUNCTIONINFO *pFunctionInfos;
 		hResult = SafeArrayAccessData (*m_pResults, reinterpret_cast<PVOID*>(&pFunctionInfos));
+		if (FAILED(hResult)) {
+			goto fail;
+		}
 		for (jsize i = 0; i < cEntries; i++) {
 			jobject joElement = pEnv->GetObjectArrayElement (jaEntries, i);
+			if (CHECK_EXCEPTION(pEnv)) {
+				LOGERROR("Error indexing function table");
+				hResult = E_FAIL;
+				goto fail;
+			}
 			pFunctionInfos[i].iExportNumber = pEnv->GetIntField (joElement, jfExportNumber);
 			jstring jsFunctionExportName = (jstring) pEnv->GetObjectField (joElement, jfFunctionExportName);
 			storeBSTR (pEnv, jsFunctionExportName, &pFunctionInfos[i].bsFunctionExportName);
@@ -127,18 +158,29 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 			jstring jsDescription = (jstring)pEnv->GetObjectField (joElement, jfDescription);
 			storeBSTR (pEnv, jsDescription, &pFunctionInfos[i].bsDescription);
 			jobjectArray jaArgsHelp = (jobjectArray) pEnv->GetObjectField (joElement, jfArgsHelp);
-			jsize cArgsHelp = pEnv->GetArrayLength (jaArgsHelp);
-			SAFEARRAY *psaArgsHelp;
-			allocSAFEARRAY_BSTR (&psaArgsHelp, cArgsHelp);
-			BSTR *pArgsHelp;
-			SafeArrayAccessData (psaArgsHelp, reinterpret_cast<PVOID*>(&pArgsHelp));
-			for (jsize j = 0; j < cArgsHelp; j++) {
-				jstring jsArgHelp = (jstring) pEnv->GetObjectArrayElement (jaArgsHelp, j);
-				storeBSTR (pEnv, jsArgHelp, &pArgsHelp[j]);
-				//freeBSTR (vArgHelp.bstrVal); // SafeArrayPutElement makes copy apparently. https://msdn.microsoft.com/en-us/library/windows/desktop/ms221283(v=vs.85).aspx
-			}
-			SafeArrayUnaccessData (psaArgsHelp);
-			pFunctionInfos[i].saArgsHelp = psaArgsHelp;
+			if (jaArgsHelp) {
+				jsize cArgsHelp = pEnv->GetArrayLength(jaArgsHelp);
+				SAFEARRAY *psaArgsHelp;
+				allocSAFEARRAY_BSTR(&psaArgsHelp, cArgsHelp);
+				BSTR *pArgsHelp;
+				SafeArrayAccessData(psaArgsHelp, reinterpret_cast<PVOID*>(&pArgsHelp));
+				for (jsize j = 0; j < cArgsHelp; j++) {
+					jstring jsArgHelp = (jstring)pEnv->GetObjectArrayElement(jaArgsHelp, j);
+					if (CHECK_EXCEPTION(pEnv)) {
+						LOGERROR("Error reading args help table");
+						hResult = E_FAIL;
+						goto fail;
+					}
+					storeBSTR(pEnv, jsArgHelp, &pArgsHelp[j]);
+					//freeBSTR (vArgHelp.bstrVal); // SafeArrayPutElement makes copy apparently. https://msdn.microsoft.com/en-us/library/windows/desktop/ms221283(v=vs.85).aspx
+				}
+				SafeArrayUnaccessData(psaArgsHelp);
+				pFunctionInfos[i].saArgsHelp = psaArgsHelp;
+			} else {
+				LOGERROR("null args help array");
+				hResult = E_FAIL;
+				goto fail;
+			}	
 		}
 		SafeArrayUnaccessData (*m_pResults);
 	} catch (std::bad_alloc) {

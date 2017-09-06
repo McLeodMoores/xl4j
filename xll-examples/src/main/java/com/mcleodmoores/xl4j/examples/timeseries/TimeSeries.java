@@ -55,6 +55,38 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
     }
     throw new XL4JRuntimeException("Cannot create time series from input");
   }
+  
+  /**
+   * A function that creates a time series with a single value, from a provided start and end date (inclusive).  This
+   * can be useful for creating dummy series to handle missing data, for example.
+   * 
+   * @param startDate  the start date, not null
+   * @param endDate  the end date, not null
+   * @param value  the value to fill
+   * @return a time series
+   * @throws XL4JRuntimeException if start date &gt; end date or arguments null
+   */
+  @XLFunction(name = "TimeSeriesFill", 
+      description = "Create a time series filled with a single value on each date (inclusive)",
+      category = "Time series",
+      typeConversionMode = TypeConversionMode.OBJECT_RESULT)
+  public static TimeSeries ofFilled(@XLParameter(name = "startDate", description = "The starting date (inclusive)") final LocalDate startDate,
+                                    @XLParameter(name = "endDate", description = "The end date (inclusive)") final LocalDate endDate,
+                                    @XLParameter(name = "value", description = "The value to fill with") final double value) {
+    ArgumentChecker.notNull(startDate, "startDate");
+    ArgumentChecker.notNull(endDate, "endDate");
+    if (endDate.isBefore(startDate)) {
+      throw new XL4JRuntimeException("end date must be before start date");
+    }
+    TimeSeries ts = TimeSeries.newTimeSeries();
+    
+    LocalDate date = startDate;
+    while (date.compareTo(endDate) <= 0) {
+      ts.put(date, value);
+      date = date.plusDays(1);
+    }
+    return ts;
+  }
 
   /**
    * A function that just returns the time series object provided, but because we specify the

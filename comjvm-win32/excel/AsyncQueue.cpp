@@ -19,7 +19,6 @@ HRESULT CAsyncQueue::Enqueue(LPXLOPER12 pHandle, LPXLOPER12 pResult) {
 }
 
 HRESULT CAsyncQueue::NotifyResults(int iMaxMillis) {
-	LOGINFO("NotifyResults");
 	LARGE_INTEGER liNow;
 	QueryPerformanceCounter(&liNow);
 	LARGE_INTEGER liFreq;
@@ -37,19 +36,19 @@ HRESULT CAsyncQueue::NotifyResults(int iMaxMillis) {
 		QueryPerformanceCounter(&liNow);
 	}
 	if (abort) { // we ran out of stuff to notify.
-		LOGINFO("We ran out of stuff to notify");
+		LOGTRACE("We ran out of stuff to notify");
 		return S_OK;
 	} else { // else we ran out of time.
-		LOGINFO("We ran out of time");
+		LOGINFO("We ran out of time, will continue later");
 		return ERROR_CONTINUE;
 	}
 }
 
 HRESULT CAsyncQueue::NotifyResult() {
-	LOGINFO("Notifying results");
+	LOGTRACE("Notifying results");
 	EnterCriticalSection(&m_cs);
 	if (!m_handles.empty()) { // check we won't get undefined behavior.
-		LOGINFO("Queue not empty");
+		LOGTRACE("Queue not empty");
 		LPXLOPER12 handle = m_handles.front();
 		LPXLOPER12 result = m_results.front();
 		m_handles.pop_front();
@@ -59,7 +58,7 @@ HRESULT CAsyncQueue::NotifyResult() {
 		XLOPER12 returnResult; // this return value isn't actually used.
 		HRESULT hr;
 		int retVal = Excel12(xlAsyncReturn, &returnResult, 2, handle, result);
-		LOGINFO("returned from xlAsyncReturn");
+		LOGTRACE("returned from xlAsyncReturn");
 		LOGTRACE("retVal from xlAsyncReturn was %d", retVal);
 		if (retVal == xlretSuccess) {
 			LOGTRACE("xlAsyncReturn was good");
@@ -74,7 +73,7 @@ HRESULT CAsyncQueue::NotifyResult() {
 		return hr;
 	} else {
 		LeaveCriticalSection(&m_cs);
-		LOGINFO("Async queue empty, not doing anything.");
+		LOGTRACE("Async queue empty, not doing anything.");
 		return S_FALSE;
 	}
 }

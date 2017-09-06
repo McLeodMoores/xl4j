@@ -47,8 +47,11 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 			goto error;
 		}
 		for (int i = 0; i < szArgs; i++) {
-			jobject joArg = CComJavaConverter::convert (pEnv, m_pJniCache, &(args[i]));
-			pEnv->SetObjectArrayElement (joaArgs, i, joArg);
+			jobject joArg;
+			hr = CComJavaConverter::convert(pEnv, m_pJniCache, &joArg, &(args[i]));
+			if (SUCCEEDED(hr)) {
+				pEnv->SetObjectArrayElement(joaArgs, i, joArg);
+			}
 			//pEnv->DeleteLocalRef(joArg);
 		}
 		SafeArrayUnaccessData (m_pArgs);
@@ -66,10 +69,8 @@ HRESULT CCallExecutor::Run (JNIEnv *pEnv) {
 		}
 		//LOGTRACE ("About to convert result");
 		//LOGTRACE("joResult = %p, about to convert", joResult);
-		*m_pResult = CComJavaConverter::convert (pEnv, m_pJniCache, joResult);
+		hr = CComJavaConverter::convert (pEnv, m_pJniCache, m_pResult, joResult);
 		//pEnv->DeleteLocalRef(joResult);
-		hr = S_OK;
-
 	} catch (std::bad_alloc) {
 		LOGERROR ("bad_alloc exception thrown");
 		hr = E_OUTOFMEMORY;

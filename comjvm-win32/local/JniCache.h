@@ -61,6 +61,8 @@ private:
 	jmethodID m_jmXLLocalReference_getRange;
 	jmethodID m_jmXLInteger_getValue;
 	jmethodID m_jmXLError_ordinal;
+	jclass m_jcEnum;
+	jmethodID m_jmEnum_ValueOf;
 	jmethodID m_jmXLBoolean_ordinal;
 	jmethodID m_jmXLArray_getArray;
 	jobject m_joCallHandler;

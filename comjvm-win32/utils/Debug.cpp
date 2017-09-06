@@ -136,6 +136,36 @@ void Debug::LOGTRACE_SAFEARRAY(SAFEARRAY *psa) {
 }
 
 /**
+ * Print out the contents of a SAFEARRAY to the ERROR level log.  This is not generic, it assumes XL4J data structures.
+ * @param psa pointer to the SAFEARRAY to print to the log
+ */
+void Debug::LOGERROR_SAFEARRAY(SAFEARRAY *psa) {
+	LOGERROR("VT_ARRAY(%dD)", SafeArrayGetDim(psa));
+	long elems = 1;
+	for (unsigned int i = 1; i <= SafeArrayGetDim(psa); i++) {
+		long lowerBound;
+		SafeArrayGetLBound(psa, i, &lowerBound);
+		long upperBound;
+		SafeArrayGetUBound(psa, i, &upperBound);
+		LOGTRACE("  dim %d (%d -> %d) (%d elems)", i, lowerBound, upperBound, upperBound - lowerBound);
+		elems *= ((upperBound - lowerBound) + 1);
+	}
+	VARIANT *pArray;
+	HRESULT hr = SafeArrayAccessData(psa, (PVOID *)&pArray);
+	if (FAILED(hr)) {
+		_com_error err(hr);
+		LOGERROR("SafeArrayAccessData failed: %s", err.ErrorMessage());
+		return;
+	}
+	if (elems < 25) {
+		for (int j = 0; j < elems; j++) {
+			LOGERROR_VARIANT(pArray++);
+		}
+	}
+	SafeArrayUnaccessData(psa);
+}
+
+/**
  * Print out a VARIANT for debug purposes at trace level.  Only supports type relevant to XL4J, not generic.
  * @param pVariant a pointer to the VARIANT to display.
  */
@@ -211,6 +241,89 @@ void Debug::LOGTRACE_VARIANT(VARIANT *pVariant) {
 		break;
 	case VT_INT_PTR:
 		LOGTRACE("VT_INT_PTR(%p)", V_INT_PTR(pVariant));
+		break;
+	default:
+		LOGERROR("Unrecognised VARIANT type %d", pVariant->vt);
+		break;
+	}
+}
+
+/**
+ * Print out a VARIANT for debug purposes at error level.  Only supports type relevant to XL4J, not generic.
+ * @param pVariant a pointer to the VARIANT to display.
+ */
+void Debug::LOGERROR_VARIANT(VARIANT *pVariant) {
+	switch (pVariant->vt) {
+	case VT_R8:
+		LOGERROR("VT_R8(%f)", V_R8(pVariant));
+		break;
+	case VT_UI8:
+		LOGERROR("VT_UI8(%llu)", V_UI8(pVariant));
+		break;
+	case VT_I8:
+		LOGERROR("VT_I8(%ll)", V_I8(pVariant));
+		break;
+	case VT_BSTR:
+		LOGERROR("VT_BSTR(%s)", V_BSTR(pVariant));
+		break;
+	case VT_BOOL:
+		if (V_BOOL(pVariant)) {
+			LOGERROR("VT_BOOL(VARIANT_TRUE)");
+		} else {
+			LOGERROR("VT_BOOL(VARIANT_FALSE)");
+		}
+		break;
+	case VT_RECORD:
+	{
+		// Find the type of the record by comparing the GUID with known GUIDs for Local and Multi
+		IID guid;
+		HRESULT hr = V_RECORDINFO(pVariant)->GetGuid(&guid);
+		if (FAILED(hr)) {
+			_com_error err(hr);
+			LOGERROR("VT_RECORD(recordinfo->GetGuid returned: %s)", err.ErrorMessage());
+		}
+
+		LOGERROR("VT_RECORD(%x-%x-%x-%x)", guid.Data1, guid.Data2, guid.Data3, guid.Data4);
+		//if (guid == IID_XL4JMULTIREFERENCE) { // if the IRecordInfo type is an XL4JMULTIREFERENCE
+		//	XL4JMULTIREFERENCE *pMultiRef = static_cast<XL4JMULTIREFERENCE *>V_RECORD(pVariant);
+		//	SAFEARRAY *psa = pMultiRef->refs;
+		//	long cRanges;
+		//	SafeArrayGetUBound(psa, 1, &cRanges);
+		//	cRanges++; // size = upper bound + 1
+		//	XL4JREFERENCE *pRef;
+		//	SafeArrayAccessData(psa, (PVOID*)(&pRef)); // access raw array ptr
+		//											   // Create a Java XLMultiReference from the array elements and the sheet id
+		//	jobject joResult = pJniCache->XLMultiReference_of(pEnv, pMultiRef->idSheet, pRef, cRanges);
+		//	SafeArrayUnaccessData(psa);
+		//	return joResult;
+		//} else if (guid == IID_XL4JREFERENCE) { // if the IRecordInfo type is an XL4JREFERENCE
+		//	XL4JREFERENCE *pRef = static_cast<XL4JREFERENCE *>(V_RECORD(pVariant));
+		//	// Create a Java XLLocalReference from it
+		//	return pJniCache->XLLocalReference_of(pEnv, pRef);
+		//} else {
+		//	LOGERROR("unrecognised RECORDINFO guid %x", guid);
+		//	return NULL;
+		//}
+	} break;
+	case VT_UI1: // UI1 encodes an error number, convert to an XLError object
+		LOGERROR("VT_UI1(%d)", V_UI1(pVariant));
+		break;
+	case VT_ARRAY:
+	{
+		SAFEARRAY *psa = V_ARRAY(pVariant);
+		LOGERROR_SAFEARRAY(psa);
+	} break;
+	case VT_NULL:
+		LOGERROR("VT_NULL");
+		break;
+	case VT_EMPTY:
+		LOGERROR("VT_EMPTY");
+		break;
+	case VT_INT:
+		LOGERROR("VT_INT(%d)", V_INT(pVariant));
+		break;
+	case VT_INT_PTR:
+		LOGERROR("VT_INT_PTR(%p)", V_INT_PTR(pVariant));
 		break;
 	default:
 		LOGERROR("Unrecognised VARIANT type %d", pVariant->vt);
@@ -306,6 +419,16 @@ void Debug::appendExceptionTraceMessages (
 	}
 }
 
+bool Debug::CheckException (JNIEnv *pEnv) {
+	if (pEnv->ExceptionCheck()) {
+		jthrowable throwable = pEnv->ExceptionOccurred();
+		Debug::printException(pEnv, throwable);
+		pEnv->ExceptionClear();
+		return true;
+	}
+	return false;
+}
+
 /**
  * Prints a Java exception with a full stack-trace.
  * @param pEnv the Java environment
@@ -339,7 +462,7 @@ void Debug::printException (JNIEnv *pEnv, jthrowable exception) {
 		mid_throwable_getStackTrace,
 		mid_throwable_toString,
 		mid_frame_toString);
-	OutputDebugStringA (error_msg.c_str());
+	LOGERROR ("Native-side Java Exception: %S", error_msg.c_str());
 }
 
 /**
