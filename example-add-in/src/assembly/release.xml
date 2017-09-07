@@ -53,7 +53,7 @@
       <filtered>false</filtered>
     </file>
 	<file>
-	  <source>install.exe</source>
+	  <source>setup.exe</source>
 	  <outputDirectory>./</outputDirectory>
 	  <filtered>false</filtered>
 	</file>
