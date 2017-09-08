@@ -66,7 +66,7 @@ public final class TimeSeries implements SortedMap<LocalDate, Double> {
    * @return a time series
    * @throws XL4JRuntimeException if start date &gt; end date or arguments null
    */
-  @XLFunction(name = "TimeSeriesFill", 
+  @XLFunction(name = "TimeSeries.Filled", 
       description = "Create a time series filled with a single value on each date (inclusive)",
       category = "Time series",
       typeConversionMode = TypeConversionMode.OBJECT_RESULT)

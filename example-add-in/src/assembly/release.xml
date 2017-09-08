@@ -35,6 +35,10 @@
       <directory>${project.basedir}/docs</directory>
       <outputDirectory>/docs</outputDirectory>
     </fileSet>
+	<fileSet>
+	  <directory>${project.basedir}/examples</directory>
+	  <outputDirectory>/examples</outputDirectory>
+	</fileSet>
   </fileSets>
   <files>
     <file>
@@ -42,6 +46,16 @@
       <outputDirectory>./</outputDirectory>
       <filtered>false</filtered>
     </file>
+	<file>
+      <source>USER-GUIDE.html</source>
+      <outputDirectory>./</outputDirectory>
+      <filtered>false</filtered>
+    </file>
+	<file>
+	  <source>DO-NOT-RUN-SETUP-INSIDE-ZIP.txt</source>
+	  <outputDirectory>./</outputDirectory>
+	  <filtered>false</filtered>
+	</file>
     <file>
       <source>LICENSE-AGREEMENT.txt</source>
       <outputDirectory>./</outputDirectory>

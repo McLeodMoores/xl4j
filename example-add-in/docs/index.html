@@ -1,0 +1,347 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      th, td {
+        vertical-align: top;
+        #padding : 8px
+      }
+    </style>
+  </head>
+  <body>
+    <div class="jumbotron text-center">
+    <h1>XL4J Example Add-in</h1>
+    <p>Function reference grouped by category</p>
+    </div>
+    <div class="container-fluid">
+    
+    <table class="table">
+      <tr>
+        <th>Category</th>
+        <th>Available Functions</th>
+      <tr>
+    
+	  <tr>
+	    <td><a href="CDS Trade.html">CDS Trade</a></td>
+	    <td>
+	      <a href="CDS Trade.html#CDS.AccrualEndDates">CDS.AccrualEndDates</a>, 
+	        <a href="CDS Trade.html#CDS.AccrualEndTimes">CDS.AccrualEndTimes</a>, 
+	        <a href="CDS Trade.html#CDS.AccrualStartDates">CDS.AccrualStartDates</a>, 
+	        <a href="CDS Trade.html#CDS.AccrualStartTimes">CDS.AccrualStartTimes</a>, 
+	        <a href="CDS Trade.html#CDS.AnnuityPayments">CDS.AnnuityPayments</a>, 
+	        <a href="CDS Trade.html#CDS.PaymentDates">CDS.PaymentDates</a>, 
+	        <a href="CDS Trade.html#CDS.PaymentTimes">CDS.PaymentTimes</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Convention.html">Convention</a></td>
+	    <td>
+	      <a href="Convention.html#IborTypeIndexConventionBuilder">IborTypeIndexConventionBuilder</a>, 
+	        <a href="Convention.html#OvernightIndexConventionBuilder">OvernightIndexConventionBuilder</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="ConvertCDSQuote.html">ConvertCDSQuote</a></td>
+	    <td>
+	      <a href="ConvertCDSQuote.html#ConvertCDSQuote">ConvertCDSQuote</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="ISDA CDS model.html">ISDA CDS model</a></td>
+	    <td>
+	      <a href="ISDA CDS model.html#CDS.Accrued">CDS.Accrued</a>, 
+	        <a href="ISDA CDS model.html#CDS.BucketedCS01">CDS.BucketedCS01</a>, 
+	        <a href="ISDA CDS model.html#CDS.BucketedIR01">CDS.BucketedIR01</a>, 
+	        <a href="ISDA CDS model.html#CDS.BuildCDS">CDS.BuildCDS</a>, 
+	        <a href="ISDA CDS model.html#CDS.BuildCDSFromConvention">CDS.BuildCDSFromConvention</a>, 
+	        <a href="ISDA CDS model.html#CDS.CS01">CDS.CS01</a>, 
+	        <a href="ISDA CDS model.html#CDS.CleanPrice">CDS.CleanPrice</a>, 
+	        <a href="ISDA CDS model.html#CDS.DirtyPrice">CDS.DirtyPrice</a>, 
+	        <a href="ISDA CDS model.html#CDS.IR01">CDS.IR01</a>, 
+	        <a href="ISDA CDS model.html#CDS.ParSpread">CDS.ParSpread</a>, 
+	        <a href="ISDA CDS model.html#CDS.PremiumLegCleanPrice">CDS.PremiumLegCleanPrice</a>, 
+	        <a href="ISDA CDS model.html#CDS.ProtectionLegPrice">CDS.ProtectionLegPrice</a>, 
+	        <a href="ISDA CDS model.html#CDS.RR01">CDS.RR01</a>, 
+	        <a href="ISDA CDS model.html#CDS.ValueOnDefault">CDS.ValueOnDefault</a>, 
+	        <a href="ISDA CDS model.html#ISDACDSConvention">ISDACDSConvention</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.BucketedCS01FromNewCurve">ISDACreditCurve.BucketedCS01FromNewCurve</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.BuildIMMCurve">ISDACreditCurve.BuildIMMCurve</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.BuildIMMCurveFromConvention">ISDACreditCurve.BuildIMMCurveFromConvention</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.Expand">ISDACreditCurve.Expand</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.ExpandForDates">ISDACreditCurve.ExpandForDates</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.ExpandSurvivalProbabilities">ISDACreditCurve.ExpandSurvivalProbabilities</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.ExpandSurvivalProbabilitiesForDates">ISDACreditCurve.ExpandSurvivalProbabilitiesForDates</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.HazardRate">ISDACreditCurve.HazardRate</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.HazardRateForDate">ISDACreditCurve.HazardRateForDate</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.SurvivalProbability">ISDACreditCurve.SurvivalProbability</a>, 
+	        <a href="ISDA CDS model.html#ISDACreditCurve.SurvivalProbabilityForDate">ISDACreditCurve.SurvivalProbabilityForDate</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.BuildCurve">ISDAYieldCurve.BuildCurve</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.BuildCurveFromConvention">ISDAYieldCurve.BuildCurveFromConvention</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.DiscountFactor">ISDAYieldCurve.DiscountFactor</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.DiscountFactorForDate">ISDAYieldCurve.DiscountFactorForDate</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.Expand">ISDAYieldCurve.Expand</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.ExpandDiscountFactors">ISDAYieldCurve.ExpandDiscountFactors</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.ExpandDiscountFactorsForDates">ISDAYieldCurve.ExpandDiscountFactorsForDates</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.ExpandForDates">ISDAYieldCurve.ExpandForDates</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.ZeroRate">ISDAYieldCurve.ZeroRate</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurve.ZeroRateForDate">ISDAYieldCurve.ZeroRateForDate</a>, 
+	        <a href="ISDA CDS model.html#ISDAYieldCurveConvention">ISDAYieldCurveConvention</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="JSON.html">JSON</a></td>
+	    <td>
+	      <a href="JSON.html#JSONArray.Expand">JSONArray.Expand</a>, 
+	        <a href="JSON.html#JSONArray.Get">JSONArray.Get</a>, 
+	        <a href="JSON.html#JSONArray.Length">JSONArray.Length</a>, 
+	        <a href="JSON.html#JSONObject.Expand">JSONObject.Expand</a>, 
+	        <a href="JSON.html#JSONObject.Get">JSONObject.Get</a>, 
+	        <a href="JSON.html#JSONObject.Has">JSONObject.Has</a>, 
+	        <a href="JSON.html#JSONObject.Names">JSONObject.Names</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Java.html">Java</a></td>
+	    <td>
+	      <a href="Java.html#After">After</a>, 
+	        <a href="Java.html#JConstruct">JConstruct</a>, 
+	        <a href="Java.html#JEnum">JEnum</a>, 
+	        <a href="Java.html#JEnumX">JEnumX</a>, 
+	        <a href="Java.html#JField">JField</a>, 
+	        <a href="Java.html#JFieldX">JFieldX</a>, 
+	        <a href="Java.html#JLinkedHashMap">JLinkedHashMap</a>, 
+	        <a href="Java.html#JMethod">JMethod</a>, 
+	        <a href="Java.html#JMethodChain">JMethodChain</a>, 
+	        <a href="Java.html#JMethodX">JMethodX</a>, 
+	        <a href="Java.html#JObjectAndMethodChain">JObjectAndMethodChain</a>, 
+	        <a href="Java.html#JPrimitiveDoubleArray">JPrimitiveDoubleArray</a>, 
+	        <a href="Java.html#JPrimitiveDoubleArray2D">JPrimitiveDoubleArray2D</a>, 
+	        <a href="Java.html#JPrimitiveDoubleArrayFromRange">JPrimitiveDoubleArrayFromRange</a>, 
+	        <a href="Java.html#JPrimitiveFloatArray">JPrimitiveFloatArray</a>, 
+	        <a href="Java.html#JPrimitiveIntArray">JPrimitiveIntArray</a>, 
+	        <a href="Java.html#JPrimitiveLongArray">JPrimitiveLongArray</a>, 
+	        <a href="Java.html#JStaticField">JStaticField</a>, 
+	        <a href="Java.html#JStaticFieldX">JStaticFieldX</a>, 
+	        <a href="Java.html#JStaticMethod">JStaticMethod</a>, 
+	        <a href="Java.html#JStaticMethodX">JStaticMethodX</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Matrix.html">Matrix</a></td>
+	    <td>
+	      <a href="Matrix.html#Matrix.ExpandAsArray">Matrix.ExpandAsArray</a>, 
+	        <a href="Matrix.html#Matrix.LabelAt">Matrix.LabelAt</a>, 
+	        <a href="Matrix.html#Matrix.Size">Matrix.Size</a>, 
+	        <a href="Matrix.html#Matrix.ValueAt">Matrix.ValueAt</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Mine.html">Mine</a></td>
+	    <td>
+	      <a href="Mine.html#AsyncWait">AsyncWait</a>, 
+	        <a href="Mine.html#ListElement">ListElement</a>, 
+	        <a href="Mine.html#MakeList">MakeList</a>, 
+	        <a href="Mine.html#MyAdd">MyAdd</a>, 
+	        <a href="Mine.html#MyArray">MyArray</a>, 
+	        <a href="Mine.html#MyDivide">MyDivide</a>, 
+	        <a href="Mine.html#MyFactorial">MyFactorial</a>, 
+	        <a href="Mine.html#MyLocalReference">MyLocalReference</a>, 
+	        <a href="Mine.html#MyMultiReference">MyMultiReference</a>, 
+	        <a href="Mine.html#MyMultiply">MyMultiply</a>, 
+	        <a href="Mine.html#MyStringCat">MyStringCat</a>, 
+	        <a href="Mine.html#MySubtract">MySubtract</a>, 
+	        <a href="Mine.html#MyXOR">MyXOR</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Portfolio.html">Portfolio</a></td>
+	    <td>
+	      <a href="Portfolio.html#Portfolio.ExpectedReturn">Portfolio.ExpectedReturn</a>, 
+	        <a href="Portfolio.html#Portfolio.ExpectedReturn.andThen">Portfolio.ExpectedReturn.andThen</a>, 
+	        <a href="Portfolio.html#Portfolio.ExpectedReturn.apply">Portfolio.ExpectedReturn.apply</a>, 
+	        <a href="Portfolio.html#Portfolio.ExpectedStandardDeviation">Portfolio.ExpectedStandardDeviation</a>, 
+	        <a href="Portfolio.html#Portfolio.ExpectedStandardDeviation.andThen">Portfolio.ExpectedStandardDeviation.andThen</a>, 
+	        <a href="Portfolio.html#Portfolio.ExpectedStandardDeviation.apply">Portfolio.ExpectedStandardDeviation.apply</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Quandl.html">Quandl</a></td>
+	    <td>
+	      <a href="Quandl.html#ExpandTabularResult">ExpandTabularResult</a>, 
+	        <a href="Quandl.html#GetColumn">GetColumn</a>, 
+	        <a href="Quandl.html#GetHeaders">GetHeaders</a>, 
+	        <a href="Quandl.html#GetNamedColumn">GetNamedColumn</a>, 
+	        <a href="Quandl.html#GetRow">GetRow</a>, 
+	        <a href="Quandl.html#QuandlAPIKeyPresent">QuandlAPIKeyPresent</a>, 
+	        <a href="Quandl.html#QuandlDataSet">QuandlDataSet</a>, 
+	        <a href="Quandl.html#TabularResultAsTimeSeries">TabularResultAsTimeSeries</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="REST.html">REST</a></td>
+	    <td>
+	      <a href="REST.html#RestGet">RestGet</a>, 
+	        <a href="REST.html#RestParams">RestParams</a>, 
+	        <a href="REST.html#RestPost">RestPost</a>, 
+	        <a href="REST.html#RestResponseEntity">RestResponseEntity</a>, 
+	        <a href="REST.html#RestResponseHeaders">RestResponseHeaders</a>, 
+	        <a href="REST.html#RestResponseJSON">RestResponseJSON</a>, 
+	        <a href="REST.html#RestResponseLength">RestResponseLength</a>, 
+	        <a href="REST.html#RestResponseStatus">RestResponseStatus</a>, 
+	        <a href="REST.html#RestURI">RestURI</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Schedule.html">Schedule</a></td>
+	    <td>
+	      <a href="Schedule.html#Schedule.Daily">Schedule.Daily</a>, 
+	        <a href="Schedule.html#Schedule.Daily.andThen">Schedule.Daily.andThen</a>, 
+	        <a href="Schedule.html#Schedule.Daily.apply">Schedule.Daily.apply</a>, 
+	        <a href="Schedule.html#Schedule.EndOfMonth">Schedule.EndOfMonth</a>, 
+	        <a href="Schedule.html#Schedule.EndOfMonth.andThen">Schedule.EndOfMonth.andThen</a>, 
+	        <a href="Schedule.html#Schedule.EndOfMonth.apply">Schedule.EndOfMonth.apply</a>, 
+	        <a href="Schedule.html#Schedule.EndOfYear">Schedule.EndOfYear</a>, 
+	        <a href="Schedule.html#Schedule.EndOfYear.andThen">Schedule.EndOfYear.andThen</a>, 
+	        <a href="Schedule.html#Schedule.EndOfYear.apply">Schedule.EndOfYear.apply</a>, 
+	        <a href="Schedule.html#Schedule.ForwardAnnual">Schedule.ForwardAnnual</a>, 
+	        <a href="Schedule.html#Schedule.ForwardAnnual.andThen">Schedule.ForwardAnnual.andThen</a>, 
+	        <a href="Schedule.html#Schedule.ForwardAnnual.apply">Schedule.ForwardAnnual.apply</a>, 
+	        <a href="Schedule.html#Schedule.ForwardMonthly">Schedule.ForwardMonthly</a>, 
+	        <a href="Schedule.html#Schedule.ForwardMonthly.andThen">Schedule.ForwardMonthly.andThen</a>, 
+	        <a href="Schedule.html#Schedule.ForwardMonthly.apply">Schedule.ForwardMonthly.apply</a>, 
+	        <a href="Schedule.html#Schedule.ForwardWeekly">Schedule.ForwardWeekly</a>, 
+	        <a href="Schedule.html#Schedule.ForwardWeekly.andThen">Schedule.ForwardWeekly.andThen</a>, 
+	        <a href="Schedule.html#Schedule.ForwardWeekly.apply">Schedule.ForwardWeekly.apply</a>, 
+	        <a href="Schedule.html#Schedule.ReverseAnnual">Schedule.ReverseAnnual</a>, 
+	        <a href="Schedule.html#Schedule.ReverseAnnual.andThen">Schedule.ReverseAnnual.andThen</a>, 
+	        <a href="Schedule.html#Schedule.ReverseAnnual.apply">Schedule.ReverseAnnual.apply</a>, 
+	        <a href="Schedule.html#Schedule.ReverseMonthly">Schedule.ReverseMonthly</a>, 
+	        <a href="Schedule.html#Schedule.ReverseMonthly.andThen">Schedule.ReverseMonthly.andThen</a>, 
+	        <a href="Schedule.html#Schedule.ReverseMonthly.apply">Schedule.ReverseMonthly.apply</a>, 
+	        <a href="Schedule.html#Schedule.ReverseWeekly">Schedule.ReverseWeekly</a>, 
+	        <a href="Schedule.html#Schedule.ReverseWeekly.andThen">Schedule.ReverseWeekly.andThen</a>, 
+	        <a href="Schedule.html#Schedule.ReverseWeekly.apply">Schedule.ReverseWeekly.apply</a>, 
+	        <a href="Schedule.html#Schedule.StartOfMonth">Schedule.StartOfMonth</a>, 
+	        <a href="Schedule.html#Schedule.StartOfMonth.andThen">Schedule.StartOfMonth.andThen</a>, 
+	        <a href="Schedule.html#Schedule.StartOfMonth.apply">Schedule.StartOfMonth.apply</a>, 
+	        <a href="Schedule.html#Schedule.StartOfYear">Schedule.StartOfYear</a>, 
+	        <a href="Schedule.html#Schedule.StartOfYear.andThen">Schedule.StartOfYear.andThen</a>, 
+	        <a href="Schedule.html#Schedule.StartOfYear.apply">Schedule.StartOfYear.apply</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Schedule.DateByIndex.html">Schedule.DateByIndex</a></td>
+	    <td>
+	      <a href="Schedule.DateByIndex.html#Schedule.DateByIndex">Schedule.DateByIndex</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Schedule.Expand.html">Schedule.Expand</a></td>
+	    <td>
+	      <a href="Schedule.Expand.html#Schedule.Expand">Schedule.Expand</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="SumProduct2.html">SumProduct2</a></td>
+	    <td>
+	      <a href="SumProduct2.html#SumProduct2">SumProduct2</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Time Series.html">Time Series</a></td>
+	    <td>
+	      <a href="Time Series.html#TimeSeries.ContinuousReturnCalculator">TimeSeries.ContinuousReturnCalculator</a>, 
+	        <a href="Time Series.html#TimeSeries.ContinuousReturnCalculator.andThen">TimeSeries.ContinuousReturnCalculator.andThen</a>, 
+	        <a href="Time Series.html#TimeSeries.ContinuousReturnCalculator.apply">TimeSeries.ContinuousReturnCalculator.apply</a>, 
+	        <a href="Time Series.html#TimeSeries.ContinuousReturnCalculator.compose">TimeSeries.ContinuousReturnCalculator.compose</a>, 
+	        <a href="Time Series.html#TimeSeries.Mean">TimeSeries.Mean</a>, 
+	        <a href="Time Series.html#TimeSeries.Mean.andThen">TimeSeries.Mean.andThen</a>, 
+	        <a href="Time Series.html#TimeSeries.Mean.apply">TimeSeries.Mean.apply</a>, 
+	        <a href="Time Series.html#TimeSeries.Mean.compose">TimeSeries.Mean.compose</a>, 
+	        <a href="Time Series.html#TimeSeries.PercentageReturn">TimeSeries.PercentageReturn</a>, 
+	        <a href="Time Series.html#TimeSeries.PercentageReturn.andThen">TimeSeries.PercentageReturn.andThen</a>, 
+	        <a href="Time Series.html#TimeSeries.PercentageReturn.apply">TimeSeries.PercentageReturn.apply</a>, 
+	        <a href="Time Series.html#TimeSeries.PercentageReturn.compose">TimeSeries.PercentageReturn.compose</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Time series.html">Time series</a></td>
+	    <td>
+	      <a href="Time series.html#ExpandTimeSeries">ExpandTimeSeries</a>, 
+	        <a href="Time series.html#TimeSeries">TimeSeries</a>, 
+	        <a href="Time series.html#TimeSeries.Abs">TimeSeries.Abs</a>, 
+	        <a href="Time series.html#TimeSeries.Abs.andThen">TimeSeries.Abs.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Abs.apply">TimeSeries.Abs.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Abs.compose">TimeSeries.Abs.compose</a>, 
+	        <a href="Time series.html#TimeSeries.Add">TimeSeries.Add</a>, 
+	        <a href="Time series.html#TimeSeries.Add.andThen">TimeSeries.Add.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Add.apply">TimeSeries.Add.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Correlation">TimeSeries.Correlation</a>, 
+	        <a href="Time series.html#TimeSeries.Correlation.andThen">TimeSeries.Correlation.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Correlation.apply">TimeSeries.Correlation.apply</a>, 
+	        <a href="Time series.html#TimeSeries.CorrelationMatrixCalculator">TimeSeries.CorrelationMatrixCalculator</a>, 
+	        <a href="Time series.html#TimeSeries.CorrelationMatrixCalculator.andThen">TimeSeries.CorrelationMatrixCalculator.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.CorrelationMatrixCalculator.apply">TimeSeries.CorrelationMatrixCalculator.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Covariance">TimeSeries.Covariance</a>, 
+	        <a href="Time series.html#TimeSeries.Covariance.andThen">TimeSeries.Covariance.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Covariance.apply">TimeSeries.Covariance.apply</a>, 
+	        <a href="Time series.html#TimeSeries.CovarianceMatrixCalculator">TimeSeries.CovarianceMatrixCalculator</a>, 
+	        <a href="Time series.html#TimeSeries.CovarianceMatrixCalculator.andThen">TimeSeries.CovarianceMatrixCalculator.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.CovarianceMatrixCalculator.apply">TimeSeries.CovarianceMatrixCalculator.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Divide">TimeSeries.Divide</a>, 
+	        <a href="Time series.html#TimeSeries.Divide.andThen">TimeSeries.Divide.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Divide.apply">TimeSeries.Divide.apply</a>, 
+	        <a href="Time series.html#TimeSeries.LowerRangeFilter">TimeSeries.LowerRangeFilter</a>, 
+	        <a href="Time series.html#TimeSeries.LowerRangeFilter.andThen">TimeSeries.LowerRangeFilter.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.LowerRangeFilter.apply">TimeSeries.LowerRangeFilter.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Multiply">TimeSeries.Multiply</a>, 
+	        <a href="Time series.html#TimeSeries.Multiply.andThen">TimeSeries.Multiply.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Multiply.apply">TimeSeries.Multiply.apply</a>, 
+	        <a href="Time series.html#TimeSeries.NegativeValuesFilter">TimeSeries.NegativeValuesFilter</a>, 
+	        <a href="Time series.html#TimeSeries.NegativeValuesFilter.andThen">TimeSeries.NegativeValuesFilter.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.NegativeValuesFilter.apply">TimeSeries.NegativeValuesFilter.apply</a>, 
+	        <a href="Time series.html#TimeSeries.NegativeValuesFilter.compose">TimeSeries.NegativeValuesFilter.compose</a>, 
+	        <a href="Time series.html#TimeSeries.PreviousValueFill">TimeSeries.PreviousValueFill</a>, 
+	        <a href="Time series.html#TimeSeries.PreviousValueFill.andThen">TimeSeries.PreviousValueFill.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.PreviousValueFill.apply">TimeSeries.PreviousValueFill.apply</a>, 
+	        <a href="Time series.html#TimeSeries.PreviousValueFill.compose">TimeSeries.PreviousValueFill.compose</a>, 
+	        <a href="Time series.html#TimeSeries.Reciprocal">TimeSeries.Reciprocal</a>, 
+	        <a href="Time series.html#TimeSeries.Reciprocal.andThen">TimeSeries.Reciprocal.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Reciprocal.apply">TimeSeries.Reciprocal.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Reciprocal.compose">TimeSeries.Reciprocal.compose</a>, 
+	        <a href="Time series.html#TimeSeries.Sample">TimeSeries.Sample</a>, 
+	        <a href="Time series.html#TimeSeries.Sample.andThen">TimeSeries.Sample.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Sample.apply">TimeSeries.Sample.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Scale">TimeSeries.Scale</a>, 
+	        <a href="Time series.html#TimeSeries.Scale.andThen">TimeSeries.Scale.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Scale.apply">TimeSeries.Scale.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Subtract">TimeSeries.Subtract</a>, 
+	        <a href="Time series.html#TimeSeries.Subtract.andThen">TimeSeries.Subtract.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Subtract.apply">TimeSeries.Subtract.apply</a>, 
+	        <a href="Time series.html#TimeSeries.UpperRangeFilter">TimeSeries.UpperRangeFilter</a>, 
+	        <a href="Time series.html#TimeSeries.UpperRangeFilter.andThen">TimeSeries.UpperRangeFilter.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.UpperRangeFilter.apply">TimeSeries.UpperRangeFilter.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Variance">TimeSeries.Variance</a>, 
+	        <a href="Time series.html#TimeSeries.Variance.andThen">TimeSeries.Variance.andThen</a>, 
+	        <a href="Time series.html#TimeSeries.Variance.apply">TimeSeries.Variance.apply</a>, 
+	        <a href="Time series.html#TimeSeries.Variance.compose">TimeSeries.Variance.compose</a>, 
+	        <a href="Time series.html#TimeSeriesZeroValuesFilter">TimeSeriesZeroValuesFilter</a>, 
+	        <a href="Time series.html#TimeSeriesZeroValuesFilter.andThen">TimeSeriesZeroValuesFilter.andThen</a>, 
+	        <a href="Time series.html#TimeSeriesZeroValuesFilter.apply">TimeSeriesZeroValuesFilter.apply</a>, 
+	        <a href="Time series.html#TimeSeriesZeroValuesFilter.compose">TimeSeriesZeroValuesFilter.compose</a></td>
+	  </tr>
+	
+	  <tr>
+	    <td><a href="Utils.html">Utils</a></td>
+	    <td>
+	      <a href="Utils.html#Array">Array</a>, 
+	        <a href="Utils.html#Null">Null</a>, 
+	        <a href="Utils.html#Prefix">Prefix</a>, 
+	        <a href="Utils.html#RemoveWhitespace">RemoveWhitespace</a></td>
+	  </tr>
+	
+	</table>
+	</div>
+  </body>
+</html>

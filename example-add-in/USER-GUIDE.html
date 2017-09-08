@@ -1,0 +1,112 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      th, td {
+        vertical-align: top;
+        padding : 8px
+      }
+    </style>
+  </head>
+  <body>
+    <div class="jumbotron text-center">
+    <h1>XL4J Example Add-in</h1>
+    <p>User Guide</p>
+    </div>
+    <div class="container-fluid">
+	<p>For information on installing this add-in, see the <a href="HOW-TO-INSTALL.html">Installation Guide</a></p>
+	<h2>Introduction</h2>
+	<p>This add-in is intended to demonstrate the type of add-in you can build using XL4J.  It demonstates a
+	  broad range of functionality split broadly into purely financial and general purpose.</p>
+	<h3>Financial Features</h3>
+	<p>These features are used to demonstrate how specific financial applications can be built.  It is not intended to
+	    be exhaustive, but simply to support the demonstration sheets we have created.
+	  <ul>
+	    <li>Pulling data from the Quandl data service</li>
+		<li>Processing Quandl data into Time Series objects</li>
+		<li>Schedule generation for time series sampling</li>
+		<li>Time series manipulation
+		  <ul>
+		    <li>arithmetic operations</li>
+		    <li>padding</li>
+			<li>statistics (variance, covariance, correlation, correlation matrices)</li>
+			<li>sampling using generated schedules</li>
+			<li>a variety of returns calculators</li>
+		  </ul>
+        </li>
+        <li>Credit Default Swaps
+		  <ul>
+		    <li>CDS Trade object creation</li>
+			<li>Compute Accrual start and end dates/times; Annuity payments, Payment dates/times</li>
+			<li>ISDA standard credit and yield curve creation</li>
+			<li>ISDA standard analytics, pricing per leg, hazard rates,
+    			survival probabilities, interpolation on curves, etc.</li>
+			<li>More flexible than the ISDA CDS Excel add-in</li>
+		  </ul>
+		</li>
+		<li>Supporting functions
+		  <ul>
+		    <li>Matrix expansion</li>
+			<li>Schedule expansion</li>
+		  </ul>
+		</li>
+	  </ul>
+	</p>
+	<h3>General purpose features</h3>
+	<p>Thes features are applicable those both inside and outside the financial services sector.
+	  <ul>
+	    <li>Asynchronous REST queries</li>
+		<li>JSON Decoding and object drilldown, query and expansion</li>
+		<li>Dynamic Java invocation
+		  <ul>
+		    <li>Create objects by calling constructors</li>
+			<li>Call static and dynamic methods</li>
+			<li>Create enum instances</li>
+			<li>Extract static and dynamic field values</li>
+			<li>Chain method calls</li>
+			<li>Create arrays (primitive and not) and containers</li>
+			<li>Choose simplest or object reference return types (the X variant of functions always return object references)</li>
+			<li>Automatic type marshalling</li>
+			<li>Use can be mixed with custom functions</li>
+		  </ul>
+	    </li>
+	  </ul>
+	</p>
+	<h2>Function Reference</h2>
+	<p>There's a <a href="docs/index.html">indexed function reference</a> generated from the source code.</p>
+	<h2>The Sample Sheets</h2>
+	<p>You can find the sample sheets in the <code>examples</code> sub-directory</p>
+	<div class="well">
+		<table>
+		  <tr>
+		    <th>Filename</th>
+			<th>Description</th>
+	      </tr>
+		  <tr>
+            <td><a href="examples/rest-countries.xlsx">rest-countries.xlsx</a></td>
+			<td>Calls out to a REST service provided by groupkt.com that returns country code information via JSON.  It demonstrates constructing a request, executing it, and drilling down into the JSON response to extract the useful data.</td>
+		  </tr>
+		  <tr>
+            <td><a href="examples/swing-image.xlsx">swing-image.xlsx</a></td><td>This is a slightly silly demonstration that writes the pattern set into a grid of 
+			Excel cells and creates a Swing toolkit window reflecting the pattern.  It is just meant to show the use of the Java primitives and does not deal with issues like multi-threading access to Swing components in a serious way.</td>
+	      </tr>
+		  <tr>
+            <td><a href="examples/sovereign-cds-pricing-and-risk.xlsx">sovereign-cds-pricing-and-risk.xlsx</a></td>
+			<td>A more serious example showing a portfolio of Soverign (although it could be readily adapter to non-soverign CDS with the appropriate data) CDS
+			pricing and risk.  Both yield and credit curves are created from real (historical, hardcoded) market data, CDS are priced and have both credit and
+			interest rate risk calculated in bucketed form and displayed both per-trade and per-currency.  Various other analytics are also displayed.</td>
+          </tr>
+		  <tr>
+		    <td><a href="time-series-and-efficient-frontier.xlsm">time-series-and-efficient-frontier.xlsm</a></td>
+			<td>A long-only equity portfolio analysis using real data pulled from the Quandl data service (refresh requires a free sign-up and API key, instructions
+			on first sheet of workbook).  Pulls historical data for a sample portfolio, computes mean return, variance, standard deviation and then calculates 
+			covariance, correlation and CAPM Beta against the index.  We then use VBA to drive the standard Excel Solver add-in (which will need to be enabled
+			if you want to recalculate) to optimise a selection of portfolios for minimum risk, given a set target return for each one.  Using this, we create an 
+			'efficient frontier' graph showing the risk/return trade-off.  There's also a test portfolio allowing you to show a specific portfolio within this.  Lastly
+			as a sanity check, we optimize a portfolio to maximise it's Sharpe ratio.  Drawing a line through this point and the origin should be at a tangent to the edge of the frontier.  To run the solver, you need to enable macros so the sheet can configure the solver automatically when you click the buttons.</td>
+
+		</table>  
+	</div>
+  </body>
+</html>

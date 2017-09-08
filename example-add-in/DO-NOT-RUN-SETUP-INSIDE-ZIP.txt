@@ -1,0 +1,1 @@
+You need to fully expand this zip file into a directory to correctly install the add-in.
