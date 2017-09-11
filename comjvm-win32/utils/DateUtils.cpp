@@ -109,7 +109,7 @@ HRESULT DateUtils::AddDays(SYSTEMTIME time, int days, LPSYSTEMTIME result) {
  * Compare two times and return a numeric difference to use for comparison.
  * @param time1 a date/time
  * @param time2 a date/time
- * @param comp a pointer to an int64_t to recieve the difference between time1 and time2 in ticks (time1 - time2)
+ * @param comp a pointer to an int64_t to recieve the difference between time1 and time2 in days (time1 - time2)
  * @return result code: E_POINTER if comp is nullptr, error if input issues, else S_OK if fine.
  */
 HRESULT DateUtils::Compare(SYSTEMTIME time1, SYSTEMTIME time2, int64_t *comp) {

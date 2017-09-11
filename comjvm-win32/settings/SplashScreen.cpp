@@ -60,7 +60,7 @@ void CSplashScreen::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CSplashScreen, CDialog)
 	ON_WM_CTLCOLOR()
 	ON_BN_CLICKED(IDC_CLOSEBUTTON, &CSplashScreen::OnBnClickedClosebutton)
-	ON_BN_CLICKED(IDC_MINIMISEBUTTON, &CSplashScreen::OnBnClickedMinimisebutton)
+	ON_BN_CLICKED(IDC_MINIMISEBUTTON, &CSplashScreen::OnBnClickedClosebutton)
 END_MESSAGE_MAP()
 
 
@@ -190,7 +190,7 @@ ULONG CSplashScreen::Release() {
 }
 
 void CSplashScreen::OnBnClickedClosebutton() {
-	Close();
+	CloseMT();
 }
 
 void CSplashScreen::OnBnClickedMinimisebutton() {

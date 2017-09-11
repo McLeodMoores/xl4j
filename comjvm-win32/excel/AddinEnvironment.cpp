@@ -101,9 +101,9 @@ HRESULT CAddinEnvironment::Start() {
 	}
 	m_pLicenseChecker = new CLicenseChecker();
 	if (FAILED(hr = m_pLicenseChecker->Validate())) {
-		LOGERROR("License checker validation failed");
+		LOGINFO("License checker validation failed");
 	} else {
-		LOGTRACE("License checker validation succeeded");
+		LOGINFO("License checker validation succeeded");
 	}
 	// register calculation event handlers
 	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationEndedEvent"), TempInt12(xleventCalculationEnded));
@@ -270,8 +270,8 @@ HRESULT CAddinEnvironment::InitFromSettings() {
 			Debug::SetLogLevel(LOGLEVEL_ERROR);
 		} else if (logLevel == _bstr_t(_T("FATAL"))) {
 			Debug::SetLogLevel(LOGLEVEL_ERROR);
-		} else /* if (logLevel == TEXT("NONE"))*/ {
-			Debug::SetLogLevel(LOGLEVEL_NONE);
+		} else /* if (logLevel == TEXT("NONE"))*/ { // changed this from NONE to ERROR
+			Debug::SetLogLevel(LOGLEVEL_ERROR);
 		}
 		_bstr_t logTarget;
 		logTarget = m_pSettings->GetString(TEXT("Addin"), TEXT("LogTarget"));
@@ -599,7 +599,8 @@ HRESULT CAddinEnvironment::LoadEULA(wchar_t **szEULA) {
 		LOGERROR("calloc failed");
 		return E_OUTOFMEMORY;
 	}
-	if (!ReadFile(hEULA, pBuffer, dwFileSize, nullptr, nullptr)) {
+	DWORD dwReadSize; // we need to read into this or it fails on Windows 7 or lower.
+	if (!ReadFile(hEULA, pBuffer, dwFileSize, &dwReadSize, nullptr)) {
 		HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
 		_com_error err(hr);
 		LOGERROR("Problem reading LICENSE-AGREEMENT.txt: %s", err.ErrorMessage());

@@ -61,5 +61,4 @@ public:
 	HRESULT _GarbageCollect();
 	void HideSplash();
 	long GetNumArgs(FUNCTIONINFO * pFunctionInfo);
-	
 };

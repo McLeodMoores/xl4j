@@ -1,149 +1,144 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.mcleodmoores.xl4j</groupId>
-  <artifactId>xl4j-parent</artifactId>
-  <version>1.0.0-beta.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+	<groupId>com.mcleodmoores.xl4j</groupId>
+	<artifactId>xl4j-parent</artifactId>
+	<version>1.0.0-beta.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
 
-  <name>XL4J Parent Project</name>
-  <description>Parent project for XL4J</description>
+	<name>XL4J Parent Project</name>
+	<description>Parent project for XL4J</description>
 
-  <licenses>
-    <license>
-      <name>GNU General Public License, Version 3.0</name>
-      <url>http://www.gnu.org/licenses/gpl.txt</url>
-    </license>
-    <license>
-      <name>McLeod Moores Commercial License</name>
-      <url>http://www.mcleodmoores.com</url>
-    </license>
-  </licenses>
-  
-  <profiles>
-    <profile>
-      <id>java</id>
-      <activation>
-        <property>
-	  <name>!env.VCINSTALLDIR</name>
-        </property>  
-      </activation>
-      <modules>
-        <module>xll-core</module>
-        <module>xll-java</module>
-        <module>xll-examples</module>
-        <module>example-add-in</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>all</id>
-      <activation>
-        <property>
-  	  <name>env.VCINSTALLDIR</name>
-        </property>  
-      </activation>
-      <modules>
-        <module>comjvm-win32</module>
-        <module>xll-core</module>
-        <module>xll-java</module>
-        <module>xll-examples</module>
-        <module>example-add-in</module>
-      </modules>
-    </profile>
-  </profiles>
-    
-  <properties>
-    <maven-native-packing.version>0.2.3</maven-native-packing.version>
-    <java.version>1.8.0</java.version>
-    <excelsdk.version>2013</excelsdk.version>
-	<gpg.skip>true</gpg.skip>
-  </properties>
-  
-  <distributionManagement> 
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <!--repository> 
-      <id>releases</id> 
-      <name>McLeod Moores public release maven repository</name> 
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url> 
-    </repository> 
-    <snapshotRepository> 
-      <id>snapshots</id> 
-      <name>McLeod Moores public snapshot maven repository</name> 
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/snapshots</url> 
-    </snapshotRepository--> 
-  </distributionManagement> 
-  <repositories> 
-    <repository>
-      <id>releases</id>
-      <name>McLeod Moores Public Release Repository</name>
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
-    </repository>
-	<repository>
-      <id>snapshots</id>
-      <name>McLeod Moores Public Snapshot Repository</name>
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/snapshots</url>
-	  <snapshots> 
-        <enabled>true</enabled> 
-      </snapshots> 
-    </repository>
-  </repositories> 
-  <pluginRepositories> 
-    <pluginRepository>
-      <id>releases</id>
-      <name>McLeod Moores Release</name>
-      <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
-    </pluginRepository>
-  </pluginRepositories> 
+	<licenses>
+		<license>
+			<name>GNU General Public License, Version 3.0</name>
+			<url>http://www.gnu.org/licenses/gpl.txt</url>
+		</license>
+		<license>
+			<name>McLeod Moores Commercial License</name>
+			<url>http://www.mcleodmoores.com</url>
+		</license>
+	</licenses>
 
-  <build>
-    <plugins>
-      <!-- plug-in for staging to Nexus -->
-      <plugin>
-        <groupId>org.sonatype.plugins</groupId>
-        <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.2</version>
-        <extensions>true</extensions>
-        <configuration>
-          <serverId>ossrh</serverId>
-          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-          <autoReleaseAfterClose>true</autoReleaseAfterClose>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>1.5</version>
-        <executions>
-          <execution>
-            <id>sign-artifacts</id>
-            <phase>verify</phase>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.8</version>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.6</version>
-        <configuration>
-          <filters>
-            <filter>src/assembly/filter.properties</filter>
-          </filters>
-          <descriptors>
-            <descriptor>src/assembly/distribution.xml</descriptor>
-          </descriptors>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<profiles>
+		<profile>
+			<id>java</id>
+			<activation>
+				<property>
+					<name>!env.VCINSTALLDIR</name>
+				</property>
+			</activation>
+			<modules>
+				<module>xll-core</module>
+				<module>xll-java</module>
+				<module>xll-examples</module>
+				<module>example-add-in</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>all</id>
+			<activation>
+				<property>
+					<name>env.VCINSTALLDIR</name>
+				</property>
+			</activation>
+			<modules>
+				<module>comjvm-win32</module>
+				<module>xll-core</module>
+				<module>xll-java</module>
+				<module>xll-examples</module>
+				<module>example-add-in</module>
+			</modules>
+		</profile>
+	</profiles>
+
+	<properties>
+		<maven-native-packing.version>0.2.3</maven-native-packing.version>
+		<java.version>1.8.0</java.version>
+		<excelsdk.version>2013</excelsdk.version>
+		<gpg.skip>true</gpg.skip>
+	</properties>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<!--repository> <id>releases</id> <name>McLeod Moores public release maven 
+			repository</name> <url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url> 
+			</repository> <snapshotRepository> <id>snapshots</id> <name>McLeod Moores 
+			public snapshot maven repository</name> <url>http://maven.mcleodmoores.com:8081/content/repositories/snapshots</url> 
+			</snapshotRepository -->
+	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>releases</id>
+			<name>McLeod Moores Public Release Repository</name>
+			<url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>snapshots</id>
+			<name>McLeod Moores Public Snapshot Repository</name>
+			<url>http://maven.mcleodmoores.com:8081/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>releases</id>
+			<name>McLeod Moores Release</name>
+			<url>http://maven.mcleodmoores.com:8081/content/repositories/releases</url>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<build>
+		<plugins>
+			<!-- plug-in for staging to Nexus -->
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.2</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.8</version>
+			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<filters>
+						<filter>src/assembly/filter.properties</filter>
+					</filters>
+					<descriptors>
+						<descriptor>src/assembly/distribution.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

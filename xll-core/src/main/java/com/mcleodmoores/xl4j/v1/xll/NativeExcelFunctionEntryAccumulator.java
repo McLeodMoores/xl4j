@@ -5,6 +5,9 @@ package com.mcleodmoores.xl4j.v1.xll;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NavigableSet;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +23,7 @@ public class NativeExcelFunctionEntryAccumulator implements LowLevelExcelCallbac
   /**
    * Native accessed data structure (public fields for speed).
    */
-  public class FunctionEntry {
+  public class FunctionEntry implements Comparable<FunctionEntry> {
     // CHECKSTYLE:OFF
     public int _exportNumber;
     public String _functionExportName;
@@ -39,9 +42,14 @@ public class NativeExcelFunctionEntryAccumulator implements LowLevelExcelCallbac
     public String _description;
     public String[] _argsHelp;
     // CHECKSTYLE:ON
+    @Override
+    public int compareTo(final FunctionEntry other) {
+      return _functionExportName.compareTo(other._functionExportName);
+    }
   }
+  
 
-  private final List<FunctionEntry> _entries = new ArrayList<>();
+  private final NavigableSet<FunctionEntry> _entries = new TreeSet<>();
 
   @Override
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
@@ -80,7 +88,7 @@ public class NativeExcelFunctionEntryAccumulator implements LowLevelExcelCallbac
    * @return the function entries
    */
   public FunctionEntry[] getEntries() {
-    final FunctionEntry[] array = _entries.toArray(new FunctionEntry[] {});
+    final FunctionEntry[] array = _entries.descendingSet().toArray(new FunctionEntry[] {});
     LOGGER.info("getEntries() called, returning {} items", array.length);
     return array;
   }

@@ -466,7 +466,9 @@ __declspec(dllexport) int GarbageCollect () {
 	ReleaseSRWLockShared(&g_JvmEnvLock);
 	switch (hr) {
 	case ERROR_CONTINUE:
-		// JVM not up and running yet, still want to reschedule
+		// JVM not up and running yet, still want to reschedule, but faster.
+		ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 0.2);
+		break;
 	case S_OK:
 		ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2);
 		break; // in case we add something below
@@ -492,18 +494,18 @@ __declspec(dllexport) int RegisterSomeFunctions () {
 			if (FAILED(g_pAddinEnv->GetSettings(&pSettings))) {
 				LOGERROR("Could not get settings from AddinEnv");
 			} else {
-				_bstr_t bstrGCEnabled = pSettings->GetString(SECTION_ADDIN, TEXT("GarbageCollection"));
-				if (bstrGCEnabled.length() > 0) {
-					LOGTRACE("bstrGCEnabled.length() > 0");
-					const _bstr_t ENABLED(TEXT("Enabled"));
-					if (bstrGCEnabled == ENABLED) {
+				//_bstr_t bstrGCEnabled = pSettings->GetString(SECTION_ADDIN, TEXT("GarbageCollection"));
+				//if (bstrGCEnabled.length() > 0) {
+				//	LOGTRACE("bstrGCEnabled.length() > 0");
+				//	const _bstr_t ENABLED(TEXT("Enabled"));
+				//	if (bstrGCEnabled == ENABLED) {
 						ExcelUtils::ScheduleCommand(TEXT("GarbageCollect"), 2.0);
-					} else {
-						LOGINFO("GarbageCollector disabled");
-					}
-				} else {
-					LOGINFO("GarbageCollector disabled");
-				}
+				//	} else {
+				//		LOGINFO("GarbageCollector disabled");
+				//	}
+				//} else {
+				//	LOGINFO("GarbageCollector disabled");
+				//}
 			}
 		} else if (hr == ERROR_CONTINUE) {
 			LOGTRACE("Registration not complete, scheduling another go");

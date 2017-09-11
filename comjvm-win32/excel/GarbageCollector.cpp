@@ -224,6 +224,13 @@ bool GarbageCollector::ScanDocuments () {
 	return false;
 }
 
+const ULONGLONG GarbageCollector::MINIMUM_RECALC_GAP = 30 * 1000;
+
+boolean GarbageCollector::IsNotTooSoonForRefresh() {
+	ULONGLONG now = GetTickCount64();
+	return (now - m_lastRefreshTime) > MINIMUM_RECALC_GAP;
+}
+
 void GarbageCollector::Collect () {
 	if (g_pAddinEnv->IsCalculateFullRebuildInProgress()) {
 		LOGTRACE("Rebuild in progress, skipping GC scan");
@@ -249,7 +256,10 @@ void GarbageCollector::Collect () {
 				if (unrecognisedHandles > m_previousUnknownHandles) {
 					LOGINFO("Unrecognised handle count is not the same as last time (there were %lld last time)", m_previousUnknownHandles);
 					// TODO: Pass this in rather than using global.
-					g_pAddinEnv->CalculateFullRebuild();
+					if (IsNotTooSoonForRefresh()) {
+						g_pAddinEnv->CalculateFullRebuild();
+						m_lastRefreshTime = GetTickCount64();
+					}
 				}
 				m_previousUnknownHandles = unrecognisedHandles; // save so we can only refresh when situation changes.
 			}
@@ -314,6 +324,7 @@ GarbageCollector::GarbageCollector (ICollect *pCollector) {
 	Reset ();
 	QueryPerformanceFrequency (&m_liFrequency);
 	m_liPreviousRefresh.QuadPart = 0;
+	m_lastRefreshTime = 0;
 	SetMaxTime (10);
 }
 

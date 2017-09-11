@@ -23,7 +23,7 @@ CJvmEnvironment::~CJvmEnvironment () {
 
 DWORD WINAPI CJvmEnvironment::BackgroundWatchdogThread(LPVOID pData) {
 	CJvmEnvironment *me = reinterpret_cast<CJvmEnvironment*>(pData);
-	Sleep(30000); // wait for 30 secs
+	Sleep(45000); // wait for 45 secs
 	me->m_pSplashScreen->CloseMT(); // close out splash if no one else has.
 	return 0;
 }
@@ -263,7 +263,7 @@ HRESULT CJvmEnvironment::_GarbageCollect () {
 		ReleaseSRWLockShared(&m_rwlock);
 		return ERROR_CONTINUE;
 	case STARTED:
-		m_pSplashScreen->Close();
+		m_pSplashScreen->CloseMT();
 		if (m_pCollector) {
 			m_pCollector->Collect();
 			ReleaseSRWLockShared(&m_rwlock);

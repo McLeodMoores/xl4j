@@ -183,6 +183,8 @@ private:
 				pszClasspath = pClasspath->GetPath ();
 				// Options
 				if (FAILED (hr = pTemplate->get_Options (&pOptionEntries))) _com_raise_error (hr);
+				// This tells reflections to load from files.
+				// always enabled now.  pOptionEntries->Add(L"-Dxl4j.production");
 				long cOptions;
 				if (FAILED (hr = pOptionEntries->get_Count (&cOptions))) _com_raise_error (hr);
 				JAVA_VM_PARAMETERS params;

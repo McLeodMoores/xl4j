@@ -170,6 +170,11 @@ HRESULT CJvmTemplate::LoadOptions (const CSettings &oSettings) {
 			logback += _bstr_t ("-logback.xml"); // megabytes
 			HRESULT hr = m_pOptions->Add (logback); // copy should increase count.
 			if (FAILED (hr)) return hr;
+		} else {
+			// default to ERROR or it's super-slow.
+			_bstr_t logback(_T("-Dlogback.configurationFile=com/mcleodmoores/xl4j/v1/error-logback.xml"));
+			HRESULT hr = m_pOptions->Add(logback);
+			if (FAILED (hr)) return hr;
 		}
 		return S_OK;
 	} catch (std::bad_alloc) {

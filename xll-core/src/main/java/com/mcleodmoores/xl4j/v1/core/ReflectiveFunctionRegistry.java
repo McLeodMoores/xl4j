@@ -114,10 +114,23 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     }
   }
 
+  private boolean isProduction() {
+    String scan = System.getProperty("xl4j.scan");
+    if (scan != null) {
+      if (scan.toLowerCase().contains("true")) {
+        return false;
+      }
+    }
+    return true;
+  }
+  
   @Override
   protected void createAndRegisterFunctions(final InvokerFactory invokerFactory) {
-    final Reflections reflections = new Reflections(new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath())
-        .addScanners(new MethodAnnotationsScanner(), new MethodParameterScanner(), new TypeAnnotationsScanner(), new FieldAnnotationsScanner()));
+    final Reflections reflections = isProduction() ? Reflections.collect() : new Reflections(
+        new ConfigurationBuilder()
+            .addUrls(ClasspathHelper.forJavaClassPath())
+            .addScanners(new MethodAnnotationsScanner(), new MethodParameterScanner(), 
+                         new TypeAnnotationsScanner(), new FieldAnnotationsScanner()));
     try {
       addDefinitions(getFunctionsForMethods(invokerFactory, reflections.getMethodsAnnotatedWith(XLFunction.class)));
     } catch (final Exception e) {

@@ -10,6 +10,7 @@
 
 class GarbageCollector {
 private:
+	static const ULONGLONG MINIMUM_RECALC_GAP;
 	//RW g_rw;
 	//COL g_col;
 	//IDSHEET g_sheet;
@@ -44,6 +45,7 @@ private:
 	// This is to prevent repeated refreshes.
 	__int64 m_previousUnknownHandles;
 	LARGE_INTEGER m_liPreviousRefresh;
+	ULONGLONG m_lastRefreshTime;
 	// list observed ids
 	std::vector<unsigned hyper> m_vObservedIds;
 	// Java interface
@@ -59,6 +61,7 @@ private:
 	bool ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName);
 	bool ScanWorkbook (XLOPER12 *pWorkbookName);
 	bool ScanDocuments ();
+	boolean IsNotTooSoonForRefresh();
 public:
 	GarbageCollector (ICollect *pCollector);
 	~GarbageCollector ();
