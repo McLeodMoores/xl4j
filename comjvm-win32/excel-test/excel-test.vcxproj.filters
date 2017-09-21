@@ -29,5 +29,8 @@
     <ClCompile Include="LicenseCheckerTest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="XLOPERWrapperTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

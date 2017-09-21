@@ -66,7 +66,7 @@ public class DefaultExcelCallbackTest {
     final XLParameter[] parameters = new XLParameter[1];
     parameters[0] = createXLParameter(null, null, null, null);
     final FunctionMetadata annotation =
-        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Field field = DefaultExcelCallbackTest.class.getDeclaredField("INT");
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -88,7 +88,7 @@ public class DefaultExcelCallbackTest {
     final Boolean isMacroEquivalent = true;
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(null, null, null, null, isVolatile, isMultiThreadSafe, isMacroEquivalent,
-            FunctionType.FUNCTION, false, false, false, false), parameters, functionName);
+            FunctionType.FUNCTION, false, false, false, false, false), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -111,7 +111,7 @@ public class DefaultExcelCallbackTest {
     final Boolean isMacroEquivalent = true;
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(null, null, null, null, isVolatile, isMultiThreadSafe, isMacroEquivalent,
-            FunctionType.FUNCTION, false, false, false, false), parameters, functionName);
+            FunctionType.FUNCTION, false, false, false, false, false), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -131,7 +131,7 @@ public class DefaultExcelCallbackTest {
     parameters[0] = createXLParameter(null, null, null, null);
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null,
-            FunctionType.COMMAND, null, null, null, null), parameters, functionName);
+            FunctionType.COMMAND, null, null, null, null, null), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -151,7 +151,7 @@ public class DefaultExcelCallbackTest {
     parameters[0] = createXLParameter(null, null, null, true);
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, false,
-            FunctionType.FUNCTION, null, null, null, null), parameters, functionName);
+            FunctionType.FUNCTION, null, null, null, null, null), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -172,7 +172,7 @@ public class DefaultExcelCallbackTest {
     parameters[1] = createXLParameter(null, null, null, null);
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null,
-            FunctionType.FUNCTION, null, null, null, null), parameters, functionName);
+            FunctionType.FUNCTION, null, null, null, null, null), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -190,7 +190,7 @@ public class DefaultExcelCallbackTest {
     final String functionName = "function1";
     final XLParameter[] parameters = new XLParameter[0];
     final FunctionMetadata annotation =
-        FunctionMetadata.of(createXLFunctions(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunctions(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -237,11 +237,12 @@ public class DefaultExcelCallbackTest {
     final Boolean isMacroEquivalent = true;
     final Boolean isLongRunning = true;
     final Boolean isAutoAsynchronous = true;
+    final Boolean isAutoRTDAsynchronous = true;
     final Boolean isManualAsynchronous = true;
     final Boolean isCallerRequired = true;
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(name, category, description, helpTopic, isVolatile, isMultiThreadSafe, isMacroEquivalent,
-            FunctionType.COMMAND, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
+            FunctionType.COMMAND, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method5", Integer.TYPE);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -375,7 +376,7 @@ public class DefaultExcelCallbackTest {
     final XLParameter[] parameters = new XLParameter[1];
     parameters[0] = createXLParameter(null, null, null, null);
     final FunctionMetadata annotation =
-        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     int exportNumber = getExportNumber();
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -446,11 +447,12 @@ public class DefaultExcelCallbackTest {
     final Boolean isMacroEquivalent = true;
     final Boolean isLongRunning = true;
     final Boolean isAutoAsynchronous = true;
+    final Boolean isAutoRTDAsynchronous = true;
     final Boolean isManualAsynchronous = true;
     final Boolean isCallerRequired = true;
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(name, category, description, helpTopic, isVolatile, isMultiThreadSafe, isMacroEquivalent,
-            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
+            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
     int exportNumber = getExportNumber();
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -511,7 +513,7 @@ public class DefaultExcelCallbackTest {
     parameters[1] = createXLParameter("parameter2", null, null, null);
     final Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method6", new Class<?>[] {Integer.TYPE, Integer.TYPE});
     FunctionMetadata annotation =
-        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     int exportNumber = getExportNumber();
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter(), new PrimitiveIntegerXLNumberTypeConverter()},
@@ -521,7 +523,7 @@ public class DefaultExcelCallbackTest {
     parameters[0] = createXLParameter(null, null, null, null);
     parameters[1] = createXLParameter(null, null, null, null);
     annotation =
-        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     exportNumber = getExportNumber();
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
         new SimpleResultMethodInvoker(method, new TypeConverter[] {new PrimitiveIntegerXLNumberTypeConverter(), new PrimitiveIntegerXLNumberTypeConverter()},
@@ -541,7 +543,7 @@ public class DefaultExcelCallbackTest {
     final String functionName = "function1";
     final XLParameter[] parameters = new XLParameter[0];
     final FunctionMetadata annotation =
-        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunction(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Constructor<?> constructor = DefaultExcelCallbackTest.class.getConstructor(new Class<?>[0]);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -584,11 +586,12 @@ public class DefaultExcelCallbackTest {
     final Boolean isMacroEquivalent = true;
     final Boolean isLongRunning = true;
     final Boolean isAutoAsynchronous = true;
+    final Boolean isAutoRTDAsynchronous = true;
     final Boolean isManualAsynchronous = true;
     final Boolean isCallerRequired = true;
     final FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunction(name, category, description, helpTopic, isVolatile, isMultiThreadSafe, isMacroEquivalent,
-            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
+            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
     final int exportNumber = getExportNumber();
     final Constructor<?> constructor = DefaultExcelCallbackTest.class.getConstructor(new Class<?>[0]);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -624,7 +627,7 @@ public class DefaultExcelCallbackTest {
     final String functionName = "function1";
     final XLParameter[] parameters = new XLParameter[0];
     final FunctionMetadata annotation =
-        FunctionMetadata.of(createXLFunctions(null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
+        FunctionMetadata.of(createXLFunctions(null, null, null, null, null, null, null, null, null, null, null, null, null), parameters, functionName);
     int exportNumber = getExportNumber();
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -692,6 +695,7 @@ public class DefaultExcelCallbackTest {
     final String helpTopic = "helpTopic";
     final Boolean isLongRunning = true;
     final Boolean isAutoAsynchronous = true;
+    final Boolean isAutoRTDAsynchronous = true;
     final Boolean isManualAsynchronous = true;
     final Boolean isCallerRequired = true;
     final Boolean isMacroEquivalent = true;
@@ -699,7 +703,7 @@ public class DefaultExcelCallbackTest {
     final Boolean isMultiThreadSafe = false;
     FunctionMetadata annotation =
         FunctionMetadata.of(createXLFunctions(name, category, description, helpTopic, isVolatile, isMultiThreadSafe, isMacroEquivalent,
-            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
+            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
     int exportNumber = getExportNumber();
     Method method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -718,6 +722,7 @@ public class DefaultExcelCallbackTest {
     assertEquals(entry._functionWorksheetName, functionName);
     assertEquals(entry._helpTopic, helpTopic);
     assertEquals(entry._isAutoAsynchronous, isAutoAsynchronous.booleanValue());
+    assertEquals(entry._isAutoRTDAsynchronous, isAutoRTDAsynchronous.booleanValue());
     assertEquals(entry._isCallerRequired, isCallerRequired.booleanValue());
     assertEquals(entry._isLongRunning, isLongRunning.booleanValue());
     assertEquals(entry._isManualAsynchronous, isManualAsynchronous.booleanValue());
@@ -748,7 +753,7 @@ public class DefaultExcelCallbackTest {
     parameters[0] = createXLParameter(parameterName, parameterDescription, optional, false);
     annotation =
         FunctionMetadata.of(createXLFunctions(name, category, description, helpTopic, true, false, false,
-            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
+            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
     exportNumber = getExportNumber();
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -758,7 +763,7 @@ public class DefaultExcelCallbackTest {
     assertEquals(entry._functionSignature, ">QQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQQX!");
     annotation =
         FunctionMetadata.of(createXLFunctions(name, category, description, helpTopic, false, false, false,
-            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
+            FunctionType.FUNCTION, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired), parameters, functionName);
     exportNumber = getExportNumber();
     method = DefaultExcelCallbackTest.class.getDeclaredMethod("method1", int[].class);
     CALLBACK.registerFunction(FunctionDefinition.of(annotation,
@@ -850,7 +855,8 @@ public class DefaultExcelCallbackTest {
 
   private static XLFunction createXLFunction(final String name, final String category, final String description, final String helpTopic,
       final Boolean isVolatile, final Boolean isMultiThreadSafe, final Boolean isMacroEquivalent, final FunctionType functionType,
-      final Boolean isLongRunning, final Boolean isAutoAsynchronous, final Boolean isManualAsynchronous, final Boolean isCallerRequired) {
+      final Boolean isLongRunning, final Boolean isAutoAsynchronous, final Boolean isAutoRTDAsynchronous, final Boolean isManualAsynchronous, 
+      final Boolean isCallerRequired) {
     return new XLFunction() {
 
       @Override
@@ -912,6 +918,11 @@ public class DefaultExcelCallbackTest {
       public boolean isAutoAsynchronous() {
         return isAutoAsynchronous == null ? false : isAutoAsynchronous;
       }
+      
+      @Override
+      public boolean isAutoRTDAsynchronous() {
+        return isAutoRTDAsynchronous == null ? false : isAutoRTDAsynchronous;
+      }
 
       @Override
       public boolean isManualAsynchronous() {
@@ -928,7 +939,8 @@ public class DefaultExcelCallbackTest {
 
   private static XLFunctions createXLFunctions(final String prefix, final String category, final String description, final String helpTopic,
       final Boolean isVolatile, final Boolean isMultiThreadSafe, final Boolean isMacroEquivalent, final FunctionType functionType,
-      final Boolean isLongRunning, final Boolean isAutoAsynchronous, final Boolean isManualAsynchronous, final Boolean isCallerRequired) {
+      final Boolean isLongRunning, final Boolean isAutoAsynchronous, final Boolean isAutoRTDAsynchronous, final Boolean isManualAsynchronous, 
+      final Boolean isCallerRequired) {
     return new XLFunctions() {
 
       @Override
@@ -999,6 +1011,11 @@ public class DefaultExcelCallbackTest {
       @Override
       public boolean isCallerRequired() {
         return isCallerRequired == null ? false : isCallerRequired;
+      }
+
+      @Override
+      public boolean isAutoRTDAsynchronous() {
+        return isAutoRTDAsynchronous == null ? false : isAutoRTDAsynchronous;
       }
 
     };

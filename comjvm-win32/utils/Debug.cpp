@@ -41,7 +41,7 @@ void Debug::odprintf (LPCTSTR sFormat, ...)
 
 size_t Debug::m_cMaxFileNameLength = 0;
 size_t Debug::m_cMaxFunctionNameLength = 0;
-volatile LOGLEVEL Debug::m_logLevel;// = LOGLEVEL_TRACE;
+volatile LOGLEVEL Debug::m_logLevel;// = LOGLEVEL_INFO;
 volatile LOGTARGET Debug::m_logTarget;// = LOGTARGET_WINDEBUG;
 FILE *Debug::m_fdLogFile = nullptr;
 const wchar_t *Debug::LOGLEVEL_STR[] = { L"TRACE", L"DEBUG", L"INFO ", L"WARN ", L"ERROR", L"FATAL", L"NONE " };

@@ -22,6 +22,10 @@ public interface LowLevelExcelCallback {
    * @param isAutoAsynchronous
    *          true if the function should be made called in a thread drawn from a pool and excel notified
    *          asynchronously on completion.  Allows long running functions not to block Excel
+   * @param isAutoRTDAsynchronous
+   *          true if the function should be made called in a thread drawn from a pool and excel notified
+   *          asynchronously via RTD on completion.  Allows long running function not to block Excel.  More
+   *          reliable than isAutoAsynchronous which gets 'out of resources' messages.
    * @param isManualAsynchronous
    *          true if the function should handle asynchronous execution itself.  Currently this is a
    *          synonym for isAutoAsynchronou, although it's really just a placeholder until the functionality
@@ -51,7 +55,7 @@ public interface LowLevelExcelCallback {
    * @return the function registration number
    */
   int xlfRegister(int exportNumber, String functionExportName, boolean isVarArgs, boolean isLongRunning,
-      boolean isAutoAsynchronous, boolean isManualAsynchronous, boolean isCallerRequired,
+      boolean isAutoAsynchronous, boolean isAutoRTDAsynchronous, boolean isManualAsynchronous, boolean isCallerRequired,
       String functionSignature, String functionWorksheetName, String parameterNames, int functionType,
       String functionCategory, String acceleratorKey, String helpTopic, String description, String... argsHelp);
   /*

@@ -75,37 +75,37 @@ public:
 	}
 
 	TEST_METHOD (BasicScan) {
-		IScan *pScan;
-		Assert::AreEqual (S_OK, m_pJvm->CreateScan (&pScan));
-		HRESULT hr; 
-		IRecordInfo *pFunctionInfoRecordInfo;
-		TypeLib *pTypeLib = new TypeLib ();
-		if (FAILED (hr = pTypeLib->GetFunctionInfoRecInfo(&pFunctionInfoRecordInfo))) {
-			_com_error err (hr);
-			LPCTSTR errMsg = err.ErrorMessage ();
-			LOGTRACE ("Failed to get record info from TypeLib %s", errMsg);
-			Assert::Fail (); 
-		}
-		delete pTypeLib;
-		SAFEARRAY *results;
-		SAFEARRAYBOUND bounds;
-		bounds.cElements = 100;
-		bounds.lLbound = 0;
-		results = SafeArrayCreateEx (VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
-		hr = pScan->Scan (&results);
-		FUNCTIONINFO *pFunctionInfos;
+		//IScan *pScan;
+		//Assert::AreEqual (S_OK, m_pJvm->CreateScan (&pScan));
+		//HRESULT hr; 
+		//IRecordInfo *pFunctionInfoRecordInfo;
+		//TypeLib *pTypeLib = new TypeLib ();
+		//if (FAILED (hr = pTypeLib->GetFunctionInfoRecInfo(&pFunctionInfoRecordInfo))) {
+		//	_com_error err (hr);
+		//	LPCTSTR errMsg = err.ErrorMessage ();
+		//	LOGTRACE ("Failed to get record info from TypeLib %s", errMsg);
+		//	Assert::Fail (); 
+		//}
+		//delete pTypeLib;
+		//SAFEARRAY *results;
+		//SAFEARRAYBOUND bounds;
+		//bounds.cElements = 100;
+		//bounds.lLbound = 0;
+		//results = SafeArrayCreateEx (VT_RECORD, 1, &bounds, pFunctionInfoRecordInfo);
+		//hr = pScan->Scan (&results);
+		//FUNCTIONINFO *pFunctionInfos;
 
-		long count;
-		SafeArrayGetUBound (results, 1, &count);
-		count++;
-		SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
-		for (int i = 0; i < count; i++) {
-			LOGTRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
-		}
-		SafeArrayUnaccessData (results);
-		Assert::AreNotEqual ((long) 100, count);
-		SafeArrayDestroy (results);
-		pScan->Release ();
+		//long count;
+		//SafeArrayGetUBound (results, 1, &count);
+		//count++;
+		//SafeArrayAccessData (results, reinterpret_cast<PVOID *>(&pFunctionInfos));
+		//for (int i = 0; i < count; i++) {
+		//	LOGTRACE ("Record %d has fields\n\texportName=%s\n\t%s\n\t%s\n", i, pFunctionInfos[i].bsFunctionExportName, pFunctionInfos[i].bsFunctionSignature, pFunctionInfos[i].bsDescription);
+		//}
+		//SafeArrayUnaccessData (results);
+		//Assert::AreNotEqual ((long) 100, count);
+		//SafeArrayDestroy (results);
+		//pScan->Release ();
 	}
 
 	};

@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 #include <vector>
-
+#include "core/core.h"
 #pragma once
 
 #ifdef COMJVM_EXCEL_EXPORT

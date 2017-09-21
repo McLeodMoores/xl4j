@@ -88,6 +88,7 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 		jfieldID jfIsVarArgs = pEnv->GetFieldID (jcFunctionEntry, "_isVarArgs", "Z");
 		jfieldID jfIsLongRunning = pEnv->GetFieldID(jcFunctionEntry, "_isLongRunning", "Z");
 		jfieldID jfIsAutoAsynchronous = pEnv->GetFieldID(jcFunctionEntry, "_isAutoAsynchronous", "Z");
+		jfieldID jfIsAutoRTDAsynchronous = pEnv->GetFieldID(jcFunctionEntry, "_isAutoRTDAsynchronous", "Z");
 		jfieldID jfIsManualAsynchronous = pEnv->GetFieldID(jcFunctionEntry, "_isManualAsynchronous", "Z");
 		jfieldID jfIsCallerRequired = pEnv->GetFieldID(jcFunctionEntry, "_isCallerRequired", "Z");
 		jfieldID jfFunctionSignature = pEnv->GetFieldID (jcFunctionEntry, "_functionSignature", "Ljava/lang/String;");
@@ -138,6 +139,8 @@ HRESULT CScanExecutor::Run (JNIEnv *pEnv) {
 			pFunctionInfos[i].bIsLongRunning = jsIsLongRunning;
 			jboolean jsIsAutoAsynchronous = pEnv->GetBooleanField(joElement, jfIsAutoAsynchronous);
 			pFunctionInfos[i].bIsAutoAsynchronous = jsIsAutoAsynchronous;
+			jboolean jsIsAutoRTDAsynchronous = pEnv->GetBooleanField(joElement, jfIsAutoRTDAsynchronous);
+			pFunctionInfos[i].bIsAutoRTDAsynchronous = jsIsAutoRTDAsynchronous;
 			jboolean jsIsManualAsynchronous = pEnv->GetBooleanField(joElement, jfIsManualAsynchronous);
 			pFunctionInfos[i].bIsManualAsynchronous = jsIsManualAsynchronous;
 			jboolean jsIsCallerRequired = pEnv->GetBooleanField(joElement, jfIsCallerRequired);

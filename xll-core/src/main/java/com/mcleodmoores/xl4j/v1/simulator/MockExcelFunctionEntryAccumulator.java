@@ -23,7 +23,7 @@ public class MockExcelFunctionEntryAccumulator implements LowLevelExcelCallback 
 
   @Override
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
-      final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired,
+      final boolean isAutoAsynchronous, final boolean isAutoRTDAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired,
       final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType,
       final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final Method method = getMethod(functionExportName);

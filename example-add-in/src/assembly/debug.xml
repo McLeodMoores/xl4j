@@ -26,6 +26,10 @@
 		  <include>bin-x86-debug/**</include>
 		  <include>bin-x64-debug/**</include>
 		</includes>
+		<excludes>
+		  <exclude>bin-x86-debug/xlcall32.dll</exclude>
+		  <exclude>bin-x64-debug/xlcall32.dll</exclude>
+		</excludes>
 	  </unpackOptions>
 	  <useProjectArtifact>false</useProjectArtifact>
 	</dependencySet>

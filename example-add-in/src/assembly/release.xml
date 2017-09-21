@@ -26,6 +26,10 @@
 		  <include>bin-x86/**</include>
 		  <include>bin-x64/**</include>
 		</includes>
+		<excludes>
+		  <exclude>bin-x86/xlcall32.dll</exclude>
+		  <exclude>bin-x64/xlcall32.dll</exclude>
+		</excludes>
 	  </unpackOptions>
 	  <useProjectArtifact>false</useProjectArtifact>
 	</dependencySet>

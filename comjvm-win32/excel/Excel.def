@@ -21,6 +21,12 @@ EXPORTS
 	LicenseInfo
 	CalculationCancelledEvent
 	CalculationCompleteEvent
+	LoadDLLs
+	;??0?$XLOPERWrapper@V?$allocator@E@std@@@@QAE@ABV0@@Z
+	;??8?$XLOPERWrapper@V?$allocator@E@std@@@@QBE_NABV0@@Z
+	;?Hash@?$XLOPERWrapper@V?$allocator@E@std@@@@QBEIXZ
+	;?ToString@?$XLOPERWrapper@V?$allocator@E@std@@@@QBE?AV?$basic_string@_WU?$char_traits@_W@std@@V?$allocator@_W@2@@std@@XZ
+	;??1?$XLOPERWrapper@V?$allocator@E@std@@@@QAE@XZ
 	UDF
 	UDF_0
 	UDF_1

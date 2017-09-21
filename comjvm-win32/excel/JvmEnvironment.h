@@ -22,6 +22,8 @@ class CJvmEnvironment;
 #include "AddinEnvironment.h"
 #include "AsyncCallResult.h"
 #include "QueuingAsyncCallResult.h"
+#include "FunctionArgumentsKey.h"
+#include <unordered_map>
 
 class CJvmEnvironment {
 	enum JvmEnvState { NOT_RUNNING, STARTING, STARTED, TERMINATING };
@@ -37,6 +39,7 @@ class CJvmEnvironment {
 	GarbageCollector *m_pCollector;
 	ISplashScreen *m_pSplashScreen;
 	IAsyncCallResult *m_pAsyncHandler;
+	std::unordered_map<FunctionArgumentsKey, HANDLE> m_asyncHandleMap;
 	static DWORD WINAPI BackgroundJvmThread(LPVOID param);
 	static DWORD WINAPI BackgroundShutdownThread(LPVOID pData);
 	static DWORD WINAPI BackgroundWatchdogThread(LPVOID pData);

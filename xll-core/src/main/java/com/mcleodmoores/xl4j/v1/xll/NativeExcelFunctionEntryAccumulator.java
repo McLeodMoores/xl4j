@@ -30,6 +30,7 @@ public class NativeExcelFunctionEntryAccumulator implements LowLevelExcelCallbac
     public boolean _isVarArgs;
     public boolean _isLongRunning;
     public boolean _isAutoAsynchronous;
+    public boolean _isAutoRTDAsynchronous;
     public boolean _isManualAsynchronous;
     public boolean _isCallerRequired;
     public String _functionSignature;
@@ -53,15 +54,16 @@ public class NativeExcelFunctionEntryAccumulator implements LowLevelExcelCallbac
 
   @Override
   public int xlfRegister(final int exportNumber, final String functionExportName, final boolean isVarArgs, final boolean isLongRunning,
-      final boolean isAutoAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired, final String functionSignature,
-      final String functionWorksheetName, final String argumentNames, final int functionType, final String functionCategory,
-      final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
+      final boolean isAutoAsynchronous, final boolean isAutoRTDAsynchronous, final boolean isManualAsynchronous, final boolean isCallerRequired, 
+      final String functionSignature, final String functionWorksheetName, final String argumentNames, final int functionType, 
+      final String functionCategory, final String acceleratorKey, final String helpTopic, final String description, final String... argsHelp) {
     final FunctionEntry entry = new FunctionEntry();
     entry._exportNumber = exportNumber;
     entry._functionExportName = functionExportName;
     entry._isVarArgs = isVarArgs;
     entry._isLongRunning = isLongRunning;
     entry._isAutoAsynchronous = isAutoAsynchronous;
+    entry._isAutoRTDAsynchronous = isAutoRTDAsynchronous;
     entry._isManualAsynchronous = isManualAsynchronous;
     entry._isCallerRequired = isCallerRequired;
     entry._functionSignature = functionSignature;

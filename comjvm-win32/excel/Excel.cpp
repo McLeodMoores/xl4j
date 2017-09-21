@@ -83,14 +83,14 @@ BOOL APIENTRY DllMain (HANDLE hDLL,
 		break;
 	case DLL_THREAD_ATTACH: {
 		//LOGTRACE ("DLL_THREAD_ATTACH called");
-		TlsSetValue (g_dwTlsIndex, NULL);
+		//TlsSetValue (g_dwTlsIndex, NULL);
 	} break;
 	case DLL_THREAD_DETACH: {
 		//LOGTRACE ("DLL_THREAD_DETACH called, g_dwTlsIndex = %d", g_dwTlsIndex);
 	} break;
 	case DLL_PROCESS_DETACH: {
 		//LOGTRACE ("DLL_PROCESS_DETACH");
-		TlsFree (g_dwTlsIndex);
+		//TlsFree (g_dwTlsIndex);
 	}
 	default:
 		break;
@@ -247,13 +247,17 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 
 	HRESULT hr;
 	if (FAILED(hr = CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
-		LOGERROR("Could not initialise COM: %s", HRESULT_TO_STR(hr));
+		OutputDebugString(L"Could not initialise COM");//, HRESULT_TO_STR(hr));
 	}
-	
 	LOGTRACE("Initializing Add-in, JVM, etc");
 	if (!g_pAddinEnv) {
 		g_pAddinEnv = new CAddinEnvironment ();
 		g_pAddinEnv->Start();
+	}
+	if (FAILED(hr = RegisterRTDServer())) {
+		OutputDebugString(L"Could not register RTD server: %s");
+	} else {
+		OutputDebugString(L"RTD Server initialised");
 	}
 	g_pJvmEnv = new CJvmEnvironment (g_pAddinEnv);
 	g_pJvmEnv->Start();
@@ -313,6 +317,10 @@ __declspec(dllexport) int WINAPI xlAutoClose (void) {
 	if (g_removeCalled) {
 		g_pJvmEnv->Shutdown();
 		g_pAddinEnv->Shutdown();
+		HRESULT hr;
+		if (FAILED(hr = UnregisterRTDServer())) {
+			LOGERROR("Could not register RTD server", HRESULT_TO_STR(hr));
+		}
 	}
 	return 1;
 }

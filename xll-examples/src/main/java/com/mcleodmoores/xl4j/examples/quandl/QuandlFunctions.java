@@ -154,6 +154,7 @@ public final class QuandlFunctions {
       category = "Quandl",
       description = "Get a data set from Quandl",
       isAutoAsynchronous = true,
+      isMultiThreadSafe = false,
       isLongRunning = true)
   public static synchronized TabularResult dataSet(
       @XLParameter(description = "Quandl Code", name = "quandlCode") final String quandlCode,
@@ -355,8 +356,8 @@ public final class QuandlFunctions {
    * @return the data as an array
    */
   @XLFunction(name = "ExpandTabularResult", category = "Quandl",
-      description = "Array function to expand a TabularResult object",
-      isAutoAsynchronous = true)
+      description = "Array function to expand a TabularResult object"/*,*/
+      /*isAutoAsynchronous = true*/)
   public static Object[][] expandTabularResult(
       @XLParameter(description = "The TabularResult object handle", name = "tabularResult") final TabularResult result,
       @XLParameter(optional = true, description = "Include Header Row", name = "includeHeader") final Boolean includeHeader) {

@@ -196,6 +196,9 @@ HRESULT FunctionRegistry::RegisterFunctions (XLOPER12 xDll) {
 		if (fi.bIsAutoAsynchronous) {
 			LOGTRACE("Function is AutoAsynchronous");
 		}
+		if (fi.bIsAutoRTDAsynchronous) {
+			LOGTRACE("Funciton is AutoRTDAsynchronous");
+		}
 		if (fi.bIsManualAsynchronous) {
 			LOGTRACE("Function is ManualAsynchronous");
 		}

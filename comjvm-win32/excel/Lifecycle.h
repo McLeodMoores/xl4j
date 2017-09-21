@@ -5,6 +5,8 @@
 
 #include "stdafx.h"
 HRESULT LoadDLLs ();
+HRESULT RegisterRTDServer();
+HRESULT UnregisterRTDServer();
 void InitAddin ();
 void InitJvm ();
 void ShutdownJvm ();

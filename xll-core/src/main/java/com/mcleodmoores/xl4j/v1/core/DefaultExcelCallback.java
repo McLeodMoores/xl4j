@@ -55,7 +55,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String exportName = functionDefinition.getExportName();
     final String signature = buildFunctionSignature(functionDefinition);
     final String functionCategory = buildFunctionCategory(functionDefinition);
-    final boolean isVarArgs, isLongRunning, isAutoAsynchronous, isManualAsynchronous, isCallerRequired;
+    final boolean isVarArgs, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired;
     final String argumentNames, helpTopic, description;
     final String[] argsHelp;
     final Integer functionTypeInt;
@@ -64,6 +64,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       final XLConstant constantAnnotation = functionMetadata.getConstantSpec();
       isLongRunning = false;
       isAutoAsynchronous = false;
+      isAutoRTDAsynchronous = false;
       isManualAsynchronous = false;
       isCallerRequired = false;
       argumentNames = "";
@@ -77,6 +78,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
         isLongRunning = functionAnnotation.isLongRunning();
         isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
+        isAutoRTDAsynchronous = functionAnnotation.isAutoRTDAsynchronous();
         isManualAsynchronous = functionAnnotation.isManualAsynchronous();
         isCallerRequired = functionAnnotation.isCallerRequired();
         argumentNames = buildArgNames(functionDefinition);
@@ -88,6 +90,7 @@ public class DefaultExcelCallback implements ExcelCallback {
         final XLFunctions functionsAnnotation = functionMetadata.getFunctionsSpec();
         isLongRunning = functionsAnnotation.isLongRunning();
         isAutoAsynchronous = functionsAnnotation.isAutoAsynchronous();
+        isAutoRTDAsynchronous = functionsAnnotation.isAutoRTDAsynchronous();
         isManualAsynchronous = functionsAnnotation.isManualAsynchronous();
         isCallerRequired = functionsAnnotation.isCallerRequired();
         argumentNames = buildArgNames(functionDefinition);
@@ -100,8 +103,8 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
     }
     _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, isLongRunning,
-        isAutoAsynchronous, isManualAsynchronous, isCallerRequired, signature, functionName, argumentNames,
-        functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
+        isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired, signature, 
+        functionName, argumentNames, functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
   private static String[] buildArgsHelp(final FunctionDefinition functionDefinition) {

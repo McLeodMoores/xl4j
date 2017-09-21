@@ -7,6 +7,10 @@ import java.util.Arrays;
 
 import com.mcleodmoores.xl4j.v1.api.annotations.XLFunction;
 import com.mcleodmoores.xl4j.v1.api.annotations.XLParameter;
+import com.mcleodmoores.xl4j.v1.api.values.XLError;
+import com.mcleodmoores.xl4j.v1.api.values.XLNumber;
+import com.mcleodmoores.xl4j.v1.api.values.XLString;
+import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.util.ArgumentChecker;
 
 /**
@@ -74,6 +78,34 @@ public final class LabelledMatrix {
       }
     }
     return result;
+  }
+  
+  /**
+   * Query the labelled matrix as an array. The first row and column contain the labels.
+   * @param col  the column number (zero-based)
+   * @param row  th row number (zero-based)
+   * @return the element of the matrix + label
+   */
+  @XLFunction(name = "Matrix.DisplayAt", description = "Expands the matrix as an array", category = "Matrix")
+  public XLValue matrixDisplayAt(@XLParameter(name = "column") final int col, @XLParameter(name = "row") final int row) {
+    if ((col < 0) || (col > _matrix[0].length + 1)) {
+      return XLError.NA;
+    }
+    if ((row < 0) || (row > _matrix.length + 1)) {
+      return XLError.NA;
+    }
+    if (col == 0) {
+      if (row == 0) {
+        return XLString.of("");
+      } else {
+        return XLString.of(_names[row - 1]);
+      }
+    } else if (row == 0) {
+      // invariant that col ! = 0
+      return XLString.of(_names[col - 1]);
+    } else {
+      return XLNumber.of(_matrix[row - 1][col - 1]);
+    }
   }
 
   /**

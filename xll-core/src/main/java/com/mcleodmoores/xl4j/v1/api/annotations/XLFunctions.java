@@ -96,7 +96,16 @@ public @interface XLFunctions {
    * @return true if the function should be made automatically asynchronous
    */
   boolean isAutoAsynchronous() default false;
-
+  
+  /**
+   * Indicates that a function should be run in a separate thread, sourced from a special thread-pool
+   * and that Excel should be notified asynchronously via RTD (which is more reliable) when the function 
+   * has finished and returned a result.  Start of execution may be delayed during periods of high 
+   * concurrency to avoid excessive thread creation.  Result may be discarded if job is cancelled.
+   * @return true if the function should be made automatically asynchronous using RTD (more reliable)
+   */
+  boolean isAutoRTDAsynchronous() default false;
+  
   /**
    * This is not currently implemented.  The intention is that it indicates a function that is able to
    * asynchronously call back into Excel to notify it of a result.  It could therefore be from a

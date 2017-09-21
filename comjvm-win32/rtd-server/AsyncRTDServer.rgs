@@ -1,0 +1,27 @@
+HKCR
+{
+	XL4JRTD.AsyncRTDServer.1 = s 'AsyncRTDServer Class'
+	{
+		CLSID = s '{6C0AEF61-C42C-41D2-B3D8-F5318C096783}'
+	}
+	XL4JRTD.AsyncRTDServer = s 'AsyncRTDServer Class'
+	{
+		CLSID = s '{6C0AEF61-C42C-41D2-B3D8-F5318C096783}'
+		CurVer = s 'XL4JRTD.AsyncRTDServer.1'
+	}
+	NoRemove CLSID
+	{
+		ForceRemove {6C0AEF61-C42C-41D2-B3D8-F5318C096783} = s 'AsyncRTDServer Class'
+		{
+			ProgID = s 'XL4JRTD.AsyncRTDServer.1'
+			VersionIndependentProgID = s 'XL4JRTD.AsyncRTDServer'
+			ForceRemove Programmable
+			InprocServer32 = s '%MODULE%'
+			{
+				val ThreadingModel = s 'Apartment'
+			}
+			val AppID = s '%APPID%'
+			TypeLib = s '{FC63DD1A-F79C-46F3-A54B-F68D58800663}'
+		}
+	}
+}
