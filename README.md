@@ -1,7 +1,7 @@
 XL4J - Native Excel XLL Add-ins in Java
 =======================================
 
-**THIS PROJECT IS PRE-RELEASE, THE BETA RELEASE IS COMING NEXT WEEK**
+**THIS PROJECT IS PRE-RELEASE, THE BETA RELEASE IS COMING SOON (DELAYED DUE TO LAST MINUTE ISSUE)**
 
 *[Sign up to be notified when the project is opened for public beta](https://www.mcleodmoores.com/signup)* or visit the 
 [XL4J Commercial Site](https://www.mcleodmoores.com/xl4j) for more information.
