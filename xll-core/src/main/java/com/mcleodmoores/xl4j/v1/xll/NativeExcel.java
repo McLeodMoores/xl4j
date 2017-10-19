@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.xl4j.v1.xll;
 
+import org.reflections.Reflections;
+
 import com.mcleodmoores.xl4j.v1.api.core.Excel;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelCallback;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFunctionCallHandler;
@@ -17,6 +19,7 @@ import com.mcleodmoores.xl4j.v1.core.ReflectiveFunctionRegistry;
 import com.mcleodmoores.xl4j.v1.invoke.ReflectiveInvokerFactory;
 import com.mcleodmoores.xl4j.v1.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.typeconvert.ScanningTypeConverterRegistry;
+import com.mcleodmoores.xl4j.v1.util.ReflectionsUtils;
 
 /**
  * Implementation of Excel interface that actually communicates with the XLL plug-in.
@@ -29,15 +32,17 @@ public class NativeExcel implements Excel {
   private final ReflectiveInvokerFactory _invokerFactory;
   private final TypeConverterRegistry _typeConverterRegistry;
   private final NativeExcelFunctionEntryAccumulator _rawCallback;
+  private final Reflections _reflections;
 
   /**
    * Create an instance of the Excel interface suitable that gets called by native code.
    */
   public NativeExcel() {
+    _reflections = ReflectionsUtils.getReflections();
     _heap = new ConcurrentHeap();
-    _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this));
+    _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this, _reflections));
     _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
-    _functionRegistry = new ReflectiveFunctionRegistry(_invokerFactory);
+    _functionRegistry = new ReflectiveFunctionRegistry(_reflections, _invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     _rawCallback = new NativeExcelFunctionEntryAccumulator();
     _excelCallback = new DefaultExcelCallback(_rawCallback);

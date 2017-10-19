@@ -40,7 +40,8 @@ public final class MyTestFunctions {
   @XLFunction(name = "AsyncWait",
       description = "Wait for n seconds",
       category = "Mine",
-      isAutoAsynchronous = true)
+      isAutoRTDAsynchronous = true,
+      isMultiThreadSafe = false)
   public static XLNumber myAsyncWait(@XLParameter(name = "delay", description = "delay in seconds") final XLNumber delay) {
     try {
       Thread.sleep((int) delay.getAsDouble() * 1000);

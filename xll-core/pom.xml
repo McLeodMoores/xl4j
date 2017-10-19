@@ -127,8 +127,9 @@
                                       .addScanners(
                                         new org.reflections.scanners.MethodAnnotationsScanner(), 
                                         new org.reflections.scanners.MethodParameterScanner(), 
-                                        new org.reflections.scanners.TypeAnnotationsScanner(), 
-                                        new org.reflections.scanners.FieldAnnotationsScanner()))
+                                        new org.reflections.scanners.TypeAnnotationsScanner(),
+                                        new org.reflections.scanners.FieldAnnotationsScanner(),
+                                        new org.reflections.scanners.SubTypesScanner(true)))
                                   .save("${escapedOutputDirectory}/META-INF/reflections/${project.artifactId}-reflections.xml")
                                 ]]></script>
 							</scripts>
@@ -151,7 +152,8 @@
                                         new org.reflections.scanners.MethodAnnotationsScanner(), 
                                         new org.reflections.scanners.MethodParameterScanner(), 
                                         new org.reflections.scanners.TypeAnnotationsScanner(), 
-                                        new org.reflections.scanners.FieldAnnotationsScanner()))
+                                        new org.reflections.scanners.FieldAnnotationsScanner(),
+                                        new org.reflections.scanners.SubTypesScanner(true)))
                                   .save("${escapedTestOutputDirectory}/META-INF/reflections/${project.artifactId}-tests-reflections.xml")
                     ]]></script>
 							</scripts>

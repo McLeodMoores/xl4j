@@ -34,6 +34,12 @@
     <ClCompile Include="AsyncRTDServer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UpdateWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SingletonRTDServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -52,6 +58,12 @@
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="AsyncRTDServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SingletonRTDServer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

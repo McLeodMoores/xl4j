@@ -19,12 +19,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.FieldAnnotationsScanner;
-import org.reflections.scanners.MethodAnnotationsScanner;
-import org.reflections.scanners.MethodParameterScanner;
-import org.reflections.scanners.TypeAnnotationsScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,14 +48,17 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
   private final AtomicInteger _exportCounter = new AtomicInteger();
   private final ConcurrentMap<Integer, FunctionDefinition> _functionDefinitionLookup = new ConcurrentHashMap<>();
   private final BlockingQueue<Collection<FunctionDefinition>> _finishedScan = new ArrayBlockingQueue<>(1);
-
+  private final Reflections _reflections;
+  
   /**
    * Default constructor.
-   *
+   * @param reflections
+   *          the reflections context, not null
    * @param invokerFactory
    *          invoker factory used to create method and constructor invokers to perform type conversions
    */
-  public ReflectiveFunctionRegistry(final InvokerFactory invokerFactory) {
+  public ReflectiveFunctionRegistry(final Reflections reflections, final InvokerFactory invokerFactory) {
+    _reflections = reflections;
     final Thread scanningThread = new Thread(new ReflectionScanner(invokerFactory));
     scanningThread.start();
   }
@@ -114,31 +111,16 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
     }
   }
 
-  private boolean isProduction() {
-    String scan = System.getProperty("xl4j.scan");
-    if (scan != null) {
-      if (scan.toLowerCase().contains("true")) {
-        return false;
-      }
-    }
-    return true;
-  }
-  
   @Override
   protected void createAndRegisterFunctions(final InvokerFactory invokerFactory) {
-    final Reflections reflections = isProduction() ? Reflections.collect() : new Reflections(
-        new ConfigurationBuilder()
-            .addUrls(ClasspathHelper.forJavaClassPath())
-            .addScanners(new MethodAnnotationsScanner(), new MethodParameterScanner(), 
-                         new TypeAnnotationsScanner(), new FieldAnnotationsScanner()));
     try {
-      addDefinitions(getFunctionsForMethods(invokerFactory, reflections.getMethodsAnnotatedWith(XLFunction.class)));
+      addDefinitions(getFunctionsForMethods(invokerFactory, _reflections.getMethodsAnnotatedWith(XLFunction.class)));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLFunction-annotated methods", e);
     }
     try {
       @SuppressWarnings("rawtypes")
-      final Set<Constructor> constructorsAnnotatedWithFunction = reflections.getConstructorsAnnotatedWith(XLFunction.class);
+      final Set<Constructor> constructorsAnnotatedWithFunction = _reflections.getConstructorsAnnotatedWith(XLFunction.class);
       // horrible, but don't want to put a raw type in the abstract class
       final Set<Constructor<?>> constructors = new HashSet<>();
       for (final Constructor<?> constructor : constructorsAnnotatedWithFunction) {
@@ -149,18 +131,18 @@ public class ReflectiveFunctionRegistry extends AbstractFunctionRegistry {
       LOGGER.error("Exception while scanning XLFunction-annotated constructors", e);
     }
     try {
-      addDefinitions(getFunctionsForTypes(invokerFactory, reflections.getTypesAnnotatedWith(XLFunctions.class)));
+      addDefinitions(getFunctionsForTypes(invokerFactory, _reflections.getTypesAnnotatedWith(XLFunctions.class)));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLFunctions-annotated classes", e);
     }
     try {
-      final Set<Class<?>> classesAnnotatedWithConstant = reflections.getTypesAnnotatedWith(XLConstant.class);
+      final Set<Class<?>> classesAnnotatedWithConstant = _reflections.getTypesAnnotatedWith(XLConstant.class);
       addDefinitions(getConstantsForTypes(invokerFactory, classesAnnotatedWithConstant));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLConstant-annotated classes", e);
     }
     try {
-      addDefinitions(getConstantsForFields(invokerFactory, reflections.getFieldsAnnotatedWith(XLConstant.class)));
+      addDefinitions(getConstantsForFields(invokerFactory, _reflections.getFieldsAnnotatedWith(XLConstant.class)));
     } catch (final Exception e) {
       LOGGER.error("Exception while scanning XLConstant-annotated fields", e);
     }

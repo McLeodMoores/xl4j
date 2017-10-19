@@ -21,8 +21,11 @@
 
 #include "resource.h"
 #include <atlbase.h>
+#include <atldef.h>
 #include <atlcom.h>
 #include <atlctl.h>
+#include <atlwin.h>
+ 
 //#import "C:\Program Files (x86)\Microsoft Office\Root\Office16\EXCEL.EXE" raw_interfaces_only, raw_native_types, no_namespace, named_guids, auto_search
 
 extern "C" const GUID __declspec(selectany) LIBID_Excel =

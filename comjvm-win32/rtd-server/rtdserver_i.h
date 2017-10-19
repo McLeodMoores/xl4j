@@ -4,7 +4,7 @@
 
 
  /* File created by MIDL compiler version 8.00.0603 */
-/* at Wed Sep 20 21:14:21 2017
+/* at Thu Oct 12 11:48:30 2017
  */
 /* Compiler settings for rtdserver.idl:
     Oicf, W1, Zp8, env=Win64 (32b run), target_arch=AMD64 8.00.0603 
@@ -88,6 +88,18 @@ EXTERN_C const IID IID_IAsyncRTDServer;
     IAsyncRTDServer : public IDispatch
     {
     public:
+        virtual HRESULT STDMETHODCALLTYPE NotifyResult( 
+            /* [in] */ long topidId,
+            /* [in] */ VARIANT result) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetTopicID( 
+            /* [in] */ long xl4jTopicID,
+            /* [out] */ long *TopicID) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE GetDeletedTopics( 
+            /* [out] */ SAFEARRAY * *DeletedTopics,
+            /* [out] */ long *size) = 0;
+        
     };
     
     
@@ -146,6 +158,21 @@ EXTERN_C const IID IID_IAsyncRTDServer;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        HRESULT ( STDMETHODCALLTYPE *NotifyResult )( 
+            IAsyncRTDServer * This,
+            /* [in] */ long topidId,
+            /* [in] */ VARIANT result);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetTopicID )( 
+            IAsyncRTDServer * This,
+            /* [in] */ long xl4jTopicID,
+            /* [out] */ long *TopicID);
+        
+        HRESULT ( STDMETHODCALLTYPE *GetDeletedTopics )( 
+            IAsyncRTDServer * This,
+            /* [out] */ SAFEARRAY * *DeletedTopics,
+            /* [out] */ long *size);
+        
         END_INTERFACE
     } IAsyncRTDServerVtbl;
 
@@ -182,6 +209,15 @@ EXTERN_C const IID IID_IAsyncRTDServer;
     ( (This)->lpVtbl -> Invoke(This,dispIdMember,riid,lcid,wFlags,pDispParams,pVarResult,pExcepInfo,puArgErr) ) 
 
 
+#define IAsyncRTDServer_NotifyResult(This,topidId,result)	\
+    ( (This)->lpVtbl -> NotifyResult(This,topidId,result) ) 
+
+#define IAsyncRTDServer_GetTopicID(This,xl4jTopicID,TopicID)	\
+    ( (This)->lpVtbl -> GetTopicID(This,xl4jTopicID,TopicID) ) 
+
+#define IAsyncRTDServer_GetDeletedTopics(This,DeletedTopics,size)	\
+    ( (This)->lpVtbl -> GetDeletedTopics(This,DeletedTopics,size) ) 
+
 #endif /* COBJMACROS */
 
 
@@ -213,6 +249,16 @@ AsyncRTDServer;
 #endif /* __rtdserverLib_LIBRARY_DEFINED__ */
 
 /* Additional Prototypes for ALL interfaces */
+
+unsigned long             __RPC_USER  LPSAFEARRAY_UserSize(     unsigned long *, unsigned long            , LPSAFEARRAY * ); 
+unsigned char * __RPC_USER  LPSAFEARRAY_UserMarshal(  unsigned long *, unsigned char *, LPSAFEARRAY * ); 
+unsigned char * __RPC_USER  LPSAFEARRAY_UserUnmarshal(unsigned long *, unsigned char *, LPSAFEARRAY * ); 
+void                      __RPC_USER  LPSAFEARRAY_UserFree(     unsigned long *, LPSAFEARRAY * ); 
+
+unsigned long             __RPC_USER  VARIANT_UserSize(     unsigned long *, unsigned long            , VARIANT * ); 
+unsigned char * __RPC_USER  VARIANT_UserMarshal(  unsigned long *, unsigned char *, VARIANT * ); 
+unsigned char * __RPC_USER  VARIANT_UserUnmarshal(unsigned long *, unsigned char *, VARIANT * ); 
+void                      __RPC_USER  VARIANT_UserFree(     unsigned long *, VARIANT * ); 
 
 /* end of Additional Prototypes */
 

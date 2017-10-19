@@ -6,6 +6,7 @@ package com.mcleodmoores.xl4j.examples.quandl;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -19,10 +20,13 @@ import com.jimmoores.quandl.DataSetRequest.Builder;
 import com.jimmoores.quandl.Frequency;
 import com.jimmoores.quandl.HeaderDefinition;
 import com.jimmoores.quandl.QuandlSession;
+import com.jimmoores.quandl.RetryPolicy;
 import com.jimmoores.quandl.Row;
+import com.jimmoores.quandl.SessionOptions;
 import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;
+import com.jimmoores.quandl.util.QuandlRequestFailedException;
 import com.jimmoores.quandl.util.QuandlRuntimeException;
 import com.mcleodmoores.xl4j.examples.timeseries.TimeSeries;
 import com.mcleodmoores.xl4j.v1.api.annotations.TypeConversionMode;
@@ -102,7 +106,42 @@ public final class QuandlFunctions {
   private static final String API_KEY_MESSAGE = "No Quandl API key: set JVM property -Dquandl.auth.token=YOUR_KEY via settings on Add-in toolbar";
   private static final long CACHE_LIFETIME_HOURS = 6;
 
+  /**
+   * Random retry policy.
+   */
+  private static final class RandomRetryPolicy extends RetryPolicy {
+    private int _maxRetries;
+    private long _backOffPeriod;
+    private Random _random;
+
+    private RandomRetryPolicy(final int maxRetries, final long backOffPeriod) {
+      _maxRetries = maxRetries;
+      _backOffPeriod = backOffPeriod;
+      _random = new Random();
+    }
+    
+    @Override
+    public boolean checkRetries(final int retries) {
+      if (retries < _maxRetries && retries >= 0) {
+        try {
+          Thread.sleep(_random.nextInt((int) _backOffPeriod));
+        } catch (InterruptedException ie) {
+          throw new QuandlRequestFailedException("Giving up on request, received InterruptedException", ie);
+        }
+      } else {
+        throw new QuandlRequestFailedException("Giving up on request after " + _maxRetries + " retries of random(" + _backOffPeriod + ") ms each.");
+      }
+      return true;
+    }
+  }
   static {
+//    SessionOptions.Builder builder;
+//    if (API_KEY_PRESENT) {
+//      builder = SessionOptions.Builder.withAuthToken(System.getProperty("quandl.auth.token"));
+//    } else {
+//      builder = SessionOptions.Builder.withoutAuthToken();
+//    }
+//    builder.withRetryPolicy(RetryPolicy.createNoRetryPolicy());//new RandomRetryPolicy(30, 5000));
     SESSION = QuandlSession.create(); //sessionOptions);
     CACHE = new ConcurrentHashMap<>();
   }
@@ -153,10 +192,10 @@ public final class QuandlFunctions {
       name = "QuandlDataSet",
       category = "Quandl",
       description = "Get a data set from Quandl",
-      isAutoAsynchronous = true,
+      isAutoRTDAsynchronous = true,
       isMultiThreadSafe = false,
       isLongRunning = true)
-  public static synchronized TabularResult dataSet(
+  public static /*synchronized*/ TabularResult dataSet(
       @XLParameter(description = "Quandl Code", name = "quandlCode") final String quandlCode,
       @XLParameter(optional = true, description = "Start Date", name = "StartDate") final LocalDate startDate,
       @XLParameter(optional = true, description = "End Date", name = "EndDate") final LocalDate endDate,
@@ -200,11 +239,12 @@ public final class QuandlFunctions {
       CACHE.put(request, CacheValue.of(result)); // update cache or initial value.
       return result;
     } catch (final QuandlRuntimeException qre) {
+      LOGGER.error("Error while getting dataset", qre);
       if (!API_KEY_PRESENT) {
         final HeaderDefinition headerDefinition = HeaderDefinition.of("Date", "Error");
         return TabularResult.of(headerDefinition, Collections.singletonList(Row.of(headerDefinition, new String[] { "1970-01-01", API_KEY_MESSAGE })));
       }
-      return null;
+      throw qre;
     }
   }
 

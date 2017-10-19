@@ -15,6 +15,9 @@ import "ocidl.idl";
 	pointer_default(unique)
 ]
 interface IAsyncRTDServer : IDispatch{
+	HRESULT NotifyResult([in] long topidId, [in] VARIANT result);
+	HRESULT GetTopicID([in] long xl4jTopicID, [out] long *TopicID);
+	HRESULT GetDeletedTopics([out] SAFEARRAY(long) *DeletedTopics, [out] long *size);
 };
 [
 	uuid(FC63DD1A-F79C-46F3-A54B-F68D58800663),

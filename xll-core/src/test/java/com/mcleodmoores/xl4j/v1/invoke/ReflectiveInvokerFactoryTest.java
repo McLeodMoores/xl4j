@@ -12,6 +12,14 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.MethodParameterScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.testng.annotations.Test;
 
 import com.mcleodmoores.xl4j.v1.InvokerTestHelper;
@@ -31,6 +39,7 @@ import com.mcleodmoores.xl4j.v1.api.values.XLString;
 import com.mcleodmoores.xl4j.v1.api.values.XLValue;
 import com.mcleodmoores.xl4j.v1.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.typeconvert.ScanningTypeConverterRegistry;
+import com.mcleodmoores.xl4j.v1.util.ReflectionsUtils;
 import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 
 /**
@@ -39,11 +48,13 @@ import com.mcleodmoores.xl4j.v1.util.XL4JRuntimeException;
 @SuppressWarnings("unchecked")
 public class ReflectiveInvokerFactoryTest {
   private static final Excel EXCEL = ExcelFactory.getInstance();
-  private static final TypeConverterRegistry REGISTRY = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(EXCEL));
+  private static final Reflections REFLECTIONS = ReflectionsUtils.getReflections();
+  private static final TypeConverterRegistry REGISTRY = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(EXCEL, REFLECTIONS));
   private static final InvokerFactory FACTORY = new ReflectiveInvokerFactory(EXCEL, REGISTRY);
   private static final Field INT_FIELD;
   private static final Field XL_VALUE_FIELD;
   private static final Method METHOD;
+  
 
   static {
     try {
@@ -54,7 +65,7 @@ public class ReflectiveInvokerFactoryTest {
       throw new XL4JRuntimeException("", e);
     }
   }
-
+  
   /**
    * Tests that the Excel factory cannot be null.
    */

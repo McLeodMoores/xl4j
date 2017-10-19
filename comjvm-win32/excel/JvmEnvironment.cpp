@@ -5,7 +5,10 @@
 
 #include "stdafx.h"
 #include "JvmEnvironment.h"
-
+#include "AsyncRTDCallResult.h"
+#include "AsyncRTDServerCOM.h"
+#include "FunctionArgumentsKey.h"
+#include <algorithm>
 
 CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment (pEnv) {
 	m_rwlock = SRWLOCK_INIT;
@@ -15,6 +18,8 @@ CJvmEnvironment::CJvmEnvironment (CAddinEnvironment *pEnv) : m_pAddinEnvironment
 	m_pCollector = nullptr; // this means an already registered GarbageCollect() command will see that the collector hasn't been created yet.
 	m_szTerminateErrorMessage = nullptr; // means no error to display.
 	m_pAsyncHandler = nullptr;
+	m_xl4jAsyncHandle = 0; // not zero in case it means something.
+	InitializeCriticalSection(&m_csAsyncHandleMap);
 }
 
 CJvmEnvironment::~CJvmEnvironment () {
@@ -231,10 +236,15 @@ DWORD WINAPI CJvmEnvironment::BackgroundJvmThread (LPVOID param) {
 		LOGTRACE("Creating GarbageCollector");
 		pThis->m_pCollector = new GarbageCollector(pCollect);
 		LOGTRACE("Created GarbageCollector");
+// First block queues async results to be called back from single thread.	
 #if 1
 		pThis->m_pAsyncHandler = new CQueuingAsyncCallResult(pThis->m_pAddinEnvironment);
+		pThis->m_pAsyncRTDServer = new CAsyncRTDServerCOM();
+		pThis->m_pAsyncRTDHandler = new CAsyncRTDCallResult(pThis->m_pAsyncRTDServer);
 #else
 		pThis->m_pAsyncHandler = new CAsyncCallResult(pThis->m_pAddinEnvironment);
+		pThis->m_pAsyncRTDServer = new CAsyncRTDServerCOM();
+		pThis->m_pAsyncRTDHandler = new CAsyncRTDCallResult(pThis->m_pAsyncRTDServer);
 #endif
 		ReleaseSRWLockShared(&(pThis->m_rwlock));
 		pThis->EnterStartedState();
@@ -333,6 +343,23 @@ HRESULT CJvmEnvironment::TrimArgs(FUNCTIONINFO *pFunctionInfo, long nArgs, VARIA
 	}
 }
 
+HRESULT CJvmEnvironment::TrimKeyArgs(std::vector<XLOPERWrapper>& args) {
+	// find first element that isn't xltypeMissing
+	auto rit = std::find_if(args.rbegin(), args.rend(),
+		[](XLOPERWrapper w) { return !w.IsMissing(); });
+	// erase from there to the end.
+	args.erase(rit.base(), end(args));
+	//for (auto iter = args.rbegin(); iter != args.rend();) {
+	//	if (iter->IsMissing()) {
+	//		std::advance(iter, 1); // this erases the current, not next item
+	//		args.erase(iter.base()); // because it's a reverse iterator
+	//	} else { // when the nils stop coming, we back off.
+	//		return S_OK;
+	//	}
+	//}
+	return S_OK;
+}
+
 
 //if (functionInfo.bIsLongRunning) {
 //	XLOPER12 caller;
@@ -345,6 +372,7 @@ HRESULT CJvmEnvironment::TrimArgs(FUNCTIONINFO *pFunctionInfo, long nArgs, VARIA
 //		return S_OK;
 //	}
 //}
+
 /**
  * Returns:
  *   S_OK if call was fine
@@ -358,7 +386,9 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 	if (m_state == STARTING) {
 		ReleaseSRWLockShared(&m_rwlock);
 		return ERROR_CONTINUE;
-	} else if (m_state == STARTED) {
+	}
+	else if (m_state == STARTED) {
+		std::vector<XLOPERWrapper> args;
 		// Find out how many parameters this function should expect.
 		FUNCTIONINFO functionInfo;
 		HRESULT hr = m_pFunctionRegistry->Get(exportNumber, &functionInfo);
@@ -387,7 +417,7 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		VARIANT vAsyncHandle;
 		// Get a ptr into the SAFEARRAY
 		VARIANT *inputs;
-		
+
 		SafeArrayAccessData(saInputs, reinterpret_cast<PVOID *>(&inputs));
 		// put into safearray if there are more than 0 com args else the first one becomes the async handle
 		// (which we might not use). Probably never happens in practice anyway...
@@ -395,25 +425,36 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 		if (nComArgs > 0) {
 			LOGTRACE("async handle is not first argument");
 			pInputs = inputs;
-		} else {
+		}
+		else {
 			LOGTRACE("async handle is first argument");
 			pInputs = &vAsyncHandle;
 		}
 		if (nArgs > 0) {
 			LOGTRACE("Got XLOPER12 %p, type = %x", first, first->xltype);
 			pConverter->convert(first, pInputs++);
+			if (functionInfo.bIsAutoRTDAsynchronous) {
+				XLOPERWrapper wrappedArg(first);
+				args.push_back(wrappedArg);
+			}
 			LOGTRACE("Copied first element into SAFEARRAY (or vAsyncHandle)");
-		} else {
+		}
+		else {
 			LOGTRACE("First paramter was NULL, no conversion");
 		}
 		LOGTRACE("Converting any remaining parameters");
 		for (int i = 0; i < nComArgs - 1; i++) {
 			LPXLOPER12 arg = va_arg(ap, LPXLOPER12);
+			if (functionInfo.bIsAutoRTDAsynchronous) { // build key
+				XLOPERWrapper wrappedArg(arg);
+				args.push_back(wrappedArg);
+			}
 			LOGTRACE("Got XLOPER12 %p, type = %x", arg, arg->xltype);
 			pConverter->convert(arg, pInputs++);
 			LOGTRACE("UDF stub: converted and copied into SAFEARRAY");
 		}
-		// If it's async and we didn't deal with it as the first argument.
+		// If it's async and we didn't deal with it as the first argument,
+		// although note that RTD async manages it's own handles.
 		if ((functionInfo.bIsAutoAsynchronous || functionInfo.bIsManualAsynchronous) && nComArgs > 0) {
 			LOGTRACE("Getting last parameter (async handle)");
 			LPXLOPER12 arg = va_arg(ap, LPXLOPER12);
@@ -452,6 +493,90 @@ HRESULT CJvmEnvironment::_UDF (int exportNumber, LPXLOPER12 *ppResult, LPXLOPER1
 			// Destroy is now done in the CCallExecutor
 			//SafeArrayDestroy(saInputs); // should recursively deallocate
 			saInputs = nullptr; // prevent double dealloc on errors.
+			ReleaseSRWLockShared(&m_rwlock);
+			return S_OK;
+		}
+		else if (functionInfo.bIsAutoRTDAsynchronous) {
+			//std::vector<XLOPERWrapper> args;
+			//for (int i = 0; i < nComArgs - 1; i++) {
+			//	LPXLOPER12 operArg = va_arg(ap2, LPXLOPER12);
+			//	XLOPERWrapper arg(operArg);
+			//	args.push_back(arg);
+			//}
+			//va_end(ap2);
+			TrimKeyArgs(args);
+			std::wstring functionName(functionInfo.bsFunctionWorksheetName);
+			FunctionArgumentsKey key(functionName, args);
+			EnterCriticalSection(&m_csAsyncHandleMap);
+			auto iter = m_asyncHandleMap.find(key);
+			long xl4jTopicHandle;
+			if (iter == m_asyncHandleMap.end()) {
+				xl4jTopicHandle = InterlockedIncrement(&m_xl4jAsyncHandle);
+				m_asyncHandleMap.emplace(key, xl4jTopicHandle);
+			}
+			else {
+				xl4jTopicHandle = iter->second;
+			}
+			LeaveCriticalSection(&m_csAsyncHandleMap);
+			// Create a unique handle, converted to a string.
+
+			wchar_t szHandleBuf[64];
+			ZeroMemory(szHandleBuf, sizeof szHandleBuf);
+			wsprintf(szHandleBuf, L"%lu", /* L"=RTD(\"XL4JRTD.AsyncRTDServer\", \"\", \"%lu\")",*/ xl4jTopicHandle);
+			LOGINFO("Evaluate forumla is: %s", szHandleBuf);
+			XLOPER12 *pResult = static_cast<XLOPER12*> (malloc(sizeof(XLOPER12)));
+			// call RTD("XL4JRTD.AsyncRTDServer", "<handle>")
+			int retVal = Excel12f(xlfRtd, pResult, 3, TempStr12(L"XL4JRTD.AsyncRTDServer"), TempStr12(L""), TempStr12(szHandleBuf));
+			if (retVal != xlretSuccess) {
+				LOGERROR("Excel12f returned %d error code", retVal);
+			}
+			//Excel12f(xlfEvaluate, pResult, 1, TempStr12(szHandleBuf));
+			//Excel12f(xlUDF, pResult, 1, TempStr12(L"RTD"), )
+			LOGINFO("Returned from xlfEvaluate");
+			// get the actual topic from the server using the handle
+			long rtdTopic;
+			if (FAILED(hr = m_pAsyncRTDServer->GetTopicID(xl4jTopicHandle, &rtdTopic))) {
+				// removes entry too.
+				LOGERROR("Problem getting topic ID: %s, skipping call.", HRESULT_TO_STR(hr));
+				// this means it's already dealt with.
+				EnterCriticalSection(&m_csAsyncHandleMap);
+				m_asyncHandleMap.erase(key);
+				LeaveCriticalSection(&m_csAsyncHandleMap);
+				goto skipCall;
+			}
+			VariantClear(&vAsyncHandle);
+			V_VT(&vAsyncHandle) = VT_I8;
+			V_I8(&vAsyncHandle) = (long long)rtdTopic;
+			LOGINFO("Got RTD Topic back from server as %ld", rtdTopic);
+			if (hr = FAILED(m_pJvm->getJvm()->CreateCall(&pCall))) {
+				LOGERROR("CreateCall failed on JVM");
+				goto error;
+			}
+			if (FAILED(hr = pCall->AsyncCall(m_pAsyncRTDHandler, vAsyncHandle, exportNumber, saInputs))) {
+				_com_error err(hr);
+				LOGERROR("RTDAsyncCall failed: %s.", err.ErrorMessage());
+				goto error;
+			}
+			skipCall:
+			pResult->xltype |= xlbitDLLFree; // tell Excel to call us back to free this structure.
+			*ppResult = pResult;
+			SAFEARRAY *topicsToDelete;
+			long size;
+			if (FAILED(m_pAsyncRTDServer->GetDeletedTopics(&topicsToDelete, &size))) {
+				LOGERROR("Error getting deleted topics");
+			} else {
+				// TODO: this needs a solid optimize, possibly with a reverse map.
+				for (long i = 0; i < size; i++) {
+					long topic;
+					SafeArrayGetElement(topicsToDelete, &i, (void *)&topic);
+					for (auto it = m_asyncHandleMap.begin(); it != m_asyncHandleMap.end();) {
+						if (it->second == topic) { 
+							m_asyncHandleMap.erase(it++); }
+						else { ++it; }
+					}
+				}
+				SafeArrayDestroy(topicsToDelete);
+			}
 			ReleaseSRWLockShared(&m_rwlock);
 			return S_OK;
 		} else {

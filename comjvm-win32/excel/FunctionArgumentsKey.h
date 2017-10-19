@@ -7,9 +7,9 @@ class FunctionArgumentsKey {
 public:
 	FunctionArgumentsKey(std::wstring functionName, std::vector<XLOPERWrapper> args) 
 		: m_functionName(functionName), m_args(args) {}
-	bool operator==(FunctionArgumentsKey& other);
-	size_t Hash() const;
 	~FunctionArgumentsKey();
+	bool operator==(const FunctionArgumentsKey other) const;
+	size_t Hash() const;
 };
 
 namespace std {

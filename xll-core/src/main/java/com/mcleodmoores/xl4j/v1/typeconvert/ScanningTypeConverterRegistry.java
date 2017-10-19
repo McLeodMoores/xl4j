@@ -14,9 +14,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 
 import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,10 +38,10 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
    *
    * @param excel
    *          the excel context, allowing access to the heap.
+   * @param reflections
+   *          the reflections context, not null
    */
-  public ScanningTypeConverterRegistry(final Excel excel) {
-    final Reflections reflections = new Reflections(
-        new ConfigurationBuilder().addUrls(ClasspathHelper.forJavaClassPath()).addScanners(new SubTypesScanner(true)));
+  public ScanningTypeConverterRegistry(final Excel excel, final Reflections reflections) {
     scanAndCreateTypeConverters(reflections, excel);
   }
 
@@ -53,12 +50,12 @@ public class ScanningTypeConverterRegistry implements TypeConverterRegistry {
    *
    * @param excel
    *          the excel context, allowing access to the heap.
+   * @param reflections
+   *          the reflections context, not null
    * @param packageName
    *          restrict scanning of implementations to a particular package
    */
-  public ScanningTypeConverterRegistry(final Excel excel, final String packageName) {
-    final Reflections reflections = new Reflections(
-        new ConfigurationBuilder().addUrls(ClasspathHelper.forPackage(packageName)).addScanners(new SubTypesScanner(true)));
+  public ScanningTypeConverterRegistry(final Excel excel, final Reflections reflections, final String packageName) {
     scanAndCreateTypeConverters(reflections, excel);
   }
 

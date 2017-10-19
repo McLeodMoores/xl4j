@@ -2,7 +2,6 @@
  * Copyright 2014-present by McLeod Moores Software Limited.
  * See distribution for license.
  */
-#include <Windows.h>
 #include "stdafx.h"
 #include "Excel.h"
 #include "AddinFileUtils.h"
@@ -53,11 +52,12 @@ HRESULT RegisterRTDServer() {
 	LOGINFO("rtd-server.dll module handle is %x", module);
 	DllInstall_t DllInstall = (DllInstall_t)GetProcAddress(module, "DllInstall");
 	LOGINFO("rtd-server DllInstall address is %p", DllInstall);
-	if (FAILED(DllInstall(TRUE, L"user"))) { // uninstall
+	if (FAILED(hr = DllInstall(TRUE, L"user"))) { // uninstall
 		LOGERROR("Could not install rtd-server dll");
 	} else {
 		LOGINFO("Successfully called DllInstall(TRUE, \"user\")");
 	}
+	return hr;
 }
 
 HRESULT UnregisterRTDServer() {
@@ -75,9 +75,10 @@ HRESULT UnregisterRTDServer() {
 	LOGINFO("rtd-server.dll module handle is %x", module);
 	DllInstall_t DllInstall = (DllInstall_t)GetProcAddress(module, "DllInstall");
 	LOGINFO("rtd-server DllInstall address is %p", DllInstall);
-	if (FAILED(DllInstall(FALSE, L"user"))) { // uninstall
+	if (FAILED(hr = DllInstall(FALSE, L"user"))) { // uninstall
 		LOGERROR("Could not uninstall rtd-server dll");
 	}
+	return hr;
 }
 
 //void InitAddin () {

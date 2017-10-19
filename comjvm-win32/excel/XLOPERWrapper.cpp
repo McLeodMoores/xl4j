@@ -4,6 +4,12 @@
 #include <Handleapi.h>
 #include <string>
 
+
+XLOPERWrapper::XLOPERWrapper(const LPXLOPER12 oper) {
+	m_pOper = (XLOPER12 *)m_allocator.allocate(sizeof XLOPER12);
+	Copy(oper, m_pOper);
+}
+
 XLOPERWrapper::XLOPERWrapper(const XLOPERWrapper& other) {
 	m_pOper = (XLOPER12 *) m_allocator.allocate(sizeof XLOPER12);
 	Copy(other.m_pOper, m_pOper);

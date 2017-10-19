@@ -114,7 +114,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;COMJVM_EXCEL_EXPORT;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <BrowseInformation>true</BrowseInformation>
@@ -129,7 +129,7 @@
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
-      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;rtd-server.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
     <PostBuildEvent>
       <Command>"$(SolutionDir)copy-dlls.bat" "$(SolutionDir)" $(ProjectName) $(Configuration) $(Platform)</Command>
@@ -148,7 +148,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;COMJVM_EXCEL_EXPORT;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
@@ -157,7 +157,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;shlwapi.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;rtd-server.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
@@ -178,7 +178,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;COMJVM_XLOPERWRAPPER_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;COMJVM_EXCEL_EXPORT;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;COMJVM_XLOPERWRAPPER_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
@@ -189,7 +189,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-i386;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;shlwapi.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
-      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;rtd-server.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
@@ -210,7 +210,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <AdditionalIncludeDirectories>$(VCInstallDir)UnitTest\include;$(SolutionDir)target\dependency\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;COMJVM_EXCEL_EXPORT;COMJVM_XLOPERWRAPPER_EXPORT;COMJVM_ADDINFILEUTILS_EXPORT;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Link>
@@ -221,7 +221,7 @@
       <AdditionalLibraryDirectories>$(VCInstallDir)UnitTest\lib;$(SolutionDir)target\dependency\lib-x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>xlcall32.lib;frmwrk32.lib;shlwapi.lib;%(AdditionalDependencies);Comctl32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>Excel.def</ModuleDefinitionFile>
-      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>core.dll;jni.dll;local.dll;settings.dll;utils.dll;helper.dll;rtd-server.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <EnableUAC>false</EnableUAC>
       <UACExecutionLevel />
       <UACUIAccess />
@@ -238,6 +238,8 @@
     <ClInclude Include="AddinEnvironment.h" />
     <ClInclude Include="AsyncCallResult.h" />
     <ClInclude Include="AsyncQueue.h" />
+    <ClInclude Include="AsyncRTDCallResult.h" />
+    <ClInclude Include="AsyncRTDServerCOM.h" />
     <ClInclude Include="Converter.h" />
     <ClInclude Include="AddinFileUtils.h" />
     <ClInclude Include="ExcelCOM.h" />
@@ -259,6 +261,8 @@
     <ClCompile Include="AddinEnvironment.cpp" />
     <ClCompile Include="AsyncCallResult.cpp" />
     <ClCompile Include="AsyncQueue.cpp" />
+    <ClCompile Include="AsyncRTDCallResult.cpp" />
+    <ClCompile Include="AsyncRTDServerCOM.cpp" />
     <ClCompile Include="Converter.cpp" />
     <ClCompile Include="AddinFileUtils.cpp" />
     <ClCompile Include="ExcelCOM.cpp" />
@@ -292,6 +296,9 @@
     </ProjectReference>
     <ProjectReference Include="..\local\local.vcxproj">
       <Project>{c0d7a35b-7195-4541-bb35-6cd51ea739bd}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\rtd-server\rtd-server.vcxproj">
+      <Project>{aadcfaee-8571-4dc2-91e2-fbeadcb53a93}</Project>
     </ProjectReference>
     <ProjectReference Include="..\settings\settings.vcxproj">
       <Project>{a9bc44b6-35c2-440d-a6a1-da59305740e2}</Project>

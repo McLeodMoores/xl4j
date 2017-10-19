@@ -61,7 +61,7 @@ private:
 	bool ScanSheet (XLOPER12 *pWorkbookName, XLOPER12 *pSheetName);
 	bool ScanWorkbook (XLOPER12 *pWorkbookName);
 	bool ScanDocuments ();
-	boolean IsNotTooSoonForRefresh();
+	bool IsNotTooSoonForRefresh();
 public:
 	GarbageCollector (ICollect *pCollector);
 	~GarbageCollector ();

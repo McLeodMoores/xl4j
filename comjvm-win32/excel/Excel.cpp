@@ -4,7 +4,7 @@
  */
 
 #include "stdafx.h"
-#define COMJVM_EXCEL_EXPORT
+//#define COMJVM_EXCEL_EXPORT
 #include "ExcelUtils.h"
 #include "../settings/SettingsDialogInterface.h"
 #include "../core/Settings.h"
@@ -246,8 +246,8 @@ __declspec(dllexport) int WINAPI xlAutoOpen (void) {
 	}
 
 	HRESULT hr;
-	if (FAILED(hr = CoInitializeEx(NULL, COINIT_MULTITHREADED))) {
-		OutputDebugString(L"Could not initialise COM");//, HRESULT_TO_STR(hr));
+	if (FAILED(hr = CoInitializeEx(NULL, COINIT_APARTMENTTHREADED))) {
+		LOGERROR("Could not initialise COM: %s", HRESULT_TO_STR(hr));
 	}
 	LOGTRACE("Initializing Add-in, JVM, etc");
 	if (!g_pAddinEnv) {
@@ -546,6 +546,10 @@ __declspec(dllexport) LPXLOPER12 UDF (int exportNumber, LPXLOPER12 first, va_lis
 	return result;
 }
 
+// This never gets called any more, it was for native async functions, but since we've swtiched to RTD for now
+// enabling this casuses RTD async functions to be cancelled when they shouldn't be.  This could be fixed, but
+// since native async functions don't seem to work (always get out of resources errors and behaviour is weird).
+// we're just disabling this for the moment.
 __declspec(dllexport) void CalculationCancelledEvent() {
 	AcquireSRWLockExclusive(&g_JvmEnvLock);
 	LOGINFO("Calculation cancelled!");

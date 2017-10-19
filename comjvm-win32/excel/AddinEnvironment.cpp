@@ -106,9 +106,13 @@ HRESULT CAddinEnvironment::Start() {
 		LOGINFO("License checker validation succeeded");
 	}
 	// register calculation event handlers
-	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationEndedEvent"), TempInt12(xleventCalculationEnded));
-	Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationCancelledEvent"), TempInt12(xleventCalculationCanceled));
-
+	// These event handlers were used for native async.  In RTD async, they are still called, so cause RTD tasks to be flushed.
+	// Theoretically this could be fixed to differentiate between the two but for now, as native async seems broken, I'm disabling
+	// this code.
+	//Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationEndedEvent"), TempInt12(xleventCalculationEnded));
+	//Excel12f(xlEventRegister, 0, 2, (LPXLOPER12)TempStr12(L"CalculationCancelledEvent"), TempInt12(xleventCalculationCanceled));
+	XLOPER12 result;
+	Excel12f(xlfRtd, &result, 3, TempStr12(L"XL4JRTD.AsyncRTDServer"), TempStr12(L""), TempStr12(L"0"));
 	m_pExcelCOM = new CExcelCOM();
 	m_pConverter = new Converter(m_pTypeLib);
 	// Register polling command that registers chunks of functions

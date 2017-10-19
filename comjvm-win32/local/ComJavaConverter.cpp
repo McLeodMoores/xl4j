@@ -363,7 +363,7 @@ HRESULT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *p
 			LARGE_INTEGER Frequency;
 			QueryPerformanceFrequency(&Frequency);
 			QueryPerformanceCounter(&StartingTime);
-			LOGINFO("XLArray");
+			LOGTRACE("XLArray");
 			jobjectArray joaValuesRows = pJniCache->XLArray_getArray(pEnv, joXLValue);
 			if (CHECK_EXCEPTION(pEnv)) {
 				LOGERROR("Error getting XLArray");
@@ -412,7 +412,7 @@ HRESULT CComJavaConverter::convert(JNIEnv *pEnv, JniCache *pJniCache, VARIANT *p
 			V_ARRAY(pResult) = psa;
 			QueryPerformanceCounter(&EndingTime);
 			ElapsedMicroseconds.QuadPart = ((EndingTime.QuadPart - StartingTime.QuadPart) * 1000000) / Frequency.QuadPart;
-			LOGINFO("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
+			LOGTRACE("Conversion took %llu microseconds", ElapsedMicroseconds.QuadPart);
 		} else {
 			LOGTRACE("Could not identify class %p, XLValue = %p", jcXLValue, pEnv->FindClass("com/mcleodmoores/xl4j/v1/api/values/XLValue"));
 			jclass jcObject = pEnv->FindClass("java/lang/Object");

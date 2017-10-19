@@ -226,7 +226,7 @@ bool GarbageCollector::ScanDocuments () {
 
 const ULONGLONG GarbageCollector::MINIMUM_RECALC_GAP = 30 * 1000;
 
-boolean GarbageCollector::IsNotTooSoonForRefresh() {
+bool GarbageCollector::IsNotTooSoonForRefresh() {
 	ULONGLONG now = GetTickCount64();
 	return (now - m_lastRefreshTime) > MINIMUM_RECALC_GAP;
 }
@@ -254,7 +254,7 @@ void GarbageCollector::Collect () {
 			if (unrecognisedHandles > 0) {
 				LOGTRACE("There were %lld unrecognised handles", unrecognisedHandles);
 				if (unrecognisedHandles > m_previousUnknownHandles) {
-					LOGINFO("Unrecognised handle count is not the same as last time (there were %lld last time)", m_previousUnknownHandles);
+					LOGINFO("Unrecognised handle count changed (there were %lld last time, %lld this time)", m_previousUnknownHandles, unrecognisedHandles);
 					// TODO: Pass this in rather than using global.
 					if (IsNotTooSoonForRefresh()) {
 						g_pAddinEnv->CalculateFullRebuild();

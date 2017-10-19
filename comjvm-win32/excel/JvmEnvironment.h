@@ -23,6 +23,7 @@ class CJvmEnvironment;
 #include "AsyncCallResult.h"
 #include "QueuingAsyncCallResult.h"
 #include "FunctionArgumentsKey.h"
+#include "AsyncRTDServerCOM.h"
 #include <unordered_map>
 
 class CJvmEnvironment {
@@ -39,7 +40,12 @@ class CJvmEnvironment {
 	GarbageCollector *m_pCollector;
 	ISplashScreen *m_pSplashScreen;
 	IAsyncCallResult *m_pAsyncHandler;
-	std::unordered_map<FunctionArgumentsKey, HANDLE> m_asyncHandleMap;
+	CAsyncRTDServerCOM *m_pAsyncRTDServer;
+	volatile unsigned long m_xl4jAsyncHandle;
+	IAsyncCallResult *m_pAsyncRTDHandler;
+	CRITICAL_SECTION m_csAsyncHandleMap;
+	std::unordered_map<FunctionArgumentsKey, long> m_asyncHandleMap;
+	std::unordered_map<long, FunctionArgumentsKey> m_asyncBackMap;
 	static DWORD WINAPI BackgroundJvmThread(LPVOID param);
 	static DWORD WINAPI BackgroundShutdownThread(LPVOID pData);
 	static DWORD WINAPI BackgroundWatchdogThread(LPVOID pData);
@@ -52,6 +58,7 @@ class CJvmEnvironment {
 
 	long GetNumCOMArgs(FUNCTIONINFO * pFunctionInfo, long nArgs);
 	HRESULT TrimArgs(FUNCTIONINFO * pFunctionInfo, long nArgs, VARIANT * inputs, SAFEARRAY * saInputs);
+	HRESULT TrimKeyArgs(std::vector<XLOPERWrapper>& args);
 public:
 	CJvmEnvironment(CAddinEnvironment *pEnv);
 	~CJvmEnvironment();

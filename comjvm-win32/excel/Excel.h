@@ -5,7 +5,7 @@
 
 #include "stdafx.h"
 #pragma once
-#define COMJVM_EXCEL_EXPORT
+//#define COMJVM_EXCEL_EXPORT
 #include "ExcelUtils.h"
 #include "AddinEnvironment.h"
 #include "JvmEnvironment.h"

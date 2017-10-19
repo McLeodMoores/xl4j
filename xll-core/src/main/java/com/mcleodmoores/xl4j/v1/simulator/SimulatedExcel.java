@@ -3,6 +3,8 @@
  */
 package com.mcleodmoores.xl4j.v1.simulator;
 
+import org.reflections.Reflections;
+
 import com.mcleodmoores.xl4j.v1.api.core.Excel;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelCallback;
 import com.mcleodmoores.xl4j.v1.api.core.ExcelFunctionCallHandler;
@@ -17,6 +19,7 @@ import com.mcleodmoores.xl4j.v1.core.ReflectiveFunctionRegistry;
 import com.mcleodmoores.xl4j.v1.invoke.ReflectiveInvokerFactory;
 import com.mcleodmoores.xl4j.v1.typeconvert.CachingTypeConverterRegistry;
 import com.mcleodmoores.xl4j.v1.typeconvert.ScanningTypeConverterRegistry;
+import com.mcleodmoores.xl4j.v1.util.ReflectionsUtils;
 import com.mcleodmoores.xl4j.v1.xll.LowLevelExcelCallback;
 
 /**
@@ -36,9 +39,10 @@ public class SimulatedExcel implements Excel {
    */
   public SimulatedExcel() {
     _heap = new ConcurrentHeap();
-    _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this));
+    Reflections reflections = ReflectionsUtils.getReflections();
+    _typeConverterRegistry = new CachingTypeConverterRegistry(new ScanningTypeConverterRegistry(this, reflections));
     _invokerFactory = new ReflectiveInvokerFactory(this, _typeConverterRegistry);
-    _functionRegistry = new ReflectiveFunctionRegistry(_invokerFactory);
+    _functionRegistry = new ReflectiveFunctionRegistry(reflections,  _invokerFactory);
     _excelCallHandler = new DefaultExcelFunctionCallHandler(_functionRegistry, _heap);
     _rawCallback = new MockExcelFunctionEntryAccumulator();
     _excelCallback = new DefaultExcelCallback(_rawCallback);

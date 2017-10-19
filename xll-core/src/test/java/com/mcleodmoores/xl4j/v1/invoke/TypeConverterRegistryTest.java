@@ -7,6 +7,14 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+import org.reflections.Reflections;
+import org.reflections.scanners.FieldAnnotationsScanner;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.MethodParameterScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -58,6 +66,7 @@ import com.mcleodmoores.xl4j.v1.typeconvert.converters.ShortXLNumberTypeConverte
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.StringXLStringTypeConverter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.XLValueArrayXLValueArrayTypeConverter;
 import com.mcleodmoores.xl4j.v1.typeconvert.converters.XLValueIdentityConverters;
+import com.mcleodmoores.xl4j.v1.util.ReflectionsUtils;
 
 /**
  * Tests for type converter registry.
@@ -101,6 +110,8 @@ public class TypeConverterRegistryTest {
     { XLValueIdentityConverters.XLMultiReferenceIdentityConverter.class, XLMultiReference.class, XLMultiReference.class }
   };
 
+  private static final Reflections REFLECTIONS = ReflectionsUtils.getReflections();
+  
   /**
    * Data provider method that creates two copies of the TEST_DATA block, one with a caching converter and one with a non-cached.
    * @return the test data set
@@ -108,9 +119,9 @@ public class TypeConverterRegistryTest {
   @DataProvider(name = "tcrPlusTestData")
   public Object[][] testDataProvider() {
     final Object[][] data = new Object[TEST_DATA.length * 2][TEST_DATA[0].length + 1];
-    final TypeConverterRegistry scanningTypeConverterRegistry = new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), PACKAGE);
+    final TypeConverterRegistry scanningTypeConverterRegistry = new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), REFLECTIONS, PACKAGE);
     final TypeConverterRegistry cachingTypeConverterRegistry = new CachingTypeConverterRegistry(
-        new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), PACKAGE));
+        new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), REFLECTIONS, PACKAGE));
     int i = 0;
     for (final Object[] testData : TEST_DATA) {
       data[i][0] = scanningTypeConverterRegistry;
@@ -145,9 +156,9 @@ public class TypeConverterRegistryTest {
    */
   @DataProvider(name = "tcr")
   public Object[][] convertersProvider() {
-    final TypeConverterRegistry scanningTypeConverterRegistry = new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), PACKAGE);
+    final TypeConverterRegistry scanningTypeConverterRegistry = new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), REFLECTIONS, PACKAGE);
     final TypeConverterRegistry cachingTypeConverterRegistry = new CachingTypeConverterRegistry(
-        new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), PACKAGE));
+        new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), REFLECTIONS, PACKAGE));
     return new Object[][] {
       { scanningTypeConverterRegistry },
       { cachingTypeConverterRegistry }
@@ -204,9 +215,9 @@ public class TypeConverterRegistryTest {
   @DataProvider(name = "tcrPlusArrayTestData")
   public Object[][] testDataProviderArray() {
     final Object[][] data = new Object[ARRAY_TEST_DATA.length * 2][ARRAY_TEST_DATA[0].length + 1];
-    final TypeConverterRegistry scanningTypeConverterRegistry = new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), PACKAGE);
+    final TypeConverterRegistry scanningTypeConverterRegistry = new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), REFLECTIONS, PACKAGE);
     final TypeConverterRegistry cachingTypeConverterRegistry = new CachingTypeConverterRegistry(
-        new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), PACKAGE));
+        new ScanningTypeConverterRegistry(ExcelFactory.getInstance(), REFLECTIONS, PACKAGE));
     int i = 0;
     for (final Object[] testData : ARRAY_TEST_DATA) {
       data[i][0] = scanningTypeConverterRegistry;

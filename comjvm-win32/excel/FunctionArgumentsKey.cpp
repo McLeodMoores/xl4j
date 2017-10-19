@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "FunctionArgumentsKey.h"
 
-bool FunctionArgumentsKey::operator==(FunctionArgumentsKey & other) {
+bool FunctionArgumentsKey::operator==(const FunctionArgumentsKey other) const {
 	if (m_functionName != other.m_functionName) {
 		return false;
 	}

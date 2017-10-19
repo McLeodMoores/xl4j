@@ -22,9 +22,11 @@ private:
 	size_t Hash(LPXLMREF12 pValue) const;
 	size_t Hash(LPXLOPER12 pValue) const;
 public:
-	XLOPERWrapper(XLOPER12 *pOper) : m_pOper{ pOper } {};
+	XLOPERWrapper(XLOPER12 *pOper);
 	XLOPERWrapper(const XLOPERWrapper& other); // copy
 	XLOPERWrapper(const XLOPERWrapper&& other); // move
+	bool IsNil() { return m_pOper->xltype == xltypeNil; }
+	bool IsMissing() { return m_pOper->xltype == xltypeMissing; }
 	bool operator==(const XLOPERWrapper& pOther) const;
 	size_t Hash() const;
 	std::wstring ToString() const;
