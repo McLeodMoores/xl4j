@@ -15,8 +15,15 @@ import com.mcleodmoores.xl4j.v1.api.values.XLValue;
  * Array utilities for Excel. Contains functions that allow the creation of arrays (primitive and object).
  */
 @XLNamespace("J")
-public class JArrayUtils {
+public final class JArrayUtils {
 
+  private JArrayUtils() { }
+  
+  /**
+   * Create a primitive double array from a sequence of numbers.
+   * @param values a sequence of number parameters
+   * @return a primitive double array containing the numbers
+   */
   @XLFunction(
       name = "PrimitiveDoubleArray",
       description = "Return a double[]",
@@ -31,7 +38,12 @@ public class JArrayUtils {
     }
     return result;
   }
-
+  
+  /**
+   * Create a primitive double array from a range of numbers.
+   * @param values a range of numbers
+   * @return a primitive double array containing the numbers
+   */
   @XLFunction(
       name = "PrimitiveDoubleArrayFromRange",
       description = "Return a double[]",
@@ -66,6 +78,11 @@ public class JArrayUtils {
     return result;
   }
 
+  /**
+   * Create a 2D primitive double array from a range of numbers.
+   * @param values a range of numbers
+   * @return a 2D primitive double array containing the numbers
+   */
   @XLFunction(
       name = "PrimitiveDoubleArray2D",
       description = "Return a double[][]",
@@ -83,6 +100,11 @@ public class JArrayUtils {
     return result;
   }
 
+  /**
+   * Create a primitive float array from a sequence of numbers.
+   * @param values a sequence of number parameters
+   * @return a primitive float array containing the numbers
+   */
   @XLFunction(
       name = "PrimitiveFloatArray",
       description = "Return a float[]",
@@ -97,6 +119,11 @@ public class JArrayUtils {
     return result;
   }
 
+  /**
+   * Create a primitive long array from a sequence of numbers.
+   * @param values a sequence of numbers
+   * @return a primitive long array containing the numbers
+   */
   @XLFunction(
       name = "PrimitiveLongArray",
       description = "Return a long[]",
@@ -110,7 +137,12 @@ public class JArrayUtils {
     }
     return result;
   }
-
+  
+  /**
+   * Create a primitive int array from a sequence of numbers.
+   * @param values a sequence of numbers
+   * @return a primitive int array containing the numbers
+   */
   @XLFunction(
       name = "PrimitiveIntArray",
       description = "Return a int[]",

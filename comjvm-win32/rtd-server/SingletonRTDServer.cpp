@@ -32,7 +32,8 @@ HRESULT CSingletonRTDServer::GetTopicID(/*[in]*/ long xl4jTopicID, /*[out]*/ lon
 		*TopicID = search->second;
 		LOGINFO("Returning TopicID(%ld) for XL4JTopicID(%ld)", *TopicID, xl4jTopicID);
 		m_xl4jTopicToExcelTopicMap.erase(search);
-		m_excelTopicToXl4jTopicMap.erase(xl4jTopicID);
+		// the back entry is removed later on.
+		//m_excelTopicToXl4jTopicMap.erase(xl4jTopicID);
 		LeaveCriticalSection(&m_csTopicMaps);
 	} else {
 		LOGERROR("Topic %ld not found", xl4jTopicID);
@@ -160,10 +161,11 @@ HRESULT CSingletonRTDServer::DisconnectData(long TopicID) {
 	long xl4jTopic = iter->second;
 	LOGINFO("Disconnect for Excel topic ID %ld, XL4J topic %ld", TopicID, xl4jTopic);
 	m_excelTopicToXl4jTopicMap.erase(iter);
+	// this following might not be necessary.
 	m_xl4jTopicToExcelTopicMap.erase(xl4jTopic);
 	LeaveCriticalSection(&m_csTopicMaps);
 	EnterCriticalSection(&m_csDeletedTopics);
-	m_deletedTopics.push_back(xl4jTopic);
+	m_deletedTopics.emplace_back(xl4jTopic);
 	LeaveCriticalSection(&m_csDeletedTopics);
 	LOGINFO("Removed");
 	return S_OK;// E_NOTIMPL;

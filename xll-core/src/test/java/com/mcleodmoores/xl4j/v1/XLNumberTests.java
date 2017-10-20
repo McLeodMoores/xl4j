@@ -17,6 +17,7 @@ public class XLNumberTests {
   private static final String EXPECTED_987_654321 = "XLNumber[value=987.654321]";
   private static final String EXPECTED_0_0 = "XLNumber[value=0.0]";
 
+  // CHECKSTYLE:OFF
   /**
    *
    */

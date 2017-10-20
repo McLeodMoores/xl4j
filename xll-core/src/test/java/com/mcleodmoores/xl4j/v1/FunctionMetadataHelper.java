@@ -134,10 +134,10 @@ public final class FunctionMetadataHelper {
         return false;
       }
 
-      @Override
-      public boolean isAutoAsynchronous() {
-        return false;
-      }
+      //@Override
+      //public boolean isAutoAsynchronous() {
+      //  return false;
+      //}
       
       @Override
       public boolean isAutoRTDAsynchronous() {
@@ -339,10 +339,10 @@ public final class FunctionMetadataHelper {
         return false;
       }
 
-      @Override
-      public boolean isAutoAsynchronous() {
-        return false;
-      }
+      //@Override
+      //public boolean isAutoAsynchronous() {
+      //  return false;
+      //}
       
       @Override
       public boolean isAutoRTDAsynchronous() {

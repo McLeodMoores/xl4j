@@ -55,7 +55,7 @@ public class DefaultExcelCallback implements ExcelCallback {
     final String exportName = functionDefinition.getExportName();
     final String signature = buildFunctionSignature(functionDefinition);
     final String functionCategory = buildFunctionCategory(functionDefinition);
-    final boolean isVarArgs, isLongRunning, isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired;
+    final boolean isVarArgs, isLongRunning, /*isAutoAsynchronous,*/ isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired;
     final String argumentNames, helpTopic, description;
     final String[] argsHelp;
     final Integer functionTypeInt;
@@ -63,7 +63,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       isVarArgs = false;
       final XLConstant constantAnnotation = functionMetadata.getConstantSpec();
       isLongRunning = false;
-      isAutoAsynchronous = false;
+      /*isAutoAsynchronous = false;*/
       isAutoRTDAsynchronous = false;
       isManualAsynchronous = false;
       isCallerRequired = false;
@@ -77,7 +77,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       if (functionMetadata.getFunctionSpec() != null) {
         final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
         isLongRunning = functionAnnotation.isLongRunning();
-        isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
+        /*isAutoAsynchronous = false; //functionAnnotation.isAutoRTDAsynchronous();*/
         isAutoRTDAsynchronous = functionAnnotation.isAutoRTDAsynchronous();
         isManualAsynchronous = functionAnnotation.isManualAsynchronous();
         isCallerRequired = functionAnnotation.isCallerRequired();
@@ -89,7 +89,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       } else if (functionMetadata.getFunctionsSpec() != null) {
         final XLFunctions functionsAnnotation = functionMetadata.getFunctionsSpec();
         isLongRunning = functionsAnnotation.isLongRunning();
-        isAutoAsynchronous = functionsAnnotation.isAutoAsynchronous();
+        /*isAutoAsynchronous = false; //functionsAnnotation.isAutoAsynchronous();*/
         isAutoRTDAsynchronous = functionsAnnotation.isAutoRTDAsynchronous();
         isManualAsynchronous = functionsAnnotation.isManualAsynchronous();
         isCallerRequired = functionsAnnotation.isCallerRequired();
@@ -103,7 +103,7 @@ public class DefaultExcelCallback implements ExcelCallback {
       }
     }
     _rawCallback.xlfRegister(functionDefinition.getExportNumber(), exportName, isVarArgs, isLongRunning,
-        isAutoAsynchronous, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired, signature, 
+        false, isAutoRTDAsynchronous, isManualAsynchronous, isCallerRequired, signature, 
         functionName, argumentNames, functionTypeInt, functionCategory, "", helpTopic, description, argsHelp);
   }
 
@@ -212,28 +212,28 @@ public class DefaultExcelCallback implements ExcelCallback {
         default:
           throw new XL4JRuntimeException("Unhandled type " + functionDefinition.getCallTargetForFunction());
       }
-      final boolean isVolatile, isMTSafe, isMacroEquivalent, isAutoAsynchronous;
+      final boolean isVolatile, isMTSafe, isMacroEquivalent, isAutoRTDAsynchronous;
       final FunctionType functionType;
       if (functionMetadata.getFunctionSpec() != null) {
         final XLFunction functionAnnotation = functionMetadata.getFunctionSpec();
         isVolatile = functionAnnotation.isVolatile();
         isMTSafe = functionAnnotation.isMultiThreadSafe();
         isMacroEquivalent = functionAnnotation.isMacroEquivalent();
-        isAutoAsynchronous = functionAnnotation.isAutoAsynchronous();
+        isAutoRTDAsynchronous = functionAnnotation.isAutoRTDAsynchronous();
         functionType = functionAnnotation.functionType();
       } else if (functionMetadata.getFunctionsSpec() != null) {
         final XLFunctions functionAnnotations = functionMetadata.getFunctionsSpec();
         isVolatile = functionAnnotations.isVolatile();
         isMTSafe = functionAnnotations.isMultiThreadSafe();
         isMacroEquivalent = functionAnnotations.isMacroEquivalent();
-        isAutoAsynchronous = functionAnnotations.isAutoAsynchronous();
+        isAutoRTDAsynchronous = functionAnnotations.isAutoRTDAsynchronous();
         functionType = functionAnnotations.functionType();
       } else {
         throw new XL4JRuntimeException("Could not get XLFunction or XLFunctions information");
       }
-      if (isVolatile && isMTSafe || isMTSafe && isMacroEquivalent) {
+      if ((isVolatile && isMTSafe) || (isMTSafe && isMacroEquivalent) || (isAutoRTDAsynchronous && isMTSafe)) {
         throw new XL4JRuntimeException(
-            "Illegal combination of XLFunction attributes, cannot be volatile & thread-safe or macro-equivalent & thread-safe");
+            "Illegal combination of XLFunction attributes, cannot be volatile & thread-safe or macro-equivalent & thread-safe or auto RTD async & thread-safe");
       }
       // Return type character
       if (functionType == FunctionType.COMMAND) {
@@ -242,16 +242,17 @@ public class DefaultExcelCallback implements ExcelCallback {
         }
         signature.append("J"); // means int, but we'll convert from XLInteger to make the class hierarchy cleaner.
       } else {
-        if (isAutoAsynchronous) {
-          signature.append(">"); // means void function is asynchronous callback handle, which we don't expose to the user.
-        } else {
+        // This is left here for posterity.  Native async can't be made to work reliably.
+        //if (isAutoAsynchronous) {
+        //  signature.append(">"); // means void function is asynchronous callback handle, which we don't expose to the user.
+        //} else {
           if (XLLocalReference.class.isAssignableFrom(excelReturnType) || XLMultiReference.class.isAssignableFrom(excelReturnType)) {
             // REVIEW: Not sure if this is a valid thing to do.
             signature.append("U"); // XLOPER12 range/ref/array. I've no idea if this is even valid. Not clear in docs.
           } else {
             signature.append("Q"); // XLOPER12
           }
-        }
+        //}
       }
       // Parameters
       final XLParameter[] parameterAnnotations = functionMetadata.getParameters();
@@ -293,9 +294,10 @@ public class DefaultExcelCallback implements ExcelCallback {
           }
         }
       }
-      if (isAutoAsynchronous) {
-        signature.append("X"); // should we allow the other options (below)?
-      }
+      // Native async can't be made to work reliably so removing.
+      //if (isAutoAsynchronous) {
+      //  signature.append("X"); // should we allow the other options (below)?
+      //}
       // Characters on the end -- we checked some invalid states at the start.
       if (isMacroEquivalent) {
         signature.append("#");

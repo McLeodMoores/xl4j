@@ -21,49 +21,49 @@ public class TestMethods {
   @XLFunction
   public LocalDate method0(final String paramName0, final Double paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public void method1(final Short paramName0, final Character paramName1) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Double method2() { return null; }
 
   @XLFunction
   public LocalDate method3(final double paramName0, final MyClass paramName1, final LocalDate paramName2, final MyClass paramName3, final Boolean paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public BigInteger method4(final LocalDate paramName0, final double paramName1, final int paramName2, final BigInteger paramName3) { return null; }
 
   @XLFunction
   public MyClass method5(final boolean paramName0, final MyClass paramName1, final Integer paramName2, final MyClass paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public double method6(final Character paramName0) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigDecimal method7(final LocalDate paramName0, final long paramName1, final MyEnum paramName2, final Byte paramName3, final Float paramName4) { return null; }
 
   @XLFunction
   public BigDecimal method8() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyEnum method9(final Long paramName0, final LocalDate paramName1, final LocalDate paramName2, final BigDecimal paramName3, final short paramName4, final BigDecimal paramName5, final Long paramName6) { return null; }
 
   @XLFunction
   public int method10(final Short paramName0) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Long method11(final Integer paramName0, final Long paramName1, final short paramName2, final String paramName3) { return null; }
 
   @XLFunction
   public float method12(final Float paramName0, final Float paramName1, final Short paramName2, final short paramName3) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public int method13(final BigDecimal paramName0, final LocalDate paramName1) { return 0; }
 
   @XLFunction
   public Boolean method14(final long paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public int method15(final short paramName0, final Byte paramName1, final Object paramName2, final Character paramName3, final Float paramName4, final Character paramName5) { return 0; }
 
   @XLFunction
@@ -72,109 +72,109 @@ public class TestMethods {
   @XLFunction
   public Character method17(final MyClass paramName0, final char paramName1, final Byte paramName2, final char paramName3, final Integer paramName4, final short paramName5, final Byte paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public void method18(final BigInteger paramName0, final byte paramName1) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public boolean method19(final String paramName0, final Object paramName1, final int paramName2, final Short paramName3, final int paramName4, final Object paramName5) { return true; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public char method20(final Boolean paramName0, final long paramName1, final Float paramName2) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public LocalDate method21(final String paramName0, final Boolean paramName1, final Short paramName2, final LocalDate paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Integer method22(final String paramName0, final float paramName1, final LocalDate paramName2, final char paramName3, final byte paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public String method23(final Boolean paramName0, final MyClass paramName1, final Long paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public MyClass method24(final byte paramName0, final Short paramName1, final Double paramName2, final float paramName3, final MyEnum paramName4) { return null; }
 
   @XLFunction
   public double method25(final Boolean paramName0, final Short paramName1, final String paramName2, final Character paramName3, final Float paramName4, final Float paramName5, final BigInteger paramName6) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyEnum method26(final BigDecimal paramName0) { return null; }
 
   @XLFunction
   public byte method27(final Object paramName0, final Byte paramName1, final Float paramName2, final Character paramName3, final Double paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Double method28(final String paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Character method29(final Character paramName0, final int paramName1, final BigInteger paramName2, final MyEnum paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigDecimal method30(final Boolean paramName0, final MyEnum paramName1, final Integer paramName2, final long paramName3, final BigInteger paramName4) { return null; }
 
   @XLFunction
   public Short method31(final Byte paramName0, final byte paramName1, final long paramName2, final byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public char method32(final Double paramName0, final String paramName1, final Double paramName2) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public long method33(final short paramName0, final Integer paramName1) { return 0L; }
 
   @XLFunction
   public Short method34(final LocalDate paramName0, final Object paramName1, final Long paramName2, final long paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public BigDecimal method35(final Short paramName0, final Short paramName1, final float paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public LocalDate method36() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public char method37(final Byte paramName0, final int paramName1, final Object paramName2, final String paramName3, final String paramName4, final MyEnum paramName5) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Long method38(final short paramName0, final String paramName1, final Object paramName2) { return null; }
 
   @XLFunction
   public Object method39(final Double paramName0, final BigInteger paramName1, final char paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Integer method40(final Long paramName0, final Integer paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Double method41(final BigDecimal paramName0, final float paramName1, final double paramName2, final MyEnum paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public byte method42(final boolean paramName0, final float paramName1, final long paramName2, final Object paramName3, final short paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigDecimal method43(final Integer paramName0, final byte paramName1, final double paramName2, final BigInteger paramName3, final boolean paramName4, final Boolean paramName5, final Integer paramName6) { return null; }
 
   @XLFunction
   public Character method44(final short paramName0, final Float paramName1, final float paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Byte method45(final Short paramName0) { return null; }
 
   @XLFunction
   public Integer method46(final short paramName0, final Character paramName1, final LocalDate paramName2, final Integer paramName3, final Short paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Object method47() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public int method48(final Long paramName0, final short paramName1, final LocalDate paramName2, final byte paramName3, final MyClass paramName4, final Object paramName5, final Character paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public double method49(final short paramName0, final Float paramName1) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigDecimal method50(final byte paramName0, final double paramName1) { return null; }
 
   @XLFunction
   public Boolean method51(final BigDecimal paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public char method52(final float paramName0, final String paramName1, final Short paramName2) { return 'x'; }
 
   @XLFunction
@@ -186,55 +186,55 @@ public class TestMethods {
   @XLFunction
   public BigInteger method55(final String paramName0, final Object paramName1, final Integer paramName2, final Integer paramName3, final char paramName4, final Integer paramName5, final MyEnum paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public byte method56(final Double paramName0, final String paramName1, final Byte paramName2, final boolean paramName3, final boolean paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Short method57() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public float method58(final MyClass paramName0, final char paramName1, final Short paramName2, final BigInteger paramName3, final double paramName4, final char paramName5) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public boolean method59(final Byte paramName0, final MyEnum paramName1) { return true; }
 
   @XLFunction
   public void method60(final Long paramName0, final Short paramName1, final float paramName2, final Byte paramName3, final LocalDate paramName4, final String paramName5) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public float method61(final byte paramName0, final double paramName1, final long paramName2, final MyEnum paramName3) { return 0f; }
 
   @XLFunction
   public Boolean method62(final int paramName0, final byte paramName1, final MyEnum paramName2, final Object paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public long method63(final boolean paramName0, final LocalDate paramName1, final String paramName2, final byte paramName3, final long paramName4) { return 0L; }
 
   @XLFunction
   public Boolean method64(final BigInteger paramName0, final Byte paramName1, final byte paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public byte method65(final Character paramName0, final Float paramName1, final Short paramName2, final short paramName3) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public MyEnum method66() { return null; }
 
   @XLFunction
   public Short method67(final long paramName0, final Object paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Object method68(final MyClass paramName0, final Character paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public String method69(final double paramName0, final MyClass paramName1, final LocalDate paramName2, final BigDecimal paramName3, final boolean paramName4, final MyClass paramName5, final Float paramName6) { return null; }
 
   @XLFunction
   public int method70(final int paramName0, final boolean paramName1, final short paramName2, final Double paramName3, final Float paramName4, final Float paramName5, final Float paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public float method71(final MyEnum paramName0, final LocalDate paramName1) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public long method72(final Boolean paramName0, final BigInteger paramName1, final BigDecimal paramName2, final Integer paramName3, final Float paramName4) { return 0L; }
 
   @XLFunction
@@ -252,16 +252,16 @@ public class TestMethods {
   @XLFunction
   public byte method77(final long paramName0, final Boolean paramName1, final Float paramName2, final MyEnum paramName3) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyEnum method78(final BigDecimal paramName0, final Long paramName1, final double paramName2, final Object paramName3) { return null; }
 
   @XLFunction
   public Short method79(final Long paramName0, final float paramName1, final char paramName2, final Object paramName3, final int paramName4, final LocalDate paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public BigDecimal method80(final BigInteger paramName0, final Integer paramName1, final int paramName2, final Short paramName3, final boolean paramName4, final BigInteger paramName5, final byte paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Float method81(final Double paramName0, final Character paramName1) { return null; }
 
   @XLFunction
@@ -273,58 +273,58 @@ public class TestMethods {
   @XLFunction
   public Byte method84() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public short method85(final Integer paramName0, final double paramName1, final short paramName2, final BigDecimal paramName3, final Object paramName4, final Byte paramName5, final long paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Object method86(final BigInteger paramName0, final Float paramName1, final Character paramName2, final Integer paramName3, final Float paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigDecimal method87(final char paramName0, final Object paramName1, final Double paramName2, final Object paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Double method88(final Long paramName0, final float paramName1, final Character paramName2, final double paramName3, final MyClass paramName4, final BigDecimal paramName5, final Integer paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public double method89(final Character paramName0, final MyClass paramName1, final Double paramName2, final MyClass paramName3, final Integer paramName4, final double paramName5) { return 0d; }
 
   @XLFunction
   public Character method90(final Boolean paramName0, final Long paramName1, final Integer paramName2, final char paramName3, final MyEnum paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public float method91(final short paramName0, final Double paramName1, final Character paramName2) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Short method92(final int paramName0, final BigDecimal paramName1, final Double paramName2, final Byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public char method93(final Boolean paramName0) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Boolean method94(final short paramName0, final MyEnum paramName1) { return null; }
 
   @XLFunction
   public Long method95(final long paramName0, final Byte paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public BigDecimal method96(final Double paramName0, final Double paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public boolean method97(final Character paramName0, final char paramName1) { return true; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public double method98(final Boolean paramName0, final char paramName1, final short paramName2, final LocalDate paramName3, final MyClass paramName4, final Float paramName5) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public short method99(final boolean paramName0, final Long paramName1, final Object paramName2, final Character paramName3, final double paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyEnum method100() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public short method101(final char paramName0, final double paramName1, final byte paramName2) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Long method102(final double paramName0, final Boolean paramName1, final short paramName2, final long paramName3, final Long paramName4) { return null; }
 
   @XLFunction
@@ -333,19 +333,19 @@ public class TestMethods {
   @XLFunction
   public Byte method104(final Float paramName0, final double paramName1, final Float paramName2, final Object paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public double method105(final byte paramName0, final int paramName1, final long paramName2) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Boolean method106(final byte paramName0, final int paramName1, final Object paramName2, final float paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public long method107(final int paramName0) { return 0L; }
 
   @XLFunction
   public Long method108(final String paramName0, final Boolean paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public int method109(final BigInteger paramName0, final float paramName1, final Object paramName2, final String paramName3) { return 0; }
 
   @XLFunction
@@ -354,10 +354,10 @@ public class TestMethods {
   @XLFunction
   public float method111(final char paramName0, final Integer paramName1, final Short paramName2, final BigInteger paramName3, final Long paramName4) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public BigDecimal method112() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Long method113(final int paramName0, final MyClass paramName1, final boolean paramName2, final BigDecimal paramName3, final Double paramName4, final int paramName5, final char paramName6) { return null; }
 
   @XLFunction
@@ -366,205 +366,205 @@ public class TestMethods {
   @XLFunction
   public MyClass method115(final MyEnum paramName0, final byte paramName1, final BigDecimal paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public int method116(final Object paramName0, final long paramName1, final short paramName2) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public short method117(final byte paramName0, final long paramName1, final byte paramName2) { return 0; }
 
   @XLFunction
   public double method118(final String paramName0, final Long paramName1) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyEnum method119(final Integer paramName0, final char paramName1, final BigInteger paramName2, final long paramName3, final LocalDate paramName4, final Boolean paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public int method120(final Long paramName0, final char paramName1, final String paramName2, final MyEnum paramName3, final long paramName4, final long paramName5, final short paramName6) { return 0; }
 
   @XLFunction
   public Boolean method121(final MyEnum paramName0, final boolean paramName1, final MyClass paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public MyEnum method122(final int paramName0) { return null; }
 
   @XLFunction
   public Integer method123(final long paramName0, final BigDecimal paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Short method124(final Double paramName0, final String paramName1, final String paramName2, final Double paramName3, final Character paramName4, final MyClass paramName5, final Float paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public byte method125(final Object paramName0, final MyEnum paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public String method126(final Byte paramName0, final long paramName1, final long paramName2, final Short paramName3) { return null; }
 
   @XLFunction
   public LocalDate method127() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public double method128() { return 0d; }
 
   @XLFunction
   public void method129(final Short paramName0) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public boolean method130(final String paramName0, final int paramName1, final int paramName2, final LocalDate paramName3, final short paramName4, final Long paramName5) { return true; }
 
   @XLFunction
   public char method131(final boolean paramName0, final BigDecimal paramName1, final LocalDate paramName2, final Boolean paramName3) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Boolean method132(final boolean paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public byte method133() { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Integer method134(final int paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Short method135() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public int method136(final int paramName0, final Long paramName1, final LocalDate paramName2, final Boolean paramName3, final Character paramName4, final MyEnum paramName5, final Byte paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Float method137(final Short paramName0, final short paramName1, final Short paramName2, final Character paramName3, final Double paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public void method138() { return ; }
 
   @XLFunction
   public char method139() { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public void method140(final byte paramName0, final double paramName1, final Long paramName2, final int paramName3, final String paramName4, final Long paramName5, final BigInteger paramName6) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Long method141(final Short paramName0) { return null; }
 
   @XLFunction
   public Long method142(final String paramName0, final MyEnum paramName1, final String paramName2, final Boolean paramName3, final Integer paramName4, final MyClass paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Double method143() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public boolean method144(final Float paramName0, final Integer paramName1, final Long paramName2, final Long paramName3, final Integer paramName4, final BigDecimal paramName5, final BigInteger paramName6) { return true; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Long method145(final String paramName0, final double paramName1, final double paramName2, final Boolean paramName3, final float paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public BigInteger method146(final Float paramName0, final float paramName1, final boolean paramName2, final Integer paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public LocalDate method147(final BigInteger paramName0) { return null; }
 
   @XLFunction
   public LocalDate method148(final Boolean paramName0, final MyEnum paramName1, final Boolean paramName2, final int paramName3, final float paramName4, final Float paramName5, final Byte paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Byte method149() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Integer method150(final Float paramName0, final Float paramName1, final double paramName2, final Boolean paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public short method151(final Character paramName0, final Character paramName1, final char paramName2) { return 0; }
 
   @XLFunction
   public String method152(final char paramName0, final char paramName1, final String paramName2, final boolean paramName3, final BigDecimal paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Character method153() { return null; }
 
   @XLFunction
   public String method154(final Character paramName0, final Integer paramName1, final Boolean paramName2, final float paramName3, final byte paramName4, final double paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Short method155(final MyEnum paramName0, final int paramName1, final byte paramName2, final boolean paramName3, final Byte paramName4, final char paramName5, final long paramName6) { return null; }
 
   @XLFunction
   public MyEnum method156(final String paramName0, final MyEnum paramName1, final byte paramName2, final boolean paramName3, final double paramName4, final float paramName5, final Double paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public BigInteger method157(final MyClass paramName0, final LocalDate paramName1, final Character paramName2, final float paramName3, final short paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Integer method158() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public byte method159(final MyClass paramName0, final double paramName1, final Object paramName2, final Byte paramName3, final Float paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Integer method160(final Object paramName0, final Character paramName1, final float paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public float method161(final short paramName0) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Byte method162(final boolean paramName0, final BigInteger paramName1, final double paramName2, final Float paramName3, final char paramName4) { return null; }
 
   @XLFunction
   public float method163(final String paramName0) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Object method164(final Long paramName0, final LocalDate paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigInteger method165(final BigInteger paramName0, final Integer paramName1, final Boolean paramName2, final Long paramName3, final double paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Character method166() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Object method167(final MyClass paramName0, final LocalDate paramName1, final String paramName2, final Long paramName3, final Boolean paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Short method168(final Byte paramName0, final Byte paramName1, final boolean paramName2, final float paramName3, final MyEnum paramName4, final Float paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Boolean method169(final BigInteger paramName0, final float paramName1, final Double paramName2, final MyEnum paramName3, final Double paramName4, final Short paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigInteger method170(final Object paramName0, final Character paramName1, final Character paramName2, final Short paramName3, final LocalDate paramName4, final MyEnum paramName5, final int paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Byte method171(final byte paramName0, final Character paramName1, final int paramName2, final LocalDate paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Float method172(final Object paramName0, final Boolean paramName1, final MyEnum paramName2) { return null; }
 
   @XLFunction
   public void method173(final Integer paramName0) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public String method174(final Boolean paramName0, final Double paramName1, final float paramName2, final char paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Double method175(final MyClass paramName0, final Float paramName1, final String paramName2, final long paramName3, final byte paramName4, final MyEnum paramName5, final Double paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Integer method176(final Long paramName0, final Boolean paramName1, final char paramName2, final double paramName3, final Double paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public short method177(final Float paramName0, final Short paramName1, final Boolean paramName2, final MyClass paramName3, final LocalDate paramName4, final MyEnum paramName5, final BigInteger paramName6) { return 0; }
 
   @XLFunction
   public Double method178(final Byte paramName0, final Long paramName1, final Long paramName2, final Double paramName3, final short paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Integer method179(final String paramName0, final Boolean paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Float method180(final String paramName0, final MyEnum paramName1, final Boolean paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public LocalDate method181() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Short method182(final Character paramName0, final int paramName1, final boolean paramName2, final Byte paramName3, final byte paramName4) { return null; }
 
   @XLFunction
@@ -573,121 +573,121 @@ public class TestMethods {
   @XLFunction
   public byte method184(final long paramName0, final float paramName1, final Character paramName2) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public BigInteger method185(final double paramName0, final String paramName1, final Float paramName2, final byte paramName3, final Object paramName4, final char paramName5, final Float paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public BigDecimal method186(final byte paramName0, final Byte paramName1, final Long paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public byte method187(final byte paramName0, final Integer paramName1, final Long paramName2) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Float method188(final Boolean paramName0, final BigDecimal paramName1, final long paramName2, final MyEnum paramName3, final Float paramName4, final MyEnum paramName5, final MyClass paramName6) { return null; }
 
   @XLFunction
   public Byte method189(final LocalDate paramName0, final Float paramName1, final Integer paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public short method190(final Short paramName0) { return 0; }
 
   @XLFunction
   public double method191(final Long paramName0) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public short method192(final Character paramName0, final Double paramName1, final Object paramName2, final MyClass paramName3, final Long paramName4, final int paramName5, final MyEnum paramName6) { return 0; }
 
   @XLFunction
   public Long method193(final Short paramName0, final double paramName1, final Short paramName2, final MyClass paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public long method194(final BigDecimal paramName0, final Double paramName1, final String paramName2) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public void method195(final String paramName0, final Object paramName1, final long paramName2) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Integer method196(final Double paramName0, final String paramName1, final String paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public byte method197(final Object paramName0, final Float paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyClass method198(final long paramName0, final double paramName1, final String paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Float method199(final double paramName0, final byte paramName1, final LocalDate paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public char method200(final boolean paramName0, final Float paramName1, final char paramName2, final char paramName3, final String paramName4, final boolean paramName5) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Float method201(final Boolean paramName0, final Short paramName1, final float paramName2, final String paramName3, final MyEnum paramName4, final BigInteger paramName5, final byte paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Long method202(final BigDecimal paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Object method203(final Integer paramName0, final float paramName1, final BigInteger paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public BigDecimal method204() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyClass method205(final Integer paramName0, final Object paramName1, final Object paramName2, final Float paramName3, final Short paramName4, final Boolean paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public MyClass method206(final int paramName0, final Integer paramName1, final Short paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public String method207(final Object paramName0, final byte paramName1, final byte paramName2, final Float paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Float method208(final BigInteger paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Double method209(final MyEnum paramName0, final MyEnum paramName1, final Double paramName2, final Double paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Character method210(final short paramName0, final double paramName1, final short paramName2, final boolean paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Boolean method211() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Object method212(final MyClass paramName0, final long paramName1, final String paramName2) { return null; }
 
   @XLFunction
   public int method213(final Object paramName0, final LocalDate paramName1, final MyEnum paramName2, final char paramName3, final MyEnum paramName4, final Boolean paramName5) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Long method214() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public char method215(final Object paramName0, final MyEnum paramName1, final short paramName2) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public LocalDate method216(final Double paramName0, final Integer paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Integer method217(final String paramName0, final boolean paramName1, final BigDecimal paramName2, final char paramName3, final BigInteger paramName4) { return null; }
 
   @XLFunction
   public Object method218(final Double paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public void method219(final String paramName0, final double paramName1, final double paramName2, final Boolean paramName3) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Character method220() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public MyEnum method221(final Double paramName0, final short paramName1, final Integer paramName2, final Character paramName3, final Double paramName4, final BigInteger paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Long method222(final BigInteger paramName0, final float paramName1, final byte paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyClass method223() { return null; }
 
   @XLFunction
@@ -696,145 +696,145 @@ public class TestMethods {
   @XLFunction
   public Byte method225() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public double method226(final Character paramName0, final String paramName1, final long paramName2, final double paramName3, final Object paramName4, final Short paramName5, final Integer paramName6) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Short method227(final Short paramName0, final MyClass paramName1, final Double paramName2, final Short paramName3, final char paramName4, final BigDecimal paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public float method228(final int paramName0) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Boolean method229(final Float paramName0, final Float paramName1, final LocalDate paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Object method230(final Character paramName0, final Boolean paramName1, final Long paramName2) { return null; }
 
   @XLFunction
   public Double method231() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigDecimal method232() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Boolean method233(final long paramName0, final BigInteger paramName1, final char paramName2, final MyClass paramName3, final short paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public MyClass method234(final Character paramName0, final Long paramName1, final Character paramName2, final Double paramName3, final double paramName4, final boolean paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public BigInteger method235(final char paramName0, final Character paramName1, final boolean paramName2, final LocalDate paramName3, final BigInteger paramName4) { return null; }
 
   @XLFunction
   public void method236(final short paramName0) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public boolean method237(final double paramName0, final Integer paramName1, final byte paramName2, final MyClass paramName3, final Short paramName4) { return true; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public BigDecimal method238(final boolean paramName0, final short paramName1, final Character paramName2, final BigInteger paramName3, final short paramName4, final MyClass paramName5) { return null; }
 
   @XLFunction
   public Integer method239() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public boolean method240(final Short paramName0) { return true; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public MyEnum method241(final Character paramName0, final Object paramName1, final double paramName2, final float paramName3, final Short paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Long method242(final short paramName0, final String paramName1, final Byte paramName2, final Short paramName3) { return null; }
 
   @XLFunction
   public void method243(final Character paramName0, final Double paramName1, final double paramName2, final Double paramName3) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Byte method244(final LocalDate paramName0, final short paramName1, final Double paramName2, final MyEnum paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public String method245(final float paramName0, final Double paramName1, final Float paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyClass method246(final BigInteger paramName0, final MyEnum paramName1, final Float paramName2, final float paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public int method247(final MyClass paramName0, final int paramName1, final boolean paramName2, final long paramName3, final String paramName4, final Boolean paramName5, final Object paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Integer method248() { return null; }
 
   @XLFunction
   public MyEnum method249(final String paramName0, final char paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public long method250(final long paramName0, final int paramName1, final Double paramName2, final Boolean paramName3, final Double paramName4) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Long method251(final float paramName0, final boolean paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public long method252(final MyClass paramName0, final Double paramName1, final short paramName2, final MyClass paramName3, final MyClass paramName4) { return 0L; }
 
   @XLFunction
   public BigDecimal method253() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Boolean method254(final char paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public LocalDate method255(final long paramName0, final byte paramName1, final String paramName2, final String paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public byte method256(final double paramName0, final MyClass paramName1, final Long paramName2, final byte paramName3, final Boolean paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Boolean method257(final Boolean paramName0, final Short paramName1, final int paramName2, final Boolean paramName3, final MyClass paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyClass method258(final Float paramName0, final long paramName1, final LocalDate paramName2, final String paramName3, final Character paramName4, final byte paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public int method259(final Double paramName0, final Object paramName1, final Float paramName2, final Integer paramName3) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public byte method260(final Byte paramName0, final long paramName1, final Object paramName2, final String paramName3, final byte paramName4, final Byte paramName5, final Boolean paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public boolean method261(final Integer paramName0, final Character paramName1, final Double paramName2, final Boolean paramName3, final char paramName4, final Integer paramName5) { return true; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public BigDecimal method262(final LocalDate paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public short method263(final MyEnum paramName0, final Long paramName1, final LocalDate paramName2, final MyClass paramName3, final BigInteger paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public int method264(final Boolean paramName0, final Character paramName1, final MyClass paramName2) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Object method265(final Short paramName0, final double paramName1, final short paramName2, final byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Byte method266(final String paramName0, final Double paramName1, final Float paramName2, final byte paramName3, final long paramName4, final Integer paramName5) { return null; }
 
   @XLFunction
   public short method267(final Byte paramName0, final long paramName1, final double paramName2, final byte paramName3, final Long paramName4, final Double paramName5, final String paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Character method268(final BigInteger paramName0, final char paramName1, final double paramName2, final boolean paramName3, final short paramName4, final Integer paramName5, final char paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public String method269(final LocalDate paramName0, final Long paramName1, final Object paramName2, final double paramName3, final int paramName4, final BigInteger paramName5, final Character paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Character method270(final double paramName0, final byte paramName1, final MyClass paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public short method271(final LocalDate paramName0, final MyClass paramName1, final boolean paramName2, final char paramName3, final BigDecimal paramName4, final long paramName5, final LocalDate paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Character method272(final MyEnum paramName0, final Character paramName1, final Double paramName2, final BigDecimal paramName3) { return null; }
 
   @XLFunction
@@ -843,10 +843,10 @@ public class TestMethods {
   @XLFunction
   public double method274(final float paramName0, final Integer paramName1, final MyClass paramName2, final char paramName3, final Short paramName4, final Double paramName5, final Float paramName6) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public MyEnum method275(final byte paramName0, final Float paramName1, final LocalDate paramName2, final MyEnum paramName3, final int paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public LocalDate method276(final MyClass paramName0, final Float paramName1, final Float paramName2, final LocalDate paramName3, final byte paramName4) { return null; }
 
   @XLFunction
@@ -855,7 +855,7 @@ public class TestMethods {
   @XLFunction
   public Object method278(final long paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Integer method279(final Float paramName0, final byte paramName1, final double paramName2, final BigDecimal paramName3) { return null; }
 
   @XLFunction
@@ -867,61 +867,61 @@ public class TestMethods {
   @XLFunction
   public BigInteger method282(final double paramName0, final BigDecimal paramName1, final MyClass paramName2, final Byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public String method283(final BigDecimal paramName0, final Double paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public BigDecimal method284(final int paramName0, final Float paramName1, final boolean paramName2, final String paramName3, final Integer paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public String method285(final String paramName0, final byte paramName1, final Float paramName2, final BigDecimal paramName3, final Object paramName4, final Long paramName5, final char paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public char method286(final Double paramName0, final String paramName1, final short paramName2, final short paramName3, final int paramName4, final Float paramName5) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public short method287(final Double paramName0, final boolean paramName1, final byte paramName2, final Double paramName3, final BigDecimal paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public BigDecimal method288(final LocalDate paramName0, final Object paramName1, final Short paramName2, final Object paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public void method289(final Byte paramName0, final Float paramName1, final Double paramName2) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public int method290(final Byte paramName0, final LocalDate paramName1, final BigInteger paramName2, final Short paramName3, final BigInteger paramName4, final char paramName5) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Short method291(final BigInteger paramName0, final Integer paramName1, final byte paramName2, final String paramName3, final LocalDate paramName4) { return null; }
 
   @XLFunction
   public LocalDate method292() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Object method293(final Float paramName0, final Long paramName1, final Float paramName2, final Float paramName3, final boolean paramName4, final Long paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public MyEnum method294(final short paramName0, final Byte paramName1, final char paramName2, final short paramName3, final BigInteger paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigDecimal method295(final LocalDate paramName0, final Object paramName1, final MyEnum paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public void method296() { return ; }
 
   @XLFunction
   public char method297(final Byte paramName0, final Byte paramName1, final MyClass paramName2) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public int method298(final byte paramName0, final Boolean paramName1, final MyClass paramName2, final Float paramName3, final short paramName4) { return 0; }
 
   @XLFunction
   public boolean method299(final double paramName0, final MyClass paramName1, final MyClass paramName2, final LocalDate paramName3) { return true; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public long method300(final LocalDate paramName0, final long paramName1, final short paramName2, final long paramName3) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public boolean method301(final LocalDate paramName0, final BigInteger paramName1, final Float paramName2, final Long paramName3, final BigInteger paramName4, final char paramName5, final byte paramName6) { return true; }
 
   @XLFunction
@@ -930,7 +930,7 @@ public class TestMethods {
   @XLFunction
   public Float method303(final Float paramName0, final Boolean paramName1, final BigInteger paramName2, final LocalDate paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public char method304(final boolean paramName0, final Double paramName1, final short paramName2, final MyEnum paramName3, final Object paramName4) { return 'x'; }
 
   @XLFunction
@@ -939,22 +939,22 @@ public class TestMethods {
   @XLFunction
   public char method306(final long paramName0, final String paramName1, final int paramName2, final int paramName3, final LocalDate paramName4, final int paramName5) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public byte method307(final LocalDate paramName0, final String paramName1, final double paramName2, final Object paramName3, final String paramName4, final Byte paramName5, final float paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Character method308(final Short paramName0, final Byte paramName1, final Long paramName2, final byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Long method309(final boolean paramName0, final BigDecimal paramName1, final Float paramName2, final Double paramName3, final LocalDate paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Object method310(final char paramName0, final double paramName1, final Float paramName2, final Float paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public String method311() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public double method312(final Byte paramName0, final long paramName1, final BigDecimal paramName2, final String paramName3, final float paramName4, final char paramName5, final long paramName6) { return 0d; }
 
   @XLFunction
@@ -963,244 +963,244 @@ public class TestMethods {
   @XLFunction
   public Double method314(final long paramName0, final BigInteger paramName1, final LocalDate paramName2, final Double paramName3, final float paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Byte method315(final short paramName0, final Byte paramName1) { return null; }
 
   @XLFunction
   public Character method316() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Short method317(final String paramName0, final BigDecimal paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Short method318(final BigDecimal paramName0, final MyClass paramName1, final Character paramName2, final Double paramName3, final Boolean paramName4, final int paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public short method319(final Short paramName0, final Long paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Integer method320(final Long paramName0, final long paramName1, final long paramName2, final short paramName3, final byte paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Integer method321(final char paramName0, final BigInteger paramName1, final long paramName2, final Byte paramName3, final int paramName4) { return null; }
 
   @XLFunction
   public MyEnum method322(final double paramName0, final byte paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public boolean method323() { return true; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public double method324(final Integer paramName0, final long paramName1, final Byte paramName2, final double paramName3, final boolean paramName4, final float paramName5) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Byte method325() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Long method326(final short paramName0, final BigInteger paramName1) { return null; }
 
   @XLFunction
   public Boolean method327(final Long paramName0, final int paramName1, final Double paramName2, final int paramName3, final Boolean paramName4, final String paramName5, final char paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyClass method328(final long paramName0, final float paramName1, final Object paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public BigDecimal method329(final MyEnum paramName0, final LocalDate paramName1, final byte paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public long method330(final long paramName0, final byte paramName1, final Long paramName2, final Boolean paramName3, final LocalDate paramName4, final char paramName5) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public String method331(final MyEnum paramName0, final MyClass paramName1, final Boolean paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Byte method332(final String paramName0, final int paramName1, final char paramName2, final short paramName3, final Long paramName4, final float paramName5, final Short paramName6) { return null; }
 
   @XLFunction
   public void method333(final double paramName0, final Long paramName1, final BigDecimal paramName2) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public long method334(final boolean paramName0) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Long method335(final Boolean paramName0, final LocalDate paramName1, final MyEnum paramName2, final double paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Long method336() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public BigDecimal method337(final char paramName0, final BigDecimal paramName1, final BigDecimal paramName2, final int paramName3, final short paramName4, final boolean paramName5, final MyEnum paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyEnum method338(final Object paramName0, final BigInteger paramName1, final boolean paramName2, final int paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Character method339(final String paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Short method340(final MyClass paramName0, final Long paramName1, final Short paramName2, final MyEnum paramName3, final Double paramName4, final Character paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public void method341(final Short paramName0) { return ; }
 
   @XLFunction
   public Float method342() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public int method343(final byte paramName0, final int paramName1, final short paramName2, final Short paramName3, final Double paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public MyClass method344(final Short paramName0, final String paramName1, final Long paramName2, final double paramName3, final BigDecimal paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public BigDecimal method345(final Character paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public LocalDate method346(final Long paramName0, final float paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public MyClass method347(final BigDecimal paramName0, final MyClass paramName1) { return null; }
 
   @XLFunction
   public Float method348(final Character paramName0, final Float paramName1, final float paramName2, final char paramName3, final Integer paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Double method349(final double paramName0, final LocalDate paramName1, final Object paramName2, final Integer paramName3, final Object paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Boolean method350(final int paramName0, final Float paramName1, final BigInteger paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public LocalDate method351(final int paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyClass method352(final String paramName0, final BigDecimal paramName1, final Integer paramName2, final Boolean paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Byte method353(final char paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Short method354(final Short paramName0, final Double paramName1, final short paramName2, final byte paramName3, final char paramName4) { return null; }
 
   @XLFunction
   public Object method355(final int paramName0, final boolean paramName1, final int paramName2, final MyEnum paramName3, final Object paramName4, final Short paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigInteger method356() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Character method357(final double paramName0, final BigInteger paramName1, final Byte paramName2, final String paramName3, final Long paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Character method358(final Object paramName0, final Short paramName1, final byte paramName2, final MyEnum paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigInteger method359(final short paramName0, final MyClass paramName1, final Boolean paramName2, final Integer paramName3, final float paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Boolean method360(final Object paramName0, final Byte paramName1, final byte paramName2, final long paramName3, final byte paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public double method361(final double paramName0, final short paramName1, final BigInteger paramName2, final String paramName3, final char paramName4) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public MyEnum method362(final boolean paramName0, final Long paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Short method363(final Integer paramName0, final BigInteger paramName1, final LocalDate paramName2) { return null; }
 
   @XLFunction
   public short method364(final Long paramName0, final Object paramName1, final int paramName2, final Byte paramName3, final float paramName4, final float paramName5) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public String method365(final byte paramName0, final Byte paramName1, final Float paramName2, final Boolean paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Float method366(final char paramName0, final BigDecimal paramName1, final String paramName2, final Object paramName3, final Character paramName4, final BigDecimal paramName5, final Float paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public byte method367(final Byte paramName0, final MyEnum paramName1, final Byte paramName2, final float paramName3) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public void method368(final short paramName0, final Object paramName1) { return ; }
 
   @XLFunction
   public Object method369(final char paramName0, final int paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public int method370(final Long paramName0, final float paramName1, final Integer paramName2, final Object paramName3, final short paramName4, final boolean paramName5, final int paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Character method371(final short paramName0, final BigInteger paramName1, final Byte paramName2) { return null; }
 
   @XLFunction
   public boolean method372(final String paramName0) { return true; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public float method373(final LocalDate paramName0, final BigDecimal paramName1, final Byte paramName2, final long paramName3, final BigInteger paramName4) { return 0f; }
 
   @XLFunction
   public Boolean method374(final Character paramName0, final LocalDate paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Boolean method375(final MyClass paramName0, final double paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public short method376(final byte paramName0, final BigDecimal paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public BigInteger method377(final Character paramName0, final char paramName1, final long paramName2, final Object paramName3, final boolean paramName4, final Double paramName5) { return null; }
 
   @XLFunction
   public Integer method378(final MyEnum paramName0, final Double paramName1, final String paramName2, final int paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Double method379(final MyEnum paramName0, final MyClass paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public boolean method380(final Integer paramName0, final String paramName1, final Character paramName2, final MyEnum paramName3) { return true; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Character method381(final long paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public short method382(final long paramName0, final Short paramName1, final Character paramName2, final float paramName3, final byte paramName4, final double paramName5) { return 0; }
 
   @XLFunction
   public Object method383(final Long paramName0, final Boolean paramName1, final Float paramName2, final int paramName3, final Object paramName4, final Double paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public byte method384(final Byte paramName0, final Byte paramName1) { return 0; }
 
   @XLFunction
   public Float method385() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public byte method386(final float paramName0, final short paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public String method387(final BigDecimal paramName0, final boolean paramName1, final MyEnum paramName2, final Character paramName3, final Float paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Boolean method388(final Boolean paramName0, final char paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Byte method389(final byte paramName0, final LocalDate paramName1, final Short paramName2, final BigInteger paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public void method390() { return ; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public int method391(final Byte paramName0, final Short paramName1, final char paramName2, final String paramName3, final Short paramName4, final boolean paramName5, final char paramName6) { return 0; }
 
   @XLFunction
   public String method392(final float paramName0, final long paramName1, final int paramName2, final int paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigInteger method393(final LocalDate paramName0, final Long paramName1, final BigInteger paramName2, final Object paramName3, final Short paramName4, final Short paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public LocalDate method394(final long paramName0, final Long paramName1, final float paramName2, final Byte paramName3, final MyEnum paramName4) { return null; }
 
   @XLFunction
@@ -1209,31 +1209,31 @@ public class TestMethods {
   @XLFunction
   public short method396(final Short paramName0, final Boolean paramName1, final Double paramName2, final BigDecimal paramName3, final BigDecimal paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public MyEnum method397(final Long paramName0, final float paramName1, final int paramName2, final Short paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public long method398(final Long paramName0, final BigInteger paramName1, final MyEnum paramName2, final long paramName3, final Float paramName4) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public void method399(final char paramName0, final Integer paramName1, final int paramName2) { return ; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Byte method400(final Character paramName0, final double paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public byte method401(final Byte paramName0, final byte paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public int method402(final int paramName0) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public float method403(final char paramName0, final String paramName1, final Integer paramName2, final short paramName3) { return 0f; }
 
   @XLFunction
   public Integer method404(final MyEnum paramName0, final Byte paramName1, final boolean paramName2, final Double paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public long method405() { return 0L; }
 
   @XLFunction
@@ -1242,85 +1242,85 @@ public class TestMethods {
   @XLFunction
   public MyEnum method407() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public double method408() { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Double method409(final Double paramName0, final short paramName1, final char paramName2, final Float paramName3, final MyEnum paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public MyClass method410(final Object paramName0, final Double paramName1, final Byte paramName2, final int paramName3, final char paramName4, final Byte paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public BigInteger method411(final boolean paramName0, final short paramName1, final byte paramName2, final byte paramName3, final Float paramName4, final char paramName5, final Float paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Byte method412(final short paramName0, final LocalDate paramName1, final short paramName2, final MyEnum paramName3, final MyEnum paramName4, final BigDecimal paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Short method413(final MyEnum paramName0, final Float paramName1, final Float paramName2, final char paramName3, final Long paramName4, final Boolean paramName5, final Double paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public BigDecimal method414(final long paramName0, final Long paramName1, final int paramName2, final MyEnum paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public MyClass method415(final float paramName0, final Float paramName1, final LocalDate paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public String method416(final LocalDate paramName0, final Double paramName1, final BigInteger paramName2, final Boolean paramName3, final Double paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public Float method417(final BigDecimal paramName0, final short paramName1, final char paramName2, final Short paramName3, final Double paramName4, final Boolean paramName5, final MyClass paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public Long method418(final double paramName0, final Byte paramName1, final BigInteger paramName2, final Integer paramName3, final float paramName4) { return null; }
 
   @XLFunction
   public MyEnum method419(final Character paramName0, final Integer paramName1, final MyClass paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Byte method420(final Long paramName0, final byte paramName1, final Float paramName2, final String paramName3, final Byte paramName4, final BigDecimal paramName5, final Short paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Float method421() { return null; }
 
   @XLFunction
   public MyClass method422(final double paramName0, final boolean paramName1, final char paramName2, final Short paramName3, final Integer paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Long method423(final Boolean paramName0, final String paramName1, final boolean paramName2, final BigInteger paramName3, final short paramName4, final boolean paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Double method424(final String paramName0, final float paramName1, final Float paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public boolean method425(final BigInteger paramName0, final String paramName1, final Integer paramName2, final Byte paramName3, final BigDecimal paramName4, final char paramName5, final Float paramName6) { return true; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public short method426(final char paramName0, final MyClass paramName1, final byte paramName2, final long paramName3, final BigInteger paramName4, final Float paramName5) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Long method427(final Integer paramName0, final byte paramName1, final LocalDate paramName2, final short paramName3) { return null; }
 
   @XLFunction
   public long method428(final Object paramName0, final int paramName1, final Integer paramName2, final Double paramName3, final String paramName4, final char paramName5) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public Double method429(final MyClass paramName0, final Double paramName1, final byte paramName2, final Long paramName3, final String paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigDecimal method430(final Long paramName0, final LocalDate paramName1, final Boolean paramName2, final Integer paramName3, final MyClass paramName4, final Object paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public double method431(final Object paramName0, final char paramName1, final LocalDate paramName2, final Byte paramName3, final double paramName4, final long paramName5, final byte paramName6) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public MyClass method432(final int paramName0, final MyClass paramName1, final boolean paramName2, final BigInteger paramName3) { return null; }
 
   @XLFunction
   public float method433(final BigDecimal paramName0, final boolean paramName1, final Double paramName2) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public MyClass method434(final Float paramName0, final BigDecimal paramName1, final long paramName2, final Object paramName3, final char paramName4) { return null; }
 
   @XLFunction
@@ -1332,109 +1332,109 @@ public class TestMethods {
   @XLFunction
   public char method437(final Boolean paramName0, final Boolean paramName1, final MyEnum paramName2, final char paramName3, final Float paramName4) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public BigInteger method438(final LocalDate paramName0, final Long paramName1, final byte paramName2, final Double paramName3, final Double paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Object method439() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public BigDecimal method440(final Short paramName0, final Character paramName1, final Character paramName2, final Double paramName3) { return null; }
 
   @XLFunction
   public String method441(final char paramName0, final Character paramName1, final Byte paramName2, final Object paramName3, final Float paramName4, final double paramName5, final long paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public String method442(final char paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Boolean method443() { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Integer method444(final double paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public float method445(final Float paramName0, final MyClass paramName1, final Object paramName2, final LocalDate paramName3, final BigInteger paramName4, final Long paramName5, final double paramName6) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public short method446(final float paramName0, final double paramName1, final Character paramName2, final double paramName3, final String paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Double method447(final MyEnum paramName0, final String paramName1, final float paramName2, final String paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public LocalDate method448(final LocalDate paramName0, final int paramName1, final MyEnum paramName2, final String paramName3, final Object paramName4, final MyClass paramName5, final boolean paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public LocalDate method449() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Object method450(final long paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public void method451(final MyEnum paramName0, final float paramName1, final Integer paramName2, final double paramName3, final long paramName4, final float paramName5) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public Object method452(final Integer paramName0, final MyClass paramName1, final BigDecimal paramName2, final MyClass paramName3, final Boolean paramName4, final Double paramName5, final Float paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public LocalDate method453(final BigInteger paramName0, final Double paramName1, final Character paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public short method454(final LocalDate paramName0, final Short paramName1, final double paramName2) { return 0; }
 
   @XLFunction
   public Object method455(final Float paramName0, final Boolean paramName1, final BigDecimal paramName2, final Byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public double method456(final boolean paramName0, final char paramName1, final Boolean paramName2, final Integer paramName3, final byte paramName4) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Double method457(final MyClass paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public char method458() { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public Boolean method459(final Byte paramName0, final Integer paramName1, final long paramName2, final long paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=true)
   public String method460(final MyEnum paramName0, final boolean paramName1, final char paramName2, final char paramName3, final MyClass paramName4, final Byte paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public byte method461(final boolean paramName0, final Short paramName1, final LocalDate paramName2, final int paramName3, final Boolean paramName4, final double paramName5) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public MyEnum method462(final int paramName0, final Integer paramName1, final byte paramName2, final MyClass paramName3, final boolean paramName4) { return null; }
 
   @XLFunction
   public String method463(final float paramName0, final int paramName1, final BigDecimal paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public short method464(final Byte paramName0, final Double paramName1, final BigInteger paramName2, final short paramName3, final Float paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true)
   public short method465() { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false)
+  @XLFunction(isAutoRTDAsynchronous=false)
   public MyEnum method466(final char paramName0, final short paramName1) { return null; }
 
   @XLFunction
   public Integer method467() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public BigInteger method468(final MyEnum paramName0, final Object paramName1) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public double method469(final Long paramName0, final double paramName1, final byte paramName2, final float paramName3) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=false)
   public short method470(final Byte paramName0, final Float paramName1, final Short paramName2, final Integer paramName3, final Object paramName4, final char paramName5, final Boolean paramName6) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=true, isMultiThreadSafe=true)
   public byte method471(final Double paramName0, final Double paramName1, final String paramName2, final Float paramName3) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Character method472(final Boolean paramName0, final MyClass paramName1, final Double paramName2, final Character paramName3, final LocalDate paramName4, final BigInteger paramName5, final byte paramName6) { return null; }
 
   @XLFunction
@@ -1443,79 +1443,79 @@ public class TestMethods {
   @XLFunction
   public Short method474() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public byte method475(final int paramName0, final long paramName1, final BigInteger paramName2, final Integer paramName3, final MyEnum paramName4) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public MyEnum method476(final String paramName0, final int paramName1) { return null; }
 
   @XLFunction
   public MyClass method477(final MyEnum paramName0, final String paramName1, final Byte paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public Float method478(final String paramName0, final LocalDate paramName1, final BigDecimal paramName2, final Long paramName3, final Byte paramName4, final float paramName5, final float paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public double method479(final double paramName0, final Character paramName1, final double paramName2) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public Float method480(final BigDecimal paramName0, final int paramName1, final Byte paramName2, final Object paramName3, final String paramName4, final Byte paramName5) { return null; }
 
   @XLFunction
   public LocalDate method481(final MyClass paramName0, final BigInteger paramName1, final MyClass paramName2, final int paramName3, final Short paramName4, final String paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public BigInteger method482(final Character paramName0, final LocalDate paramName1, final BigDecimal paramName2, final Integer paramName3, final boolean paramName4, final char paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public long method483(final LocalDate paramName0, final float paramName1, final double paramName2) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=true)
   public void method484(final MyEnum paramName0, final boolean paramName1, final MyEnum paramName2) { return ; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public BigDecimal method485(final short paramName0, final Boolean paramName1, final Double paramName2, final Double paramName3, final LocalDate paramName4, final Float paramName5, final Short paramName6) { return null; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public BigInteger method486() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public BigInteger method487(final boolean paramName0, final BigInteger paramName1, final Long paramName2) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public float method488(final float paramName0, final BigInteger paramName1, final char paramName2, final boolean paramName3, final Long paramName4) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public LocalDate method489(final Byte paramName0, final byte paramName1, final Character paramName2, final Byte paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Short method490(final double paramName0, final Double paramName1, final Object paramName2, final Integer paramName3, final LocalDate paramName4) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=true)
   public MyEnum method491(final String paramName0, final boolean paramName1, final Short paramName2, final float paramName3, final Integer paramName4, final Object paramName5) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=false)
   public long method492(final Boolean paramName0, final String paramName1) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false, isMultiThreadSafe=false)
   public Byte method493(final char paramName0, final Object paramName1, final boolean paramName2, final Byte paramName3) { return null; }
 
   @XLFunction
   public int method494(final Object paramName0, final double paramName1) { return 0; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public MyClass method495(final MyEnum paramName0, final char paramName1, final long paramName2, final LocalDate paramName3, final MyEnum paramName4) { return null; }
 
   @XLFunction
   public double method496(final Object paramName0, final String paramName1, final MyEnum paramName2, final float paramName3, final LocalDate paramName4, final int paramName5) { return 0d; }
 
-  @XLFunction(isAutoAsynchronous=false, isMacroEquivalent=false)
+  @XLFunction(isAutoRTDAsynchronous=false, isMacroEquivalent=false)
   public long method497(final byte paramName0, final short paramName1, final boolean paramName2, final Object paramName3, final Float paramName4) { return 0L; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Object method498(final LocalDate paramName0, final short paramName1, final Byte paramName2, final BigDecimal paramName3) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true)
   public Double method499() { return null; }
 
   @XLFunction
@@ -1524,16 +1524,16 @@ public class TestMethods {
   @XLFunction
   public BigDecimal method501(final Integer paramName0) { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public float method502(final Boolean paramName0, final double paramName1, final float paramName2, final Boolean paramName3, final LocalDate paramName4) { return 0f; }
 
-  @XLFunction(isAutoAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
+  @XLFunction(isAutoRTDAsynchronous=true, isMacroEquivalent=true, isMultiThreadSafe=false)
   public char method503(final Byte paramName0, final LocalDate paramName1) { return 'x'; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public String method504() { return null; }
 
-  @XLFunction(isAutoAsynchronous=true)
+  @XLFunction(isAutoRTDAsynchronous=true)
   public Float method505(final Long paramName0, final Long paramName1, final float paramName2, final Float paramName3, final MyEnum paramName4) { return null; }
 
   @XLFunction

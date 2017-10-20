@@ -33,6 +33,7 @@ public class XLLocalReferenceTests {
     Assert.assertEquals(localRef.getRange(), xlRange);
   }
 
+  // CHECKSTYLE:OFF
   /**
    *
    */

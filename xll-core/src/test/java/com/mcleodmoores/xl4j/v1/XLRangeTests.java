@@ -134,6 +134,7 @@ public class XLRangeTests {
     Assert.assertTrue(range.isSingleCell());
   }
 
+  // CHECKSTYLE:OFF
   /**
    *
    */

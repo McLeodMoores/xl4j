@@ -104,6 +104,7 @@ public class XLMultiReferenceTests {
     Assert.assertEquals(multiRef.getSheetId(), sheetId);
   }
 
+  // CHECKSTYLE:OFF
   /**
    *
    */

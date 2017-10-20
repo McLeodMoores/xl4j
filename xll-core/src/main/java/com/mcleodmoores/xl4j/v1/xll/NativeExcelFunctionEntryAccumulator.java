@@ -3,10 +3,7 @@
  */
 package com.mcleodmoores.xl4j.v1.xll;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NavigableSet;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.slf4j.Logger;

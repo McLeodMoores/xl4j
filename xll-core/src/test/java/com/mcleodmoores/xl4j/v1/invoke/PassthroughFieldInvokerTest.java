@@ -22,8 +22,10 @@ public class PassthroughFieldInvokerTest {
   private static final Field FIELD;
   private static final PassthroughFieldInvokerTest OBJECT = new PassthroughFieldInvokerTest();
   private static final FieldGetter INVOKER;
+  // CHECKSTYLE:OFF
   /** Visible field. */
   public final XLNumber _xlNumber1 = XLNumber.of(4);
+  // CHECKSTYLE:ON
   /** Inaccessible field */
   @SuppressWarnings("unused")
   private final XLNumber _xlNumber2 = XLNumber.of(2);

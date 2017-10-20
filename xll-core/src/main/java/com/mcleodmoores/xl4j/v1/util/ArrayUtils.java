@@ -110,6 +110,13 @@ public final class ArrayUtils {
     }
   }
   
+  /**
+   * @throws ArrayWrongSizeException
+   * Turn a single column/row 2D array into a 1D array. 
+   * @param <T> the type of the arrays
+   * @param arr the two dimensional array containing a single row or column 
+   * @return the resulting one dimensional array
+   */
   public static <T> T[] makeRowOrColumnArray(final T[][] arr) throws ArrayWrongSizeException {
     if (arr.length == 1) {
       return arr[0];

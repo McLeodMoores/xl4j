@@ -184,7 +184,7 @@ public class ConcurrentHeap implements Heap {
       LOGGER.error("There were unrecognised handles, triggering recalc");
     }
     startGC();
-    return unrecognisedHandles;//_snapHandle - snapBefore; // object allocated during cycle
+    return unrecognisedHandles; //_snapHandle - snapBefore; // object allocated during cycle
   }
 
   @Override

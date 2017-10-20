@@ -15,6 +15,7 @@ public class XLIntegerTests {
   private static final String EXPECTED_65536 = "XLInteger[value=65536]";
   private static final String EXPECTED_0 = "XLInteger[value=0]";
 
+  // CHECKSTYLE:OFF
   /**
    *
    */

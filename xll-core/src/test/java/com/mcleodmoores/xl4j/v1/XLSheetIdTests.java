@@ -15,6 +15,7 @@ public class XLSheetIdTests {
   private static final String EXPECTED_65536 = "XLSheetId[sheetId=65536]";
   private static final String EXPECTED_0 = "XLSheetId[sheetId=0]";
 
+  // CHECKSTYLE:OFF
   /**
    *
    */

@@ -26,7 +26,9 @@ public class ObjectFieldInvokerTest {
   private static final TypeConverter CONVERTER = new IntegerXLNumberTypeConverter();
   private static final FieldGetter INVOKER;
   /** Visible field. */
+  // CHECKSTYLE:OFF
   public final Integer _integer1 = 4;
+  // CHECKSTYLE:ON
   /** Inaccessible field */
   @SuppressWarnings("unused")
   private final Integer _integer2 = 2;

@@ -22,7 +22,6 @@ import com.jimmoores.quandl.HeaderDefinition;
 import com.jimmoores.quandl.QuandlSession;
 import com.jimmoores.quandl.RetryPolicy;
 import com.jimmoores.quandl.Row;
-import com.jimmoores.quandl.SessionOptions;
 import com.jimmoores.quandl.SortOrder;
 import com.jimmoores.quandl.TabularResult;
 import com.jimmoores.quandl.Transform;

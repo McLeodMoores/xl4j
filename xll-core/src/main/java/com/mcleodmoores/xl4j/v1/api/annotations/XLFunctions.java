@@ -89,13 +89,15 @@ public @interface XLFunctions {
   boolean isLongRunning() default false;
 
   /**
+   * Removed because native async can't be made to work reliably.
+   * 
    * Indicates that a function should be run in a separate thread, sourced from a special thread-pool
    * and that Excel should be notified asynchronously when the function has finished and returned a
    * result.  Start of execution may be delayed during periods of high concurrency to avoid excessive
    * thread creation.  Result may be discarded if job is cancelled.
    * @return true if the function should be made automatically asynchronous
    */
-  boolean isAutoAsynchronous() default false;
+  //boolean isAutoAsynchronous() default false;
   
   /**
    * Indicates that a function should be run in a separate thread, sourced from a special thread-pool
