@@ -95,7 +95,7 @@ public final class RestFunctions {
    * @return
    *          the response
    */
-  @XLFunction(name = "Get", category = "REST", isAutoAsynchronous = true)
+  @XLFunction(name = "Get", category = "REST", isAutoRTDAsynchronous = true, isMultiThreadSafe = false)
   public static Response get(final WebTarget target, @XLParameter(optional = true) final Object[][] responseTypes) {
     final List<String> listResponseTypes = new ArrayList<>();
     if (responseTypes != null) {
@@ -127,7 +127,7 @@ public final class RestFunctions {
    * @return
    *          the response
    */
-  @XLFunction(name = "Post", category = "REST", isAutoAsynchronous = true)
+  @XLFunction(name = "Post", category = "REST", isAutoRTDAsynchronous = true, isMultiThreadSafe = false)
   public static Response post(
       @XLParameter(name = "target") final WebTarget target,
       @XLParameter(name = "entity") final Entity<?> entity,
