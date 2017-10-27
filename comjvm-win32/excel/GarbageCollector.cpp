@@ -224,7 +224,7 @@ bool GarbageCollector::ScanDocuments () {
 	return false;
 }
 
-const ULONGLONG GarbageCollector::MINIMUM_RECALC_GAP = 30 * 1000;
+const ULONGLONG GarbageCollector::MINIMUM_RECALC_GAP = 60 * 1000;
 
 bool GarbageCollector::IsNotTooSoonForRefresh() {
 	ULONGLONG now = GetTickCount64();
