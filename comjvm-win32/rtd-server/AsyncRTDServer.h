@@ -20,7 +20,7 @@ class ATL_NO_VTABLE CAsyncRTDServer :
 	public CComObjectRootEx<CComSingleThreadModel>,
 	public CComCoClass<CAsyncRTDServer, &CLSID_AsyncRTDServer>,
 	IDispatchImpl<IAsyncRTDServer, &IID_IAsyncRTDServer, &LIBID_rtdserverLib, /*wMajor =*/ 1, /*wMinor =*/ 0>,
-	IDispatchImpl<IRtdServer, &__uuidof(IRtdServer), &LIBID_Excel, /* wMajor = */ 1, /* wMinor = */ 9> {
+	IDispatchImpl<IRtdServer, &__uuidof(IRtdServer), &LIBID_Excel, /* wMajor = */ 1, /* wMinor = */ 7> {
 private:
 	static CSingletonRTDServer s_singleton;
 	//volatile unsigned long initialised = 0;
