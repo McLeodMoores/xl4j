@@ -128,7 +128,8 @@ bool CSplashScreen::IsSplashOpen() {
 			return true;
 		}
 		HWND hSplash = ::FindWindowExW(hwndParent, nullptr, L"MsoSplash", nullptr);
-		return hSplash != nullptr;
+		HWND hSecurity = ::FindWindowExW(nullptr, nullptr, L"Microsoft Excel Security Notice", nullptr);
+		return (hSplash != nullptr) && (hSecurity != nullptr);
 	} else {
 		return true;
 	}

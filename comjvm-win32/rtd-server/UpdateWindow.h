@@ -20,6 +20,7 @@ public:
 		if (!DestroyWindow()) {
 			LOGERROR("DestroyWindow returned an error: %s", GETLASTERROR_TO_STR());
 		}
+		m_hWnd = 0;
 	}
 private:
 
