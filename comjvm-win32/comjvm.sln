@@ -49,8 +49,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rtd-server", "rtd-server\rt
 		{A0CDA5B6-5EDD-4324-B09E-AEE599B41B74} = {A0CDA5B6-5EDD-4324-B09E-AEE599B41B74}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xlcall32", "xlcall32\xlcall32.vcxproj", "{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -147,14 +145,6 @@ Global
 		{AADCFAEE-8571-4DC2-91E2-FBEADCB53A93}.Release|Win32.Build.0 = Release|Win32
 		{AADCFAEE-8571-4DC2-91E2-FBEADCB53A93}.Release|x64.ActiveCfg = Release|x64
 		{AADCFAEE-8571-4DC2-91E2-FBEADCB53A93}.Release|x64.Build.0 = Release|x64
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Debug|Win32.Build.0 = Debug|Win32
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Debug|x64.ActiveCfg = Debug|x64
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Debug|x64.Build.0 = Debug|x64
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Release|Win32.ActiveCfg = Release|Win32
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Release|Win32.Build.0 = Release|Win32
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Release|x64.ActiveCfg = Release|x64
-		{EDEFDD67-2FED-49CE-8662-8E0F18C032DC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
