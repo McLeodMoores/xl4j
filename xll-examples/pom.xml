@@ -49,9 +49,9 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!-- Properties for maven-javadoc-plugin -->
 		<windowtitle>XL4J API</windowtitle>
-		<doctitle>&lt;h1&gt;XL4J API&lt;/h1&gt;</doctitle>
-		<bottom>&lt;i&gt;Copyright 2014-Present McLeod Moores
-			Limited&lt;/i&gt;&lt;br/&gt;&lt;i&gt;${javadoc.footer.license}&lt;/i&gt;</bottom>
+		<doctitle>&lt;h1>XL4J API&lt;/h1></doctitle>
+		<bottom>&lt;i>Copyright 2014-Present McLeod Moores
+			Limited&lt;/i>&lt;br/>&lt;i>${javadoc.footer.license}&lt;/i></bottom>
 		<!-- Properties for buildnumber-maven-plugin -->
 		<maven.buildNumber.getRevisionOnlyOnce>true</maven.buildNumber.getRevisionOnlyOnce>
 		<!-- Version properties -->
@@ -421,7 +421,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -445,7 +445,7 @@
 		<dependency>
 			<groupId>com.jimmoores</groupId>
 			<artifactId>quandl</artifactId>
-			<version>1.4.0</version>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.testng</groupId>
@@ -577,7 +577,7 @@
 								</goals>
 								<configuration>
 									<target>
-										<ant antfile="${basedir}/pom-ant.xml" target="dist-src" />
+										<ant antfile="${basedir}/pom-ant.xml" target="dist-src"/>
 									</target>
 								</configuration>
 							</execution>
