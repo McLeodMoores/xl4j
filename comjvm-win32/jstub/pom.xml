@@ -19,7 +19,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <bcel.version>5.2</bcel.version>
+    <bcel.version>6.6.0</bcel.version>
     <commons-lang3.version>3.2.1</commons-lang3.version>
     <helpers.version>0.1.1</helpers.version>
     <jacoco-maven-plugin.version>0.7.0.201403182114</jacoco-maven-plugin.version>
