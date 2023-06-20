@@ -165,7 +165,7 @@
 						<groupId>org.reflections</groupId>
 						<artifactId>reflections</artifactId>
 						<!-- use latest version of Reflections -->
-						<version>0.9.11</version>
+						<version>0.9.12</version>
 					</dependency>
 					<dependency>
 						<groupId>org.codehaus.groovy</groupId>
@@ -422,7 +422,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore/>
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -457,7 +457,7 @@
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
-			<version>0.9.11</version>
+			<version>0.9.12</version>
 		</dependency>
 		<dependency>
 			<groupId>dom4j</groupId>
@@ -577,7 +577,7 @@
 								</goals>
 								<configuration>
 									<target>
-										<ant antfile="${basedir}/pom-ant.xml" target="dist-src" />
+										<ant antfile="${basedir}/pom-ant.xml" target="dist-src"/>
 									</target>
 								</configuration>
 							</execution>
